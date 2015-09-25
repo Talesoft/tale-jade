@@ -21,6 +21,9 @@ class NodeBase
         return $this->_parent !== null;
     }
 
+    /**
+     * @return \Tale\Jade\NodeBase|null
+     */
     public function getParent()
     {
 
@@ -36,6 +39,16 @@ class NodeBase
             $node->appendChild($this);
 
         return $this;
+    }
+
+    public function getRoot()
+    {
+
+        $current = $this;
+        while ($current->hasParent())
+            $current = $current->getParent();
+
+        return $current;
     }
 
     public function hasChildren()
