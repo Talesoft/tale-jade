@@ -102,25 +102,14 @@ class Lexer
     protected function peek($length = 1)
     {
 
-        $token = $this->substr($this->_lineInput, $this->_offset, $length);
-        return $token;
+        return $this->substr($this->_lineInput, $this->_offset, $length);
     }
 
-    protected function consume($token)
+    protected function consume($length = 1)
     {
 
-        $this->_token .= $token;
-        $this->_offset += $this->strlen($token);
+        $this->_lineInput = $this->substr($this->_lineInput, $length);
         return $this;
-    }
-
-    protected function fetch()
-    {
-
-        $token = $this->_token;
-        $this->_token = '';
-
-        return $token;
     }
 
     protected function peekWhile($callback, $length = 1, $reverse = false)
@@ -131,18 +120,20 @@ class Lexer
                 "Argument 1 passed to peekWhile needs to be callback"
             );
 
+        $token = '';
         while (!$this->isEol()
            && ($reverse
-                ? !$callback($char = $this->peek($length))
-                : $callback($char = $this->peek($length))
+                ? !$callback($string = $this->peek($length))
+                : $callback($string = $this->peek($length))
               )
         )
         {
 
-            $this->consume($char);
+            $this->consume($length);
+            $token .= $string;
         }
 
-        return $this->fetch();
+        return $token;
     }
 
     protected function peekUntil($callback, $length = 1)
@@ -156,7 +147,7 @@ class Lexer
 
         return preg_match(
             "/$pattern/$modifiers",
-            $this->substr($this->_lineInput, $this->_offset),
+            $this->_lineInput,
             $this->_matches
         );
     }
@@ -263,7 +254,7 @@ class Lexer
 
         if (!($this->_output instanceof DocumentNode) || $this->_output->hasChildren() || $this->_level !== 0)
             $this->throwException(
-                "Extends has to be the very first, unindented command you make"
+                "Extends has to be the very first, unindented instruction you make"
             );
 
         $this->_output->setExtendPath($this->getMatch(1));
@@ -316,7 +307,12 @@ class Lexer
     protected function scanTag()
     {
 
-        if (!$this->match('^([a-z][a-z0-9\-_]*)', ))
+        if (!$this->match('^([a-z][a-z0-9\-_]*)', 'i'))
+            return false;
+
+        $this->consumeMatch();
+        $tag = $this->getMatch(1);
+
     }
 
     protected function scanElement()
