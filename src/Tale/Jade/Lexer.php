@@ -87,14 +87,7 @@ class Lexer
             $this->_lineLength = $this->strlen($this->_lineInput);
 
             $this->scanIndent();
-
-            $this->scanExtends() or
-            $this->scanBlock() or
-            $this->scanDoctype() or
-            $this->scanElement() or
-            $this->throwException(
-                "Failed to parse line \"$line\", no valid Jade syntax"
-            );
+            $this->scan();
         }
 
         return $this->_output->getRoot();
@@ -180,6 +173,47 @@ class Lexer
         return isset($this->_matches[$index]) ? $this->_matches[$index] : null;
     }
 
+    protected function enter(NodeBase $node)
+    {
+
+        if ($this->_levelDifference > 0 || $this->_output instanceof DocumentNode) {
+
+            //This node is a child-node
+            $this->_output->appendChild($node);
+        } else if ($this->_levelDifference < 0) {
+
+            //We go the difference of levels up and append it there
+            $count = $this->_levelDifference;
+            $ref = $this->_output;
+            while($count++ < 1) {
+
+                $ref = $ref->getParent();
+            }
+            $ref->appendChild($node);
+        } else {
+
+            //We're on the same level, this is a sibling
+            $this->_output->getParent()->appendChild($node);
+        }
+
+        //Enter this node
+        $this->_output = $node;
+
+        return $this;
+    }
+
+    protected function scan()
+    {
+
+        $this->scanExtends() or
+        $this->scanBlock() or
+        $this->scanDoctype() or
+        $this->scanElement() or
+        $this->throwException(
+            "Failed to parse line \"{$this->_lineInput}\", no valid Jade syntax"
+        );
+    }
+
     protected function scanIndent()
     {
 
@@ -219,35 +253,6 @@ class Lexer
         //Now we can make out the level of the current indentation
         //If we didnt indent fully, we indent it one level up anyways
         $this->_levelDifference = $this->_level - $oldLevel;
-    }
-
-    protected function enter(NodeBase $node)
-    {
-
-        if ($this->_levelDifference > 0 || $this->_output instanceof DocumentNode) {
-
-            //This node is a child-node
-            $this->_output->appendChild($node);
-        } else if ($this->_levelDifference < 0) {
-
-            //We go the difference of levels up and append it there
-            $count = $this->_levelDifference;
-            $ref = $this->_output;
-            while($count++ < 1) {
-
-                $ref = $ref->getParent();
-            }
-            $ref->appendChild($node);
-        } else {
-
-            //We're on the same level, this is a sibling
-            $this->_output->getParent()->appendChild($node);
-        }
-
-        //Enter this node
-        $this->_output = $node;
-
-        return $this;
     }
 
     protected function scanExtends()
@@ -306,6 +311,12 @@ class Lexer
                 (?<classes>(?:\.[a-z][a-z0-9\-_]*)+)?
                 (?<id>(?:\#[a-z][a-z0-9\-_]*))?
         ', 'ix');
+    }
+
+    protected function scanTag()
+    {
+
+        if (!$this->match('^([a-z][a-z0-9\-_]*)', ))
     }
 
     protected function scanElement()
