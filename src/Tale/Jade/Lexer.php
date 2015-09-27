@@ -57,14 +57,17 @@ class Lexer
         $this->_indentStyle = $this->_options['indentStyle'];
         $this->_indentWidth = $this->_options['indentWidth'];
 
-        foreach ($this->scanWhile(
+        foreach ($this->await(
             'newLine', 'indent',
             'import',
             'block',
-            'conditional', 'each', 'case', 'when',
-            'comment', 'filter',
+            'conditional', 'each', 'case', 'when', 'loop',
+            'mixin', 'mixinCall',
             'doctype',
             'tag', 'classes', 'id', 'attributes',
+            'merger',
+            'comment', 'filter',
+            'code',
             'text'
         ) as $token)
             yield $token;
@@ -87,12 +90,18 @@ class Lexer
                     break;
                 case 'extends':
                 case 'include':
+
+                    if ($token->filter)
+                        echo " $token->filter";
+
                     echo " $token->path";
                     break;
                 case 'tag':
                 case 'class':
                 case 'id':
                 case 'filter':
+                case 'mixin':
+                case 'mixin-call':
                     echo " $token->name";
                     break;
                 case 'block':
@@ -109,23 +118,29 @@ class Lexer
                     echo " $token->value";
                     break;
                 case 'case':
-                case 'conditional':
+                case 'if':
+                case 'elseif':
+                case 'else':
+                case 'unless':
                 case 'each':
-
-                    if ($token->type === 'conditional')
-                        echo " $token->conditionalType";
+                case 'while':
 
                     if ($token->subject)
                         echo " $token->subject";
 
                     if ($token->type === 'each' && $token->itemName)
                         echo " $token->itemName";
+
+                    if ($token->type === 'each' && $token->keyName)
+                        echo " $token->keyName";
                     break;
                 case 'when':
                     echo " $token->value";
                     break;
                 case 'attribute':
-                    echo " $token->name";
+
+                    if (isset($token->name))
+                        echo " $token->name";
 
                     if ($token->value)
                         echo " $token->value";
@@ -246,44 +261,27 @@ class Lexer
         }
     }
 
-    protected function scanWhile(...$scans)
+    protected function await(...$scans)
     {
 
         while (!$this->isAtEnd()) {
 
-            $break = true;
+            $found = false;
             foreach (call_user_func_array([$this, 'scan'], $scans) as $token) {
 
-                $break = false;
                 yield $token;
+                $found = true;
             }
 
-            if ($break)
-                break;
-        }
-    }
-
-    protected function scanText()
-    {
-
-        if (!$this->match("^([^\r\n]*)"))
-            return;
-
-        $this->consumeMatch();
-        $text = $this->getMatch(1);
-
-        if (!empty($text)) {
-
-            $token = $this->createToken('text');
-            $token->content = trim($text);
-            yield $token;
+            if (!$found)
+                $this->throwException(implode(', ', $scans).' not found');
         }
     }
 
     protected function scanNewLine()
     {
 
-        if (in_array($this->peek(), ["\r" /*Other ignored chars?*/])) {
+        if ($this->peek() === "\r") {
 
             $this->consume();
         }
@@ -306,6 +304,14 @@ class Lexer
 
         $this->consumeMatch();
         $indent = $this->getMatch(1);
+
+        foreach($this->scanNewLine() as $token) {
+
+            yield $token;
+            return;
+        }
+
+        var_dump("INDENT `$indent`");
 
         $oldLevel = $this->_level;
         if (!empty($indent)) {
@@ -347,6 +353,67 @@ class Lexer
         yield $token;
     }
 
+
+    protected function scanText()
+    {
+
+        if (!$this->match("^([^\r\n]*)"))
+            return;
+
+        $this->consumeMatch();
+        $text = $this->getMatch(1);
+
+        if (!empty($text)) {
+
+            $token = $this->createToken('text');
+            $token->content = trim($text);
+            yield $token;
+        }
+    }
+
+
+    protected function scanTextBlock()
+    {
+
+        foreach ($this->await('newLine', 'indent', 'text') as $token) {
+
+            yield $token;
+            if ($token->type === 'indent') {
+
+                $level = 0;
+                foreach ($this->await('indent', 'newLine', 'text') as $subToken) {
+
+                    yield $subToken;
+
+                    if ($subToken->type === 'indent')
+                        $level += $subToken->levels;
+
+                    if ($subToken->type === 'outdent' && $level === 0) {
+                        break 2;
+                    }
+                }
+            }
+        }
+    }
+
+    protected function scanTextElement()
+    {
+
+        if (!$this->match("^([^\r\n]*)"))
+            return;
+
+        $this->consumeMatch();
+        $text = $this->getMatch(1);
+
+        if (!empty($text)) {
+
+            $token = $this->createToken('text');
+            $token->content = trim($text);
+            yield $token;
+        }
+    }
+
+
     protected function scanComment()
     {
 
@@ -381,39 +448,16 @@ class Lexer
             yield $token;
     }
 
-    protected function scanTextBlock()
-    {
-
-        foreach ($this->scanWhile('newLine', 'indent', 'text') as $token) {
-
-            yield $token;
-            if ($token->type === 'indent') {
-
-                $level = 0;
-                foreach ($this->scanWhile('indent', 'text', 'newLine') as $subToken) {
-
-                    yield $subToken;
-
-                    if ($subToken->type === 'indent')
-                        $level += $subToken->levels;
-
-                    if ($subToken->type === 'outdent' && $level === 0)
-                        break 2;
-                }
-            }
-        }
-    }
-
     protected function scanImport()
     {
 
-        if (!$this->match('^(extends|include) ([a-z0-9\-_\\/\. ]+)', 'i'))
+        if (!$this->match('^(?<type>extends|include)(?::(?<filter>[a-z][a-z0-9\-_]*))? (?<path>[a-z0-9\-_\\/\. ]+)', 'i'))
             return;
 
         $this->consumeMatch();
-        $token = $this->createToken('import');
-        $token->importType = $this->getMatch(1);
-        $token->path = $this->getMatch(2);
+        $token = $this->createToken($this->getMatch('type'));
+        $token->path = $this->getMatch('path');
+        $token->filter = $this->getMatch('filter') ? $this->getMatch('filter') : null;
 
         yield $token;
     }
@@ -421,18 +465,21 @@ class Lexer
     protected function scanBlock()
     {
 
-        if (!$this->match('^block(?:(?: (append|prepend|replace))? ([a-z][a-z0-9\-_]+))?'))
+        if (!$this->match('^(?:block|block (append|prepend|replace)|(append|prepend|replace)) ([a-z][a-z0-9\-_]+)?'))
             return;
 
         $this->consumeMatch();
-        $name = $this->getMatch(2);
-        $mode = $this->getMatch(1);
 
         $token = $this->createToken('block');
-        $token->name = $name;
-        $token->mode = $mode ? $mode : 'replace';
+        $token->name = $this->getMatch(3);
+        $token->mode = $this->getMatch(1) ? $this->getMatch(1) : (
+            $this->getMatch(2) ? $this->getMatch(2) : 'replace'
+        );
 
         yield $token;
+
+        foreach ($this->scanSub() as $token)
+            yield $token;
     }
 
     protected function scanCase()
@@ -471,10 +518,11 @@ class Lexer
             return;
 
         $this->consumeMatch();
-        $token = $this->createToken('conditional');
-        $token->conditionalType = $this->getMatch(3)
-                                ? $this->getMatch(3)
-                                : str_replace(' ', '', $this->getMatch(1));
+        $token = $this->createToken(
+            $this->getMatch(3)
+            ? $this->getMatch(3)
+            : str_replace(' ', '', $this->getMatch(1))
+        );
         $token->subject = $this->getMatch(2) ? $this->getMatch(2) : null;
 
         yield $token;
@@ -483,13 +531,28 @@ class Lexer
     protected function scanEach()
     {
 
-        if (!$this->match("^each ([^\r\n]+) in ([^\r\n]+)"))
+        $nl = "\r\n";
+        if (!$this->match('^each\s+\$([a-z][a-z0-9\-_]*)(?:\s*,\s*\$([a-z][a-z0-9\-_]*))\s+in\s+([^'.$nl.']+)', 'i'))
             return;
 
         $this->consumeMatch();
         $token = $this->createToken('each');
-        $token->subject = $this->getMatch(2) ? $this->getMatch(2) : $this->getMatch(1);
-        $token->itemName = $this->getMatch(2) ? $this->getMatch(1) : null;
+        $token->subject = $this->getMatch(3);
+        $token->itemName = $this->getMatch(1);
+        $token->keyName = $this->getMatch(2) ? $this->getMatch(2) : null;
+
+        yield $token;
+    }
+
+    protected function scanLoop()
+    {
+
+        if (!$this->match("^while ([^\r\n]+)"))
+            return;
+
+        $this->consumeMatch();
+        $token = $this->createToken('while');
+        $token->subject = $this->getMatch(1) ? $this->getMatch(1) : null;
 
         yield $token;
     }
@@ -497,8 +560,16 @@ class Lexer
     protected function scanCode()
     {
 
-        if ($this->peek() !== '-')
+        if (!$this->match('^(-|[!]?=)'))
             return;
+
+        $this->consumeMatch();
+        $token = $this->createToken('code');
+        $token->escaped = $this->getMatch(1) === '=';
+        yield $token;
+
+        foreach ($this->scanTextBlock() as $token)
+            yield $token;
     }
 
     protected function scanSub()
@@ -594,6 +665,58 @@ class Lexer
             yield $token;
     }
 
+    protected function scanMixin()
+    {
+
+        if (!$this->match('^mixin ([a-z][a-z0-9\-_]*)', 'i'))
+            return;
+
+        $this->consumeMatch();
+
+        $token = $this->createToken('mixin');
+        $token->name = $this->getMatch(1);
+        yield $token;
+
+        foreach($this->scanSub() as $token)
+            yield $token;
+    }
+
+    protected function scanMixinCall()
+    {
+
+        if (!$this->match('^\+([a-z][a-z0-9\-_]*)', 'i'))
+            return;
+
+        $this->consumeMatch();
+
+        $token = $this->createToken('mixin-call');
+        $token->name = $this->getMatch(1);
+        yield $token;
+
+        //Make sure classes are scanned on this before we scan the . add-on
+        foreach ($this->scanClasses() as $token)
+            yield $token;
+
+        foreach($this->scanSub() as $token)
+            yield $token;
+    }
+
+    protected function scanMerger()
+    {
+
+        if (!$this->match('^\&([a-z][a-z0-9\-_]*)', 'i'))
+            return;
+
+        $this->consumeMatch();
+
+        $token = $this->createToken('merger');
+        $token->name = $this->getMatch(1);
+        yield $token;
+
+        foreach($this->scanSub() as $token)
+            yield $token;
+    }
+
     protected function scanAttributes()
     {
 
@@ -603,28 +726,36 @@ class Lexer
         $this->consume();
         $this->skip();
 
-        $continue = false;
-        do {
+        if ($this->peek() !== ')') {
 
-            if ($this->match('^([a-z][a-z0-9\-_]*)', 'i')) {
+            $continue = true;
+            while(!$this->isAtEnd() && $continue) {
 
-                $this->consumeMatch();
-                $name = $this->getMatch(1);
-                $value = null;
-                $this->skip();
+                $token = $this->createToken('attribute');
+                $token->name = null;
+                $token->value = null;
+                $token->escaped = true;
 
-                $escaped = true;
+                if ($this->match('^([a-z][a-z0-9\-_]*)', 'i')) {
+
+                    $this->consumeMatch();
+                    $token->name = $this->getMatch(1);
+                    $this->skip();
+                }
 
                 if ($this->peek() === '!') {
 
-                    $escaped = true;
+                    $token->escaped = false;
                     $this->consume();
                 }
 
-                if ($this->peek() === '=') {
+                if (!$token->name || $this->peek() === '=') {
 
-                    $this->consume();
-                    $this->skip();
+                    if ($token->name) {
+
+                        $this->consume();
+                        $this->skip();
+                    }
 
                     $value = '';
                     $prev = null;
@@ -632,7 +763,8 @@ class Lexer
                     $level = 0;
                     $inString = false;
                     $stringType = null;
-                    do {
+                    $break = false;
+                    while (!$this->isAtEnd() && !$break) {
 
                         if ($this->isAtEnd())
                             break;
@@ -640,7 +772,7 @@ class Lexer
                         $prev = $char;
                         $char = $this->peek();
 
-                        switch($char) {
+                        switch ($char) {
                             case '"':
                             case '\'':
 
@@ -654,22 +786,37 @@ class Lexer
                                 break;
                             case '(':
 
-                                $level++;
+                                if (!$inString)
+                                    $level++;
                                 break;
                             case ')':
 
-                                if ($level === 0)
-                                    break 2;
+                                if ($inString)
+                                    break;
+
+                                if ($level === 0) {
+
+                                    $break = true;
+                                    break;
+                                }
 
                                 $level--;
                                 break;
                             case ',':
-                                break 2;
+
+                                if (!$inString)
+                                    $break = true;
+                                break;
                         }
 
-                        $value .= $char;
-                        $this->consume();
-                    } while(!$this->isAtEnd());
+                        if (!$break) {
+
+                            $value .= $char;
+                            $this->consume();
+                        }
+                    }
+
+                    $token->value = $value;
                 }
 
                 if ($this->peek() === ',') {
@@ -682,13 +829,9 @@ class Lexer
                     $continue = false;
                 }
 
-                $token = $this->createToken('attribute');
-                $token->name = $name;
-                $token->value = $value;
-                $token->escaped = $escaped;
                 yield $token;
             }
-        } while(!$this->isAtEnd() && $continue);
+        }
 
         if ($this->peek() !== ')')
             $this->throwException(

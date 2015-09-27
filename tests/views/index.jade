@@ -1,5 +1,11 @@
 
-extends layout-basic.jade
+extends layout-basic(page-title='My Page')
+
+
+mixin some-mixin(key, value)
+
+    p&classes($caller->classes)= $key
+    p&attributes($caller->attributes)= $value
 
 block content
 
@@ -26,6 +32,16 @@ block content
                     li: a
                     li: a
 
+        include:markdown some-include(some-variable='someValue')
+
+
+        +some-mixin('some-key', 'some-value').some-class.some-other-class(some-attribute)
+
+        - $var = 'Some raw PHP'
+
+        -
+            Here can be any kind of raw PHP
+            Awesome, isn't it? Jade can't do that!
 
         .some-content.
 
@@ -40,6 +56,12 @@ block content
             attr2= $this->__("some string 'some sub string'" ) )
 
             .some-class#someId
+
+                | Some text in an element
+
+                | Some other text.
+                    Notice how we can have sub text without the need to repeat |
+                    This works in a multi-line manner
 
         case (isset($dayOfWeek) ? $dayOfWeek : "Sunday")
             when "Sunday": a(href='#') Sunday
@@ -58,9 +80,16 @@ block content
             .alert.alert-danger
                 p Error!
 
+
+        each $person ,   $id in  $persons
+            p= $person->name
+
     unless $sent
         p Oh noes!
 
+
+        while $i > 15
+            do something
 
         :markdown
             **Some Markdown Content**
