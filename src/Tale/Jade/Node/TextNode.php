@@ -13,7 +13,7 @@ class TextNode extends NodeBase
     {
         parent::__construct();
 
-        $this->_text = $text;
+        $this->_text = $text ? $text : '';
     }
 
     public function hasText()

@@ -7,7 +7,12 @@ block content
     p= $somePhpContent
 
 
-    form.form.form-horizontal#mainForm
+    //- Some Comment
+        This should also stay commented
+        in following lines
+
+
+    form.some-class(action='#', method='post').form.form-horizontal#mainForm
 
         .row
             .col.col-md-4
@@ -16,4 +21,55 @@ block content
 
             #startsWithId
 
+                ul
+                    li: a()
+                    li: a
+                    li: a
+
+
+        .some-content.
+
+            | here goes some multiline text i thought of
+            () All special chars should be ignored
+
+            .some-class(some-attribute='some-value', some-attribute2)
+
+        .some-class(some-attribute='some-value', some-attribute2)
+
+        .complex-element(attr1=(isset( $someVar ) ? $someVar : 'Demacia'),
+            attr2= $this->__("some string 'some sub string'" ) )
+
             .some-class#someId
+
+        case (isset($dayOfWeek) ? $dayOfWeek : "Sunday")
+            when "Sunday": a(href='#') Sunday
+            when 'Monday": a(href='#') Monday
+            when 'Tuesday'
+                a(href='#') Tuesday
+            when 1: a() Demacia
+            default
+
+                a(href='#') By the force!
+
+
+    each $someItem in $someItems
+
+        if $exists
+            .alert.alert-danger
+                p Error!
+
+    unless $sent
+        p Oh noes!
+
+
+        :markdown
+            **Some Markdown Content**
+
+    if $someIf
+        some i get out of stuffs
+    elseif $someElseIf
+        some random stuff
+    else if $someOtherElseIf
+        some other stuff
+    else
+        some stuff
