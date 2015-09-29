@@ -31,4 +31,10 @@ class TextToken extends TokenBase
 
         return $this;
     }
+
+    protected function export()
+    {
+
+        return [$this->_value];
+    }
 }
