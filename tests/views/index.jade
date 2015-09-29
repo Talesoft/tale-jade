@@ -64,11 +64,14 @@ block content
                     This works in a multi-line manner
 
         case (isset($dayOfWeek) ? $dayOfWeek : "Sunday")
-            when "Sunday": a(href='#') Sunday
-            when 'Monday": a(href='#') Monday
+            when "Sunday"
+                a(href='#') Sunday
+            when 'Monday'
+                a(href='#') Monday
             when 'Tuesday'
                 a(href='#') Tuesday
-            when 1: a() Demacia
+            when 1
+                a() Demacia
             default
 
                 a(href='#') By the force!
