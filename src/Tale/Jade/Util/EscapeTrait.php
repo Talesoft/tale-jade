@@ -1,21 +1,11 @@
 <?php
 
-namespace Tale\Jade\Lexer\Token;
+namespace Tale\Jade\Util;
 
-use Tale\Jade\Lexer;
-
-class ExpressionToken extends TextToken
+trait EscapeTrait
 {
 
-    private $_escape;
-
-    public function __construct(Lexer $lexer)
-    {
-
-        parent::__construct($lexer);
-
-        $this->_escape = false;
-    }
+    private $_escape = false;
 
     public function isEscaped()
     {

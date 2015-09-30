@@ -1,11 +1,14 @@
 
-extends layout-basic(page-title='My Page')
+//extends layout-basic(page-title='My Page')
 
 
 mixin some-mixin(key, value)
 
     p&classes($caller->classes)= $key
     p&attributes($caller->attributes)= $value
+
+    if $caller->block
+        block
 
 block content
 
@@ -36,6 +39,8 @@ block content
 
 
         +some-mixin('some-key', 'some-value').some-class.some-other-class(some-attribute)
+            | Some sub content for this mixin
+            p This will be replaced with "block" inside the mixin
 
         - $var = 'Some raw PHP'
 

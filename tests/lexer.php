@@ -25,12 +25,10 @@ $lexer = new Tale\Jade\Lexer();
             <pre>
                 <?php
                     echo "\n<b>views/index.jade</b>\n";
-                    foreach ($lexer->lex(file_get_contents('views/index.jade')) as $token)
-                        echo $token;
+                    $lexer->dump(file_get_contents('views/index.jade'));
 
                     echo "\n\n<b>views/layout-basic.jade</b>\n";
-                    foreach ($lexer->lex(file_get_contents('views/layout-basic.jade')) as $token)
-                        echo $token;
+                    $lexer->dump(file_get_contents('views/layout-basic.jade'));
                 ?>
             </pre>
         </td>

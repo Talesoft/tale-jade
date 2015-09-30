@@ -1,23 +1,22 @@
 <?php
 
-namespace Tale\Jade\Lexer\Token;
+namespace Tale\Jade\Util;
 
-use Tale\Jade\Lexer;
-
-class ConditionalToken extends Lexer\TokenBase
+trait TypeTrait
 {
-    private $_type;
 
-    public function __construct(Lexer $lexer)
+    private $_type = null;
+
+    /**
+     * @return bool
+     */
+    public function hasType()
     {
-
-        parent::__construct($lexer);
-
-        $this->_type = null;
+        return $this->_type !== null;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getType()
     {

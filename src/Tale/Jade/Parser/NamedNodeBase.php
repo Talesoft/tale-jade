@@ -1,20 +1,19 @@
 <?php
 
-namespace Tale\Jade\Lexer\Token;
+namespace Tale\Jade\Parser;
 
-use Tale\Jade\Lexer;
 
-class AttributeToken extends ExpressionToken
+abstract class NamedNodeBase extends NodeBase
 {
 
     private $_name;
 
-    public function __construct(Lexer $lexer)
+    public function __construct()
     {
 
-        parent::__construct($lexer);
+        parent::__construct();
 
-        $this->_name = false;
+        $this->_name = null;
     }
 
     /**
@@ -37,11 +36,5 @@ class AttributeToken extends ExpressionToken
         $this->_name = $name;
 
         return $this;
-    }
-
-    public function export()
-    {
-
-        return [$this->_name => $this->getValue()];
     }
 }

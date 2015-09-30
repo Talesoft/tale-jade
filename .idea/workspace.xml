@@ -2,37 +2,65 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="54819058-2860-4625-9148-675b1b97e472" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/AssignmentToken.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/AttributeEndToken.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/AttributeStartToken.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/AttributeToken.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/BlockToken.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/CaseToken.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/ClassToken.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/ConditionalToken.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/DoToken.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/DoctypeToken.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/EachToken.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/ElementNode.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/IdToken.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/MixinCallToken.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/MixinToken.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer/NamedTokenBase.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Parser/NodeBase.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Parser.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/SpaceToken.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/SubToken.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/TagToken.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/WhenToken.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/WhileToken.php" />
-      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Dumper.php" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/IndentToken.php" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/IndentToken.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/AssignmentNode.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/AttributeNode.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Util/AttributesTrait.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/BlockNode.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/CommentNode.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/ConditionalNode.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/DocumentNode.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Util/EscapeTrait.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Parser/Exception.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/ExpressionNode.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Util/FilterTrait.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/ImportNode.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/LexException.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/MixinCallNode.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/MixinNode.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Util/NameTrait.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Parser/NamedNodeBase.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Util/RenderTrait.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/TextNode.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Util/TypeTrait.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Util/ValueTrait.php" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Exception.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\NamedTokenBase.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\TokenBase.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\AssignmentToken.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\AttributeEndToken.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\AttributeStartToken.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\AttributeToken.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\BlockToken.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\CaseToken.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\ClassToken.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\CommentToken.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\ConditionalToken.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\DoToken.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\DoctypeToken.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\EachToken.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\FilterToken.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\IdToken.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\ImportToken.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\IndentToken.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\MixinCallToken.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\MixinToken.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\NewLineToken.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\OutdentToken.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\SpaceToken.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\SubToken.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\TagToken.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\TextToken.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\WhenToken.php" afterPath="" />
+      <change type="DELETED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\WhileToken.php" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/ElementNode.php" afterPath="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/ElementNode.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Tale/Jade/Lexer.php" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/NewLineToken.php" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/NewLineToken.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/TextToken.php" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/TextToken.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Tale/Jade/Lexer/TokenBase.php" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer/TokenBase.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/index.php" afterPath="$PROJECT_DIR$/tests/index.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Tale/Jade/Parser/NodeBase.php" afterPath="$PROJECT_DIR$/src/Tale/Jade/Parser/NodeBase.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Tale/Jade/Parser.php" afterPath="$PROJECT_DIR$/src/Tale/Jade/Parser.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/views/index.jade" afterPath="$PROJECT_DIR$/tests/views/index.jade" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MOVED" beforePath="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token\ExpressionToken.php" afterPath="$PROJECT_DIR$/src/Tale/Jade/Util/PathTrait.php" />
+      <change type="MOVED" beforePath="D:\Projekte\tale-jade\tests\basic.php" afterPath="$PROJECT_DIR$/tests/parser.php" />
+      <change type="MOVED" beforePath="D:\Projekte\tale-jade\tests\index.php" afterPath="$PROJECT_DIR$/tests/lexer.php" />
     </list>
     <ignored path="tale-jade.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -54,107 +82,121 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Lexer.php" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Lexer.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-11.269231">
-              <caret line="876" column="46" selection-start-line="876" selection-start-column="46" selection-end-line="876" selection-end-column="46" />
+            <state vertical-scroll-proportion="-2.8230958">
+              <caret line="3" column="0" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
               <folding>
-                <element signature="e#29#59#0#PHP" expanded="true" />
-                <marker date="1443569284554" expanded="true" signature="15269:15363" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="7957:8205" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="7957:8433" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="11834:13255" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="12136:13255" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="12166:13255" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="12206:13255" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="12387:13255" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="12429:13255" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="12552:12802" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="12552:13255" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="12578:12802" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="12838:13255" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="12878:13255" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="13003:13235" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="13003:13255" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="13029:13235" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="14027:14221" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="14027:16422" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="14503:16422" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="14559:14843" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="14559:16422" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="16445:16537" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="16553:20614" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="16997:20614" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="17433:17864" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="17433:20614" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="17884:20614" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="18328:20614" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="18773:19344" placeholder="..." />
+                <marker date="1443630427936" expanded="true" signature="18773:20614" placeholder="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Parser.php" pinned="false" current-in-tab="true">
+      <file leaf-file-name="LexException.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Tale/Jade/LexException.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-2.6153846">
+              <caret line="4" column="40" selection-start-line="4" selection-start-column="40" selection-end-line="4" selection-end-column="40" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.jade" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/views/index.jade">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="9" column="21" selection-start-line="9" selection-start-column="21" selection-end-line="9" selection-end-column="21" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="lexer.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/lexer.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-19.615385">
+              <caret line="30" column="20" selection-start-line="30" selection-start-column="20" selection-end-line="30" selection-end-column="20" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Parser.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7659208">
-              <caret line="47" column="39" selection-start-line="47" selection-start-column="39" selection-end-line="47" selection-end-column="39" />
+            <state vertical-scroll-proportion="71.163635">
+              <caret line="68" column="25" selection-start-line="68" selection-start-column="25" selection-end-line="68" selection-end-column="25" />
               <folding>
-                <element signature="e#29#67#0#PHP" expanded="true" />
+                <element signature="e#29#71#0#PHP" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ElementNode.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser/Node/ElementNode.php">
+      <file leaf-file-name="AttributeNode.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser/Node/AttributeNode.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-11.115385">
-              <caret line="17" column="5" selection-start-line="17" selection-start-column="5" selection-end-line="17" selection-end-column="5" />
-              <folding />
+            <state vertical-scroll-proportion="-13.076923">
+              <caret line="20" column="5" selection-start-line="20" selection-start-column="5" selection-end-line="20" selection-end-column="5" />
+              <folding>
+                <element signature="e#41#71#0#PHP" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="NodeBase.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser/NodeBase.php">
+      <file leaf-file-name="ExpressionNode.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser/Node/ExpressionNode.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="71.80769">
-              <caret line="2" column="26" selection-start-line="2" selection-start-column="26" selection-end-line="2" selection-end-column="26" />
-              <folding />
+            <state vertical-scroll-proportion="-4.576923">
+              <caret line="7" column="37" selection-start-line="0" selection-start-column="0" selection-end-line="11" selection-end-column="1" />
+              <folding>
+                <element signature="e#41#71#0#PHP" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TokenBase.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/TokenBase.php">
+      <file leaf-file-name="ConditionalNode.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser/Node/ConditionalNode.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-3.9230769">
-              <caret line="6" column="9" selection-start-line="6" selection-start-column="9" selection-end-line="6" selection-end-column="9" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="NamedTokenBase.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/NamedTokenBase.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-3.9230769">
-              <caret line="6" column="9" selection-start-line="6" selection-start-column="9" selection-end-line="6" selection-end-column="9" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AttributeToken.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/AttributeToken.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-18.115385">
-              <caret line="44" column="49" selection-start-line="44" selection-start-column="49" selection-end-line="44" selection-end-column="49" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="WhileToken.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/WhileToken.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-3.9230769">
-              <caret line="6" column="16" selection-start-line="0" selection-start-column="0" selection-end-line="8" selection-end-column="1" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AttributeStartToken.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/AttributeStartToken.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-3.9230769">
-              <caret line="6" column="25" selection-start-line="0" selection-start-column="0" selection-end-line="8" selection-end-column="1" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AttributeEndToken.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/AttributeEndToken.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-3.9230769">
-              <caret line="6" column="9" selection-start-line="6" selection-start-column="9" selection-end-line="6" selection-end-column="9" />
-              <folding />
+            <state vertical-scroll-proportion="-7.1923075">
+              <caret line="11" column="17" selection-start-line="11" selection-start-column="17" selection-end-line="11" selection-end-column="17" />
+              <folding>
+                <element signature="e#41#71#0#PHP" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -167,57 +209,57 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/tests/basic.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Node/ExtendsNode.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Node/ContentNode.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Node/DocumentTypeNode.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Node/DoctypeNode.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/NodeBase.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Node/DocumentNode.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Node/BlockNode.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/ParseException.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Node/TextNode.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Node/ElementNode.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Node/ExpressionNode.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/LexException.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Exception.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/OutdentToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/FilterToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/CommentToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/ExpressionToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/ImportToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/ClassToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/IdToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/MixinCallToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/MixinToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/TagToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/AssignmentToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/BlockToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/DoctypeToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Dumper.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/NewLineToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/IndentToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/AttributeToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/TextToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/SubToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/CaseToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/WhenToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/ConditionalToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/EachToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/WhileToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/DoToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/SpaceToken.php" />
-        <option value="$PROJECT_DIR$/tests/index.php" />
-        <option value="$PROJECT_DIR$/tests/views/index.jade" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/AttributeStartToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/AttributeEndToken.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/DocumentNode.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Parser/Exception.php" />
         <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/TokenBase.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/NamedTokenBase.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Parser/NodeBase.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Parser/NamedNodeBase.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/Trait/NameTrait.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Util/EscapeTrait.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/WhenToken.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/TextToken.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Util/NameTrait.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Util/ValueTrait.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Util/TypeTrait.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/FilterToken.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/ExpressionToken.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/MixinCallToken.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/TagToken.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/DoctypeToken.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/ClassToken.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/BlockToken.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/AssignmentToken.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/MixinToken.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/IdToken.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Util/AttributesTrait.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/TextNode.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/MixinNode.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/MixinCallNode.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Util/ImportTrait.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Util/PathTrait.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Util/FilterTrait.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/ImportToken.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/AssignmentNode.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/ImportNode.php" />
         <option value="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/ElementNode.php" />
+        <option value="$PROJECT_DIR$/tests/parser.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/BlockNode.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Util/RenderTrait.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/CommentNode.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/CommentToken.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/ExpressionNode.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Parser/NodeBase.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/AttributeToken.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/AttributeNode.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Parser/Node/ConditionalNode.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/ConditionalToken.php" />
+        <option value="$PROJECT_DIR$/tests/views/index.jade" />
         <option value="$PROJECT_DIR$/src/Tale/Jade/Parser.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer.php.old" />
+        <option value="$PROJECT_DIR$/tests/lexer.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Exception.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/LexerException.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/LexException.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer.php" />
       </list>
     </option>
   </component>
@@ -235,8 +277,8 @@
   <component name="ProjectFrameBounds">
     <option name="x" value="-8" />
     <option name="y" value="-8" />
-    <option name="width" value="1382" />
-    <option name="height" value="744" />
+    <option name="width" value="1296" />
+    <option name="height" value="1000" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -261,7 +303,7 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -356,6 +398,32 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="Util" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tale-jade" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tale-jade" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Tale" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Jade" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="Parser" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -390,41 +458,23 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tale-jade" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tale-jade" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Tale" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Jade" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Lexer" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="FullScreen" value="false" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Projekte\tale-jade\src\Tale\Jade" />
+      <recent name="D:\Projekte\tale-jade\src\Tale\Jade\Util" />
+      <recent name="D:\Projekte\tale-jade\src\Tale\Jade\Lexer" />
+      <recent name="D:\Projekte\tale-jade\src\Tale\Jade\Lexer\Token" />
+    </key>
   </component>
   <component name="RunManager">
     <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
@@ -468,15 +518,15 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
-    <editor active="false" />
+    <frame x="-8" y="-8" width="1296" height="1000" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25256222" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2564725" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32949308" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32755905" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32718894" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32949308" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
@@ -507,426 +557,251 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer.php">
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Util/AttributesTrait.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="94" column="0" selection-start-line="94" selection-start-column="0" selection-end-line="94" selection-end-column="0" />
+        <state vertical-scroll-proportion="-14.384615">
+          <caret line="22" column="0" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
           <folding>
-            <element signature="e#29#59#0#PHP" expanded="true" />
-            <marker date="1443569284554" expanded="true" signature="15269:15363" placeholder="..." />
+            <element signature="e#34#74#0#PHP" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/index.php">
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser/Node/TextNode.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="9" column="57" selection-start-line="9" selection-start-column="57" selection-end-line="9" selection-end-column="57" />
+        <state vertical-scroll-proportion="-6.5384617">
+          <caret line="10" column="19" selection-start-line="10" selection-start-column="19" selection-end-line="10" selection-end-column="19" />
+          <folding>
+            <element signature="e#41#71#0#PHP" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser/Node/MixinCallNode.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-4.576923">
+          <caret line="7" column="1" selection-start-line="7" selection-start-column="1" selection-end-line="7" selection-end-column="1" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/views/index.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="18" column="30" selection-start-line="18" selection-start-column="30" selection-end-line="18" selection-end-column="30" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/views/layout-basic.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/index.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="6" column="42" selection-start-line="6" selection-start-column="42" selection-end-line="6" selection-end-column="42" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/views/index.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="18" column="30" selection-start-line="18" selection-start-column="30" selection-end-line="18" selection-end-column="30" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/views/layout-basic.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/index.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="6" column="42" selection-start-line="6" selection-start-column="42" selection-end-line="6" selection-end-column="42" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/views/index.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="18" column="30" selection-start-line="18" selection-start-column="30" selection-end-line="18" selection-end-column="30" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/basic.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="6" column="4" selection-start-line="0" selection-start-column="0" selection-end-line="6" selection-end-column="68" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/index.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="6" column="42" selection-start-line="6" selection-start-column="42" selection-end-line="6" selection-end-column="42" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="2" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/composer.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.2075472">
-          <caret line="10" column="23" selection-start-line="10" selection-start-column="23" selection-end-line="10" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/basic.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="6" column="4" selection-start-line="0" selection-start-column="0" selection-end-line="6" selection-end-column="68" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Exception.php">
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Util/PathTrait.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-2.6153846">
-          <caret line="4" column="36" selection-start-line="4" selection-start-column="36" selection-end-line="4" selection-end-column="36" />
+          <caret line="4" column="15" selection-start-line="0" selection-start-column="0" selection-end-line="36" selection-end-column="1" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/CommentToken.php">
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Util/FilterTrait.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.0">
-          <caret line="4" column="20" selection-start-line="0" selection-start-column="0" selection-end-line="40" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/FilterToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.4230769">
-          <caret line="6" column="35" selection-start-line="6" selection-start-column="35" selection-end-line="6" selection-end-column="35" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/ClassToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.6153846">
-          <caret line="4" column="14" selection-start-line="4" selection-start-column="14" selection-end-line="4" selection-end-column="20" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/IdToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.6153846">
-          <caret line="4" column="20" selection-start-line="4" selection-start-column="20" selection-end-line="4" selection-end-column="20" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/MixinCallToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.6153846">
-          <caret line="4" column="20" selection-start-line="4" selection-start-column="20" selection-end-line="4" selection-end-column="20" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/MixinToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.6153846">
-          <caret line="4" column="20" selection-start-line="0" selection-start-column="0" selection-end-line="8" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/AssignmentToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.9230769">
-          <caret line="6" column="21" selection-start-line="6" selection-start-column="21" selection-end-line="6" selection-end-column="21" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/TagToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.230769">
-          <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/ImportToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.65384614">
-          <caret line="25" column="26" selection-start-line="0" selection-start-column="0" selection-end-line="89" selection-end-column="1" />
-          <folding>
-            <element signature="e#41#61#0#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/DoctypeToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-17.76923">
-          <caret line="40" column="5" selection-start-line="40" selection-start-column="5" selection-end-line="40" selection-end-column="5" />
-          <folding>
-            <element signature="e#41#61#0#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/NewLineToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.8461537">
-          <caret line="12" column="41" selection-start-line="12" selection-start-column="41" selection-end-line="12" selection-end-column="41" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/IndentToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-18.307692">
-          <caret line="28" column="16" selection-start-line="28" selection-start-column="16" selection-end-line="28" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/views/layout-basic.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <marker date="1443204954707" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1443204954707" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1443204954707" expanded="true" signature="-1:-1" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/TextToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-21.038462">
-          <caret line="37" column="31" selection-start-line="37" selection-start-column="31" selection-end-line="37" selection-end-column="31" />
-          <folding>
-            <element signature="e#41#61#0#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/OutdentToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.6153846">
-          <caret line="4" column="38" selection-start-line="0" selection-start-column="0" selection-end-line="6" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/SubToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.9230769">
-          <caret line="6" column="32" selection-start-line="0" selection-start-column="0" selection-end-line="8" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/BlockToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.7307692">
-          <caret line="16" column="27" selection-start-line="0" selection-start-column="0" selection-end-line="40" selection-end-column="1" />
-          <folding>
-            <element signature="e#41#61#0#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/ConditionalToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-16.461538">
-          <caret line="36" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="39" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/EachToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-40.46154">
-          <caret line="63" column="1" selection-start-line="63" selection-start-column="1" selection-end-line="63" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/CaseToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.9230769">
-          <caret line="6" column="15" selection-start-line="0" selection-start-column="0" selection-end-line="8" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/DoToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.9230769">
-          <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/ExpressionToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.9615383">
-          <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/WhenToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-14.5">
-          <caret line="29" column="31" selection-start-line="0" selection-start-column="0" selection-end-line="41" selection-end-column="1" />
-          <folding>
-            <element signature="e#41#61#0#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/SpaceToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.9230769">
-          <caret line="6" column="16" selection-start-line="6" selection-start-column="16" selection-end-line="6" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/index.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.9230769">
-          <caret line="6" column="45" selection-start-line="6" selection-start-column="45" selection-end-line="6" selection-end-column="45" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/views/index.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="30" column="27" selection-start-line="30" selection-start-column="27" selection-end-line="30" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/AttributeToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-18.115385">
-          <caret line="44" column="49" selection-start-line="44" selection-start-column="49" selection-end-line="44" selection-end-column="49" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/WhileToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.9230769">
-          <caret line="6" column="16" selection-start-line="0" selection-start-column="0" selection-end-line="8" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/AttributeStartToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.9230769">
-          <caret line="6" column="25" selection-start-line="0" selection-start-column="0" selection-end-line="8" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/AttributeEndToken.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.9230769">
-          <caret line="6" column="9" selection-start-line="6" selection-start-column="9" selection-end-line="6" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-11.269231">
-          <caret line="876" column="46" selection-start-line="876" selection-start-column="46" selection-end-line="876" selection-end-column="46" />
-          <folding>
-            <element signature="e#29#59#0#PHP" expanded="true" />
-            <marker date="1443569284554" expanded="true" signature="15269:15363" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/TokenBase.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.9230769">
-          <caret line="6" column="9" selection-start-line="6" selection-start-column="9" selection-end-line="6" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer/NamedTokenBase.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.9230769">
-          <caret line="6" column="9" selection-start-line="6" selection-start-column="9" selection-end-line="6" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser/NodeBase.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="71.80769">
-          <caret line="2" column="26" selection-start-line="2" selection-start-column="26" selection-end-line="2" selection-end-column="26" />
+        <state vertical-scroll-proportion="-16.346153">
+          <caret line="25" column="28" selection-start-line="25" selection-start-column="28" selection-end-line="25" selection-end-column="28" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser/Node/ElementNode.php">
       <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-13.0">
+          <caret line="33" column="20" selection-start-line="33" selection-start-column="20" selection-end-line="33" selection-end-column="20" />
+          <folding>
+            <element signature="e#41#71#0#PHP" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser/Node/MixinNode.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-8.5">
+          <caret line="13" column="1" selection-start-line="13" selection-start-column="1" selection-end-line="13" selection-end-column="1" />
+          <folding>
+            <element signature="e#41#71#0#PHP" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser/Node/AssignmentNode.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.230769">
+          <caret line="8" column="20" selection-start-line="8" selection-start-column="20" selection-end-line="8" selection-end-column="20" />
+          <folding>
+            <element signature="e#41#71#0#PHP" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/parser.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-24.461538">
+          <caret line="39" column="73" selection-start-line="39" selection-start-column="73" selection-end-line="39" selection-end-column="73" />
+          <folding>
+            <marker date="1443622217149" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443622217149" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443622217149" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443622217149" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443622217149" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443622217149" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443622217149" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443622217149" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1443622217149" expanded="true" signature="-1:-1" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser/Node/ImportNode.php">
+      <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-11.115385">
-          <caret line="17" column="5" selection-start-line="17" selection-start-column="5" selection-end-line="17" selection-end-column="5" />
+          <caret line="17" column="24" selection-start-line="0" selection-start-column="0" selection-end-line="18" selection-end-column="1" />
+          <folding>
+            <element signature="e#41#71#0#PHP" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser/Node/BlockNode.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-7.1923075">
+          <caret line="11" column="15" selection-start-line="11" selection-start-column="15" selection-end-line="11" selection-end-column="15" />
+          <folding>
+            <element signature="e#41#71#0#PHP" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Util/EscapeTrait.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-18.961538">
+          <caret line="29" column="5" selection-start-line="0" selection-start-column="0" selection-end-line="30" selection-end-column="1" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Util/RenderTrait.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-4.576923">
+          <caret line="7" column="28" selection-start-line="7" selection-start-column="28" selection-end-line="7" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser/Node/CommentNode.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.5384617">
+          <caret line="10" column="19" selection-start-line="10" selection-start-column="19" selection-end-line="10" selection-end-column="19" />
+          <folding>
+            <element signature="e#41#71#0#PHP" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser/NodeBase.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-22.807692">
+          <caret line="177" column="20" selection-start-line="177" selection-start-column="20" selection-end-line="177" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser/Node/AttributeNode.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-13.076923">
+          <caret line="20" column="5" selection-start-line="20" selection-start-column="5" selection-end-line="20" selection-end-column="5" />
+          <folding>
+            <element signature="e#41#71#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser/Node/ExpressionNode.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-4.576923">
+          <caret line="7" column="37" selection-start-line="0" selection-start-column="0" selection-end-line="11" selection-end-column="1" />
+          <folding>
+            <element signature="e#41#71#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser/Node/ConditionalNode.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-7.1923075">
+          <caret line="11" column="17" selection-start-line="11" selection-start-column="17" selection-end-line="11" selection-end-column="17" />
+          <folding>
+            <element signature="e#41#71#0#PHP" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7659208">
-          <caret line="47" column="39" selection-start-line="47" selection-start-column="39" selection-end-line="47" selection-end-column="39" />
+        <state vertical-scroll-proportion="71.163635">
+          <caret line="68" column="25" selection-start-line="68" selection-start-column="25" selection-end-line="68" selection-end-column="25" />
           <folding>
-            <element signature="e#29#67#0#PHP" expanded="true" />
+            <element signature="e#29#71#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/views/index.jade">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="9" column="21" selection-start-line="9" selection-start-column="21" selection-end-line="9" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/lexer.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-19.615385">
+          <caret line="30" column="20" selection-start-line="30" selection-start-column="20" selection-end-line="30" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/LexException.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.6153846">
+          <caret line="4" column="40" selection-start-line="4" selection-start-column="40" selection-end-line="4" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.8230958">
+          <caret line="3" column="0" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
+          <folding>
+            <marker date="1443630427936" expanded="true" signature="7957:8205" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="7957:8433" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="11834:13255" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="12136:13255" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="12166:13255" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="12206:13255" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="12387:13255" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="12429:13255" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="12552:12802" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="12552:13255" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="12578:12802" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="12838:13255" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="12878:13255" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="13003:13235" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="13003:13255" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="13029:13235" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="14027:14221" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="14027:16422" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="14503:16422" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="14559:14843" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="14559:16422" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="16445:16537" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="16553:20614" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="16997:20614" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="17433:17864" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="17433:20614" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="17884:20614" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="18328:20614" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="18773:19344" placeholder="..." />
+            <marker date="1443630427936" expanded="true" signature="18773:20614" placeholder="..." />
           </folding>
         </state>
       </provider>

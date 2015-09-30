@@ -1,21 +1,11 @@
 <?php
 
-namespace Tale\Jade\Lexer\Token;
+namespace Tale\Jade\Util;
 
-use Tale\Jade\Lexer;
-
-class CommentToken extends TextToken
+trait RenderTrait
 {
 
-    private $_render;
-
-    public function __construct(Lexer $lexer)
-    {
-
-        parent::__construct($lexer);
-
-        $this->_render = true;
-    }
+    private $_render = false;
 
     public function isRendered()
     {

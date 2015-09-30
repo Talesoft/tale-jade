@@ -27,6 +27,16 @@ class NodeBase
         return $this->_parent;
     }
 
+    public function getRoot()
+    {
+
+        $current = $this;
+        while ($current->hasParent())
+            $current = $current->getParent();
+
+        return $current;
+    }
+
     public function setParent(NodeBase $node)
     {
 
@@ -137,5 +147,40 @@ class NodeBase
         array_splice($this->_children, $index, 1);
 
         return $this;
+    }
+
+    protected function export() {
+
+        return [];
+    }
+
+    public function dump($level = 0)
+    {
+
+        $exports = $this->export();
+        $export = implode(' ', array_map(function($key, $value) {
+
+            $str = '';
+            if (!is_numeric($key))
+                $str .= "$key=";
+
+            if ($value)
+                $str .= $value;
+
+            return $str;
+        }, array_keys($exports), $exports));
+
+        $indent = str_repeat('    ', $level);
+        $str = $indent.'['.basename(get_class($this), 'Node').(empty($export) ? '' : " $export").']'."\n";
+        foreach ($this->_children as $child)
+            $str .= $child->dump($level + 1);
+
+        return $str;
+    }
+
+    public function __toString()
+    {
+
+        return $this->dump();
     }
 }
