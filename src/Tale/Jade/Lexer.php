@@ -125,6 +125,11 @@ class Lexer
         return $this->_lastMatches;
     }
 
+    /**
+     * @param $input
+     *
+     * @return \Generator
+     */
     public function lex($input)
     {
 
@@ -481,9 +486,8 @@ class Lexer
 
         $this->consumeMatch();
 
-        /** @var \Tale\Jade\Lexer\Token\CommentToken $token */
         $token = $this->createToken('comment');
-        $token['render'] = $this->getMatch(1) ? true : false;
+        $token['rendered'] = $this->getMatch(1) ? true : false;
 
         yield $token;
 
