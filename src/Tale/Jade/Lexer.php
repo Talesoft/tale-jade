@@ -133,9 +133,9 @@ class Lexer
     public function lex($input)
     {
 
-        $this->_input = str_replace([
+        $this->_input = rtrim(str_replace([
             "\r", "\x00"
-        ], '', $input);
+        ], '', $input))."\n";
         $this->_length = $this->strlen($this->_input);
         $this->_position = 0;
 
@@ -365,6 +365,13 @@ class Lexer
         $this->consumeMatch();
         $indent = $this->getMatch(1);
 
+        //If this is an empty line, we ignore the indentation completely.
+        foreach ($this->scanNewLine() as $token) {
+
+            yield $token;
+            return;
+        }
+
         $oldLevel = $this->_level;
         if (!empty($indent)) {
 
@@ -390,7 +397,12 @@ class Lexer
                 //We will use the pretty first indentation as our indent width
                 $this->_indentWidth = $this->strlen($indent);
 
-            $this->_level = intval(ceil($this->strlen($indent) / $this->_indentWidth));
+            $this->_level = intval(round($this->strlen($indent) / $this->_indentWidth));
+
+            if ($this->_level > $oldLevel + 1)
+                $this->throwException(
+                    "You should indent in by one level only"
+                );
         } else
             $this->_level = 0;
 
@@ -487,7 +499,7 @@ class Lexer
         $this->consumeMatch();
 
         $token = $this->createToken('comment');
-        $token['rendered'] = $this->getMatch(1) ? true : false;
+        $token['rendered'] = $this->getMatch(1) ? false : true;
 
         yield $token;
 
@@ -521,20 +533,7 @@ class Lexer
 
         foreach ($this->scanToken(
             'block',
-            'block(?:[\t ]+(?<insertType>append|prepend|replace))?(?:[\t ]+(?<name>[a-zA-Z][a-zA-Z0-9\-_]*))?'
-        ) as $token) {
-
-            yield $token;
-
-            //Allow direct content via <sub> token (should do <indent> in the parser)
-            foreach ($this->scanSub() as $subToken)
-                yield $subToken;
-        }
-
-        //TODO: Doing this twice seems like a DRY-fail, fix this
-        foreach ($this->scanToken(
-            'block',
-            '(?<insertType>append|prepend|replace)(?:[\t ]+(?<name>[a-zA-ZA-Z][a-zA-Z0-9\-_]*))'
+            '(?J:block(?:[\t ]+(?<insertType>append|prepend|replace))?(?:[\t ]+(?<name>[a-zA-Z][a-zA-Z0-9\-_]*))?|(?<insertType>append|prepend|replace)(?:[\t ]+(?<name>[a-zA-ZA-Z][a-zA-Z0-9\-_]*)))'
         ) as $token) {
 
             yield $token;
@@ -603,7 +602,7 @@ class Lexer
 
         foreach ($this->scanToken(
             'each',
-            "each[\t ]+[\$]?(?<itemName>[a-zA-Z][a-zA-Z0-9\-_]*)(?:[\t ]*,[\t ]*[\$]?(?<keyName>[a-zA-Z][a-zA-Z0-9\-_]*))[\t ]+in[\t ]+"
+            "each[\t ]+[\$]?(?<itemName>[a-zA-Z][a-zA-Z0-9\-_]*)(?:[\t ]*,[\t ]*[\$]?(?<keyName>[a-zA-Z][a-zA-Z0-9\-_]*))?[\t ]+in[\t ]+"
         ) as $token) {
 
             yield $token;
@@ -618,7 +617,7 @@ class Lexer
 
         foreach ($this->scanToken(
             'while',
-            "while[\t ]*\n"
+            "while[\t ]*"
         ) as $token) {
 
             yield $token;
@@ -646,7 +645,9 @@ class Lexer
         if ($this->peek() === '-') {
 
             $this->consume();
-            yield $this->createToken('expression');
+            $token = $this->createToken('expression');
+            $token['escaped'] = false;
+            yield $token;
             $this->readSpaces();
 
             foreach ($this->scanTextBlock() as $subToken)
@@ -675,9 +676,7 @@ class Lexer
             $token = $this->createToken('sub');
 
             $spaces = $this->readSpaces();
-
-            if (!empty($spaces))
-                yield $this->createToken('space');
+            $token['withSpace'] = !empty($spaces);
 
             yield $token;
         }
@@ -800,7 +799,6 @@ class Lexer
             $continue = true;
             while(!$this->isAtEnd() && $continue) {
 
-                /** @var \Tale\Jade\Lexer\Token\AttributeToken $token */
                 $token = $this->createToken('attribute');
                 $token['name'] = null;
                 $token['value'] = null;

@@ -1,8 +1,12 @@
 
-//extends layout-basic(page-title='My Page')
+extends layout-basic(page-title='My Page')
 
 
 mixin some-mixin(key, value)
+
+    p Some normal p text
+    p= Some p expression
+    p!= Some escaped p expression
 
     p&classes($caller->classes)= $key
     p&attributes($caller->attributes)= $value
@@ -21,7 +25,7 @@ block content
         in following lines
 
 
-    form.some-class(action='#', method='post').form.form-horizontal#mainForm
+    form.some-class(action='#', method!='post').form.form-horizontal#mainForm
 
         .row
             .col.col-md-4
@@ -36,6 +40,10 @@ block content
                     li: a
 
         include:markdown some-include(some-variable='someValue')
+
+        some:name-spaced:element(some-attr='val') Some Value
+            | Some Text
+            some:element(): some:sub-element: sub:element Some Text Content
 
 
         +some-mixin('some-key', 'some-value').some-class.some-other-class(some-attribute)
@@ -96,8 +104,17 @@ block content
         p Oh noes!
 
 
-        while $i > 15
+        - $i = 0
+        while $i < 15
             do something
+            - $i++
+
+
+        - $j = 0
+        do
+            p= "Hello from Jade!"
+            - $j++
+        while $j < 15
 
         :markdown
             **Some Markdown Content**

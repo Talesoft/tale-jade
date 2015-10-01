@@ -10,8 +10,6 @@ class Parser
 
 
     private $_level;
-    /** @var array */
-    private $_parents;
     /** @var \Generator */
     private $_tokens;
     /** @var \Tale\Jade\Node */
@@ -19,6 +17,7 @@ class Parser
     private $_currentParent;
     private $_current;
     private $_last;
+    private $_subLevel;
 
 
     public function __construct(array $options = null, Lexer $lexer = null)
@@ -34,8 +33,8 @@ class Parser
     {
 
         $this->_level = 0;
+        $this->_subLevel = 0;
         $this->_nodes = [];
-        $this->_parents = [];
         $this->_tokens = $this->_lexer->lex($input);
         $this->_document = $this->createNode('document');
         $this->_currentParent = $this->_document;
@@ -59,7 +58,10 @@ class Parser
         $method = 'handle'.ucfirst($token['type']);
 
         if (!method_exists($this, $method))
-            var_dump('UNHANDLED '.$token['type']);
+            $this->throwException(
+                "Unexpected token, no handler found",
+                $token
+            );
         else
             call_user_func([$this, $method], $token);
     }
@@ -79,6 +81,12 @@ class Parser
         }
     }
 
+    protected function lookUpNext(array $types)
+    {
+
+        return $this->nextToken()->lookUp($types);
+    }
+
     protected function expect(array $types)
     {
 
@@ -90,10 +98,16 @@ class Parser
         return null;
     }
 
+    protected function expectNext(array $types)
+    {
+
+        return $this->nextToken()->expect($types);
+    }
+
     protected function expectEnd(array $relatedToken = null)
     {
 
-        foreach ($this->lookUp(['newLine']) as $token) {
+        foreach ($this->lookUpNext(['newLine']) as $token) {
 
             $this->handleToken($token);
             return;
@@ -122,7 +136,6 @@ class Parser
     protected function getToken()
     {
 
-        var_dump("TOK", $this->_tokens->current());
         return $this->_tokens->current();
     }
 
@@ -157,14 +170,13 @@ class Parser
 
         $node = $this->createNode('assignment');
         $node->name = $token['name'];
-        $this->_current->children[] = $node;
         $this->_current->assignments[] = $node;
 
-        if ($token = $this->expect(['attributeStart'])) {
+        if ($this->expectNext(['attributeStart'])) {
 
             $element = $this->_current;
             $this->_current = $node;
-            $this->handleToken($token);
+            $this->handleToken();
             $this->_current = $element;
         } else
             $this->throwException(
@@ -183,6 +195,9 @@ class Parser
         $node->value = $token['value'];
         $node->escaped = $token['escaped'];
 
+        if (!$node->name && in_array($this->_current->type, ['element', 'mixin']))
+            $this->throwException('Attributes in elements and mixins need a name', $token);
+
         $this->_current->attributes[] = $node;
     }
 
@@ -192,20 +207,21 @@ class Parser
         if (!$this->_current)
             $this->_current = $this->createElement();
 
-        if (!in_array($this->_current->type, ['element', 'import', 'mixin', 'mixinCall']))
+        if (!in_array($this->_current->type, ['element', 'assignment', 'import', 'mixin', 'mixinCall']))
             $this->throwException(
-                "Attributes can only be placed on element, import, mixin and mixin-calls"
+                "Attributes can only be placed on element, assignment, import, mixin and mixinCall"
             );
 
-        foreach ($this->lookUp(['attribute']) as $subToken) {
+        foreach ($this->lookUpNext(['attribute']) as $subToken) {
 
-            var_dump('ATTR', $subToken);
             $this->handleToken($subToken);
         }
 
-        //Skip the attribute end!
-        $this->nextToken();
-        var_dump('CUR', $this->getToken());
+        if (!$this->expect(['attributeEnd']))
+            $this->throwException(
+                "Attribute list not ended",
+                $token
+            );
     }
 
     protected function handleAttributeEnd(array $token)
@@ -217,8 +233,8 @@ class Parser
     {
 
         $node = $this->createNode('block');
-        $node->name = $token['name'];
-        $node->insertType = $token['insertType'];
+        $node->name = isset($token['name']) ? $token['name'] : null;
+        $node->insertType = isset($token['insertType']) ? $token['insertType'] : null;
 
         $this->_current = $node;
 
@@ -245,18 +261,57 @@ class Parser
     {
 
         $node = $this->createNode('comment');
+        $node->rendered = $token['rendered'];
 
-        if ($token['rendered'])
-            $node->rendered = true;
+        $this->_current = $node;
+    }
 
+    protected function handleCase(array $token)
+    {
+
+        $node = $this->createNode('case');
         $this->_current = $node;
     }
 
     protected function handleConditional(array $token)
     {
 
+        $this->validateSingle();
+
         $node = $this->createNode('conditional');
-        $node->type = $token['type'];
+        $node->conditionType = $token['conditionType'];
+
+        $this->_current = $node;
+    }
+
+    protected function handleDo(array $token)
+    {
+
+        $this->validateSingle();
+
+        $node = $this->createNode('do');
+        $this->_current = $node;
+    }
+
+    protected function handleDoctype(array $token)
+    {
+
+        $this->validateSingle();
+
+        $node = $this->createNode('doctype');
+        $node->name = $token['name'];
+
+        $this->_current = $node;
+    }
+
+    protected function handleEach(array $token)
+    {
+
+        $this->validateSingle($token);
+
+        $node = $this->createNode('each');
+        $node->itemName = $token['itemName'];
+        $node->keyName = isset($token['keyName']) ? $token['keyName'] : null;
 
         $this->_current = $node;
     }
@@ -267,6 +322,36 @@ class Parser
         $node = $this->createNode('expression');
         $node->escaped = $token['escaped'];
 
+        if ($this->_current) {
+
+            if (!in_array($this->_current->type, ['element']))
+                $this->throwException(
+                    "Only elements can have expressions appended",
+                    $token
+                );
+
+            $this->_current->children[] = $node;
+            $node->parent = $this->_current;
+
+            if ($this->expectNext(['text'])) {
+
+                $old = $this->_current;
+                $this->_current = $node;
+                $this->handleToken();
+                $this->_current = $old;
+            }
+
+        } else
+            $this->_current = $node;
+    }
+
+    protected function handleFilter(array $token)
+    {
+
+        $this->validateSingle($token);
+
+        $node = $this->createNode('filter');
+        $node->name = $token['name'];
         $this->_current = $node;
     }
 
@@ -303,6 +388,8 @@ class Parser
         $node->importType = $token['importType'];
         $node->path = $token['path'];
         $node->filter = $token['filter'];
+        $node->attributes = [];
+        $node->assignments = [];
 
         $this->_current = $node;
     }
@@ -321,10 +408,6 @@ class Parser
                 $token
             );
 
-        if (!isset($this->_parents[$this->_level]))
-            $this->_parents[$this->_level] = [];
-
-        $this->_parents[$this->_level][] = $this->_last;
         $this->_currentParent = $this->_last;
     }
 
@@ -337,6 +420,9 @@ class Parser
         if ($this->_current->type !== 'element')
             $this->throwException("Tags can only be used on elements", $token);
 
+        if ($this->_current->tag)
+            $this->throwException('This element already has a tag name', $token);
+
         $this->_current->tag = $token['name'];
     }
 
@@ -345,6 +431,8 @@ class Parser
 
         $node = $this->createNode('mixin');
         $node->name = $token['name'];
+        $node->attributes = [];
+        $node->assignments = [];
 
         $this->_current = $node;
     }
@@ -354,29 +442,58 @@ class Parser
 
         $node = $this->createNode('mixinCall');
         $node->name = $token['name'];
+        $node->attributes = [];
+        $node->assignments = [];
 
         $this->_current = $node;
     }
 
-    protected function handleNewLine(array $token)
+    protected function handleNewLine(array $token = null)
     {
 
         if ($this->_current) {
 
             $this->_currentParent->children[] = $this->_current;
+            $this->_current->parent = $this->_currentParent;
             $this->_last = $this->_current;
             $this->_current = null;
         }
+
+        if ($this->_subLevel)
+            $this->handleOutdent(['levels' => 0]);
     }
 
     protected function handleOutdent(array $token)
     {
 
-        $this->_level -= $token['levels'];
+        $levels = $token['levels'] + $this->_subLevel;
+        $this->_level -= $levels;
+        $this->_subLevel = 0;
 
-        return isset($this->_parents[$this->_level])
-             ? end($this->_parents[$this->_level])
-             : end(current($this->_parents));
+        while ($levels-- > 0)
+            $this->_currentParent = $this->_currentParent->parent;
+    }
+
+    protected function handleSub(array $token)
+    {
+
+        if (!$this->_current || $this->_current->type !== 'element')
+            $this->throwException(
+                "Sub accesssor can only be used on elements",
+                $token
+            );
+
+        if (!$token['withSpace'] && $this->expectNext(['tag'])) {
+
+            $token = $this->getToken();
+            $this->_current->tag .= ':'.$token['name'];
+            return;
+        }
+
+        //We just fake some tokens
+        $this->handleNewLine(); //Stores the element in the current _parentNode
+        $this->handleIndent(['levels' => 1]); //Sets the left element as _parentNode
+        $this->_subLevel++;
     }
 
 
@@ -385,10 +502,34 @@ class Parser
 
         $node = $this->createNode('text');
         $node->value = $token['value'];
-        if ($this->_current)
-            $this->_current->children[] = $node;
-        else
+        if ($this->_current) {
+
+            if (in_array($this->_current->type, ['conditional', 'when', 'case', 'while', 'each']))
+                $this->_current->subject = $token['value'];
+            else {
+                $this->_current->children[] = $node;
+                $node->parent = $this->_current;
+            }
+        } else
             $this->_current = $node;
+    }
+
+    protected function handleWhen(array $token)
+    {
+
+        $this->validateSingle($token);
+
+        $node = $this->createNode('when');
+        $this->_current = $node;
+    }
+
+    protected function handleWhile(array $token)
+    {
+
+        $this->validateSingle();
+
+        $node = $this->createNode('while');
+        $this->_current = $node;
     }
 
 
@@ -403,5 +544,15 @@ class Parser
         throw new ParseException(
             "Failed to parse Jade: $message"
         );
+    }
+
+    protected function validateSingle(array $relatedToken = null)
+    {
+
+        if ($this->_current)
+            $this->throwException(
+                "This instruction needs to be on a single line",
+                $relatedToken
+            );
     }
 }

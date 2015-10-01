@@ -6,6 +6,7 @@ class Node
 {
 
     public $type;
+    public $parent;
     public $children;
 
     private $_data;
@@ -14,6 +15,7 @@ class Node
     {
 
         $this->type = $type;
+        $this->parent = null;
         $this->children = [];
         $this->_data = [];
     }
@@ -28,13 +30,15 @@ class Node
                 $str .= "$key=";
 
             if ($value)
-                $str .= $value;
+                $str .= !is_array($value)
+                      ? $value
+                      : '{'.implode(', ', array_map('trim', array_map('strval', $value))).'}';
 
             return $str;
         }, array_keys($this->_data), $this->_data));
 
         $indent = str_repeat('    ', $level);
-        $str = $indent.'['.basename(get_class($this), 'Node').(empty($export) ? '' : " $export").']'."\n";
+        $str = $indent.'['.$this->type.(empty($export) ? '' : " $export").']'."\n";
         foreach ($this->children as $child)
             $str .= $child->dump($level + 1);
 
