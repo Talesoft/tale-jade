@@ -2,12 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="54819058-2860-4625-9148-675b1b97e472" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/regex.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Tale/Jade/Lexer.php" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/CompileException.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Tale/Jade/Compiler.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Tale/Jade/Node.php" afterPath="$PROJECT_DIR$/src/Tale/Jade/Node.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Tale/Jade/Parser.php" afterPath="$PROJECT_DIR$/src/Tale/Jade/Parser.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/views/index.jade" afterPath="$PROJECT_DIR$/tests/views/index.jade" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="tale-jade.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -32,8 +30,8 @@
       <file leaf-file-name="Lexer.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-4.890909">
-              <caret line="619" column="24" selection-start-line="619" selection-start-column="24" selection-end-line="619" selection-end-column="24" />
+            <state vertical-scroll-proportion="25.4">
+              <caret line="786" column="36" selection-start-line="786" selection-start-column="23" selection-end-line="786" selection-end-column="36" />
               <folding>
                 <marker date="1443739177071" expanded="true" signature="8039:8287" placeholder="..." />
                 <marker date="1443739177071" expanded="true" signature="16595:17906" placeholder="..." />
@@ -59,8 +57,8 @@
       <file leaf-file-name="index.jade" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests/views/index.jade">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-16.62069">
-              <caret line="116" column="21" selection-start-line="116" selection-start-column="21" selection-end-line="116" selection-end-column="21" />
+            <state vertical-scroll-proportion="-16.413794">
+              <caret line="128" column="18" selection-start-line="128" selection-start-column="18" selection-end-line="128" selection-end-column="18" />
               <folding />
             </state>
           </provider>
@@ -76,11 +74,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Parser.php" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Parser.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.33333334">
-              <caret line="476" column="0" selection-start-line="476" selection-start-column="0" selection-end-line="476" selection-end-column="0" />
+            <state vertical-scroll-proportion="-3.3454545">
+              <caret line="205" column="38" selection-start-line="205" selection-start-column="23" selection-end-line="205" selection-end-column="38" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Compiler.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Compiler.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.46127367">
+              <caret line="187" column="86" selection-start-line="187" selection-start-column="86" selection-end-line="187" selection-end-column="86" />
               <folding />
             </state>
           </provider>
@@ -100,7 +108,17 @@
         <entry file="file://$PROJECT_DIR$/src/Tale/Jade/ParseException.php">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="-1.3076923">
-              <caret line="2" column="19" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
+              <caret line="2" column="19" selection-start-line="0" selection-start-column="0" selection-end-line="5" selection-end-column="2" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CompileException.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Tale/Jade/CompileException.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-2.6153846">
+              <caret line="4" column="22" selection-start-line="4" selection-start-column="22" selection-end-line="4" selection-end-column="22" />
               <folding />
             </state>
           </provider>
@@ -109,8 +127,8 @@
       <file leaf-file-name="Node.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Node.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.1923077">
-              <caret line="17" column="29" selection-start-line="17" selection-start-column="29" selection-end-line="17" selection-end-column="29" />
+            <state vertical-scroll-proportion="-16.346153">
+              <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -124,8 +142,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Util/EscapeTrait.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/WhenToken.php" />
         <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer/Token/TextToken.php" />
         <option value="$PROJECT_DIR$/src/Tale/Jade/Util/NameTrait.php" />
         <option value="$PROJECT_DIR$/src/Tale/Jade/Util/ValueTrait.php" />
@@ -171,10 +187,12 @@
         <option value="$PROJECT_DIR$/src/Tale/Jade/ParseException.php" />
         <option value="$PROJECT_DIR$/tests/innergen.php" />
         <option value="$PROJECT_DIR$/tests/regex.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Node.php" />
         <option value="$PROJECT_DIR$/tests/views/index.jade" />
         <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Node.php" />
         <option value="$PROJECT_DIR$/src/Tale/Jade/Parser.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/CompileException.php" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Compiler.php" />
       </list>
     </option>
   </component>
@@ -445,14 +463,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/ParseException.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-1.3076923">
-          <caret line="2" column="19" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/parser.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-14.192307">
@@ -472,14 +482,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Node.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.1923077">
-          <caret line="17" column="29" selection-start-line="17" selection-start-column="29" selection-end-line="17" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/lexer.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-15.153846">
@@ -490,16 +492,48 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/views/index.jade">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-16.62069">
-          <caret line="116" column="21" selection-start-line="116" selection-start-column="21" selection-end-line="116" selection-end-column="21" />
+        <state vertical-scroll-proportion="-16.413794">
+          <caret line="128" column="18" selection-start-line="128" selection-start-column="18" selection-end-line="128" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Node.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-16.346153">
+          <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/ParseException.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-1.3076923">
+          <caret line="2" column="19" selection-start-line="0" selection-start-column="0" selection-end-line="5" selection-end-column="2" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/CompileException.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.6153846">
+          <caret line="4" column="22" selection-start-line="4" selection-start-column="22" selection-end-line="4" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.3454545">
+          <caret line="205" column="38" selection-start-line="205" selection-start-column="23" selection-end-line="205" selection-end-column="38" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-4.890909">
-          <caret line="619" column="24" selection-start-line="619" selection-start-column="24" selection-end-line="619" selection-end-column="24" />
+        <state vertical-scroll-proportion="25.4">
+          <caret line="786" column="36" selection-start-line="786" selection-start-column="23" selection-end-line="786" selection-end-column="36" />
           <folding>
             <marker date="1443739177071" expanded="true" signature="8039:8287" placeholder="..." />
             <marker date="1443739177071" expanded="true" signature="16595:17906" placeholder="..." />
@@ -511,10 +545,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser.php">
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Compiler.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33333334">
-          <caret line="476" column="0" selection-start-line="476" selection-start-column="0" selection-end-line="476" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.46127367">
+          <caret line="187" column="86" selection-start-line="187" selection-start-column="86" selection-end-line="187" selection-end-column="86" />
           <folding />
         </state>
       </provider>

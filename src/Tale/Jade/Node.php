@@ -6,17 +6,24 @@ class Node
 {
 
     public $type;
+    public $line;
+    public $offset;
+
     public $parent;
     public $children;
 
     private $_data;
 
-    public function __construct($type)
+    public function __construct($type, $line, $offset)
     {
 
         $this->type = $type;
+        $this->line = $line;
+        $this->offset = $offset;
+
         $this->parent = null;
         $this->children = [];
+
         $this->_data = [];
     }
 

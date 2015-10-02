@@ -29,6 +29,24 @@ class Parser
         $this->_lexer = $lexer ? $lexer : new Lexer($this->_options['lexer']);
     }
 
+    /**
+     * @return array
+     */
+    public function getOptions()
+    {
+
+        return $this->_options;
+    }
+
+    /**
+     * @return \Tale\Jade\Lexer
+     */
+    public function getLexer()
+    {
+
+        return $this->_lexer;
+    }
+
     public function parse($input)
     {
 
@@ -36,7 +54,7 @@ class Parser
         $this->_subLevel = 0;
         $this->_nodes = [];
         $this->_tokens = $this->_lexer->lex($input);
-        $this->_document = $this->createNode('document');
+        $this->_document = $this->createNode('document', ['line' => 0, 'offset' => 0]);
         $this->_currentParent = $this->_document;
         $this->_current = null;
         $this->_last = null;
@@ -139,17 +157,18 @@ class Parser
         return $this->_tokens->current();
     }
 
-    protected function createNode($name)
+    protected function createNode($name, array $token = null)
     {
 
-        $node = new Node($name);
+        $token = $token ? $token : ['line' => $this->_lexer->getLine(), 'offset' => $this->_lexer->getOffset()];
+        $node = new Node($name, $token['line'], $token['offset']);
         return $node;
     }
 
-    protected function createElement()
+    protected function createElement(array $token = null)
     {
 
-        $node = $this->createNode('element');
+        $node = $this->createNode('element', $token);
         $node->tag = null;
         $node->attributes = [];
         $node->assignments = [];
@@ -168,7 +187,7 @@ class Parser
                 "Assignments can only happen on elements"
             );
 
-        $node = $this->createNode('assignment');
+        $node = $this->createNode('assignment', $token);
         $node->name = $token['name'];
         $this->_current->assignments[] = $node;
 
@@ -190,7 +209,7 @@ class Parser
         if (!$this->_current)
             $this->_current = $this->createElement();
 
-        $node = $this->createNode('attribute');
+        $node = $this->createNode('attribute', $token);
         $node->name = $token['name'];
         $node->value = $token['value'];
         $node->escaped = $token['escaped'];
@@ -232,7 +251,7 @@ class Parser
     protected function handleBlock(array $token)
     {
 
-        $node = $this->createNode('block');
+        $node = $this->createNode('block', $token);
         $node->name = isset($token['name']) ? $token['name'] : null;
         $node->insertType = isset($token['insertType']) ? $token['insertType'] : null;
 
@@ -250,7 +269,7 @@ class Parser
         if (!in_array($this->_current->type, ['element', 'mixinCall']))
             $this->throwException("Classes can only be used on elements and mixin calls", $token);
 
-        $attr = $this->createNode('attribute');
+        $attr = $this->createNode('attribute', $token);
         $attr->name = 'class';
         $attr->value = $token['name'];
         $attr->escaped = false;
@@ -260,7 +279,7 @@ class Parser
     protected function handleComment(array $token)
     {
 
-        $node = $this->createNode('comment');
+        $node = $this->createNode('comment', $token);
         $node->rendered = $token['rendered'];
 
         $this->_current = $node;
@@ -269,7 +288,7 @@ class Parser
     protected function handleCase(array $token)
     {
 
-        $node = $this->createNode('case');
+        $node = $this->createNode('case', $token);
         $this->_current = $node;
     }
 
@@ -278,7 +297,7 @@ class Parser
 
         $this->validateSingle();
 
-        $node = $this->createNode('conditional');
+        $node = $this->createNode('conditional', $token);
         $node->conditionType = $token['conditionType'];
 
         $this->_current = $node;
@@ -289,7 +308,7 @@ class Parser
 
         $this->validateSingle();
 
-        $node = $this->createNode('do');
+        $node = $this->createNode('do', $token);
         $this->_current = $node;
     }
 
@@ -298,7 +317,7 @@ class Parser
 
         $this->validateSingle();
 
-        $node = $this->createNode('doctype');
+        $node = $this->createNode('doctype', $token);
         $node->name = $token['name'];
 
         $this->_current = $node;
@@ -309,7 +328,7 @@ class Parser
 
         $this->validateSingle($token);
 
-        $node = $this->createNode('each');
+        $node = $this->createNode('each', $token);
         $node->itemName = $token['itemName'];
         $node->keyName = isset($token['keyName']) ? $token['keyName'] : null;
 
@@ -319,7 +338,7 @@ class Parser
     protected function handleExpression(array $token)
     {
 
-        $node = $this->createNode('expression');
+        $node = $this->createNode('expression', $token);
         $node->escaped = $token['escaped'];
 
         if ($this->_current) {
@@ -350,7 +369,7 @@ class Parser
 
         $this->validateSingle($token);
 
-        $node = $this->createNode('filter');
+        $node = $this->createNode('filter', $token);
         $node->name = $token['name'];
         $this->_current = $node;
     }
@@ -364,7 +383,7 @@ class Parser
         if (!in_array($this->_current->type, ['element', 'mixinCall']))
             $this->throwException("IDs can only be used on elements and mixin calls", $token);
 
-        $attr = $this->createNode('attribute');
+        $attr = $this->createNode('attribute', $token);
         $attr->name = 'id';
         $attr->value = $token['name'];
         $attr->escaped = false;
@@ -384,7 +403,7 @@ class Parser
                 $token
             );
 
-        $node = $this->createNode('import');
+        $node = $this->createNode('import', $token);
         $node->importType = $token['importType'];
         $node->path = $token['path'];
         $node->filter = $token['filter'];
@@ -429,7 +448,7 @@ class Parser
     protected function handleMixin(array $token)
     {
 
-        $node = $this->createNode('mixin');
+        $node = $this->createNode('mixin', $token);
         $node->name = $token['name'];
         $node->attributes = [];
         $node->assignments = [];
@@ -440,7 +459,7 @@ class Parser
     protected function handleMixinCall(array $token)
     {
 
-        $node = $this->createNode('mixinCall');
+        $node = $this->createNode('mixinCall', $token);
         $node->name = $token['name'];
         $node->attributes = [];
         $node->assignments = [];
@@ -500,7 +519,7 @@ class Parser
     protected function handleText(array $token)
     {
 
-        $node = $this->createNode('text');
+        $node = $this->createNode('text', $token);
         $node->value = $token['value'];
         if ($this->_current) {
 
@@ -519,7 +538,7 @@ class Parser
 
         $this->validateSingle($token);
 
-        $node = $this->createNode('when');
+        $node = $this->createNode('when', $token);
         $this->_current = $node;
     }
 
@@ -528,7 +547,7 @@ class Parser
 
         $this->validateSingle();
 
-        $node = $this->createNode('while');
+        $node = $this->createNode('while', $token);
         $this->_current = $node;
     }
 
