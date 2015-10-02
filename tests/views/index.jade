@@ -4,11 +4,20 @@ extends layout-basic(page-title='My Page')
 
 mixin some-mixin(key, value)
 
+    empty-tag
     p Some normal p text
-    p= Some p expression
-    p!= Some escaped p expression
+    p Some nested first text
+        | Some nested second text
+        | Some nested third text
 
-    p&classes($caller->classes)= $key
+    p. Some nested first text
+        Some nested second text
+        Some nested third text
+
+    p= Some p expression
+    p!= Some un-escaped p expression
+
+    p.first-class(class='second-class', class='third-class', class=$varClass)&class($caller->classes)= $key
     p&attributes($caller->attributes)= $value
 
     if $caller->block
@@ -20,7 +29,16 @@ block content
     p= $somePhpContent
 
 
-    //- Some Comment
+    // Inline Rendered Comment
+
+    //- Inline hidden comment
+
+
+    // Some shown comment
+         This should also stay commented
+         in following lines
+
+    //- Some hidden Comment
         This should also stay commented
         in following lines
 
