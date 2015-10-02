@@ -10,6 +10,7 @@ class Parser
 
 
     private $_level;
+    private $_subLevel;
     /** @var \Generator */
     private $_tokens;
     /** @var \Tale\Jade\Node */
@@ -17,7 +18,8 @@ class Parser
     private $_currentParent;
     private $_current;
     private $_last;
-    private $_subLevel;
+    private $_inMixin;
+    private $_mixinLevel;
 
 
     public function __construct(array $options = null, Lexer $lexer = null)
@@ -58,6 +60,8 @@ class Parser
         $this->_currentParent = $this->_document;
         $this->_current = null;
         $this->_last = null;
+        $this->_inMixin = false;
+        $this->_mixinLevel = null;
 
         while ($this->hasTokens()) {
 
@@ -255,6 +259,11 @@ class Parser
         $node->name = isset($token['name']) ? $token['name'] : null;
         $node->insertType = isset($token['insertType']) ? $token['insertType'] : null;
 
+        if (!$node->name && !$this->_inMixin)
+            $this->throwException(
+                "Blocks outside a mixin always need a name"
+            );
+
         $this->_current = $node;
 
         $this->expectEnd($token);
@@ -340,6 +349,7 @@ class Parser
 
         $node = $this->createNode('expression', $token);
         $node->escaped = $token['escaped'];
+        $node->return = $token['return'];
 
         if ($this->_current) {
 
@@ -349,8 +359,7 @@ class Parser
                     $token
                 );
 
-            $this->_current->children[] = $node;
-            $node->parent = $this->_current;
+            $this->_current->append($node);
 
             if ($this->expectNext(['text'])) {
 
@@ -448,10 +457,18 @@ class Parser
     protected function handleMixin(array $token)
     {
 
+        if ($this->_inMixin)
+            $this->throwException(
+                "Failed to define mixin: Mixins cant be nested"
+            );
+
         $node = $this->createNode('mixin', $token);
         $node->name = $token['name'];
         $node->attributes = [];
         $node->assignments = [];
+
+        $this->_inMixin = true;
+        $this->_mixinLevel = $this->_level;
 
         $this->_current = $node;
     }
@@ -472,8 +489,7 @@ class Parser
 
         if ($this->_current) {
 
-            $this->_currentParent->children[] = $this->_current;
-            $this->_current->parent = $this->_currentParent;
+            $this->_currentParent->append($this->_current);
             $this->_last = $this->_current;
             $this->_current = null;
         }
@@ -488,6 +504,12 @@ class Parser
         $levels = $token['levels'] + $this->_subLevel;
         $this->_level -= $levels;
         $this->_subLevel = 0;
+
+        if ($this->_inMixin && $this->_level <= $this->_mixinLevel) {
+
+            $this->_inMixin = false;
+            $this->_mixinLevel = null;
+        }
 
         while ($levels-- > 0)
             $this->_currentParent = $this->_currentParent->parent;
@@ -526,8 +548,7 @@ class Parser
             if (in_array($this->_current->type, ['conditional', 'when', 'case', 'while', 'each']))
                 $this->_current->subject = $token['value'];
             else {
-                $this->_current->children[] = $node;
-                $node->parent = $this->_current;
+                $this->_current->append($node);
             }
         } else
             $this->_current = $node;

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "5881702b720d8f49ba224422cbc1ccab",
+    "hash": "7bcb154184c6be49f2a5d683807c2e7d",
     "packages": [
         {
             "name": "talesoft/tale-util",
@@ -12,16 +12,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Talesoft/tale-util.git",
-                "reference": "da54762bd1cb873745ae7823a2f588713c4d930f"
+                "reference": "62fb3daf93ff10d66bb241923dbdfe3be8034ddd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Talesoft/tale-util/zipball/da54762bd1cb873745ae7823a2f588713c4d930f",
-                "reference": "da54762bd1cb873745ae7823a2f588713c4d930f",
+                "url": "https://api.github.com/repos/Talesoft/tale-util/zipball/62fb3daf93ff10d66bb241923dbdfe3be8034ddd",
+                "reference": "62fb3daf93ff10d66bb241923dbdfe3be8034ddd",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.6.0"
+                "php": ">=5.5.0"
             },
             "type": "library",
             "autoload": {
@@ -40,7 +40,7 @@
                 }
             ],
             "description": "A simple collection of basic PHP utilities",
-            "time": "2015-09-22 22:10:29"
+            "time": "2015-10-02 18:03:57"
         }
     ],
     "packages-dev": [],

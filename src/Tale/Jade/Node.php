@@ -14,7 +14,7 @@ class Node
 
     private $_data;
 
-    public function __construct($type, $line, $offset)
+    public function __construct($type, $line = null, $offset = null)
     {
 
         $this->type = $type;
@@ -25,6 +25,89 @@ class Node
         $this->children = [];
 
         $this->_data = [];
+    }
+
+    public function indexOf(Node $node)
+    {
+
+        return array_search($node, $this->children, true);
+    }
+
+    public function append(Node $node)
+    {
+
+        $this->children[] = $node;
+        $node->parent = $this;
+
+        return $this;
+    }
+
+    public function prepend(Node $node)
+    {
+
+        array_unshift($this->children, $node);
+        $node->parent = $this;
+
+        return $this;
+    }
+
+    public function remove(Node $node)
+    {
+
+        $index = $this->indexOf($node);
+
+        if ($index !== false) {
+
+            $this->children[$index]->parent = null;
+            array_splice($this->children, $index, 1);
+        }
+
+        return $this;
+    }
+
+    public function insertAfter(Node $node, Node $newNode)
+    {
+
+        $index = $this->indexOf($node);
+
+        if ($index === false)
+            return $this->append($newNode);
+
+        array_splice($this->children, $index + 1, 0, [$newNode]);
+
+        return $this;
+    }
+
+    public function insertBefore(Node $node, Node $newNode)
+    {
+
+        $index = $this->indexOf($node);
+
+        if ($index === false)
+            return $this->prepend($newNode);
+
+        array_splice($this->children, $index, 0, [$newNode]);
+
+        return $this;
+    }
+
+    public function find($type)
+    {
+
+        foreach ($this->children as $node) {
+
+            if ($node->type === $type)
+                yield $node;
+
+            foreach ($node->find($type) as $subNode)
+                yield $subNode;
+        }
+    }
+
+    public function findArray($type)
+    {
+
+        return iterator_to_array($this->find($type));
     }
 
     public function dump($level = 0)

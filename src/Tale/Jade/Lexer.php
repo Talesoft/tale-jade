@@ -647,6 +647,7 @@ class Lexer
             $this->consume();
             $token = $this->createToken('expression');
             $token['escaped'] = false;
+            $token['return'] = false;
             yield $token;
             $this->readSpaces();
 
@@ -660,6 +661,7 @@ class Lexer
         ) as $token) {
 
             $token['escaped'] = $this->getMatch(1) === '!=' ? false : true;
+            $token['return'] = true;
             yield $token;
 
             foreach ($this->scanText() as $subToken)

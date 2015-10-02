@@ -34,6 +34,18 @@ class Compiler
             'selfRepeatingAttributes' => [
                 'selected', 'checked', 'disabled'
             ],
+            'doctypes' => [
+                '5'             => '<!DOCTYPE html>',
+                'html'          => '<!DOCTYPE html>',
+                'xml'           => '<?xml version="1.0" encoding="utf-8"?>',
+                'default'       => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
+                'transitional'  => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
+                'strict'        => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">',
+                'frameset'      => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">',
+                '1.1'           => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">',
+                'basic'         => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">',
+                'mobile'        => '<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.2//EN" "http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd">'
+            ],
             'defaultTag' => 'div',
             'quoteStyle' => '"',
             'paths' => [],
@@ -82,6 +94,8 @@ class Compiler
         $this->_level = 0;
 
         $node = $this->_parser->parse($input);
+        $this->handleImports($node);
+        $this->handleBlocks($node);
         $phtml = $this->compileNode($node);
 
 
@@ -171,8 +185,7 @@ $__assign = function($name, $values) {
         if (strpos($code, "\n") !== false) {
 
             $this->_level++;
-            $code = $this->newLine()
-                  .implode($this->newLine().$this->indent(), preg_split("/\n[\t ]+/", $code))
+            $code = implode($this->newLine().$this->indent(), preg_split("/\n[\t ]*/", $code))
                   .$this->newLine().$this->indent(-1);
             $this->_level--;
         }
@@ -209,7 +222,7 @@ $__assign = function($name, $values) {
                 $node
             );*/
 
-            var_dump('Unhandled '.$node->type);
+            var_dump('Unhandled '.$node->type."($method)");
             return $this->compileChildren($node->children);
         }
 
@@ -220,6 +233,13 @@ $__assign = function($name, $values) {
     {
 
         return $this->compileChildren($node->children);
+    }
+    protected function compileDoctype(Node $node)
+    {
+
+        $name = $node->name;
+        $value = isset($this->_options['doctypes'][$name]) ? $this->_options['doctypes'][$name] : $name;
+        return $value;
     }
 
     private function _resolvePath($path)
@@ -247,7 +267,18 @@ $__assign = function($name, $values) {
         return false;
     }
 
-    protected function compileImport(Node $node)
+    protected function handleImports(Node $node)
+    {
+
+        foreach ($node->find('import') as $importNode) {
+
+            $this->handleImport($importNode);
+        }
+
+        return $this;
+    }
+
+    protected function handleImport(Node $node)
     {
 
         $path = $node->path;
@@ -256,19 +287,120 @@ $__assign = function($name, $values) {
         if (strncmp($path, $ext, strlen($ext) !== 0))
             $path .= $ext;
 
-        $path = $this->_resolvePath($path);
+        $fullPath = $this->_resolvePath($path);
 
-        if (!$path)
+        if (!$fullPath)
             $this->throwException(
-                "File $node->path wasnt found in ".implode(', ', $this->_options['paths'])
+                "File $path wasnt found in ".implode(', ', $this->_options['paths'])
             );
 
+        $importedNode = $this->_parser->parse(file_get_contents($fullPath));
         $this->_files[] = $path;
-        $importedNode = $this->_parser->parse(file_get_contents($path));
+        $this->handleImports($importedNode);
         array_pop($this->_files);
 
-        //TODO: Handle attributes of $node!!!!
-        return $this->compileNode($importedNode);
+        $node->parent->insertBefore($node, $importedNode);
+        $node->parent->remove($node);
+
+        return $this;
+    }
+
+    protected function handleBlocks(Node $node)
+    {
+
+        $this->_blocks = $node->findArray('block');
+        foreach ($this->_blocks as $blockNode)
+            $this->handleBlock($blockNode);
+
+        return $this;
+    }
+
+    protected function handleBlock(Node $node)
+    {
+
+        if (!$node->name || $node->mode === 'ignore') //Will be handled through compileBlock when the loop encounters it
+            return $this;
+
+        //Find all other blocks with that name
+        foreach ($this->_blocks as $block) {
+
+            if ($block === $node || $block->name !== $node->name)
+                continue;
+
+            $mode = $block->mode;
+            //detach from parent
+            $block->parent->remove($block);
+
+            switch ($mode) {
+                default:
+                case 'replace':
+
+                    $node->children = [];
+                //WANTED FALLTHROUGH!
+                case 'append':
+
+                    //Append to master block
+                    foreach ($block->children as $child) {
+
+                        $block->remove($child);
+                        $node->append($child);
+                    }
+                    break;
+                case 'prepend':
+
+                    $last = null;
+                    foreach ($block->children as $child) {
+
+                        $block->remove($child);
+                        if (!$last) {
+
+                            $node->prepend($child);
+                            $last = $child;
+                            continue;
+                        }
+
+                        $node->insertAfter($last, $child);
+                        $last = $child;
+                    }
+                    break;
+            }
+
+            $block->mode = 'ignore';
+        }
+    }
+
+    protected function compileBlock(Node $node)
+    {
+
+        $name = $node->name;
+
+        if (!$name)
+            return $this->createShortCode('!empty($__block) ? $__block : \'\'');
+
+        //At this point the code knows this block only, since handleBlock took care of the blocks previously
+        return $this->compileChildren($node->children);
+    }
+
+    protected function compileConditional(Node $node)
+    {
+
+        $type = $node->conditionType;
+        $subject = $node->subject;
+
+        if ($this->isVariable($subject))
+            $subject = "isset($subject) ? $subject : false";
+
+        if ($type === 'unless') {
+
+            $type = 'if';
+            $subject = "!($subject)";
+        }
+
+        $phtml = $type === 'else' ? $this->createCode(' else {') : $this->createCode("$type ($subject) {");
+        $phtml .= $this->compileChildren($node->children);
+        $phtml .= $this->newLine().$this->indent().$this->createCode("}");
+
+        return $phtml;
     }
 
     protected function compileChildren(array $nodes, $allowInline = false)
@@ -453,12 +585,13 @@ $__assignments[\''.$assignment->name.'\'] = $__assign('
 
         if (count($node->children) === 1 && $node->children[0]->type === 'text' && $this->isVariable($node->children[0]->value)) {
 
-            //We can have a single variable expression that uses empty() automatically
+            //We can have a single variable expression that uses isset automatically
             $value = $node->children[0]->value;
-            return $this->createShortCode(sprintf($code, "empty({$value}) ? {$value} : ''"));
+            return $this->createShortCode(sprintf($code, "isset({$value}) ? {$value} : ''"));
         }
 
-        return $this->createShortCode(sprintf($code, trim($this->compileChildren($node->children, true))));
+        $method = $node->return ? 'createShortCode' : 'createCode';
+        return $this->$method(sprintf($code, trim($this->compileChildren($node->children, true))));
     }
 
     protected function compileComment(Node $node)
