@@ -257,7 +257,7 @@ class Parser
 
         $node = $this->createNode('block', $token);
         $node->name = isset($token['name']) ? $token['name'] : null;
-        $node->insertType = isset($token['insertType']) ? $token['insertType'] : null;
+        $node->mode = isset($token['mode']) ? $token['mode'] : null;
 
         if (!$node->name && !$this->_inMixin)
             $this->throwException(

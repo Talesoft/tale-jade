@@ -160,6 +160,7 @@ class Lexer
             'assignment',
             'comment', 'filter',
             'expression',
+            'markup',
             'textLine',
             'text'
         ], true) as $token)
@@ -300,11 +301,15 @@ class Lexer
                     }
                     break;
                 case '(':
+                case '[':
+                case '{':
 
                     if (!$inString)
                         $level++;
                     break;
                 case ')':
+                case ']':
+                case '}':
 
                     if ($inString)
                         break;
@@ -319,7 +324,7 @@ class Lexer
                     break;
             }
 
-            if (in_array($char, $breakChars, true) && !$inString)
+            if (in_array($char, $breakChars, true) && !$inString && $level === 0)
                 $break = true;
 
             if (!$break) {
@@ -553,6 +558,15 @@ class Lexer
             yield $token;
     }
 
+    protected function scanMarkup()
+    {
+
+        if ($this->peek() !== '<')
+            return;
+
+        foreach ($this->scanText() as $token)
+            yield $token;
+    }
 
     protected function scanComment()
     {
@@ -597,7 +611,7 @@ class Lexer
 
         foreach ($this->scanToken(
             'block',
-            '(?J:block(?:[\t ]+(?<insertType>append|prepend|replace))?(?:[\t ]+(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*))?|(?<insertType>append|prepend|replace)(?:[\t ]+(?<name>[a-zA-ZA-Z][a-zA-Z0-9\-_]*)))'
+            '(?J:block(?:[\t ]+(?<mode>append|prepend|replace))?(?:[\t ]+(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*))?|(?<mode>append|prepend|replace)(?:[\t ]+(?<name>[a-zA-ZA-Z][a-zA-Z0-9\-_]*)))'
         ) as $token) {
 
             yield $token;

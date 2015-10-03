@@ -109,7 +109,7 @@ class Node
 
         $index = $this->parent->indexOf($this) - 1;
 
-        return isset($this->parent[$index]) ? $this->parent[$index] : null;
+        return isset($this->parent->children[$index]) ? $this->parent->children[$index] : null;
     }
 
     public function next()

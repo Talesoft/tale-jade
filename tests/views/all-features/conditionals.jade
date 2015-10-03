@@ -1,0 +1,26 @@
+
+append content
+
+    h1 Conditionals
+
+    - $expression1 = (5 < 3) //false
+    - $expression2 = (5 > 3) //true
+
+    if $expression1
+        p EXP1 This shouldnt be shown
+    else
+
+        if $expression2
+            p EXP2 This should be shown
+        else
+            p EXP2 This shouldnt be shown
+
+    - $animal = 'elephant'
+
+    if $animal === 'elephant'
+        p IF Animal is an elephant
+
+    unless $animal !== 'elephant'
+        p UNLESS Animal is an elephant
+
+
