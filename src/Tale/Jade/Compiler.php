@@ -19,11 +19,12 @@ class Compiler
     private $_blocks;
     private $_hasAssignments;
     private $_level;
+    private $_indentAnchor;
 
     public function __construct(array $options = null, Parser $parser = null, Lexer $lexer = null)
     {
 
-        $this->_options = array_replace([
+        $this->_options = array_replace_recursive([
             'pretty' => true,
             'indentStyle' => Lexer::INDENT_SPACE,
             'indentWidth' => 4,
@@ -46,8 +47,16 @@ class Compiler
                 'basic'         => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">',
                 'mobile'        => '<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.2//EN" "http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd">'
             ],
+            'filters' => [
+                'css' => 'Tale\\Jade\\Filter::filterStyle',
+                'js' => 'Tale\\Jade\\Filter::filterScript',
+                'php' => 'Tale\\Jade\\Filter::filterCode',
+                'markdown' => 'Tale\\Jade\\Filter::filterMarkdown'
+                //What else?
+            ],
             'defaultTag' => 'div',
             'quoteStyle' => '"',
+            'replaceMixins' => false,
             'paths' => [],
             'extension' => '.jade',
             'parser' => [],
@@ -88,50 +97,36 @@ class Compiler
     public function compile($input, $path = null)
     {
 
+        //Compiler reset
         $this->_files = $path ? [$path] : [];
         $this->_mixins = [];
         $this->_blocks = [];
+        $this->_hasAssignments = false;
         $this->_level = 0;
 
+        //Parse the input into an AST
         $node = $this->_parser->parse($input);
+
+        //There are some things we need to take care of before compilation
         $this->handleImports($node);
         $this->handleBlocks($node);
+        $this->handleMixins($node);
+
+        //The actual compilation process ($node is the very root node of everything)
         $phtml = $this->compileNode($node);
 
 
+        //Reset the level again for our next operations
         $this->_level = 0;
         //Now we append/prepend specific stuff (like mixin functions and helpers)
-        if ($this->_hasAssignments) {
+        $assign = $this->compileAssignHelper();
+        $mixins = $this->compileMixins();
 
-            $phtml = $this->createCode('
-$__assign = function($name, $values) {
 
-    $values = [];
+        //Put everything together
+        $phtml = implode('', [$assign, $mixins, $phtml]);
 
-    foreach ($values as $value) {
-
-        if (empty($value))
-            continue;
-
-        if ($name === \'class\')
-            $values[] = (is_array($value) ? implode(\' \', $value) : $value);
-        else
-            $values[] = $value;
-    }
-
-    $value = \'\';
-
-    if ($name === \'class\')
-        $value = \' \'.implode(\' \', $values);
-    else if (is_array($string) || is_object($string))
-        $value = json_encode($values);
-    else
-        $value = implode(\'\', $values);
-
-    return $value;
-}').$this->newLine().$phtml;
-        }
-
+        //Return the compiled PHTML
         return $phtml;
     }
 
@@ -150,7 +145,7 @@ $__assign = function($name, $values) {
     protected function isVariable($value)
     {
 
-        return preg_match('/^\$[a-z][a-z0-9\_\[\]\->\'" ]*$/i', $value);
+        return preg_match('/^\$[a-z_][a-z0-9\_\[\]\->\'"]*$/i', $value);
     }
 
     protected function interpolate($string)
@@ -222,7 +217,7 @@ $__assign = function($name, $values) {
                 $node
             );*/
 
-            var_dump('Unhandled '.$node->type."($method)");
+            var_dump('Unhandled '.$node->type.'('.$method.')');
             return $this->compileChildren($node->children);
         }
 
@@ -291,7 +286,8 @@ $__assign = function($name, $values) {
 
         if (!$fullPath)
             $this->throwException(
-                "File $path wasnt found in ".implode(', ', $this->_options['paths'])
+                "File $path wasnt found in ".implode(', ', $this->_options['paths']),
+                $node
             );
 
         $importedNode = $this->_parser->parse(file_get_contents($fullPath));
@@ -369,13 +365,148 @@ $__assign = function($name, $values) {
         }
     }
 
+    protected function handleMixins(Node $node)
+    {
+
+        $mixins = $node->findArray('mixin');
+        foreach ($mixins as $mixinNode)
+            $this->handleMixin($mixinNode);
+
+        return $this;
+    }
+
+    protected function handleMixin(Node $node)
+    {
+
+        //Find the absolute document root
+        $root = $node;
+        while($root->parent)
+            $root = $root->parent;
+
+        //Detach
+        $node->parent->remove($node);
+
+        if (isset($this->_mixins[$node->name]) && !$this->_options['replaceMixins'])
+            $this->throwException(
+                "Duplicate mixin name $node->name",
+                $node
+            );
+
+        $this->_mixins[$node->name] = ['node' => $node, 'phtml' => $this->compileChildren($node->children)];
+
+        return $this;
+    }
+
+    protected function compileMixins()
+    {
+
+        if (count($this->_mixins) < 1)
+            return '';
+
+        $phtml = '';
+        $phtml .= $this->createCode('$__args = isset($__args) ? $__args : [];').$this->newLine();
+        $phtml .= $this->createCode('$__mixins = [];').$this->newLine();
+
+        $assign = $this->_hasAssignments ? ', $__assign' : '';
+        foreach ($this->_mixins as $name => $mixin) {
+
+            //Put the arguments together
+            $args = [];
+            foreach ($mixin['node']->attributes as $attr) {
+
+                $args[$attr->name] = $attr->value;
+            }
+
+            $phtml .= $this->createCode(
+                '$__mixins[\''.$name.'\'] = function(array $__callArgs) use($__args, $__mixins'.$assign.') {
+                    static $__mixinArgs = '.var_export($args, true).';
+                    extract($__args);
+                    extract($__mixinArgs);
+                    extract($__callArgs);
+                '
+            ).$this->newLine();
+
+            $phtml .= $mixin['phtml'].$this->newLine();
+            $phtml .= $this->createCode('};');
+        }
+
+        return $phtml;
+    }
+
+    protected function compileMixinCall(Node $node)
+    {
+
+        $name = $node->name;
+
+        if (!isset($this->_mixins[$name]))
+            $this->throwException(
+                "Mixin $name is not defined",
+                $node
+            );
+
+        $mixin = $this->_mixins[$name];
+        $assign = $this->_hasAssignments ? ', $__assign' : '';
+        $phtml = $this->createCode(
+            '$__block = function(array $__callArgs) use($__args, $__mixins'.$assign.') {
+                extract($__args);
+                extract($__callArgs);
+            '
+        ).$this->newLine();
+        $phtml .= $this->compileChildren($node->children).$this->newLine();
+        $phtml .= $this->indent().$this->createCode('};').$this->newLine();
+
+        $args = [];
+        foreach ($node->attributes as $attr) {
+
+            $value = $attr->value;
+
+            if ($this->isScalar($value)) {
+
+                $value = trim($this->interpolate($value), '\'"');
+            }
+
+            if ($attr->name) {
+
+                if (isset($args[$attr->name])) {
+
+                    if (is_array($args[$attr->name]))
+                        $args[$attr->name][] = $value;
+                    else
+                        $args[$attr->name] = [$args[$attr->name], $value];
+                } else {
+
+                    $args[$attr->name] = $value;
+                }
+                continue;
+            }
+
+            foreach ($mixin['node']->attributes as $mixinAttr) {
+
+                if (isset($args[$mixinAttr->name]))
+                    continue;
+
+                $args[$mixinAttr->name] = $value;
+            }
+        }
+
+        $phtml .= $this->indent().$this->createCode(
+            '$__mixinCallArgs = '.var_export($args, true).';
+            $__mixinCallArgs[\'__block\'] = $__block;
+            call_user_func($__mixins[\''.$name.'\'], $__mixinCallArgs);
+            unset($__mixinCallArgs);
+            unset($__block);'
+        ).$this->newLine();
+
+        return $phtml;
+    }
+
     protected function compileBlock(Node $node)
     {
 
         $name = $node->name;
 
         if (!$name)
-            return $this->createShortCode('!empty($__block) ? $__block : \'\'');
+            return $this->createShortCode('isset($__block) && $__block instanceof \Closure ? $__block(array_replace($__args, $__callArgs)) : \'\'');
 
         //At this point the code knows this block only, since handleBlock took care of the blocks previously
         return $this->compileChildren($node->children);
@@ -386,6 +517,9 @@ $__assign = function($name, $values) {
 
         $type = $node->conditionType;
         $subject = $node->subject;
+
+        if ($subject === 'block')
+            $subject = '$__block';
 
         if ($this->isVariable($subject))
             $subject = "isset($subject) ? $subject : false";
@@ -403,6 +537,111 @@ $__assign = function($name, $values) {
         return $phtml;
     }
 
+    protected function compileCase(Node $node)
+    {
+
+        $subject = $node->subject;
+
+        if ($this->isVariable($subject))
+            $subject = "isset({$subject}) ? {$subject} : null";
+
+        $phtml = $this->createCode("switch ({$subject}) { case ':JADE_BREAK:': break;").$this->newLine();
+        $phtml .= $this->compileChildren($node->children).$this->newLine();
+        $phtml .= $this->indent().$this->createCode('}');
+
+        return $phtml;
+    }
+
+    protected function compileWhen(Node $node)
+    {
+
+        $subject = $node->subject;
+
+        if ($subject && $this->isVariable($subject))
+            $subject = "isset({$subject}) ? {$subject} : null";
+
+        $phtml = $this->createCode($node->default ? 'default:' : "case $subject:").$this->newLine();
+        $phtml .= $this->compileChildren($node->children).$this->newLine();
+
+        if (count($node->children) > 0)
+            $phtml .= $this->indent().$this->createCode('break;');
+
+        return $phtml;
+    }
+
+    protected function compileEach(Node $node)
+    {
+
+        static $id = 0;
+
+        $subject = $node->subject;
+
+        if ($this->isVariable($subject))
+            $subject = "isset({$subject}) ? {$subject} : null";
+
+        $as = "\${$node->itemName}";
+        if ($node->keyName)
+            $as .= " => \${$node->keyName}";
+
+        $var = '$__iterator'.($id++);
+        $phtml = $this->createCode("$var = {$subject};").$this->newLine();
+        $phtml .= $this->indent().$this->createCode("foreach ($var as $as) {").$this->newLine();
+        $phtml .= $this->compileChildren($node->children).$this->newLine();
+        $phtml .= $this->indent().$this->createCode('}').$this->newLine();
+        $phtml .= $this->indent().$this->createCode("unset($var);");
+
+        return $phtml;
+    }
+
+    protected function compileWhile(Node $node)
+    {
+
+        $subject = $node->subject;
+
+        if ($this->isVariable($subject))
+            $subject = "isset({$subject}) ? {$subject} : null";
+
+        $phtml = $this->createCode("while ({$subject}) {").$this->newLine();
+        $phtml .= $this->compileChildren($node->children).$this->newLine();
+        $phtml .= $this->indent().$this->createCode('}').$this->newLine();
+
+        return $phtml;
+    }
+
+    protected function compileDo(Node $node)
+    {
+
+        $subject = $node->subject;
+
+        if (!empty($subject))
+            $this->throwException(
+                "Do can't have a subject",
+                $node
+            );
+
+        $phtml = $this->createCode("do {").$this->newLine();
+        $phtml .= $this->compileChildren($node->children).$this->newLine();
+        $phtml .= $this->indent().$this->createCode('}').$this->newLine();
+
+        return $phtml;
+    }
+
+    protected function compileFilter(Node $node)
+    {
+
+        $name = $node->name;
+
+        if (!isset($this->_options['filters'][$name]))
+            $this->throwException(
+                "Filter $name doesnt exist",
+                $node
+            );
+
+        $result = call_user_func($this->_options['filters'][$name], $node, $this);
+
+        return $result instanceof Node ? $this->compileNode($node) : (string)$node;
+    }
+
     protected function compileChildren(array $nodes, $allowInline = false)
     {
 
@@ -418,8 +657,13 @@ $__assign = function($name, $values) {
 
         foreach ($nodes as $node) {
 
-            if ($node->type === 'text' && !$this->_options['pretty'])
+            $this->_options['pretty'] = false;
+            if ($node->type === 'text' && !$this->_options['pretty']) {
+
+                var_dump('textnode');
                 $phtml .= ' ';
+            }
+            $this->_options['pretty'] = true;
 
             $phtml .= $this->newLine().$this->indent().$this->compileNode($node);
         }
@@ -430,8 +674,12 @@ $__assign = function($name, $values) {
 
     protected function compileElement(Node $node)
     {
+
+        static $id = 0;
+
         $phtml = '';
         $assignedAttributes = [];
+        $assignmentVar = null;
 
         if (!$node->tag)
             $node->tag = $this->_options['defaultTag'];
@@ -439,18 +687,19 @@ $__assign = function($name, $values) {
         if (count($node->assignments) > 0) {
 
             $this->_hasAssignments = true;
-            $phtml .= $this->createCode('$__assignments = [];');
+            $assignmentVar = '$__assign'.($id++);
+            $phtml .= $this->createCode("$assignmentVar = [];");
             foreach ($node->assignments as $assignment) {
 
                 $phtml .= $this->newLine()
                         .$this->indent()
-                        .$this->createCode('
-$__assignments[\''.$assignment->name.'\'] = $__assign('
-    .'\''.$assignment->name.'\','
-    .'['.implode(',', array_map(function($attr) {
+                        .$this->createCode(
+                            $assignmentVar.'[\''.$assignment->name.'\'] = $__assign('
+                                .'\''.$assignment->name.'\','
+                                .'['.implode(',', array_map(function($attr) {
 
-    return "isset({$attr->value}) ? {$attr->value} : null";
-}, $assignment->attributes)).']);'
+                                return "isset({$attr->value}) ? {$attr->value} : null";
+                            }, $assignment->attributes)).']);'
                         )
                         .$this->newLine();
 
@@ -514,7 +763,7 @@ $__assignments[\''.$assignment->name.'\'] = $__assign('
                 if (in_array($name, $assignedAttributes)) {
 
                     $values[] = $this->createShortCode(
-                        'isset($__assignments[\''.$name.'\']) ? $__assignments[\''.$name.'\'] : \'\''
+                        'isset('.$assignmentVar.'[\''.$name.'\']) ? '.$assignmentVar.'[\''.$name.'\'] : \'\''
                     );
                 }
 
@@ -566,7 +815,7 @@ $__assignments[\''.$assignment->name.'\'] = $__assign('
 
         if (count($node->assignments) > 0) {
 
-            $phtml .= $this->newLine().$this->indent().$this->createCode('unset($__assignments);');
+            $phtml .= $this->newLine().$this->indent().$this->createCode("unset($assignmentVar);");
         }
 
         return $phtml;
@@ -591,6 +840,7 @@ $__assignments[\''.$assignment->name.'\'] = $__assign('
         }
 
         $method = $node->return ? 'createShortCode' : 'createCode';
+
         return $this->$method(sprintf($code, trim($this->compileChildren($node->children, true))));
     }
 
@@ -599,6 +849,47 @@ $__assignments[\''.$assignment->name.'\'] = $__assign('
 
         $content = $this->compileChildren($node->children, true);
         return $node->rendered ? $this->createMarkupComment($content) : $this->createPhpComment($content);
+    }
+
+    protected function compileAssignHelper()
+    {
+
+        $phtml = '';
+        if ($this->_hasAssignments) {
+
+            $phtml = $this->createCode(
+                '$__assign = function($name, $values) {
+
+                    $values = [];
+
+                    foreach ($values as $value) {
+
+                        if (empty($value))
+                            continue;
+
+                        if ($name === \'class\') {
+                            $values[] = (is_array($value) ? implode(\' \', $value) : $value);
+                        } else {
+                            $values[] = $value;
+                        }
+                    }
+
+                    $value = \'\';
+
+                    if ($name === \'class\') {
+                        $value = \' \'.implode(\' \', $values);
+                    } else if (is_array($string) || is_object($string)) {
+                        $value = json_encode($values);
+                    } else {
+                        $value = implode(\'\', $values);
+                    }
+
+                    return $value;
+                }'
+            ).$this->newLine();
+        }
+
+        return $phtml;
     }
 
     protected function throwException($message, Node $relatedNode = null)

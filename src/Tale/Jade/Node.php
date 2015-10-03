@@ -104,6 +104,39 @@ class Node
         }
     }
 
+    public function prev()
+    {
+
+        $index = $this->parent->indexOf($this) - 1;
+
+        return isset($this->parent[$index]) ? $this->parent[$index] : null;
+    }
+
+    public function next()
+    {
+
+        $index = $this->parent->indexOf($this) + 1;
+
+        return isset($this->parent->children[$index]) ? $this->parent->children[$index] : null;
+    }
+
+    public function text($indentStyle = '  ', $newLine = "\n", $level = 0)
+    {
+
+        $indent = str_repeat($indentStyle, $level);
+        $texts = [];
+        foreach ($this->children as $child) {
+
+            if ($child->type === 'text') {
+
+                $texts[] = $indent.$child->value;
+                $texts[] = $child->text($indentStyle, $newLine, $level + 1);
+            }
+        }
+
+        return implode($newLine, $texts);
+    }
+
     public function findArray($type)
     {
 

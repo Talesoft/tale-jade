@@ -298,6 +298,7 @@ class Parser
     {
 
         $node = $this->createNode('case', $token);
+        $node->subject = $token['subject'];
         $this->_current = $node;
     }
 
@@ -307,6 +308,7 @@ class Parser
         $this->validateSingle();
 
         $node = $this->createNode('conditional', $token);
+        $node->subject = $token['subject'];
         $node->conditionType = $token['conditionType'];
 
         $this->_current = $node;
@@ -338,6 +340,7 @@ class Parser
         $this->validateSingle($token);
 
         $node = $this->createNode('each', $token);
+        $node->subject = $token['subject'];
         $node->itemName = $token['itemName'];
         $node->keyName = isset($token['keyName']) ? $token['keyName'] : null;
 
@@ -518,13 +521,13 @@ class Parser
     protected function handleSub(array $token)
     {
 
-        if (!$this->_current || $this->_current->type !== 'element')
+        if (!$this->_current)
             $this->throwException(
-                "Sub accesssor can only be used on elements",
+                "Sub accesssor needs an element to work on",
                 $token
             );
 
-        if (!$token['withSpace'] && $this->expectNext(['tag'])) {
+        if ($this->_current->type === 'element' && !$token['withSpace'] && $this->expectNext(['tag'])) {
 
             $token = $this->getToken();
             $this->_current->tag .= ':'.$token['name'];
@@ -545,11 +548,7 @@ class Parser
         $node->value = $token['value'];
         if ($this->_current) {
 
-            if (in_array($this->_current->type, ['conditional', 'when', 'case', 'while', 'each']))
-                $this->_current->subject = $token['value'];
-            else {
-                $this->_current->append($node);
-            }
+            $this->_current->append($node);
         } else
             $this->_current = $node;
     }
@@ -560,6 +559,8 @@ class Parser
         $this->validateSingle($token);
 
         $node = $this->createNode('when', $token);
+        $node->subject = $token['subject'];
+        $node->default = $token['default'];
         $this->_current = $node;
     }
 
@@ -569,6 +570,7 @@ class Parser
         $this->validateSingle();
 
         $node = $this->createNode('while', $token);
+        $node->subject = $token['subject'];
         $this->_current = $node;
     }
 

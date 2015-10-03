@@ -268,6 +268,70 @@ class Lexer
         });
     }
 
+    protected function readBracketContents(array $breakChars = null)
+    {
+
+        $breakChars = $breakChars ? $breakChars : [];
+        $value = '';
+        $prev = null;
+        $char = null;
+        $level = 0;
+        $inString = false;
+        $stringType = null;
+        $break = false;
+        while (!$this->isAtEnd() && !$break) {
+
+            if ($this->isAtEnd())
+                break;
+
+            $prev = $char;
+            $char = $this->peek();
+
+            switch ($char) {
+                case '"':
+                case '\'':
+
+                    if ($inString && $stringType === $char && $prev !== '\\')
+                        $inString = false;
+                    else if (!$inString) {
+
+                        $inString = true;
+                        $stringType = $char;
+                    }
+                    break;
+                case '(':
+
+                    if (!$inString)
+                        $level++;
+                    break;
+                case ')':
+
+                    if ($inString)
+                        break;
+
+                    if ($level === 0) {
+
+                        $break = true;
+                        break;
+                    }
+
+                    $level--;
+                    break;
+            }
+
+            if (in_array($char, $breakChars, true) && !$inString)
+                $break = true;
+
+            if (!$break) {
+
+                $value .= $char;
+                $this->consume();
+            }
+        }
+
+        return trim($value);
+    }
+
     protected function match($pattern, $modifiers = '')
     {
 
@@ -510,7 +574,7 @@ class Lexer
     protected function scanFilter()
     {
 
-        foreach ($this->scanToken('filter', ':(?<name>[a-zA-Z][a-zA-Z0-9\-_]*)?') as $token) {
+        foreach ($this->scanToken('filter', ':(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*)?') as $token) {
 
             yield $token;
 
@@ -524,7 +588,7 @@ class Lexer
 
         return $this->scanToken(
             'import',
-            '(?<importType>extends|include)(?::(?<filter>[a-zA-Z][a-zA-Z0-9\-_]*))?[\t ]+(?<path>[a-zA-Z0-9\-_\\/\. ]+)'
+            '(?<importType>extends|include)(?::(?<filter>[a-zA-Z_][a-zA-Z0-9\-_]*))?[\t ]+(?<path>[a-zA-Z0-9\-_\\/\. ]+)'
         );
     }
 
@@ -533,7 +597,7 @@ class Lexer
 
         foreach ($this->scanToken(
             'block',
-            '(?J:block(?:[\t ]+(?<insertType>append|prepend|replace))?(?:[\t ]+(?<name>[a-zA-Z][a-zA-Z0-9\-_]*))?|(?<insertType>append|prepend|replace)(?:[\t ]+(?<name>[a-zA-ZA-Z][a-zA-Z0-9\-_]*)))'
+            '(?J:block(?:[\t ]+(?<insertType>append|prepend|replace))?(?:[\t ]+(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*))?|(?<insertType>append|prepend|replace)(?:[\t ]+(?<name>[a-zA-ZA-Z][a-zA-Z0-9\-_]*)))'
         ) as $token) {
 
             yield $token;
@@ -547,96 +611,100 @@ class Lexer
     protected function scanCase()
     {
 
-        foreach ($this->scanToken(
-            'case',
-            "case[\t ]+"
-        ) as $token) {
-
-            yield $token;
-
-            foreach ($this->scanText() as $subToken)
-                yield $subToken;
-        }
+        return $this->scanControlStatement('case', ['case']);
     }
 
     protected function scanWhen()
     {
 
-        foreach ($this->scanToken(
-            'when',
-            "(when[\t ]+|default[\t ]*\n)"
-        ) as $token) {
+        foreach ($this->scanControlStatement('when', ['when', 'default'], 'name') as $token) {
 
-            $type = $this->getMatch(1);
-
-            if ($type === 'default')
-                $token->setDefault();
+            if ($token['type'] === 'when')
+                $token['default'] = ($token['name'] === 'default');
 
             yield $token;
-
-            if ($this->getMatch(1) === 'when')
-                foreach ($this->scanText() as $subToken)
-                    yield $subToken;
         }
     }
 
     protected function scanConditional()
     {
 
-        foreach ($this->scanToken(
-            'conditional',
-            "(?<conditionType>(?:if|unless)[\t ]+|else[\t ]*\n|else([\t ]*if[\t ]+)?)"
-        ) as $token) {
+        return $this->scanControlStatement('conditional', [
+            'if', 'unless', 'elseif', 'else if', 'else'
+        ], 'conditionType');
+    }
 
-            $token['conditionType'] = trim($token['conditionType']);
+    protected function scanControlStatement($type, array $names, $nameAttribute = null)
+    {
+
+        foreach ($names as $name) {
+
+            if (!$this->match("{$name}[\t \n]"))
+                continue;
+
+            $this->consumeMatch();
+            $this->readSpaces();
+
+            $token = $this->createToken($type);
+            if ($nameAttribute)
+                $token[$nameAttribute] = str_replace(' ', '', $name);
+            $token['subject'] = null;
+
+            //each is a special little unicorn
+            if ($name === 'each') {
+
+                if (!$this->match('\$?(?<itemName>[a-zA-Z_][a-zA-Z0-9_]*)(?:[\t ]*,[\t ]*\$?(?<keyName>[a-zA-Z_][a-zA-Z0-9_]*))?[\t ]+in[\t ]+'))
+                    $this->throwException(
+                        "The syntax for each is `each [$]itemName[, [$]keyName] in [subject]`",
+                        $token
+                    );
+
+                $this->consumeMatch();
+                $token['itemName'] = $this->getMatch('itemName');
+                $token['keyName'] = $this->getMatch('keyName');
+                $this->readSpaces();
+            }
+
+            if ($this->peek() === '(') {
+
+                $this->consume();
+                $token['subject'] = $this->readBracketContents();
+
+                if ($this->peek() !== ')')
+                    $this->throwException(
+                        "Unclosed control statement subject"
+                    );
+
+                $this->consume();
+            } elseif ($this->match("([^:\n]+)")){
+
+                $this->consumeMatch();
+                $token['subject'] = trim($this->getMatch(1));
+            }
+
             yield $token;
 
-            if ($token['conditionType'] !== 'else')
-                foreach ($this->scanText() as $subToken)
-                    yield $subToken;
+            foreach ($this->scanSub() as $subToken)
+                yield $subToken;
         }
     }
 
     protected function scanEach()
     {
 
-        foreach ($this->scanToken(
-            'each',
-            "each[\t ]+[\$]?(?<itemName>[a-zA-Z][a-zA-Z0-9\-_]*)(?:[\t ]*,[\t ]*[\$]?(?<keyName>[a-zA-Z][a-zA-Z0-9\-_]*))?[\t ]+in[\t ]+"
-        ) as $token) {
-
-            yield $token;
-
-            foreach ($this->scanText() as $subToken)
-                yield $subToken;
-        }
+        return $this->scanControlStatement('each', ['each']);
     }
 
     protected function scanWhile()
     {
 
-        foreach ($this->scanToken(
-            'while',
-            "while[\t ]*"
-        ) as $token) {
-
-            yield $token;
-
-            foreach ($this->scanText() as $subToken)
-                yield $subToken;
-        }
+        return $this->scanControlStatement('while', ['while']);
     }
 
     protected function scanDo()
     {
 
-        foreach ($this->scanToken(
-            'do',
-            "do[\t ]*\n"
-        ) as $token) {
-
-            yield $token;
-        }
+        return $this->scanControlStatement('do', ['do']);
     }
 
     protected function scanExpression()
@@ -700,7 +768,7 @@ class Lexer
     protected function scanTag()
     {
 
-        foreach ($this->scanToken('tag', '(?<name>[a-zA-Z][a-zA-Z0-9\-_]*)', 'i') as $token) {
+        foreach ($this->scanToken('tag', '(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*)', 'i') as $token) {
 
             yield $token;
 
@@ -716,7 +784,7 @@ class Lexer
     protected function scanClasses()
     {
 
-        foreach ($this->scanToken('class', '(\.(?<name>[a-zA-Z][a-zA-Z0-9\-_]+))', 'i') as $token) {
+        foreach ($this->scanToken('class', '(\.(?<name>[a-zA-Z_][a-zA-Z0-9\-_]+))', 'i') as $token) {
 
             yield $token;
 
@@ -732,7 +800,7 @@ class Lexer
     protected function scanId()
     {
 
-        foreach ($this->scanToken('id', '(#(?<name>[a-zA-Z][a-zA-Z0-9\-_]+))', 'i') as $token) {
+        foreach ($this->scanToken('id', '(#(?<name>[a-zA-Z_][a-zA-Z0-9\-_]+))', 'i') as $token) {
 
             yield $token;
 
@@ -748,7 +816,7 @@ class Lexer
     protected function scanMixin()
     {
 
-        foreach ($this->scanToken('mixin', "mixin[\t ]+(?<name>[a-zA-Z][a-zA-Z0-9\-_]*)") as $token) {
+        foreach ($this->scanToken('mixin', "mixin[\t ]+(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*)") as $token) {
 
             yield $token;
 
@@ -764,7 +832,7 @@ class Lexer
     protected function scanMixinCall()
     {
 
-        foreach ($this->scanToken('mixinCall', '\+(?<name>[a-zA-Z][a-zA-Z0-9\-_]*)') as $token) {
+        foreach ($this->scanToken('mixinCall', '\+(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*)') as $token) {
 
             yield $token;
 
@@ -780,7 +848,7 @@ class Lexer
     protected function scanAssignment()
     {
 
-        foreach ($this->scanToken('assignment', '&(?<name>[a-zA-Z][a-zA-Z0-9\-_]*)') as $token) {
+        foreach ($this->scanToken('assignment', '&(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*)') as $token) {
 
             yield $token;
         }
@@ -806,7 +874,7 @@ class Lexer
                 $token['value'] = null;
                 $token['escaped'] = true;
 
-                if ($this->match('([a-zA-Z][a-zA-Z0-9\-_]*)', 'i')) {
+                if ($this->match('([a-zA-Z_][a-zA-Z0-9\-_]*)', 'i')) {
 
                     $this->consumeMatch();
                     $token['name'] = $this->getMatch(1);
@@ -827,66 +895,7 @@ class Lexer
                         $this->read('ctype_space');
                     }
 
-                    $value = '';
-                    $prev = null;
-                    $char = null;
-                    $level = 0;
-                    $inString = false;
-                    $stringType = null;
-                    $break = false;
-                    while (!$this->isAtEnd() && !$break) {
-
-                        if ($this->isAtEnd())
-                            break;
-
-                        $prev = $char;
-                        $char = $this->peek();
-
-                        switch ($char) {
-                            case '"':
-                            case '\'':
-
-                                if ($inString && $stringType === $char && $prev !== '\\')
-                                    $inString = false;
-                                else if (!$inString) {
-
-                                    $inString = true;
-                                    $stringType = $char;
-                                }
-                                break;
-                            case '(':
-
-                                if (!$inString)
-                                    $level++;
-                                break;
-                            case ')':
-
-                                if ($inString)
-                                    break;
-
-                                if ($level === 0) {
-
-                                    $break = true;
-                                    break;
-                                }
-
-                                $level--;
-                                break;
-                            case ',':
-
-                                if (!$inString)
-                                    $break = true;
-                                break;
-                        }
-
-                        if (!$break) {
-
-                            $value .= $char;
-                            $this->consume();
-                        }
-                    }
-
-                    $token['value'] = trim($value);
+                    $token['value'] = $this->readBracketContents([',']);
                 }
 
                 if ($this->peek() === ',') {

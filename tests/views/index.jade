@@ -20,7 +20,7 @@ mixin some-mixin(key, value)
     p.first-class(class='second-class', class='third-class', class=$varClass)&class($caller->classes)= $key
     p&attributes($caller->attributes)= $value
 
-    if $caller->block
+    if block
         block
 
 block content
@@ -28,6 +28,16 @@ block content
     h1 Some h1 Element
     p= $somePhpContent
 
+
+
+    table(attr=(some() && (really(")))))\"(()()").'()))()\'((()))') || isset($complex) ?: $attribute: $content'')))))))) <- This should be rendered as text
+
+
+    if (some() && (really(")))))\"(()()").'()))()\'((()))') || isset($complex) ?: $attribute: $content''))))))))
+
+        p Some Action
+
+    case (some() && (really(")))))\"(()()").'()))()\'((()))') || isset($complex) ?: $attribute: $content''): when ("some:\" : content"): some:element Some Text Content
 
     // Inline Rendered Comment
 
@@ -103,9 +113,27 @@ block content
                 a(href='#') Tuesday
             when 1
                 a() Demacia
+
+            when 5: element with block explansion
+            when 6: another element with block expansion
+            when 10
+            when 11
+                | There should be no brake at 10
             default
 
                 a(href='#') By the force!
+
+
+
+    h1 Lets try another thing jade cant
+
+    if $someVar: ns:element: sub-ns:sub-element
+
+        - $i = 15
+        while $i-- > 0: p= $i
+
+        each $someItem in $someValues: li: a(href=$someItem)= $someItem
+    else: else-ns:else-element
 
 
     each $someItem in $someItems
@@ -136,6 +164,24 @@ block content
 
         :markdown
             **Some Markdown Content**
+
+            ### This is pretty cool, but....
+            ## what happens when i...
+            # indent?
+
+                it would be rather awesome
+                    if the indentation would stay
+                even
+            on
+                switching
+                    levels
+                    levels
+                    levels
+                levels
+                    levels
+                levels
+                levels
+            levels
 
     if $someIf
         some i get out of stuffs
