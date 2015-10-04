@@ -1,0 +1,23 @@
+
+
+h1 These wont get compiled, but you see how they work
+
+
+//layout.jade
+doctype 5
+html
+    head
+
+        include styles
+    body
+        block content
+
+        include scripts
+
+
+
+//index.jade
+extends layout
+
+append content
+    h1 Welcome to Jade!

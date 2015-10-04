@@ -9,15 +9,16 @@
 ?>
 <?php $__args = isset($__args) ? $__args : [];?>
 <?php $__mixins = [];?>
-<?php $__mixins['example-button'] = function(array $__callArgs) use($__args, $__mixins) {
-    static $__mixinArgs = array (
+<?php $__mixins['example-button'] = function(array $__arguments) use($__args, $__mixins) {
+    static $__defaults = array (
     'label' => NULL,
     'example' => NULL,
     'withErrorHandler' => NULL,
     );
-    extract($__args);
-    extract($__mixinArgs);
-    extract($__callArgs);
+    $__arguments = array_replace($__defaults, $__arguments);
+    $__args = array_replace($__args, $__arguments);
+    extract($__args); 
+    
     
 ?>
 
@@ -36,35 +37,39 @@
             </title>
             
                 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css"></link>
-                <style>
-                    body {
-                        font-family: 'Segoe UI', 'San Francisco', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-                        font-size: 16px;
-                        padding-bottom: 100px;
-                    }
-                    pre {
-                        display: block;
-                        border-radius: 0;
-                        background: #fff;
-                        border: none;
-                        width: 100%;
-                        height: 100%;
-                        overflow: auto;
-                    }
-                    #phpEditor, #jadeEditor, .CodeMirror {
-                        width: 100%;
-                        height: 100%;
-                    }
-                    .editor {
-                        width: 100%;
-                        height: 600px;
-                        border: 3px solid lawngreen;
-                        transition: border-color .2s ease-out;
-                        border-radius: 2px;
-                    }
-                    .compiling {border-color: darkgreen;
-                    }
-                </style>
+                <style>body {
+    font-family: 'Segoe UI', 'San Francisco', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    padding-bottom: 100px;
+}
+
+pre {
+    display: block;
+    border-radius: 0;
+    background: #fff;
+    border: none;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+
+#phpEditor, #jadeEditor, .CodeMirror {
+    width: 100%;
+    height: 100%;
+}
+
+.editor {
+    width: 100%;
+    height: 600px;
+    border: 3px solid lawngreen;
+    transition: border-color .2s ease-out;
+    border-radius: 2px;
+}
+
+.compiling {
+    border-color: darkgreen;
+}
+</style>
         </head>
         <body>
             <div class="container">
@@ -204,6 +209,55 @@
                         unset($__block);
                     ?>
 
+                    <?php $__mixinCallArgs = ['label' => 'Imports', 'example' => 'imports'];
+                        $__mixinCallArgs['__block'] = isset($__block) ? $__block : null;
+                        call_user_func($__mixins['example-button'], $__mixinCallArgs);
+                        unset($__mixinCallArgs);
+                        unset($__block);
+                    ?>
+
+                    <?php $__mixinCallArgs = ['label' => 'Filters', 'example' => 'filters'];
+                        $__mixinCallArgs['__block'] = isset($__block) ? $__block : null;
+                        call_user_func($__mixins['example-button'], $__mixinCallArgs);
+                        unset($__mixinCallArgs);
+                        unset($__block);
+                    ?>
+
+                    <?php $__mixinCallArgs = ['label' => 'Attribute Stacking', 'example' => 'attribute-stacking'];
+                        $__mixinCallArgs['__block'] = isset($__block) ? $__block : null;
+                        call_user_func($__mixins['example-button'], $__mixinCallArgs);
+                        unset($__mixinCallArgs);
+                        unset($__block);
+                    ?>
+
+                    <?php $__mixinCallArgs = ['label' => 'Expressions', 'example' => 'expressions'];
+                        $__mixinCallArgs['__block'] = isset($__block) ? $__block : null;
+                        call_user_func($__mixins['example-button'], $__mixinCallArgs);
+                        unset($__mixinCallArgs);
+                        unset($__block);
+                    ?>
+
+                    <?php $__mixinCallArgs = ['label' => 'Text', 'example' => 'text'];
+                        $__mixinCallArgs['__block'] = isset($__block) ? $__block : null;
+                        call_user_func($__mixins['example-button'], $__mixinCallArgs);
+                        unset($__mixinCallArgs);
+                        unset($__block);
+                    ?>
+
+                    <?php $__mixinCallArgs = ['label' => 'Include Filters', 'example' => 'include-filters'];
+                        $__mixinCallArgs['__block'] = isset($__block) ? $__block : null;
+                        call_user_func($__mixins['example-button'], $__mixinCallArgs);
+                        unset($__mixinCallArgs);
+                        unset($__block);
+                    ?>
+
+                    <?php $__mixinCallArgs = ['label' => 'Variadics', 'example' => 'variadics'];
+                        $__mixinCallArgs['__block'] = isset($__block) ? $__block : null;
+                        call_user_func($__mixins['example-button'], $__mixinCallArgs);
+                        unset($__mixinCallArgs);
+                        unset($__block);
+                    ?>
+
                 </div>
             </div>
             <?php switch (isset($action) ? $action : null) { case ':JADE_BREAK:': break;?>
@@ -240,45 +294,57 @@
                 <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
                 <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.min.js"></script>
                 <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/theme-dreamweaver.js"></script>
-                <script>
-                    $(function() {
-                        ace.config.set("packaged", true);
-                        ace.config.set("basePath", 'https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0');
-                        var jadeEditor = ace.edit('jadeEditor');
-                        var phpEditor = ace.edit('phpEditor');
-                        jadeEditor.setTheme('ace/theme/xcode');
-                        jadeEditor.getSession().setMode('ace/mode/jade');
-                        jadeEditor.getSession().setUseWorker(false)
-                        jadeEditor.getSession().setUseSoftTabs(true);
-                        jadeEditor.setValue(<?=isset($exampleJade) ? $exampleJade : ''?>);
-                        jadeEditor.navigateFileStart();
-                        phpEditor.setTheme('ace/theme/xcode');
-                        phpEditor.getSession().setMode('ace/mode/php');
-                        phpEditor.getSession().setUseWorker(false)
-                        phpEditor.getSession().setUseSoftTabs(true);
-                        phpEditor.setReadOnly(true);
-                        function compile()
-                        {
-                            document.getElementById('phpEditor').classList.add('compiling');
-                            var eh = <?=isset($handleErrors) ? $handleErrors : ''?> ? '&withErrorHandler' : '';
-                            var m = <?=isset($minify) ? $minify : ''?> ? '&minify' : '';
-                            $.post('<?=isset($url) ? $url : ''?>?' + eh + m, {jade: jadeEditor.getValue()}, function(result) {
-                                document.getElementById('phpEditor').classList.remove('compiling');
-                                phpEditor.setValue(JSON.parse(result));
-                                phpEditor.navigateFileStart();
-                            });
-                        }
-                        var iv;
-                        function changed()
-                        {
-                            if (iv) {window.clearTimeout(iv);
-                            }
-                            document.getElementById('phpEditor').classList.add('compiling');
-                            iv = window.setTimeout(compile, 500);
-                        }
-                        jadeEditor.getSession().on('change', changed);
-                        compile();
-                    });
-                </script>
+                <script>$(function() {
+
+    ace.config.set("packaged", true);
+    ace.config.set("basePath", 'https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0');
+
+    var jadeEditor = ace.edit('jadeEditor');
+    var phpEditor = ace.edit('phpEditor');
+
+    jadeEditor.setTheme('ace/theme/xcode');
+    jadeEditor.getSession().setMode('ace/mode/jade');
+    jadeEditor.getSession().setUseWorker(false)
+    jadeEditor.getSession().setUseSoftTabs(true);
+    jadeEditor.setValue(<?=isset($exampleJade) ? $exampleJade : ''?>);
+    jadeEditor.navigateFileStart();
+    phpEditor.setTheme('ace/theme/xcode');
+    phpEditor.getSession().setMode('ace/mode/php');
+    phpEditor.getSession().setUseWorker(false)
+    phpEditor.getSession().setUseSoftTabs(true);
+    phpEditor.setReadOnly(true);
+
+    function compile()
+    {
+
+        document.getElementById('phpEditor').classList.add('compiling');
+
+        var eh = <?=isset($handleErrors) ? $handleErrors : ''?> ? '&withErrorHandler' : '';
+        var m = <?=isset($minify) ? $minify : ''?> ? '&minify' : '';
+        $.post('<?=isset($url) ? $url : ''?>?' + eh + m, {jade: jadeEditor.getValue()}, function(result) {
+
+            document.getElementById('phpEditor').classList.remove('compiling');
+            phpEditor.setValue(JSON.parse(result));
+            phpEditor.navigateFileStart();
+        });
+    }
+
+    var iv;
+    function changed()
+    {
+
+        if (iv) {
+
+            window.clearTimeout(iv);
+        }
+
+        document.getElementById('phpEditor').classList.add('compiling');
+        iv = window.setTimeout(compile, 500);
+    }
+
+    jadeEditor.getSession().on('change', changed);
+    compile();
+});
+</script>
         </body>
     </html><?php restore_error_handler(); unset($__errorHandler);?>

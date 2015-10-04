@@ -36,7 +36,6 @@ class Compiler
             ],
             'doctypes' => [
                 '5'             => '<!DOCTYPE html>',
-                'html'          => '<!DOCTYPE html>',
                 'xml'           => '<?xml version="1.0" encoding="utf-8"?>',
                 'default'       => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
                 'transitional'  => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
@@ -47,11 +46,19 @@ class Compiler
                 'mobile'        => '<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.2//EN" "http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd">'
             ],
             'filters' => [
+                'plain' => 'Tale\\Jade\\Filter::filterPlain',
                 'css' => 'Tale\\Jade\\Filter::filterStyle',
                 'js' => 'Tale\\Jade\\Filter::filterScript',
                 'php' => 'Tale\\Jade\\Filter::filterCode',
                 'markdown' => 'Tale\\Jade\\Filter::filterMarkdown'
                 //What else?
+            ],
+            'filterMap' => [
+                'css' => 'css',
+                'js' => 'js',
+                'php' => 'php',
+                'md' => 'markdown',
+                'jade' => 'plain'
             ],
             'handleErrors' => true,
             'compileUncalledMixins' => false,
@@ -190,16 +197,26 @@ class Compiler
     protected function interpolate($string, $attribute = false)
     {
 
-        return preg_replace_callback('/([#!])\{([^\}]+)\}/', function($matches) use($attribute) {
+        $string = preg_replace_callback('/([#!])\{([^\}]+)\}/', function($matches) use($attribute) {
 
             $subject = $matches[2];
             $code = "isset($subject) ? $subject : ''";
 
             if ($matches[1] !== '!')
-                $code = "htmlentities($code, \ENT_QUOTES)";
+                $code = "htmlentities($code, \\ENT_QUOTES)";
 
             return !$attribute ? $this->createShortCode($code) : '\'.('.$code.').\'';
         }, $string);
+
+        $string = preg_replace_callback('/([#!])\[([^\}]+)\]/', function($matches) use($attribute) {
+
+            $input = $matches[2];
+            $node = $this->_parser->parse($input);
+
+            return $this->compileNode($node);
+        }, $string);
+
+        return $string;
     }
 
     protected function newLine()
@@ -275,15 +292,20 @@ class Compiler
     {
 
         $name = $node->name;
-        $value = isset($this->_options['doctypes'][$name]) ? $this->_options['doctypes'][$name] : $name;
+        $value = isset($this->_options['doctypes'][$name]) ? $this->_options['doctypes'][$name] : '<!DOCTYPE '.$name.'>';
+
+        //If doctype is XML, we switch to XML mode
+        if ($name === 'xml')
+            $this->_options['mode'] = self::MODE_XML;
+
         return $value;
     }
 
-    public function resolvePath($path)
+    public function resolvePath($path, $extension = null)
     {
 
         $paths = $this->_options['paths'];
-        $ext = $this->_options['extension'];
+        $ext = $extension ? $extension : $this->_options['extension'];
 
         if (substr($path, -strlen($ext)) !== $ext)
             $path .= $ext;
@@ -329,6 +351,49 @@ class Compiler
     {
 
         $path = $node->path;
+        if ($node->importType === 'include') {
+
+            $ext = pathinfo($path, \PATHINFO_EXTENSION);
+
+            if (empty($ext) && $node->filter && in_array($node->filter, $this->_options['filterMap'], true)) {
+
+                //Get our extension from our filter map
+                $ext = array_search($node->filter, $this->_options['filterMap']);
+            }
+
+            if (!empty($ext) && (".$ext" !== $this->_options['extension'] || $node->filter)) {
+
+                if (!$node->filter && isset($this->_options['filterMap'][$ext]))
+                    $node->filter = $this->_options['filterMap'][$ext];
+
+                $fullPath = $this->resolvePath($path, ".$ext");
+                if (!$fullPath)
+                    $this->throwException(
+                        "File $path not found in ".implode(', ',$this->_options['paths']).", Include path: ".get_include_path(),
+                        $node
+                    );
+
+                $text = file_get_contents($fullPath);
+
+                $newNode = new Node('text');
+                $newNode->value = $this->interpolate($text);
+
+                if ($node->filter) {
+
+                    $filter = new Node('filter');
+                    $filter->name = $node->filter;
+                    $filter->append($newNode);
+                    $newNode = $filter;
+                }
+
+                $node->parent->insertBefore($node, $newNode);
+                $node->parent->remove($node);
+
+                return $this;
+            }
+        }
+
+
         $fullPath = $this->resolvePath($path);
 
         if (!$fullPath)
@@ -471,17 +536,35 @@ class Compiler
 
             //Put the arguments together
             $args = [];
+            $i = 0;
+            $variadicIndex = null;
+            $variadicName = null;
             foreach ($mixin['node']->attributes as $attr) {
 
-                $args[$attr->name] = $attr->value;
+                $attrName = $attr->name;
+                if (strncmp('...', $attrName, 3) === 0) {
+
+                    $variadicIndex = $i;
+                    $attrName = substr($attrName, 3);
+                    $variadicName = $attrName;
+                }
+                $args[$attrName] = $attr->value;
+                $i++;
+            }
+
+            $variadic = '';
+            if ($variadicIndex !== null) {
+
+                $variadic = "\n\$$variadicName = array_slice(\$__arguments, $variadicIndex);";
             }
 
             $phtml .= $this->createCode(
-                '$__mixins[\''.$name.'\'] = function(array $__callArgs) use($__args, $__mixins) {
-                    static $__mixinArgs = '.var_export($args, true).';
-                    extract($__args);
-                    extract($__mixinArgs);
-                    extract($__callArgs);
+                '$__mixins[\''.$name.'\'] = function(array $__arguments) use($__args, $__mixins) {
+                    static $__defaults = '.var_export($args, true).';
+                    $__arguments = array_replace($__defaults, $__arguments);
+                    $__args = array_replace($__args, $__arguments);
+                    extract($__args); '.$variadic.'
+
                 '
             ).$this->newLine();
 
@@ -521,16 +604,38 @@ class Compiler
             $phtml .= $this->indent().$this->createCode('};').$this->newLine();
         }
 
+        $nodeAttributes = $node->attributes;
+        foreach ($node->assignments as $assignment) {
+
+            $attrName = $assignment->name;
+
+            //This line provides compatibility to the offical jade method
+            if ($this->_options['mode'] === self::MODE_HTML && $attrName === 'classes')
+                $attrName = 'class';
+
+            foreach ($assignment->attributes as $attr) {
+
+                if (!$attr->value)
+                    $attr->value = $attr->name;
+
+                $attr->name = $attrName;
+                $nodeAttributes[] = $attr;
+            }
+        }
+
         $args = [];
         $i = 0;
-        foreach ($node->attributes as $index => $attr) {
+        foreach ($nodeAttributes as $index => $attr) {
 
             $value = $attr->value;
 
             $i++;
             if ($this->isScalar($value)) {
 
-                $value = trim($this->interpolate($value), '\'"');
+                $value = '\''.trim($this->interpolate($value), '\'"').'\'';
+            } else if($this->isVariable($value)) {
+
+                $value = "isset($value) ? $value : null";
             }
 
             if ($attr->name) {
@@ -560,7 +665,17 @@ class Compiler
         $argCodes = [];
         foreach ($args as $key => $value) {
 
-            $argCodes[] = '\''.$key.'\' => '.($this->isVariable($value) ? "isset($value) ? $value : null" : '\''.$value.'\'');
+            $code = '\''.$key.'\' => ';
+
+            if (is_array($value)) {
+
+                $code .= '['.implode(', ', $value).']';
+            } else {
+
+                $code .= $value;
+            }
+
+            $argCodes[] = $code;
         }
 
         $phtml .= (count($node->children) > 0 ? $this->indent() : '').$this->createCode(
@@ -1009,7 +1124,7 @@ class Compiler
             $value = (array)$value;
 
         if (is_array($value))
-            $value = self::flatten($value, '; ');
+            $value = self::flatten($value, '; ', ': ');
 
         return $quoteStyle.((string)$value).$quoteStyle;
     }

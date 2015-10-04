@@ -1,0 +1,17 @@
+
+
+h1 Expressions
+
+div
+    = $someVariable
+    = (is_array($var) ? implode(', ', $var) : $var)
+
+
+h2 Avoid escaping
+    != $someVariable
+
+
+h2 Directly append to elements
+    ul
+        li: a(href='#')= $item1
+        li: a(href='#')!= $item2

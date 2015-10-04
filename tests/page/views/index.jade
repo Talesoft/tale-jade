@@ -1,11 +1,11 @@
 
 mixin example-button(label, example, withErrorHandler)
     //- Nifty, isn't it?
-    a.btn.btn-default.btn-lg(
-        href=$url,
-        href='?example='.$example,
-        href=$withErrorHandler ? '&withErrorHandler': '',
-        href='#liveCompiler'
+    a.btn.btn-default.btn-lg&href(
+        $url,
+        '?example='.$example,
+        $withErrorHandler ? '&withErrorHandler': '',
+        '#liveCompiler'
     )= $label
 
 doctype 5
@@ -67,6 +67,13 @@ html(lang='en')
                 +example-button('Error Handler', $example, true)
                 +example-button('Doctypes', 'doctypes')
                 +example-button('Interpolation', 'interpolation')
+                +example-button('Imports', 'imports')
+                +example-button('Filters', 'filters')
+                +example-button('Attribute Stacking', 'attribute-stacking')
+                +example-button('Expressions', 'expressions')
+                +example-button('Text', 'text')
+                +example-button('Include Filters', 'include-filters')
+                +example-button('Variadics', 'variadics')
 
 
 

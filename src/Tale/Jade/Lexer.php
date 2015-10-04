@@ -2,26 +2,109 @@
 
 namespace Tale\Jade;
 
+/**
+ * The Lexer parses the input string into tokens
+ * that can be worked with easier
+ *
+ * @package Tale\Jade
+ */
 class Lexer
 {
 
+    /**
+     * Tab Indentation (\t)
+     */
     const INDENT_TAB = "\t";
+    /**
+     * Space Indentation ( )
+     */
     const INDENT_SPACE = ' ';
 
+    /**
+     * The current input string
+     *
+     * @var string
+     */
     private $_input;
 
+    /**
+     * The total length of the current input
+     *
+     * @var int
+     */
     private $_length;
+
+    /**
+     * The current position inside the input string
+     *
+     * @var int
+     */
     private $_position;
+
+    /**
+     * The current line we are on
+     *
+     * @var int
+     */
     private $_line;
+
+    /**
+     * The current offset in a line we are on
+     * Resets on each new line and increases on each read character
+     *
+     * @var int
+     */
     private $_offset;
+
+    /**
+     * The current indentation level we are on
+     *
+     * @var int
+     */
     private $_level;
 
+    /**
+     * The current indentation character
+     *
+     * @var string
+     */
     private $_indentStyle;
+
+    /**
+     * The width of the indentation, meaning how often $_indentStyle
+     * is repeated for each $_level
+     *
+     * @var string
+     */
     private $_indentWidth;
 
+    /**
+     * The last result gotten via ->peek()
+     *
+     * @var string
+     */
     private $_lastPeekResult;
+
+    /**
+     * The last matches gotten via ->match()
+     *
+     * @var array
+     */
     private $_lastMatches;
 
+    /**
+     * Creates a new lexer instance
+     * The options should be an associative array
+     *
+     * Valid options are:
+     *      indentStyle: The indentation character
+     *      indentWidth: How often to repeat indentStyle
+     *      encoding: The encoding when working with mb_*-functions
+     *
+     * @param array|null $options
+     *
+     * @throws \Exception
+     */
     public function __construct(array $options = null)
     {
 
@@ -46,6 +129,8 @@ class Lexer
     }
 
     /**
+     * Returns the current input worked on
+     *
      * @return string
      */
     public function getInput()
@@ -167,6 +252,9 @@ class Lexer
             yield $token;
     }
 
+    /**
+     * @param $input
+     */
     public function dump($input)
     {
 
@@ -193,12 +281,20 @@ class Lexer
         }
     }
 
+    /**
+     * @return bool
+     */
     protected function isAtEnd()
     {
 
         return $this->_position >= $this->_length;
     }
 
+    /**
+     * @param int $length
+     *
+     * @return string
+     */
     protected function peek($length = 1)
     {
 
@@ -206,6 +302,12 @@ class Lexer
         return $this->_lastPeekResult;
     }
 
+    /**
+     * @param null $length
+     *
+     * @return $this
+     * @throws \Tale\Jade\LexException
+     */
     protected function consume($length = null)
     {
 
@@ -226,6 +328,13 @@ class Lexer
         return $this;
     }
 
+    /**
+     * @param     $callback
+     * @param int $length
+     *
+     * @return string
+     * @throws \Exception
+     */
     protected function read($callback, $length = 1)
     {
 
@@ -260,6 +369,10 @@ class Lexer
         return $result;
     }
 
+    /**
+     * @return string
+     * @throws \Exception
+     */
     protected function readSpaces()
     {
 
@@ -269,6 +382,11 @@ class Lexer
         });
     }
 
+    /**
+     * @param array|null $breakChars
+     *
+     * @return string
+     */
     protected function readBracketContents(array $breakChars = null)
     {
 
@@ -337,6 +455,12 @@ class Lexer
         return trim($value);
     }
 
+    /**
+     * @param        $pattern
+     * @param string $modifiers
+     *
+     * @return int
+     */
     protected function match($pattern, $modifiers = '')
     {
 
@@ -347,6 +471,9 @@ class Lexer
         );
     }
 
+    /**
+     * @return \Tale\Jade\Lexer
+     */
     protected function consumeMatch()
     {
 
@@ -356,12 +483,24 @@ class Lexer
         return $this->consume($this->strlen($match));
     }
 
+    /**
+     * @param $index
+     *
+     * @return null
+     */
     protected function getMatch($index)
     {
 
         return isset($this->_lastMatches[$index]) ? $this->_lastMatches[$index] : null;
     }
 
+    /**
+     * @param array      $scans
+     * @param bool|false $throwException
+     *
+     * @return \Generator|void
+     * @throws \Tale\Jade\LexException
+     */
     protected function scanFor(array $scans, $throwException = false)
     {
 
@@ -395,6 +534,11 @@ class Lexer
         }
     }
 
+    /**
+     * @param $type
+     *
+     * @return array
+     */
     protected function createToken($type)
     {
 
@@ -405,6 +549,13 @@ class Lexer
         ];
     }
 
+    /**
+     * @param        $type
+     * @param        $pattern
+     * @param string $modifiers
+     *
+     * @return \Generator|void
+     */
     protected function scanToken($type, $pattern, $modifiers = '')
     {
 
@@ -425,6 +576,10 @@ class Lexer
         yield $token;
     }
 
+    /**
+     * @return \Generator|void
+     * @throws \Tale\Jade\LexException
+     */
     protected function scanIndent()
     {
 
@@ -488,6 +643,9 @@ class Lexer
         yield $token;
     }
 
+    /**
+     * @return \Generator
+     */
     protected function scanNewLine()
     {
 
@@ -499,6 +657,9 @@ class Lexer
         }
     }
 
+    /**
+     * @return \Generator
+     */
     protected function scanText()
     {
 
@@ -515,6 +676,9 @@ class Lexer
     }
 
 
+    /**
+     * @return \Generator
+     */
     protected function scanTextBlock()
     {
 
@@ -547,6 +711,9 @@ class Lexer
         }
     }
 
+    /**
+     * @return \Generator|void
+     */
     protected function scanTextLine()
     {
 
@@ -558,6 +725,9 @@ class Lexer
             yield $token;
     }
 
+    /**
+     * @return \Generator|void
+     */
     protected function scanMarkup()
     {
 
@@ -568,6 +738,9 @@ class Lexer
             yield $token;
     }
 
+    /**
+     * @return \Generator|void
+     */
     protected function scanComment()
     {
 
@@ -585,6 +758,9 @@ class Lexer
             yield $token;
     }
 
+    /**
+     * @return \Generator
+     */
     protected function scanFilter()
     {
 
@@ -597,6 +773,9 @@ class Lexer
         }
     }
 
+    /**
+     * @return \Generator|void
+     */
     protected function scanImport()
     {
 
@@ -606,6 +785,9 @@ class Lexer
         );
     }
 
+    /**
+     * @return \Generator
+     */
     protected function scanBlock()
     {
 
@@ -622,12 +804,18 @@ class Lexer
         }
     }
 
+    /**
+     * @return \Generator
+     */
     protected function scanCase()
     {
 
         return $this->scanControlStatement('case', ['case']);
     }
 
+    /**
+     * @return \Generator
+     */
     protected function scanWhen()
     {
 
@@ -640,6 +828,9 @@ class Lexer
         }
     }
 
+    /**
+     * @return \Generator
+     */
     protected function scanConditional()
     {
 
@@ -648,6 +839,14 @@ class Lexer
         ], 'conditionType');
     }
 
+    /**
+     * @param       $type
+     * @param array $names
+     * @param null  $nameAttribute
+     *
+     * @return \Generator
+     * @throws \Tale\Jade\LexException
+     */
     protected function scanControlStatement($type, array $names, $nameAttribute = null)
     {
 
@@ -703,24 +902,36 @@ class Lexer
         }
     }
 
+    /**
+     * @return \Generator
+     */
     protected function scanEach()
     {
 
         return $this->scanControlStatement('each', ['each']);
     }
 
+    /**
+     * @return \Generator
+     */
     protected function scanWhile()
     {
 
         return $this->scanControlStatement('while', ['while']);
     }
 
+    /**
+     * @return \Generator
+     */
     protected function scanDo()
     {
 
         return $this->scanControlStatement('do', ['do']);
     }
 
+    /**
+     * @return \Generator
+     */
     protected function scanExpression()
     {
 
@@ -751,6 +962,9 @@ class Lexer
         }
     }
 
+    /**
+     * @return \Generator
+     */
     protected function scanSub()
     {
 
@@ -773,12 +987,18 @@ class Lexer
         }
     }
 
+    /**
+     * @return \Generator|void
+     */
     protected function scanDoctype()
     {
 
         return $this->scanToken('doctype', "(doctype|!!!) (?<name>[^\n]*)");
     }
 
+    /**
+     * @return \Generator
+     */
     protected function scanTag()
     {
 
@@ -795,6 +1015,9 @@ class Lexer
         }
     }
 
+    /**
+     * @return \Generator
+     */
     protected function scanClasses()
     {
 
@@ -811,6 +1034,9 @@ class Lexer
         }
     }
 
+    /**
+     * @return \Generator
+     */
     protected function scanId()
     {
 
@@ -827,6 +1053,9 @@ class Lexer
         }
     }
 
+    /**
+     * @return \Generator
+     */
     protected function scanMixin()
     {
 
@@ -843,6 +1072,9 @@ class Lexer
         }
     }
 
+    /**
+     * @return \Generator
+     */
     protected function scanMixinCall()
     {
 
@@ -859,6 +1091,9 @@ class Lexer
         }
     }
 
+    /**
+     * @return \Generator
+     */
     protected function scanAssignment()
     {
 
@@ -868,6 +1103,11 @@ class Lexer
         }
     }
 
+    /**
+     * @return \Generator|void
+     * @throws \Exception
+     * @throws \Tale\Jade\LexException
+     */
     protected function scanAttributes()
     {
 
@@ -888,7 +1128,7 @@ class Lexer
                 $token['value'] = null;
                 $token['escaped'] = true;
 
-                if ($this->match('([a-zA-Z_][a-zA-Z0-9\-_]*)', 'i')) {
+                if ($this->match('((\.\.\.)?[a-zA-Z_][a-zA-Z0-9\-_]*)', 'i')) {
 
                     $this->consumeMatch();
                     $token['name'] = $this->getMatch(1);
@@ -942,6 +1182,11 @@ class Lexer
             yield $token;
     }
 
+    /**
+     * @param $message
+     *
+     * @throws \Tale\Jade\LexException
+     */
     protected function throwException($message)
     {
 
@@ -949,6 +1194,11 @@ class Lexer
         throw new LexException($message);
     }
 
+    /**
+     * @param $string
+     *
+     * @return int
+     */
     protected function strlen($string)
     {
 
@@ -958,6 +1208,13 @@ class Lexer
         return strlen($string);
     }
 
+    /**
+     * @param      $haystack
+     * @param      $needle
+     * @param null $offset
+     *
+     * @return bool|int
+     */
     protected function strpos($haystack, $needle, $offset = null)
     {
 
@@ -967,6 +1224,13 @@ class Lexer
         return strpos($haystack, $needle, $offset);
     }
 
+    /**
+     * @param      $string
+     * @param      $start
+     * @param null $range
+     *
+     * @return string
+     */
     protected function substr($string, $start, $range = null)
     {
 
@@ -976,6 +1240,12 @@ class Lexer
         return substr($string, $start, $range);
     }
 
+    /**
+     * @param $haystack
+     * @param $needle
+     *
+     * @return int
+     */
     protected function substr_count($haystack, $needle)
     {
         if (function_exists('mb_substr_count'))

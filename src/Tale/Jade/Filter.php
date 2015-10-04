@@ -5,6 +5,12 @@ namespace Tale\Jade;
 class Filter
 {
 
+    public static function filterPlain(Node $node)
+    {
+
+        return $node->text();
+    }
+
     public static function filterStyle(Node $node)
     {
 

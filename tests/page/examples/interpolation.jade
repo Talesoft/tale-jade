@@ -7,3 +7,11 @@ a(href=$baseUrl, href='?page=#{page}')
 script.
 
     var photos = !{$photos};
+
+
+
+p.
+    Tag Interpolation Example
+    Take a look at my awesome #[a(href='#blog') Blog]!
+
+    #[table.table-striped.table-bordered: tr.row: td#tableCell Test!]

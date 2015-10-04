@@ -1,0 +1,40 @@
+
+
+h1 Attribute Stacking
+
+p Repeative attributes append to their value
+
+a(href=$baseUrl, href='&page=#{$page}', href='##{$action}')
+
+
+- $parts = [$baseUrl, "&page=$page", "#$action"];
+a&href($parts)
+
+
+p Classes get appended with a space
+div(class=col, class='col-1', class=$col3)&class(['col-4', $col5])
+
+
+p Style gets converted automatically
+div(style=['width' => '100%', 'background' => 'red'], style=['height' => '20px'])
+
+- $styles = ['color' => 'black', 'font-size' => '15px']
+div&style($styles)
+
+div(style=['color' => 'red', 'font-size' => '12px'], style=['height' => '20px', [['width' => '200px']]])&style(['background' => 'yellow'])
+    | Test
+
+
+p data-* Attributes convert to JSON automatically
+div(data-some-var=['a', 'b', 'c'], data-some-var=['d'], data-some-var='e')
+
+
+p The URL of this site is put together as follows internally
+mixin example-button(label, example, withErrorHandler)
+//- Nifty, isn't it?
+a.btn.btn-default.btn-lg&href(
+    $url,
+    '?example='.$example,
+    $withErrorHandler ? '&withErrorHandler': '',
+    '#liveCompiler'
+)= $label

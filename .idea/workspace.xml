@@ -2,30 +2,29 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="54819058-2860-4625-9148-675b1b97e472" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/page/views/pages/about.jade" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/page/examples/assignments.jade" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/page/examples/block-expansion.jade" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/page/examples/blocks.jade" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/page/examples/code.jade" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/page/examples/comments.jade" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/page/examples/conditionals.jade" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/page/examples/doctypes.jade" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/page/examples/escaping.jade" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/page/index.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/page/examples/interpolation.jade" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/page/examples/loops.jade" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/page/examples/mixins.jade" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/page/views/pages/more-examples.jade" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/page/examples/welcome.jade" />
-      <change type="DELETED" beforePath="D:\Projekte\tale-jade\tests\live-compiler.php" afterPath="" />
-      <change type="DELETED" beforePath="D:\Projekte\tale-jade\tests\regex.php" afterPath="" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/page/examples/attribute-stacking.jade" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/page/examples/expressions.jade" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/page/examples/filters.jade" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/page/examples/imports.jade" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/page/examples/include-filters.jade" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/page/views/script.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/page/views/style.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/page/examples/text.jade" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/page/examples/variadics.jade" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Tale/Jade/Compiler.php" afterPath="$PROJECT_DIR$/src/Tale/Jade/Compiler.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Tale/Jade/Renderer/Adapter/File.php" afterPath="$PROJECT_DIR$/src/Tale/Jade/Renderer/Adapter/File.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Tale/Jade/Filter.php" afterPath="$PROJECT_DIR$/src/Tale/Jade/Filter.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Tale/Jade/Lexer.php" afterPath="$PROJECT_DIR$/src/Tale/Jade/Lexer.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Tale/Jade/Parser.php" afterPath="$PROJECT_DIR$/src/Tale/Jade/Parser.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/page/examples/code.jade" afterPath="$PROJECT_DIR$/tests/page/examples/code.jade" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/page/examples/doctypes.jade" afterPath="$PROJECT_DIR$/tests/page/examples/doctypes.jade" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/page/views/index.jade" afterPath="$PROJECT_DIR$/tests/page/views/index.jade" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/page/cache/views/views/index.phtml" afterPath="$PROJECT_DIR$/tests/page/cache/views/views/index.phtml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/page/examples/interpolation.jade" afterPath="$PROJECT_DIR$/tests/page/examples/interpolation.jade" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/page/examples/loops.jade" afterPath="$PROJECT_DIR$/tests/page/examples/loops.jade" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/page/examples/mixins.jade" afterPath="$PROJECT_DIR$/tests/page/examples/mixins.jade" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/page/views/scripts.jade" afterPath="$PROJECT_DIR$/tests/page/views/scripts.jade" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/page/views/styles.jade" afterPath="$PROJECT_DIR$/tests/page/views/styles.jade" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MOVED" beforePath="D:\Projekte\tale-jade\tests\live-compiler\index.jade" afterPath="$PROJECT_DIR$/tests/page/views/index.jade" />
-      <change type="MOVED" beforePath="D:\Projekte\tale-jade\tests\live-compiler\scripts.jade" afterPath="$PROJECT_DIR$/tests/page/views/scripts.jade" />
-      <change type="MOVED" beforePath="D:\Projekte\tale-jade\tests\live-compiler\styles.jade" afterPath="$PROJECT_DIR$/tests/page/views/styles.jade" />
     </list>
     <ignored path="tale-jade.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -50,18 +49,18 @@
       <file leaf-file-name="Lexer.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.65384614">
-              <caret line="326" column="80" selection-start-line="326" selection-start-column="80" selection-end-line="326" selection-end-column="80" />
+            <state vertical-scroll-proportion="-5.2363634">
+              <caret line="1130" column="44" selection-start-line="1130" selection-start-column="44" selection-end-line="1130" selection-end-column="44" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Compiler.php" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Compiler.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Compiler.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-153.89091">
-              <caret line="527" column="34" selection-start-line="527" selection-start-column="34" selection-end-line="527" selection-end-column="34" />
+            <state vertical-scroll-proportion="0.0680147">
+              <caret line="544" column="54" selection-start-line="544" selection-start-column="54" selection-end-line="544" selection-end-column="54" />
               <folding />
             </state>
           </provider>
@@ -70,38 +69,8 @@
       <file leaf-file-name="index.phtml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests/page/cache/views/views/index.phtml">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="107.57692">
-              <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Parser.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.33695653">
-              <caret line="505" column="32" selection-start-line="505" selection-start-column="32" selection-end-line="505" selection-end-column="32" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="scripts.jade" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/page/views/scripts.jade">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="34" column="28" selection-start-line="34" selection-start-column="28" selection-end-line="34" selection-end-column="28" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="index.jade" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/page/views/index.jade">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="68" column="65" selection-start-line="68" selection-start-column="65" selection-end-line="68" selection-end-column="65" />
+            <state vertical-scroll-proportion="28.038462">
+              <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -111,37 +80,67 @@
         <entry file="file://$PROJECT_DIR$/tests/page/examples/interpolation.jade">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="8" column="26" selection-start-line="8" selection-start-column="26" selection-end-line="8" selection-end-column="26" />
+              <caret line="16" column="48" selection-start-line="16" selection-start-column="48" selection-end-line="16" selection-end-column="48" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="block-expansion.jade" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/page/examples/block-expansion.jade">
+      <file leaf-file-name="mixins.jade" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/page/examples/mixins.jade">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="8" column="47" selection-start-line="8" selection-start-column="47" selection-end-line="8" selection-end-column="47" />
+              <caret line="29" column="0" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="doctypes.jade" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/page/examples/doctypes.jade">
+      <file leaf-file-name="variadics.jade" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/page/examples/variadics.jade">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="12" column="10" selection-start-line="12" selection-start-column="10" selection-end-line="12" selection-end-column="10" />
+              <caret line="10" column="51" selection-start-line="10" selection-start-column="51" selection-end-line="10" selection-end-column="51" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="styles.jade" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/page/views/styles.jade">
+      <file leaf-file-name="loops.jade" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/page/examples/loops.jade">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="2" column="109" selection-start-line="2" selection-start-column="109" selection-end-line="2" selection-end-column="109" />
+              <caret line="20" column="62" selection-start-line="20" selection-start-column="62" selection-end-line="20" selection-end-column="62" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Parser.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-3.3454545">
+              <caret line="484" column="38" selection-start-line="484" selection-start-column="23" selection-end-line="484" selection-end-column="38" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.jade" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/page/views/index.jade">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="75" column="57" selection-start-line="75" selection-start-column="57" selection-end-line="75" selection-end-column="57" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="attribute-stacking.jade" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/page/examples/attribute-stacking.jade">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="34" column="27" selection-start-line="34" selection-start-column="27" selection-end-line="34" selection-end-column="27" />
               <folding />
             </state>
           </provider>
@@ -155,17 +154,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/Tale/Jade/CompileException.php" />
-        <option value="$PROJECT_DIR$/tests/views/some-include.jade" />
-        <option value="$PROJECT_DIR$/composer.json" />
-        <option value="$PROJECT_DIR$/tests/views/layout-basic.jade" />
-        <option value="$PROJECT_DIR$/tests/anti/nested-mixins.jade" />
-        <option value="$PROJECT_DIR$/tests/anti/block-without-name.jade" />
-        <option value="$PROJECT_DIR$/tests/anti.php" />
-        <option value="$PROJECT_DIR$/tests/anti/unclosed-attribute-block.jade" />
-        <option value="$PROJECT_DIR$/tests/nodes.php" />
-        <option value="$PROJECT_DIR$/tests/views/index.jade" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Filter.php" />
         <option value="$PROJECT_DIR$/src/Tale/Jade/Renderer/AdapterBase.php" />
         <option value="$PROJECT_DIR$/src/Tale/Jade/Renderer.php" />
         <option value="$PROJECT_DIR$/tests/views/all-features/some-parent.jade" />
@@ -175,7 +163,6 @@
         <option value="$PROJECT_DIR$/src/Tale/Jade/Node.php" />
         <option value="$PROJECT_DIR$/tests/views/all-features/navigation.jade" />
         <option value="$PROJECT_DIR$/tests/views/all-features/mixins.jade" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer.php" />
         <option value="$PROJECT_DIR$/tests/views/all-features/conditionals.jade" />
         <option value="$PROJECT_DIR$/tests/views/all-features.jade" />
         <option value="$PROJECT_DIR$/tests/renderer.php" />
@@ -187,25 +174,37 @@
         <option value="$PROJECT_DIR$/tests/index.php" />
         <option value="$PROJECT_DIR$/tests/page/views/pages/about.jade" />
         <option value="$PROJECT_DIR$/tests/page/views/pages/more-examples.jade" />
-        <option value="$PROJECT_DIR$/tests/page/examples/mixins.jade" />
         <option value="$PROJECT_DIR$/tests/page/examples/assignments.jade" />
         <option value="$PROJECT_DIR$/tests/page/examples/blocks.jade" />
-        <option value="$PROJECT_DIR$/tests/page/views/styles.jade" />
         <option value="$PROJECT_DIR$/tests/page/examples/conditionals.jade" />
-        <option value="$PROJECT_DIR$/tests/page/examples/loops.jade" />
         <option value="$PROJECT_DIR$/tests/page/examples/escaping.jade" />
         <option value="$PROJECT_DIR$/tests/page/examples/inline-code.jade" />
         <option value="$PROJECT_DIR$/tests/page/examples/comments.jade" />
         <option value="$PROJECT_DIR$/tests/page/examples/welcome.jade" />
         <option value="$PROJECT_DIR$/src/Tale/Jade/Renderer/Adapter/File.php" />
-        <option value="$PROJECT_DIR$/src/Tale/Jade/Compiler.php" />
         <option value="$PROJECT_DIR$/tests/page/index.php" />
-        <option value="$PROJECT_DIR$/tests/page/views/scripts.jade" />
-        <option value="$PROJECT_DIR$/tests/page/examples/doctypes.jade" />
-        <option value="$PROJECT_DIR$/tests/page/views/index.jade" />
-        <option value="$PROJECT_DIR$/tests/page/examples/interpolation.jade" />
         <option value="$PROJECT_DIR$/tests/page/examples/block-expansion.jade" />
+        <option value="$PROJECT_DIR$/tests/page/examples/imports.jade" />
+        <option value="$PROJECT_DIR$/tests/page/examples/filters.jade" />
+        <option value="$PROJECT_DIR$/tests/page/examples/expressions.jade" />
+        <option value="$PROJECT_DIR$/tests/page/examples/text.jade" />
+        <option value="$PROJECT_DIR$/tests/page/examples/code.jade" />
+        <option value="$PROJECT_DIR$/tests/page/examples/doctypes.jade" />
+        <option value="$PROJECT_DIR$/tests/page/views/style.css" />
+        <option value="$PROJECT_DIR$/tests/page/views/styles.jade" />
+        <option value="$PROJECT_DIR$/tests/page/views/script.js" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Filter.php" />
+        <option value="$PROJECT_DIR$/tests/page/views/scripts.jade" />
+        <option value="$PROJECT_DIR$/tests/page/examples/include-filters.jade" />
+        <option value="$PROJECT_DIR$/tests/page/examples/interpolation.jade" />
         <option value="$PROJECT_DIR$/src/Tale/Jade/Parser.php" />
+        <option value="$PROJECT_DIR$/tests/page/examples/attribute-stacking.jade" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Lexer.php" />
+        <option value="$PROJECT_DIR$/tests/page/examples/mixins.jade" />
+        <option value="$PROJECT_DIR$/tests/page/examples/loops.jade" />
+        <option value="$PROJECT_DIR$/tests/page/views/index.jade" />
+        <option value="$PROJECT_DIR$/tests/page/examples/variadics.jade" />
+        <option value="$PROJECT_DIR$/src/Tale/Jade/Compiler.php" />
       </list>
     </option>
   </component>
@@ -648,81 +647,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/LexException.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="4" column="40" selection-start-line="4" selection-start-column="40" selection-end-line="4" selection-end-column="40" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/parser.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="39" column="73" selection-start-line="39" selection-start-column="73" selection-end-line="39" selection-end-column="73" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/CompileException.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="4" column="22" selection-start-line="4" selection-start-column="22" selection-end-line="4" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/views/some-include.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="9" column="18" selection-start-line="9" selection-start-column="18" selection-end-line="9" selection-end-column="18" />
-          <folding>
-            <marker date="1443808807866" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1443808807866" expanded="true" signature="-1:-1" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/composer.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-14.384615">
-          <caret line="22" column="0" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/anti/nested-mixins.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.2520593">
-          <caret line="9" column="31" selection-start-line="9" selection-start-column="31" selection-end-line="9" selection-end-column="31" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/lexer.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="2" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="35" selection-end-column="8" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/anti/block-without-name.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="7" column="13" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/anti/unclosed-attribute-block.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.056013178">
-          <caret line="2" column="23" selection-start-line="2" selection-start-column="23" selection-end-line="2" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/anti.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-17.0">
@@ -762,14 +686,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Filter.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-17.0">
-          <caret line="26" column="5" selection-start-line="26" selection-start-column="5" selection-end-line="26" selection-end-column="5" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Renderer/AdapterBase.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.115384616">
@@ -798,14 +714,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="21" column="13" selection-start-line="21" selection-start-column="13" selection-end-line="21" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Node.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.3454545">
-          <caret line="117" column="43" selection-start-line="117" selection-start-column="42" selection-end-line="117" selection-end-column="43" />
           <folding />
         </state>
       </provider>
@@ -914,14 +822,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/page/examples/loops.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="17" column="30" selection-start-line="17" selection-start-column="30" selection-end-line="17" selection-end-column="30" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/page/examples/escaping.jade">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -930,26 +830,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/page/examples/code.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="19" column="27" selection-start-line="19" selection-start-column="27" selection-end-line="19" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/page/examples/comments.jade">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="13" column="28" selection-start-line="13" selection-start-column="28" selection-end-line="13" selection-end-column="28" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/page/examples/mixins.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="20" column="82" selection-start-line="20" selection-start-column="82" selection-end-line="20" selection-end-column="82" />
           <folding />
         </state>
       </provider>
@@ -990,62 +874,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/page/cache/views/views/index.phtml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="107.57692">
-          <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Compiler.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-153.89091">
-          <caret line="527" column="34" selection-start-line="527" selection-start-column="34" selection-end-line="527" selection-end-column="34" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/page/examples/doctypes.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="12" column="10" selection-start-line="12" selection-start-column="10" selection-end-line="12" selection-end-column="10" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/page/views/styles.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="2" column="109" selection-start-line="2" selection-start-column="109" selection-end-line="2" selection-end-column="109" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/page/views/scripts.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="34" column="28" selection-start-line="34" selection-start-column="28" selection-end-line="34" selection-end-column="28" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/page/views/index.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="68" column="65" selection-start-line="68" selection-start-column="65" selection-end-line="68" selection-end-column="65" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/page/examples/interpolation.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="8" column="26" selection-start-line="8" selection-start-column="26" selection-end-line="8" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/page/examples/block-expansion.jade">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1054,18 +882,186 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer.php">
+    <entry file="file://$PROJECT_DIR$/tests/page/examples/imports.jade">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.65384614">
-          <caret line="326" column="80" selection-start-line="326" selection-start-column="80" selection-end-line="326" selection-end-column="80" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="22" column="23" selection-start-line="22" selection-start-column="23" selection-end-line="22" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/page/examples/filters.jade">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="18" column="18" selection-start-line="18" selection-start-column="18" selection-end-line="18" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/page/examples/expressions.jade">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="13" column="11" selection-start-line="13" selection-start-column="11" selection-end-line="13" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/page/examples/text.jade">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="22" column="12" selection-start-line="22" selection-start-column="12" selection-end-line="22" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/page/examples/code.jade">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="7" column="24" selection-start-line="7" selection-start-column="24" selection-end-line="7" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/page/examples/doctypes.jade">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="15" column="33" selection-start-line="15" selection-start-column="33" selection-end-line="15" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Node.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.3454545">
+          <caret line="117" column="43" selection-start-line="117" selection-start-column="42" selection-end-line="117" selection-end-column="43" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/page/views/style.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="31" column="1" selection-start-line="31" selection-start-column="1" selection-end-line="31" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Filter.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.3461537">
+          <caret line="10" column="28" selection-start-line="10" selection-start-column="28" selection-end-line="10" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/page/views/script.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="21" column="5" selection-start-line="21" selection-start-column="5" selection-end-line="21" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/page/examples/include-filters.jade">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="14" column="40" selection-start-line="14" selection-start-column="40" selection-end-line="14" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/page/views/scripts.jade">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="5" column="10" selection-start-line="5" selection-start-column="10" selection-end-line="5" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/page/views/styles.jade">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="3" column="17" selection-start-line="3" selection-start-column="17" selection-end-line="3" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/page/examples/interpolation.jade">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="16" column="48" selection-start-line="16" selection-start-column="48" selection-end-line="16" selection-end-column="48" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Parser.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33695653">
-          <caret line="505" column="32" selection-start-line="505" selection-start-column="32" selection-end-line="505" selection-end-column="32" />
+        <state vertical-scroll-proportion="-3.3454545">
+          <caret line="484" column="38" selection-start-line="484" selection-start-column="23" selection-end-line="484" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/page/cache/views/views/index.phtml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="28.038462">
+          <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/page/examples/attribute-stacking.jade">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="34" column="27" selection-start-line="34" selection-start-column="27" selection-end-line="34" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/page/examples/loops.jade">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="20" column="62" selection-start-line="20" selection-start-column="62" selection-end-line="20" selection-end-column="62" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Lexer.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.2363634">
+          <caret line="1130" column="44" selection-start-line="1130" selection-start-column="44" selection-end-line="1130" selection-end-column="44" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/page/views/index.jade">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="75" column="57" selection-start-line="75" selection-start-column="57" selection-end-line="75" selection-end-column="57" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/page/examples/mixins.jade">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="29" column="0" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/page/examples/variadics.jade">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="10" column="51" selection-start-line="10" selection-start-column="51" selection-end-line="10" selection-end-column="51" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Tale/Jade/Compiler.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0680147">
+          <caret line="544" column="54" selection-start-line="544" selection-start-column="54" selection-end-line="544" selection-end-column="54" />
           <folding />
         </state>
       </provider>

@@ -186,9 +186,9 @@ class Parser
         if (!$this->_current)
             $this->_current = $this->createElement();
 
-        if ($this->_current->type !== 'element')
+        if (!in_array($this->_current->type, ['element', 'mixinCall']))
             $this->throwException(
-                "Assignments can only happen on elements"
+                "Assignments can only happen on elements and mixinCalls"
             );
 
         $node = $this->createNode('assignment', $token);
