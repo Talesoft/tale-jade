@@ -221,6 +221,12 @@ class Parser
         if (!$node->name && in_array($this->_current->type, ['element', 'mixin']))
             $this->throwException('Attributes in elements and mixins need a name', $token);
 
+        if ($this->_current->type === 'mixinCall' && !$node->value) {
+
+            $node->value = $node->name;
+            $node->name = null;
+        }
+
         $this->_current->attributes[] = $node;
     }
 
@@ -497,7 +503,7 @@ class Parser
             $this->_current = null;
         }
 
-        if ($this->_subLevel)
+        if ($this->_subLevel > 0)
             $this->handleOutdent(['levels' => 0]);
     }
 

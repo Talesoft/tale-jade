@@ -1,0 +1,21 @@
+
+
+h1 Mixin Example
+
+
+mixin bootstrap-button(label, theme='default')
+
+    a.btn(class='btn-'.$theme)= $label
+
+
+mixin bootstrap-carousel
+
+    .carousel
+        // Code for bootstrap carousel
+
+
+p Watch mah buttons!
++bootstrap-button('Send')
++bootstrap-button('Reply', 'info')
+
+p Notice how the bootstrap-carousel mixin isn't rendered, because we didnt use it!

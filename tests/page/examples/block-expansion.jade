@@ -1,0 +1,25 @@
+
+
+
+h1 Block Expansion via :
+
+
+nav: ul
+    li: a(href='#') 1
+    li: a(href='#'): if $variable: some.element
+    li: a(href='#') 3
+
+
+- $var = true
+
+if $var: p This should be printed through block expansion
+
+
+if (true ? true : false): p This should be printed through block expansion
+
+
+- $i = 15
+while $i-- > 0: p Counter: #{$i}
+
+- $array = ['key1' => 'value1', 'key2' => 'value2', 'key3' => 'value3']
+each $value, $key in $array: p Foreach #{$key} => #{$value}

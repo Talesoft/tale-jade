@@ -1,24 +1,35 @@
 
 
 link(rel='stylesheet', href='//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css')
-link(rel='stylesheet', href='//cdnjs.cloudflare.com/ajax/libs/codemirror/5.4.0/codemirror.min.css')
 style.
-
-    body, html {
-        height: 100%;
-    }
 
     body {
         font-family: 'Segoe UI', 'San Francisco', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         font-size: 16px;
+        padding-bottom: 100px;
+    }
+
+    pre {
+        display: block;
+        border-radius: 0;
+        background: #fff;
+        border: none;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+    }
+
+    #phpEditor, #jadeEditor, .CodeMirror {
+        width: 100%;
+        height: 100%;
     }
 
     .editor {
         width: 100%;
-        height: 500px;
-        margin: 20px;
+        height: 600px;
         border: 3px solid lawngreen;
         transition: border-color .2s ease-out;
+        border-radius: 2px;
     }
 
     .compiling {

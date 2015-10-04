@@ -169,7 +169,7 @@ class Compiler
 
         if (!$fullPath)
             throw new \Exception(
-                "File $path wasnt found in ".implode(', ', $this->_options['paths'])
+                "File $path wasnt found in ".implode(', ', $this->_options['paths']).", Include path: ".get_include_path()
             );
 
         return $this->compile(file_get_contents($fullPath), $fullPath);
@@ -187,14 +187,18 @@ class Compiler
         return preg_match('/^\$[a-z_][a-z0-9\_\[\]\->\'"]*$/i', $value);
     }
 
-    protected function interpolate($string)
+    protected function interpolate($string, $attribute = false)
     {
 
-        return preg_replace_callback('/\#\{([^\}]+)\}/', function($matches) {
+        return preg_replace_callback('/([#!])\{([^\}]+)\}/', function($matches) use($attribute) {
 
-            $subject = $matches[1];
+            $subject = $matches[2];
+            $code = "isset($subject) ? $subject : ''";
 
-            return $this->createShortCode("isset($subject) ? $subject : ''");
+            if ($matches[1] !== '!')
+                $code = "htmlentities($code, \ENT_QUOTES)";
+
+            return !$attribute ? $this->createShortCode($code) : '\'.('.$code.').\'';
         }, $string);
     }
 
@@ -284,20 +288,17 @@ class Compiler
         if (substr($path, -strlen($ext)) !== $ext)
             $path .= $ext;
 
-        if (count($this->_files) > 0)
-            $paths[] = dirname(end($this->_files));
-
         if (count($paths) < 1) {
 
             //We got no paths to search in. We use the include-path in that case
             $paths = explode(\PATH_SEPARATOR, get_include_path());
         }
 
+        if (count($this->_files) > 0)
+            $paths[] = dirname(end($this->_files));
+
         foreach ($paths as $directory) {
 
-            //TODO: This is the only reference to tale-util right now
-            //We might as well write a little join-wrapper here
-            //and remove the dependency of tale-util in composer
             $fullPath = realpath(PathUtil::join($directory, $path));
 
             if ($fullPath)
@@ -332,7 +333,7 @@ class Compiler
 
         if (!$fullPath)
             $this->throwException(
-                "File $path wasnt found in ".implode(', ', $this->_options['paths']),
+                "File $path wasnt found in ".implode(', ',$this->_options['paths']).", Include path: ".get_include_path(),
                 $node
             );
 
@@ -521,10 +522,12 @@ class Compiler
         }
 
         $args = [];
-        foreach ($node->attributes as $attr) {
+        $i = 0;
+        foreach ($node->attributes as $index => $attr) {
 
             $value = $attr->value;
 
+            $i++;
             if ($this->isScalar($value)) {
 
                 $value = trim($this->interpolate($value), '\'"');
@@ -545,17 +548,23 @@ class Compiler
                 continue;
             }
 
-            foreach ($mixin['node']->attributes as $mixinAttr) {
+            if (isset($mixin['node']->attributes[$index])) {
 
-                if (isset($args[$mixinAttr->name]))
-                    continue;
-
-                $args[$mixinAttr->name] = $value;
+                $args[$mixin['node']->attributes[$index]->name] = $value;
+                continue;
             }
+
+            $args[] = $value;
+        }
+
+        $argCodes = [];
+        foreach ($args as $key => $value) {
+
+            $argCodes[] = '\''.$key.'\' => '.($this->isVariable($value) ? "isset($value) ? $value : null" : '\''.$value.'\'');
         }
 
         $phtml .= (count($node->children) > 0 ? $this->indent() : '').$this->createCode(
-            '$__mixinCallArgs = '.var_export($args, true).';
+            '$__mixinCallArgs = ['.implode(', ', $argCodes).'];
             $__mixinCallArgs[\'__block\'] = isset($__block) ? $__block : null;
             call_user_func($__mixins[\''.$name.'\'], $__mixinCallArgs);
             unset($__mixinCallArgs);
@@ -650,7 +659,7 @@ class Compiler
         $subject = $node->subject;
 
         if ($this->isVariable($subject))
-            $subject = "isset({$subject}) ? {$subject} : null";
+            $subject = "isset({$subject}) ? {$subject} : []";
 
         $as = "\${$node->itemName}";
         if ($node->keyName)
@@ -674,9 +683,13 @@ class Compiler
         if ($this->isVariable($subject))
             $subject = "isset({$subject}) ? {$subject} : null";
 
-        $phtml = $this->createCode("while ({$subject}) {").$this->newLine();
-        $phtml .= $this->compileChildren($node->children).$this->newLine();
-        $phtml .= $this->indent().$this->createCode('}').$this->newLine();
+        $hasChildren = count($node->children) > 0;
+        $phtml = $this->createCode("while ({$subject})".($hasChildren ? ' {' : '')).$this->newLine();
+        if ($hasChildren) {
+
+            $phtml .= $this->compileChildren($node->children).$this->newLine();
+            $phtml .= $this->indent().$this->createCode('}').$this->newLine();
+        }
 
         return $phtml;
     }
@@ -785,6 +798,7 @@ class Compiler
             foreach ($attributes as $name => $attrs) {
 
                 $values = [];
+                $escaped = true;
                 foreach ($attrs as $attr) {
 
                     $value = trim($attr->value);
@@ -793,7 +807,7 @@ class Compiler
 
                         if ($this->isScalar($value)) {
 
-                            $value = $this->interpolate($value);
+                            $value = $this->interpolate($value, true);
                             $values[] = $value;
                             continue;
                         } else if ($this->isVariable($value)) {
@@ -804,6 +818,9 @@ class Compiler
                             $values[] = $value;
                         }
                     }
+
+                    if (!$attr->escaped)
+                        $escaped = false;
                 }
 
                 if ($this->_options['mode'] === self::MODE_HTML && count($values) < 1 && in_array($name, $this->_options['selfRepeatingAttributes'])) {
@@ -821,12 +838,15 @@ class Compiler
                         case 'class': $builder = '\Tale\Jade\Compiler::buildClassValue'; break;
                         case 'style': $builder = '\Tale\Jade\Compiler::buildStyleValue'; break;
                     }
+
+                    if (strncmp($name, 'data-', 5) === 0)
+                        $builder = '\Tale\Jade\Compiler::buildDataValue';
                 }
 
                 //If all values are scalar, we don't do any kind of resolution for
                 //the attribute name. It's always there.
 
-                $escaped = $attr->escaped ? 'true' : 'false';
+                $escaped = $escaped ? 'true' : 'false';
 
                 $pair = '';
                 if (count(array_filter($values, [$this, 'isScalar'])) === count($values)) {
@@ -965,6 +985,15 @@ class Compiler
 
 
     public static function buildValue($value, $quoteStyle, $escaped)
+    {
+
+        if (is_object($value))
+            $value = (array)$value;
+
+        return $quoteStyle.($escaped ? htmlentities(self::isObjectOrArray($value) ? implode('', $value) : $value, \ENT_QUOTES) : ((string)$value)).$quoteStyle;
+    }
+
+    public static function buildDataValue($value, $quoteStyle, $escaped)
     {
 
         if (self::isObjectOrArray($value))

@@ -1,0 +1,20 @@
+
+
+//Official jade suggests a - prefix for single-line code
+
+- $var = 'Some code'
+
+//In Tale-Jade you can also use it multi-line
+-
+    class SomeFilter extends Filter
+    {
+        public function filter($value)
+        {
+            return trim($value, '"');
+        }
+    }
+
+    $i = 15;
+
+    //PHP comment
+    $filter = new Filter();

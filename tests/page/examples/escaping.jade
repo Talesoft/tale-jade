@@ -1,0 +1,11 @@
+
+//Values consisting of alphanumeric characters and surrounded by quotes will not be escaped
+div(attr='This is not escaped')
+
+
+//Normal attributes are always escaped, if they are an expression
+- $var = 'This is & " ; escaped'
+div(attr=$var)
+
+//Disable escaping with the !-prefix
+div(attr!=$var)
