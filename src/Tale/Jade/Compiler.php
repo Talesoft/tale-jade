@@ -141,6 +141,7 @@ class Compiler
         $this->handleImports($node);
         $this->handleBlocks($node);
         $this->handleMixins($node);
+        $this->handleExpansions($node);
 
         //The actual compilation process ($node is the very root node of everything)
         $phtml = $this->compileNode($node);

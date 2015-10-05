@@ -632,8 +632,11 @@ class Lexer
 
         $levels = $this->_level - $oldLevel;
 
-        if ($levels === 0)
+        if (!empty($indent) && $levels === 0) {
+
+            yield $this->createToken('nodent');
             return;
+        }
 
         //We create a token for each indentation/outdentation
         $type = $levels > 0 ? 'indent' : 'outdent';
@@ -962,24 +965,29 @@ class Lexer
         }
     }
 
-    /**
-     * @return \Generator
-     */
-    protected function scanSub()
+    protected function scanExpansion()
     {
 
-        //TODO: Maybe the : token should be "blockExpansion" and not "sub"?
-        //We could also put it into an own method "scanBlockExpansion"
         if ($this->peek() === ':') {
 
             $this->consume();
-            $token = $this->createToken('sub');
+            $token = $this->createToken('expansion');
 
             $spaces = $this->readSpaces();
             $token['withSpace'] = !empty($spaces);
 
             yield $token;
         }
+    }
+
+    /**
+     * @return \Generator
+     */
+    protected function scanSub()
+    {
+
+        foreach ($this->scanExpansion() as $token)
+            yield $token;
 
         if ($this->peek() === '.') {
 

@@ -21,6 +21,8 @@ class Parser
     private $_last;
     private $_inMixin;
     private $_mixinLevel;
+    private $_expandedNodes;
+    private $_expansion;
 
 
     public function __construct(array $options = null, Lexer $lexer = null)
@@ -63,6 +65,8 @@ class Parser
         $this->_last = null;
         $this->_inMixin = false;
         $this->_mixinLevel = null;
+        $this->_expandedNodes = [];
+        $this->_expansion = false;
 
         while ($this->hasTokens()) {
 
@@ -80,12 +84,12 @@ class Parser
 
         $method = 'handle'.ucfirst($token['type']);
 
-        if (!method_exists($this, $method))
+        if (!method_exists($this, $method)) {
             $this->throwException(
-                "Unexpected token, no handler found",
+                "Unexpected token `{$token['type']}`, no handler $method found",
                 $token
             );
-        else
+        } else
             call_user_func([$this, $method], $token);
     }
 
@@ -369,7 +373,8 @@ class Parser
                 $this->_current = $node;
                 $this->handleToken();
                 $this->_current = $old;
-            }
+            } else
+                $this->handleToken();
 
         } else
             $this->_current = $node;
@@ -499,6 +504,7 @@ class Parser
     {
 
         $this->_level--;
+
         $this->_currentParent = $this->_currentParent->parent;
 
         if ($this->_inMixin && $this->_level <= $this->_mixinLevel) {
@@ -508,76 +514,71 @@ class Parser
         }
     }
 
-    protected function handleSub(array $token)
+    protected function handleNodent()
+    {
+    }
+
+    protected function handleExpansion(array $token, Node $origin = null)
     {
 
         if (!$this->_current)
             $this->throwException(
-                "Sub accesssor needs an element to work on",
+                "Expansion needs an element to work on",
                 $token
             );
 
-        if ($this->_current->type === 'element' && !$token['withSpace'] && $this->expectNext(['tag'])) {
+        if ($this->_current->type === 'element' && !$token['withSpace']) {
+
+            if (!$this->expectNext(['tag']))
+                $this->throwException(
+                    "Expected tag name after double colon",
+                    $token
+                );
 
             $token = $this->getToken();
             $this->_current->tag .= ':'.$token['name'];
             return;
         }
 
-        var_dump("SUB ON {$this->_current->tag}");
-        $originalParent = $this->_currentParent;
+        $origin = $origin ? $origin : $this->_current;
 
-        //Fake newline and indentation
         $this->handleNewLine();
         $this->handleIndent();
 
-        $this->nextToken();
-        while ($this->hasTokens()) {
+        $level = 0;
+        while($this->hasTokens()) {
 
-            $token = $this->getToken();
-            $this->handleToken();
+            var_dump($this->getToken());
+            if ($this->expectNext(['indent', 'nodent', 'outdent'])) {
 
-            var_dump("SUB ".$token['type']);
-            if ($token['type'] === 'newLine') {
+                $subToken = $this->getToken();
+                $this->handleToken();
+                switch ($subToken['type']) {
+                    case 'nodent':
 
-                $this->nextToken();
-                if ($this->expect(['indent'])) {
+                        while ($this->_currentParent !== $origin->parent)
+                            $this->handleOutdent();
+                        return;
+                    case 'indent':
+                        $level++;
+                        $origin = null;
+                        break;
+                    case 'outdent':
+                        $level--;
 
-                    var_dump("INDENT");
-                    //We indented. We first need to run through all sub-levels until we reach our fitting outdentation
-                    $level = 0;
-                    while ($this->hasTokens()) {
-
-                        $subToken = $this->getToken();
-                        $this->handleToken();
-
-                        var_dump("SUB->SUB ".$subToken['type']);
-
-                        if ($subToken['type'] === 'indent')
-                            $level++;
-
-                        if ($subToken['type'] === 'outdent')
-                            $level--;
-
-                        if ($level <= 0)
-                            break;
-
-                        $this->nextToken();
-                    }
-
-                    var_dump("OUTDENT");
-                } else {
-
-                    var_dump("SAME LINE");
+                        if ($level <= 0) {
+                            return;
+                        }
                 }
-                break;
+            } else if ($this->hasTokens()) {
+
+                $subToken = $this->getToken();
+                if ($subToken['type'] === 'expansion')
+                    $this->handleExpansion($subToken, $origin);
+                else
+                    $this->handleToken();
             }
-
-            $this->nextToken();
-        }
-
-        echo($originalParent);
-        $this->_currentParent = $originalParent;
+        };
     }
 
 
@@ -624,3 +625,6 @@ class Parser
         );
     }
 }
+
+
+
