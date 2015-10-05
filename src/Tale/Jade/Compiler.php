@@ -29,7 +29,7 @@ class Compiler
             'indentWidth' => 4,
             'mode' => self::MODE_HTML,
             'selfClosingTags' => [
-                'input', 'br', 'img'
+                'input', 'br', 'img', 'link'
             ],
             'selfRepeatingAttributes' => [
                 'selected', 'checked', 'disabled'
