@@ -742,7 +742,29 @@ class Compiler
         if ($this->isVariable($subject))
             $subject = "isset({$subject}) ? {$subject} : null";
 
-        $phtml = $this->createCode("switch ({$subject}) { case ':JADE_BREAK:': break;").$this->newLine();
+        $hasChild = false;
+        foreach ($node->children as $child) {
+
+            if ($child->type !== 'when')
+                $this->throwException(
+                    "`case` can only have `when` children",
+                    $node
+                );
+
+            $hasChild = true;
+        }
+
+        if (!$hasChild) {
+
+            $this->throwException(
+                "`case` needs at least one `when`-child",
+                $node
+            );
+        }
+
+        //Notice that we omit the "? >"
+        //This is because PHP doesnt allow "? ><?php" between switch and the first case
+        $phtml = $this->createCode("switch ({$subject}) {", '<?php ', '').$this->newLine();
         $phtml .= $this->compileChildren($node->children).$this->newLine();
         $phtml .= $this->indent().$this->createCode('}');
 
@@ -752,12 +774,22 @@ class Compiler
     protected function compileWhen(Node $node)
     {
 
+        if (!$node->parent || $node->parent->type !== 'case')
+            $this->throwException(
+                "`when` can only be direct descendants of `case`",
+                $node
+            );
+
         $subject = $node->subject;
 
         if ($subject && $this->isVariable($subject))
             $subject = "isset({$subject}) ? {$subject} : null";
 
-        $phtml = $this->createCode($node->default ? 'default:' : "case $subject:").$this->newLine();
+        $first = $node->parent->indexOf($node) === 0;
+
+        //If this is the first node, we omit the prefix for the code "<?php"
+        //Notice that compileCase omits the ? >, so it fits together here
+        $phtml = $this->createCode($node->default ? 'default:' : "case $subject:", $first ? '' : '<?php ').$this->newLine();
         $phtml .= $this->compileChildren($node->children).$this->newLine();
 
         if (count($node->children) > 0)

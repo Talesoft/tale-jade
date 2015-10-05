@@ -311,8 +311,6 @@ class Parser
     protected function handleConditional(array $token)
     {
 
-        $this->validateSingle();
-
         $node = $this->createNode('conditional', $token);
         $node->subject = $token['subject'];
         $node->conditionType = $token['conditionType'];
@@ -323,16 +321,12 @@ class Parser
     protected function handleDo(array $token)
     {
 
-        $this->validateSingle();
-
         $node = $this->createNode('do', $token);
         $this->_current = $node;
     }
 
     protected function handleDoctype(array $token)
     {
-
-        $this->validateSingle();
 
         $node = $this->createNode('doctype', $token);
         $node->name = $token['name'];
@@ -342,8 +336,6 @@ class Parser
 
     protected function handleEach(array $token)
     {
-
-        $this->validateSingle($token);
 
         $node = $this->createNode('each', $token);
         $node->subject = $token['subject'];
@@ -384,8 +376,6 @@ class Parser
 
     protected function handleFilter(array $token)
     {
-
-        $this->validateSingle($token);
 
         $node = $this->createNode('filter', $token);
         $node->name = $token['name'];
@@ -562,8 +552,6 @@ class Parser
     protected function handleWhen(array $token)
     {
 
-        $this->validateSingle($token);
-
         $node = $this->createNode('when', $token);
         $node->subject = $token['subject'];
         $node->default = $token['default'];
@@ -572,8 +560,6 @@ class Parser
 
     protected function handleWhile(array $token)
     {
-
-        $this->validateSingle();
 
         $node = $this->createNode('while', $token);
         $node->subject = $token['subject'];
@@ -592,15 +578,5 @@ class Parser
         throw new ParseException(
             "Failed to parse Jade: $message"
         );
-    }
-
-    protected function validateSingle(array $relatedToken = null)
-    {
-
-        if ($this->_current)
-            $this->throwException(
-                "This instruction needs to be on a single line",
-                $relatedToken
-            );
     }
 }
