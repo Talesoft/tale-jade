@@ -635,12 +635,12 @@ class Lexer
         if ($levels === 0)
             return;
 
-        /** @var \Tale\Jade\Lexer\Token\IndentToken $token */
-        $token = $this->createToken($levels > 0 ? 'indent' : 'outdent');
+        //We create a token for each indentation/outdentation
+        $type = $levels > 0 ? 'indent' : 'outdent';
+        $levels = abs($levels);
 
-        $token['levels'] = abs($levels);
-
-        yield $token;
+        while ($levels--)
+            yield $this->createToken($type);
     }
 
     /**
@@ -691,17 +691,17 @@ class Lexer
 
             if ($token['type'] === 'indent') {
 
-                $level = $token['levels'];
+                $level = 1;
                 foreach ($this->scanFor(['indent', 'newLine', 'text']) as $subToken) {
 
                     yield $subToken;
 
                     if ($subToken['type'] === 'indent')
-                        $level += $subToken['levels'];
+                        $level++;
 
                     if ($subToken['type'] === 'outdent') {
 
-                        $level -= $subToken['levels'];
+                        $level--;
 
                         if ($level <= 0)
                             break 2;
@@ -968,6 +968,8 @@ class Lexer
     protected function scanSub()
     {
 
+        //TODO: Maybe the : token should be "blockExpansion" and not "sub"?
+        //We could also put it into an own method "scanBlockExpansion"
         if ($this->peek() === ':') {
 
             $this->consume();

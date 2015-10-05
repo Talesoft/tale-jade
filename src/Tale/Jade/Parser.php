@@ -11,6 +11,7 @@ class Parser
 
     private $_level;
     private $_subLevel;
+    private $_subLevels;
     /** @var \Generator */
     private $_tokens;
     /** @var \Tale\Jade\Node */
@@ -54,7 +55,7 @@ class Parser
 
         $this->_level = 0;
         $this->_subLevel = 0;
-        $this->_nodes = [];
+        $this->_subLevels = [];
         $this->_tokens = $this->_lexer->lex($input);
         $this->_document = $this->createNode('document', ['line' => 0, 'offset' => 0]);
         $this->_currentParent = $this->_document;
@@ -405,7 +406,7 @@ class Parser
         //The only difference (for the parser) is, that extend will probably
         //be at indent 0 and PROBABLY the first instruction at all
 
-        if ($this->_current)
+        if ($this->_current && $token['importType'] === 'extends')
             $this->throwException(
                 "extend/include should be the very first statement on a line",
                 $token
@@ -421,10 +422,10 @@ class Parser
         $this->_current = $node;
     }
 
-    protected function handleIndent(array $token)
+    protected function handleIndent(array $token = null)
     {
 
-        $this->_level += $token['levels'];
+        $this->_level++;
 
         if (!$this->_last)
             return;
@@ -492,26 +493,19 @@ class Parser
             $this->_last = $this->_current;
             $this->_current = null;
         }
-
-        if ($this->_subLevel > 0)
-            $this->handleOutdent(['levels' => 0]);
     }
 
-    protected function handleOutdent(array $token)
+    protected function handleOutdent(array $token = null)
     {
 
-        $levels = $token['levels'] + $this->_subLevel;
-        $this->_level -= $levels;
-        $this->_subLevel = 0;
+        $this->_level--;
+        $this->_currentParent = $this->_currentParent->parent;
 
         if ($this->_inMixin && $this->_level <= $this->_mixinLevel) {
 
             $this->_inMixin = false;
             $this->_mixinLevel = null;
         }
-
-        while ($levels-- > 0)
-            $this->_currentParent = $this->_currentParent->parent;
     }
 
     protected function handleSub(array $token)
@@ -530,10 +524,60 @@ class Parser
             return;
         }
 
-        //We just fake some tokens
-        $this->handleNewLine(); //Stores the element in the current _parentNode
-        $this->handleIndent(['levels' => 1]); //Sets the left element as _parentNode
-        $this->_subLevel++;
+        var_dump("SUB ON {$this->_current->tag}");
+        $originalParent = $this->_currentParent;
+
+        //Fake newline and indentation
+        $this->handleNewLine();
+        $this->handleIndent();
+
+        $this->nextToken();
+        while ($this->hasTokens()) {
+
+            $token = $this->getToken();
+            $this->handleToken();
+
+            var_dump("SUB ".$token['type']);
+            if ($token['type'] === 'newLine') {
+
+                $this->nextToken();
+                if ($this->expect(['indent'])) {
+
+                    var_dump("INDENT");
+                    //We indented. We first need to run through all sub-levels until we reach our fitting outdentation
+                    $level = 0;
+                    while ($this->hasTokens()) {
+
+                        $subToken = $this->getToken();
+                        $this->handleToken();
+
+                        var_dump("SUB->SUB ".$subToken['type']);
+
+                        if ($subToken['type'] === 'indent')
+                            $level++;
+
+                        if ($subToken['type'] === 'outdent')
+                            $level--;
+
+                        if ($level <= 0)
+                            break;
+
+                        $this->nextToken();
+                    }
+
+                    var_dump("OUTDENT");
+                } else {
+
+                    var_dump("SAME LINE");
+                }
+                break;
+            }
+
+            $this->nextToken();
+        }
+
+        echo($originalParent);
+        $this->_currentParent = $originalParent;
     }
 
 

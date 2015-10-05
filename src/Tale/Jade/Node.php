@@ -168,6 +168,12 @@ class Node
         return $str;
     }
 
+    public function __isset($key)
+    {
+
+        return isset($this->_data[$key]);
+    }
+
     public function &__get($key)
     {
 
