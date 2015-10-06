@@ -336,7 +336,7 @@ class Compiler
 
         foreach ($paths as $directory) {
 
-            $fullPath = realpath(PathUtil::join($directory, $path));
+            $fullPath = realpath(rtrim($directory, '/\\').'/'.ltrim($path, '/\\'));
 
             if ($fullPath)
                 return $fullPath;

@@ -40,10 +40,7 @@ class File extends AdapterBase
         if (substr($path, -strlen($ext)) === $ext)
             $path = substr($path, 0, -strlen($ext));
 
-        $outputPath = PathUtil::join(
-            $this->getOption('outputDirectory'),
-            $path.$this->getOption('extension')
-        );
+        $outputPath = rtrim($this->getOption('outputDirectory'), '/\\').'/'.ltrim($path.$this->getOption('extension'), '/\\');
 
         $render = function($__path, $__args) {
 
