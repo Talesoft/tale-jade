@@ -18,7 +18,6 @@ class Filter
         $text = self::filterPlain($node, $indent, $newLine);
 
         $text = preg_replace(['/^\s*<\?php ?/i', '/\?>\s*$/'], '', $text);
-        var_dump($text);
 
         return $indent.'<?php '.$newLine.$text.$newLine.$indent.'?>'.$newLine;
     }
