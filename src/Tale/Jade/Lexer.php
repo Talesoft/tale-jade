@@ -793,12 +793,23 @@ class Lexer
 
         foreach ($this->scanToken(
             'block',
-            '(?J:block(?:[\t ]+(?<mode>append|prepend|replace))?(?:[\t ]+(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*))?|(?<mode>append|prepend|replace)(?:[\t ]+(?<name>[a-zA-ZA-Z][a-zA-Z0-9\-_]*)))'
+            'block(?:[\t ]+(?<mode>append|prepend|replace))?[\t ]+(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*)'
         ) as $token) {
 
             yield $token;
 
             //Allow direct content via <sub> token (should do <indent> in the parser)
+            foreach ($this->scanSub() as $subToken)
+                yield $subToken;
+        }
+
+        foreach ($this->scanToken(
+            'block',
+            '(?<mode>append|prepend|replace)(?:[\t ]+(?<name>[a-zA-ZA-Z][a-zA-Z0-9\-_]*))'
+        ) as $token) {
+
+            yield $token;
+
             foreach ($this->scanSub() as $subToken)
                 yield $subToken;
         }

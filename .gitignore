@@ -1,6 +1,7 @@
 
 /.idea
 /vendor
+/tests
 
 .DS_Store
 Thumbs.db
