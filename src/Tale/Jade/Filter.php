@@ -5,33 +5,49 @@ namespace Tale\Jade;
 class Filter
 {
 
-    public static function filterPlain(Node $node)
+    public static function wrapTag($tag, Node $node, $indent, $newLine)
     {
 
-        return $node->text();
+        return "<$tag>".$newLine.self::filterPlain($node, $indent, $newLine).$indent."</$tag>";
     }
 
-    public static function filterStyle(Node $node)
+    public static function wrapCode(Node $node, $indent, $newLine)
     {
 
-        return '<style>'.$node->text().'</style>';
+        return "<?php ".$newLine.self::filterPlain($node, $indent, $newLine).$indent."?>";
     }
 
-    public static function filterScript(Node $node)
+
+    public static function filterPlain(Node $node, $indent, $newLine)
     {
 
-        return '<script>'.$node->text().'</script>';
+        return implode($newLine, array_map(function($line) use($indent, $newLine) {
+
+            return $indent.trim($line);
+        }, preg_split("/\r?\n/", $node->text())));
     }
 
-    public static function filterCode(Node $node)
+    public static function filterStyle(Node $node, $indent, $newLine)
     {
 
-        return '<?php '.$node->text().'?>';
+        return self::wrapTag('style', $node, $indent, $newLine);
     }
 
-    public static function filterMarkdown(Node $node)
+    public static function filterScript(Node $node, $indent, $newLine)
     {
 
-        return '<markdown>'.$node->text().'</markdown>';
+        return self::wrapTag('script', $node, $indent, $newLine);
+    }
+
+    public static function filterCode(Node $node, $indent, $newLine)
+    {
+
+        return self::wrapCode($node, $indent, $newLine);
+    }
+
+    public static function filterMarkdown(Node $node, $indent, $newLine)
+    {
+
+        return self::wrapTag('markdown', $node, $indent, $newLine);
     }
 }

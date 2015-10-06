@@ -11,6 +11,7 @@ class Parser
 
     private $_level;
     private $_subLevel;
+    private $_subLevels;
     /** @var \Generator */
     private $_tokens;
     /** @var \Tale\Jade\Node */
@@ -20,6 +21,7 @@ class Parser
     private $_last;
     private $_inMixin;
     private $_mixinLevel;
+    private $_expansion;
 
 
     public function __construct(array $options = null, Lexer $lexer = null)
@@ -54,7 +56,7 @@ class Parser
 
         $this->_level = 0;
         $this->_subLevel = 0;
-        $this->_nodes = [];
+        $this->_subLevels = [];
         $this->_tokens = $this->_lexer->lex($input);
         $this->_document = $this->createNode('document', ['line' => 0, 'offset' => 0]);
         $this->_currentParent = $this->_document;
@@ -62,6 +64,7 @@ class Parser
         $this->_last = null;
         $this->_inMixin = false;
         $this->_mixinLevel = null;
+        $this->_expansion = null;
 
         while ($this->hasTokens()) {
 
@@ -79,12 +82,12 @@ class Parser
 
         $method = 'handle'.ucfirst($token['type']);
 
-        if (!method_exists($this, $method))
+        if (!method_exists($this, $method)) {
             $this->throwException(
-                "Unexpected token, no handler found",
+                "Unexpected token `{$token['type']}`, no handler $method found",
                 $token
             );
-        else
+        } else
             call_user_func([$this, $method], $token);
     }
 
@@ -368,7 +371,8 @@ class Parser
                 $this->_current = $node;
                 $this->handleToken();
                 $this->_current = $old;
-            }
+            } else
+                $this->handleToken();
 
         } else
             $this->_current = $node;
@@ -405,7 +409,7 @@ class Parser
         //The only difference (for the parser) is, that extend will probably
         //be at indent 0 and PROBABLY the first instruction at all
 
-        if ($this->_current)
+        if ($this->_current && $token['importType'] === 'extends')
             $this->throwException(
                 "extend/include should be the very first statement on a line",
                 $token
@@ -421,10 +425,10 @@ class Parser
         $this->_current = $node;
     }
 
-    protected function handleIndent(array $token)
+    protected function handleIndent(array $token = null)
     {
 
-        $this->_level += $token['levels'];
+        $this->_level++;
 
         if (!$this->_last)
             return;
@@ -488,52 +492,59 @@ class Parser
 
         if ($this->_current) {
 
+            if ($this->_expansion) {
+
+                $this->_current->expands = $this->_expansion;
+                $this->_expansion = null;
+            }
+
             $this->_currentParent->append($this->_current);
             $this->_last = $this->_current;
             $this->_current = null;
         }
-
-        if ($this->_subLevel > 0)
-            $this->handleOutdent(['levels' => 0]);
     }
 
-    protected function handleOutdent(array $token)
+    protected function handleOutdent(array $token = null)
     {
 
-        $levels = $token['levels'] + $this->_subLevel;
-        $this->_level -= $levels;
-        $this->_subLevel = 0;
+        $this->_level--;
+
+        $this->_currentParent = $this->_currentParent->parent;
 
         if ($this->_inMixin && $this->_level <= $this->_mixinLevel) {
 
             $this->_inMixin = false;
             $this->_mixinLevel = null;
         }
-
-        while ($levels-- > 0)
-            $this->_currentParent = $this->_currentParent->parent;
     }
 
-    protected function handleSub(array $token)
+    protected function handleExpansion(array $token, Node $origin = null)
     {
 
         if (!$this->_current)
             $this->throwException(
-                "Sub accesssor needs an element to work on",
+                "Expansion needs an element to work on",
                 $token
             );
 
-        if ($this->_current->type === 'element' && !$token['withSpace'] && $this->expectNext(['tag'])) {
+        if ($this->_current->type === 'element' && !$token['withSpace']) {
+
+            if (!$this->expectNext(['tag']))
+                $this->throwException(
+                    "Expected tag name after double colon",
+                    $token
+                );
 
             $token = $this->getToken();
             $this->_current->tag .= ':'.$token['name'];
             return;
         }
 
-        //We just fake some tokens
-        $this->handleNewLine(); //Stores the element in the current _parentNode
-        $this->handleIndent(['levels' => 1]); //Sets the left element as _parentNode
-        $this->_subLevel++;
+        if ($this->_expansion)
+            $this->_current->expands = $this->_expansion;
+
+        $this->_expansion = $this->_current;
+        $this->_current = null;
     }
 
 
@@ -580,3 +591,6 @@ class Parser
         );
     }
 }
+
+
+

@@ -632,15 +632,15 @@ class Lexer
 
         $levels = $this->_level - $oldLevel;
 
-        if ($levels === 0)
+        if (!empty($indent) && $levels === 0)
             return;
 
-        /** @var \Tale\Jade\Lexer\Token\IndentToken $token */
-        $token = $this->createToken($levels > 0 ? 'indent' : 'outdent');
+        //We create a token for each indentation/outdentation
+        $type = $levels > 0 ? 'indent' : 'outdent';
+        $levels = abs($levels);
 
-        $token['levels'] = abs($levels);
-
-        yield $token;
+        while ($levels--)
+            yield $this->createToken($type);
     }
 
     /**
@@ -691,17 +691,17 @@ class Lexer
 
             if ($token['type'] === 'indent') {
 
-                $level = $token['levels'];
+                $level = 1;
                 foreach ($this->scanFor(['indent', 'newLine', 'text']) as $subToken) {
 
                     yield $subToken;
 
                     if ($subToken['type'] === 'indent')
-                        $level += $subToken['levels'];
+                        $level++;
 
                     if ($subToken['type'] === 'outdent') {
 
-                        $level -= $subToken['levels'];
+                        $level--;
 
                         if ($level <= 0)
                             break 2;
@@ -852,7 +852,7 @@ class Lexer
 
         foreach ($names as $name) {
 
-            if (!$this->match("{$name}[\t \n]"))
+            if (!$this->match("{$name}[:\t \n]"))
                 continue;
 
             $this->consumeMatch();
@@ -962,22 +962,29 @@ class Lexer
         }
     }
 
-    /**
-     * @return \Generator
-     */
-    protected function scanSub()
+    protected function scanExpansion()
     {
 
         if ($this->peek() === ':') {
 
             $this->consume();
-            $token = $this->createToken('sub');
+            $token = $this->createToken('expansion');
 
             $spaces = $this->readSpaces();
             $token['withSpace'] = !empty($spaces);
 
             yield $token;
         }
+    }
+
+    /**
+     * @return \Generator
+     */
+    protected function scanSub()
+    {
+
+        foreach ($this->scanExpansion() as $token)
+            yield $token;
 
         if ($this->peek() === '.') {
 

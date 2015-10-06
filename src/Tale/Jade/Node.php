@@ -74,6 +74,7 @@ class Node
             return $this->append($newNode);
 
         array_splice($this->children, $index + 1, 0, [$newNode]);
+        $newNode->parent = $this;
 
         return $this;
     }
@@ -87,6 +88,7 @@ class Node
             return $this->prepend($newNode);
 
         array_splice($this->children, $index, 0, [$newNode]);
+        $newNode->parent = $this;
 
         return $this;
     }
@@ -166,6 +168,18 @@ class Node
             $str .= $child->dump($level + 1);
 
         return $str;
+    }
+
+    public function __isset($key)
+    {
+
+        return isset($this->_data[$key]);
+    }
+
+    public function __unset($key)
+    {
+
+        unset($this->_data[$key]);
     }
 
     public function &__get($key)
