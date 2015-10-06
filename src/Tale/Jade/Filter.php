@@ -17,14 +17,15 @@ class Filter
         $strlen = function_exists('mb_strlen') ? 'mb_strlen' : 'strlen';
         $text = self::filterPlain($node, $indent, $newLine);
 
+        $trimmedText = trim($text);
         //Make sure to have it correctly wrapped in php tags
-        if (strpos($text, '<?php') !== 0)
-            $text = '<?php '.$newLine.$text;
+        if (strpos($trimmedText, '<?php') !== 0)
+            $text = $indent.'<?php '.$newLine.ltrim($text);
 
-        if (strpos($text, '?>') !== $strlen($text) - 1)
-            $text .= $indent.'?>'.$newLine;
+        if (strpos($trimmedText, '?>') !== $strlen($trimmedText) - 1)
+            $text = rtrim($text).$newLine.$indent.'?>';
 
-        return $text;
+        return $text.$newLine;
     }
 
 
