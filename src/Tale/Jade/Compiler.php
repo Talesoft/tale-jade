@@ -26,7 +26,7 @@ class Compiler
         $this->_options = array_replace_recursive([
             'pretty' => true,
             'indentStyle' => Lexer::INDENT_SPACE,
-            'indentWidth' => 4,
+            'indentWidth' => 2,
             'mode' => self::MODE_HTML,
             'selfClosingTags' => [
                 'input', 'br', 'img', 'link'
