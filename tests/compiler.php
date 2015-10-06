@@ -5,6 +5,7 @@ include '../vendor/autoload.php';
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 ini_set('error_reporting', E_ALL | E_NOTICE);
+ini_set('xdebug.max_nesting_level', 300);
 
 $compiler = new Tale\Jade\Compiler();
 ?>

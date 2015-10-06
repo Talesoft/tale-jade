@@ -141,7 +141,6 @@ class Compiler
         $this->handleImports($node);
         $this->handleBlocks($node);
         $this->handleMixins($node);
-        $this->handleExpansions($node);
 
         //The actual compilation process ($node is the very root node of everything)
         $phtml = $this->compileNode($node);
@@ -272,13 +271,28 @@ class Compiler
 
         $method = 'compile'.ucfirst($node->type);
 
-        if (!method_exists($this, $method)) {
+        if (!method_exists($this, $method))
             $this->throwException(
-                "No handler found",
+                "No handler $method found for $node->type found",
                 $node
             );
 
-            return $this->compileChildren($node->children);
+        //resolve expansions
+        if (isset($node->expands)) {
+
+            $current = $node;
+            while (isset($current->expands)) {
+
+                $expandedNode = $current->expands;
+                unset($current->expands);
+
+                $current->parent->insertBefore($current, $expandedNode);
+                $current->parent->remove($current);
+                $expandedNode->append($current);
+                $current = $expandedNode;
+            }
+
+            return $this->compileNode($current);
         }
 
         return call_user_func([$this, $method], $node);
@@ -287,7 +301,7 @@ class Compiler
     protected function compileDocument(Node $node)
     {
 
-        return $this->compileChildren($node->children);
+        return $this->compileChildren($node->children, false);
     }
     protected function compileDoctype(Node $node)
     {
@@ -387,6 +401,14 @@ class Compiler
                     $newNode = $filter;
                 }
 
+                //Notice that include might have an expansion before
+                //We'd need to resolve that before we remove the import node alltogether
+                if (isset($node->expands)) {
+
+                    $newNode->expands = $node->expands;
+                    unset($node->expands);
+                }
+
                 $node->parent->insertBefore($node, $newNode);
                 $node->parent->remove($node);
 
@@ -407,6 +429,14 @@ class Compiler
         $this->_files[] = $fullPath;
         $this->handleImports($importedNode);
         array_pop($this->_files);
+
+        //Notice that include might have an expansion before
+        //We'd need to resolve that before we remove the import node alltogether
+        if (isset($node->expands)) {
+
+            $importedNode->expands = $node->expands;
+            unset($node->expands);
+        }
 
         $node->parent->insertBefore($node, $importedNode);
         $node->parent->remove($node);
@@ -435,6 +465,12 @@ class Compiler
 
             if ($block === $node || $block->name !== $node->name)
                 continue;
+
+            if ($block->expands)
+                $this->throwException(
+                    "It makes no sense for a sub-block to expand anything",
+                    $block
+                );
 
             $mode = $block->mode;
             //detach from parent
@@ -514,7 +550,7 @@ class Compiler
         //Detach
         $node->parent->remove($node);
 
-        $this->_mixins[$node->name] = ['node' => $node, 'phtml' => $this->compileChildren($node->children)];
+        $this->_mixins[$node->name] = ['node' => $node, 'phtml' => $this->compileChildren($node->children, false)];
 
         return $this;
     }
@@ -601,7 +637,7 @@ class Compiler
                 extract($__callArgs);
             '
                 ).$this->newLine();
-            $phtml .= $this->compileChildren($node->children).$this->newLine();
+            $phtml .= $this->compileChildren($node->children, false).$this->newLine();
             $phtml .= $this->indent().$this->createCode('};').$this->newLine();
         }
 
@@ -699,7 +735,7 @@ class Compiler
             return $this->createShortCode('isset($__block) && $__block instanceof \Closure ? $__block(array_replace($__args, $__callArgs)) : \'\'');
 
         //At this point the code knows this block only, since handleBlock took care of the blocks previously
-        return $this->compileChildren($node->children);
+        return $this->compileChildren($node->children, false);
     }
 
     protected function compileConditional(Node $node)
@@ -743,14 +779,24 @@ class Compiler
         if ($this->isVariable($subject))
             $subject = "isset({$subject}) ? {$subject} : null";
 
+        //Notice that we omit the "? >"
+        //This is because PHP doesnt allow "? ><?php" between switch and the first case
+        $phtml = $this->createCode("switch ({$subject}) {", '<?php ', '').$this->newLine();
+        $phtml .= $this->compileChildren($node->children).$this->newLine();
+        $phtml .= $this->indent().$this->createCode('}');
+
+
+        //We need to check this after compilation, since there could be when: something children
+        //that would be like [case children=[[something expands=[when]]] right now
         $hasChild = false;
         foreach ($node->children as $child) {
 
-            if ($child->type !== 'when')
+            if ($child->type !== 'when') {
                 $this->throwException(
                     "`case` can only have `when` children",
                     $node
                 );
+            }
 
             $hasChild = true;
         }
@@ -762,12 +808,6 @@ class Compiler
                 $node
             );
         }
-
-        //Notice that we omit the "? >"
-        //This is because PHP doesnt allow "? ><?php" between switch and the first case
-        $phtml = $this->createCode("switch ({$subject}) {", '<?php ', '').$this->newLine();
-        $phtml .= $this->compileChildren($node->children).$this->newLine();
-        $phtml .= $this->indent().$this->createCode('}');
 
         return $phtml;
     }
@@ -871,16 +911,16 @@ class Compiler
                 $node
             );
 
-        $result = call_user_func($this->_options['filters'][$name], $node, $this);
+        $result = call_user_func($this->_options['filters'][$name], $node, $this->indent(), $this->newLine(), $this);
 
         return $result instanceof Node ? $this->compileNode($result) : (string)$result;
     }
 
-    protected function compileChildren(array $nodes, $allowInline = false)
+    protected function compileChildren(array $nodes, $indent = true, $allowInline = false)
     {
 
         $phtml = '';
-        $this->_level++;
+        $this->_level += $indent ? 1 : 0;
 
         if (count($nodes) === 1 && $allowInline) {
 
@@ -898,7 +938,7 @@ class Compiler
 
             $phtml .= $this->newLine().$this->indent().$this->compileNode($node);
         }
-        $this->_level--;
+        $this->_level -= $indent ? 1 : 0;
 
         return $phtml;
     }
@@ -1070,7 +1110,7 @@ class Compiler
     protected function compileText(Node $node)
     {
 
-        return $this->interpolate($node->value).$this->compileChildren($node->children, true);
+        return $this->interpolate($node->value).$this->compileChildren($node->children, true, true);
     }
 
     protected function compileExpression(Node $node)
@@ -1087,13 +1127,13 @@ class Compiler
 
         $method = $node->return ? 'createShortCode' : 'createCode';
 
-        return $this->$method(sprintf($code, trim($this->compileChildren($node->children, true))));
+        return $this->$method(sprintf($code, trim($this->compileChildren($node->children, true, true))));
     }
 
     protected function compileComment(Node $node)
     {
 
-        $content = $this->compileChildren($node->children, true);
+        $content = $this->compileChildren($node->children, true, true);
         return $node->rendered ? $this->createMarkupComment($content) : $this->createPhpComment($content);
     }
 

@@ -632,11 +632,8 @@ class Lexer
 
         $levels = $this->_level - $oldLevel;
 
-        if (!empty($indent) && $levels === 0) {
-
-            yield $this->createToken('nodent');
+        if (!empty($indent) && $levels === 0)
             return;
-        }
 
         //We create a token for each indentation/outdentation
         $type = $levels > 0 ? 'indent' : 'outdent';
@@ -855,7 +852,7 @@ class Lexer
 
         foreach ($names as $name) {
 
-            if (!$this->match("{$name}[\t \n]"))
+            if (!$this->match("{$name}[:\t \n]"))
                 continue;
 
             $this->consumeMatch();

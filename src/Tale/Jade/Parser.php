@@ -21,7 +21,6 @@ class Parser
     private $_last;
     private $_inMixin;
     private $_mixinLevel;
-    private $_expandedNodes;
     private $_expansion;
 
 
@@ -65,8 +64,7 @@ class Parser
         $this->_last = null;
         $this->_inMixin = false;
         $this->_mixinLevel = null;
-        $this->_expandedNodes = [];
-        $this->_expansion = false;
+        $this->_expansion = null;
 
         while ($this->hasTokens()) {
 
@@ -494,6 +492,12 @@ class Parser
 
         if ($this->_current) {
 
+            if ($this->_expansion) {
+
+                $this->_current->expands = $this->_expansion;
+                $this->_expansion = null;
+            }
+
             $this->_currentParent->append($this->_current);
             $this->_last = $this->_current;
             $this->_current = null;
@@ -512,10 +516,6 @@ class Parser
             $this->_inMixin = false;
             $this->_mixinLevel = null;
         }
-    }
-
-    protected function handleNodent()
-    {
     }
 
     protected function handleExpansion(array $token, Node $origin = null)
@@ -540,45 +540,11 @@ class Parser
             return;
         }
 
-        $origin = $origin ? $origin : $this->_current;
+        if ($this->_expansion)
+            $this->_current->expands = $this->_expansion;
 
-        $this->handleNewLine();
-        $this->handleIndent();
-
-        $level = 0;
-        while($this->hasTokens()) {
-
-            var_dump($this->getToken());
-            if ($this->expectNext(['indent', 'nodent', 'outdent'])) {
-
-                $subToken = $this->getToken();
-                $this->handleToken();
-                switch ($subToken['type']) {
-                    case 'nodent':
-
-                        while ($this->_currentParent !== $origin->parent)
-                            $this->handleOutdent();
-                        return;
-                    case 'indent':
-                        $level++;
-                        $origin = null;
-                        break;
-                    case 'outdent':
-                        $level--;
-
-                        if ($level <= 0) {
-                            return;
-                        }
-                }
-            } else if ($this->hasTokens()) {
-
-                $subToken = $this->getToken();
-                if ($subToken['type'] === 'expansion')
-                    $this->handleExpansion($subToken, $origin);
-                else
-                    $this->handleToken();
-            }
-        };
+        $this->_expansion = $this->_current;
+        $this->_current = null;
     }
 
 

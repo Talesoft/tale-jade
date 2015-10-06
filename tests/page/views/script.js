@@ -18,6 +18,7 @@ $(function() {
     phpEditor.getSession().setUseSoftTabs(true);
     phpEditor.setReadOnly(true);
 
+
     function compile()
     {
 
@@ -43,7 +44,7 @@ $(function() {
         }
 
         document.getElementById('phpEditor').classList.add('compiling');
-        iv = window.setTimeout(compile, 500);
+        iv = window.setTimeout(compile, 50);
     }
 
     jadeEditor.getSession().on('change', changed);
