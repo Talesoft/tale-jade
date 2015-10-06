@@ -2,7 +2,8 @@
 
 # The Tale Jade Template Engine
 
-> Finally a fully-functional, complete and clean port of the Jade language to PHP 
+> **Finally a fully-functional, complete and clean port of the Jade language to PHP**
+>
 > *— Abraham Lincoln*
 
 The Tale Jade Template Engine brings the popular and powerful Templating-Language [Jade for Node.js](http://jade-lang.com) to PHP!
@@ -82,9 +83,9 @@ We don't stick to the Jade-convention, but we'll always provide compatibility to
 help reducing confusion.
 
 Planned features:
-[ ] Import Attributes (`include some-file(some-var='some-value')`)
-[ ] Helper Libraries
-[ ] Aliases (Like mixins, just smaller)
+- [ ] Import Attributes (`include some-file(some-var='some-value')`)
+- [ ] Helper Libraries
+- [ ] Aliases (Like mixins, just smaller)
 
 
 
