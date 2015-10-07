@@ -2,6 +2,8 @@
 
 namespace Tale\Jade;
 
+use Tale\Jade\Parser\Node;
+
 /**
  * Class Filter
  * @package Tale\Jade
