@@ -2,6 +2,9 @@
 
 namespace Tale\Jade;
 
+use Tale\Jade\Parser\Node;
+use Tale\Jade\Parser\Exception;
+
 class Parser
 {
 
@@ -586,7 +589,7 @@ class Parser
                         .' at '.$relatedToken['line']
                         .':'.$relatedToken['offset'].')';
 
-        throw new ParseException(
+        throw new Exception(
             "Failed to parse Jade: $message"
         );
     }

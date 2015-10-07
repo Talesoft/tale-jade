@@ -2,7 +2,8 @@
 
 namespace Tale\Jade;
 
-use Tale\Util\PathUtil;
+use Tale\Jade\Compiler\Exception;
+use Tale\Jade\Parser\Node;
 
 class Compiler
 {
@@ -929,9 +930,9 @@ class Compiler
             return trim($compiled);
         }
 
-        foreach ($nodes as $node) {
+        foreach ($nodes as $idx => $node) {
 
-            if ($node->type === 'text' && !$this->_options['pretty']) {
+            if ($node->type === 'text' && !$this->_options['pretty'] && $idx > 0) {
 
                 $phtml .= ' ';
             }
@@ -1166,7 +1167,7 @@ class Compiler
                     .' at '.$relatedNode->line
                     .':'.$relatedNode->offset.')';
 
-        throw new CompileException(
+        throw new Exception(
             "Failed to compile Jade: $message"
         );
     }

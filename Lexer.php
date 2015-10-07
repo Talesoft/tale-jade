@@ -2,6 +2,8 @@
 
 namespace Tale\Jade;
 
+use Tale\Jade\Lexer\Exception;
+
 /**
  * The Lexer parses the input string into tokens
  * that can be worked with easier
@@ -1203,13 +1205,13 @@ class Lexer
     /**
      * @param $message
      *
-     * @throws \Tale\Jade\LexException
+     * @throws \Tale\Jade\Lexer\Exception
      */
     protected function throwException($message)
     {
 
         $message = "Failed to parse jade: $message (Line: {$this->_line}, Offset: {$this->_offset})";
-        throw new LexException($message);
+        throw new Exception($message);
     }
 
     /**

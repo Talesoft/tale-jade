@@ -1,6 +1,6 @@
 <?php
 
-namespace Tale\Jade;
+namespace Tale\Jade\Parser;
 
 class Node
 {
