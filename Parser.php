@@ -24,10 +24,6 @@ class Parser
     /**
      * @var
      */
-    private $_currentToken;
-    /**
-     * @var
-     */
     private $_level;
     /**
      * @var
@@ -116,6 +112,12 @@ class Parser
         $this->_inMixin = false;
         $this->_mixinLevel = null;
         $this->_expansion = null;
+
+        //Fix HHVM generators needing ->next() before ->current()
+        if (defined('HHVM_VERSION')) {
+
+            $this->_tokens->next();
+        }
 
         while ($this->hasTokens()) {
 
@@ -234,7 +236,6 @@ class Parser
     protected function nextToken()
     {
 
-        $this->_currentToken = null;
         $this->_tokens->next();
 
         return $this;
@@ -246,12 +247,9 @@ class Parser
     protected function getToken()
     {
 
-        if ($this->_currentToken)
-            return $this->_currentToken;
-
-        $this->_currentToken = $this->_tokens->current();
-        return $this->_currentToken;
+        return $this->_tokens->current();
     }
+
 
     /**
      * @param $name
