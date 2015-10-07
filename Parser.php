@@ -11,7 +11,7 @@ class Parser
     private $_options;
     private $_lexer;
 
-
+    private $_currentToken;
     private $_level;
     private $_subLevel;
     private $_subLevels;
@@ -156,6 +156,7 @@ class Parser
     protected function nextToken()
     {
 
+        $this->_currentToken = null;
         $this->_tokens->next();
 
         return $this;
@@ -164,7 +165,11 @@ class Parser
     protected function getToken()
     {
 
-        return $this->_tokens->current();
+        if ($this->_currentToken)
+            return $this->_currentToken;
+
+        $this->_currentToken = $this->_tokens->current();
+        return $this->_currentToken;
     }
 
     protected function createNode($name, array $token = null)
