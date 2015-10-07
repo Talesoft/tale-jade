@@ -51,10 +51,20 @@ class Filter
     public static function filterPlain(Node $node, $indent, $newLine)
     {
 
-        return implode($newLine, array_map(function($line) use($indent, $newLine) {
+        $text = trim($node->text());
 
-            return $indent.trim($line);
-        }, preg_split("/\r?\n/", trim($node->text())))).$newLine;
+        //Normalize newlines to $newLine and append our indent
+        $i = 0;
+        return implode($newLine, array_map(function($value) use($indent, $newLine, &$i) {
+
+            if (strlen($indent) < 1 && $i++ !== 0&& strlen($value) > 0) {
+
+                //Make sure we separate with at least one white-space
+                $indent = ' ';
+            }
+
+            return $indent.trim($value);
+        }, explode("\n", $text)));
     }
 
     /**
