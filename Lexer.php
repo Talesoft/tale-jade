@@ -975,6 +975,9 @@ class Lexer
         }
     }
 
+    /**
+     * @return \Generator
+     */
     protected function scanExpansion()
     {
 

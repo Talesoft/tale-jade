@@ -5,28 +5,72 @@ namespace Tale\Jade;
 use Tale\Jade\Parser\Node;
 use Tale\Jade\Parser\Exception;
 
+/**
+ * Class Parser
+ * @package Tale\Jade
+ */
 class Parser
 {
 
+    /**
+     * @var array
+     */
     private $_options;
+    /**
+     * @var Lexer
+     */
     private $_lexer;
 
+    /**
+     * @var
+     */
     private $_currentToken;
+    /**
+     * @var
+     */
     private $_level;
+    /**
+     * @var
+     */
     private $_subLevel;
+    /**
+     * @var
+     */
     private $_subLevels;
     /** @var \Generator */
     private $_tokens;
     /** @var \Tale\Jade\Node */
     private $_document;
+    /**
+     * @var
+     */
     private $_currentParent;
+    /**
+     * @var
+     */
     private $_current;
+    /**
+     * @var
+     */
     private $_last;
+    /**
+     * @var
+     */
     private $_inMixin;
+    /**
+     * @var
+     */
     private $_mixinLevel;
+    /**
+     * @var
+     */
     private $_expansion;
 
 
+    /**
+     * @param array|null $options
+     * @param Lexer|null $lexer
+     */
     public function __construct(array $options = null, Lexer $lexer = null)
     {
 
@@ -54,6 +98,10 @@ class Parser
         return $this->_lexer;
     }
 
+    /**
+     * @param $input
+     * @return \Tale\Jade\Node|Node
+     */
     public function parse($input)
     {
 
@@ -78,6 +126,10 @@ class Parser
         return $this->_document;
     }
 
+    /**
+     * @param array|null $token
+     * @throws Exception
+     */
     protected function handleToken(array $token = null)
     {
 
@@ -94,6 +146,10 @@ class Parser
             call_user_func([$this, $method], $token);
     }
 
+    /**
+     * @param array $types
+     * @return \Generator
+     */
     protected function lookUp(array $types)
     {
 
@@ -109,12 +165,20 @@ class Parser
         }
     }
 
+    /**
+     * @param array $types
+     * @return \Generator
+     */
     protected function lookUpNext(array $types)
     {
 
         return $this->nextToken()->lookUp($types);
     }
 
+    /**
+     * @param array $types
+     * @return mixed|null
+     */
     protected function expect(array $types)
     {
 
@@ -126,12 +190,20 @@ class Parser
         return null;
     }
 
+    /**
+     * @param array $types
+     * @return mixed|null
+     */
     protected function expectNext(array $types)
     {
 
         return $this->nextToken()->expect($types);
     }
 
+    /**
+     * @param array|null $relatedToken
+     * @throws Exception
+     */
     protected function expectEnd(array $relatedToken = null)
     {
 
@@ -147,12 +219,18 @@ class Parser
         );
     }
 
+    /**
+     * @return bool
+     */
     protected function hasTokens()
     {
 
         return $this->_tokens->valid();
     }
 
+    /**
+     * @return $this
+     */
     protected function nextToken()
     {
 
@@ -162,6 +240,9 @@ class Parser
         return $this;
     }
 
+    /**
+     * @return mixed
+     */
     protected function getToken()
     {
 
@@ -172,6 +253,11 @@ class Parser
         return $this->_currentToken;
     }
 
+    /**
+     * @param $name
+     * @param array|null $token
+     * @return Node
+     */
     protected function createNode($name, array $token = null)
     {
 
@@ -180,6 +266,10 @@ class Parser
         return $node;
     }
 
+    /**
+     * @param array|null $token
+     * @return Node
+     */
     protected function createElement(array $token = null)
     {
 
@@ -191,6 +281,10 @@ class Parser
         return $node;
     }
 
+    /**
+     * @param array $token
+     * @throws Exception
+     */
     protected function handleAssignment(array $token)
     {
 
@@ -218,6 +312,10 @@ class Parser
             );
     }
 
+    /**
+     * @param array $token
+     * @throws Exception
+     */
     protected function handleAttribute(array $token)
     {
 
@@ -241,6 +339,10 @@ class Parser
         $this->_current->attributes[] = $node;
     }
 
+    /**
+     * @param array $token
+     * @throws Exception
+     */
     protected function handleAttributeStart(array $token)
     {
 
@@ -264,11 +366,18 @@ class Parser
             );
     }
 
+    /**
+     * @param array $token
+     */
     protected function handleAttributeEnd(array $token)
     {
 
     }
 
+    /**
+     * @param array $token
+     * @throws Exception
+     */
     protected function handleBlock(array $token)
     {
 
@@ -286,6 +395,10 @@ class Parser
         $this->expectEnd($token);
     }
 
+    /**
+     * @param array $token
+     * @throws Exception
+     */
     protected function handleClass(array $token)
     {
 
@@ -302,6 +415,9 @@ class Parser
         $this->_current->attributes[] = $attr;
     }
 
+    /**
+     * @param array $token
+     */
     protected function handleComment(array $token)
     {
 
@@ -311,6 +427,9 @@ class Parser
         $this->_current = $node;
     }
 
+    /**
+     * @param array $token
+     */
     protected function handleCase(array $token)
     {
 
@@ -319,6 +438,9 @@ class Parser
         $this->_current = $node;
     }
 
+    /**
+     * @param array $token
+     */
     protected function handleConditional(array $token)
     {
 
@@ -329,6 +451,9 @@ class Parser
         $this->_current = $node;
     }
 
+    /**
+     * @param array $token
+     */
     protected function handleDo(array $token)
     {
 
@@ -336,6 +461,9 @@ class Parser
         $this->_current = $node;
     }
 
+    /**
+     * @param array $token
+     */
     protected function handleDoctype(array $token)
     {
 
@@ -345,6 +473,9 @@ class Parser
         $this->_current = $node;
     }
 
+    /**
+     * @param array $token
+     */
     protected function handleEach(array $token)
     {
 
@@ -356,6 +487,10 @@ class Parser
         $this->_current = $node;
     }
 
+    /**
+     * @param array $token
+     * @throws Exception
+     */
     protected function handleExpression(array $token)
     {
 
@@ -386,6 +521,9 @@ class Parser
             $this->_current = $node;
     }
 
+    /**
+     * @param array $token
+     */
     protected function handleFilter(array $token)
     {
 
@@ -394,6 +532,10 @@ class Parser
         $this->_current = $node;
     }
 
+    /**
+     * @param array $token
+     * @throws Exception
+     */
     protected function handleId(array $token)
     {
 
@@ -410,6 +552,10 @@ class Parser
         $this->_current->attributes[] = $attr;
     }
 
+    /**
+     * @param array $token
+     * @throws Exception
+     */
     protected function handleImport(array $token)
     {
 
@@ -433,6 +579,10 @@ class Parser
         $this->_current = $node;
     }
 
+    /**
+     * @param array|null $token
+     * @throws Exception
+     */
     protected function handleIndent(array $token = null)
     {
 
@@ -450,6 +600,10 @@ class Parser
         $this->_currentParent = $this->_last;
     }
 
+    /**
+     * @param array $token
+     * @throws Exception
+     */
     protected function handleTag(array $token)
     {
 
@@ -465,6 +619,10 @@ class Parser
         $this->_current->tag = $token['name'];
     }
 
+    /**
+     * @param array $token
+     * @throws Exception
+     */
     protected function handleMixin(array $token)
     {
 
@@ -484,6 +642,9 @@ class Parser
         $this->_current = $node;
     }
 
+    /**
+     * @param array $token
+     */
     protected function handleMixinCall(array $token)
     {
 
@@ -495,6 +656,9 @@ class Parser
         $this->_current = $node;
     }
 
+    /**
+     * @param array|null $token
+     */
     protected function handleNewLine(array $token = null)
     {
 
@@ -512,6 +676,9 @@ class Parser
         }
     }
 
+    /**
+     * @param array|null $token
+     */
     protected function handleOutdent(array $token = null)
     {
 
@@ -526,6 +693,11 @@ class Parser
         }
     }
 
+    /**
+     * @param array $token
+     * @param Node|null $origin
+     * @throws Exception
+     */
     protected function handleExpansion(array $token, Node $origin = null)
     {
 
@@ -556,6 +728,9 @@ class Parser
     }
 
 
+    /**
+     * @param array $token
+     */
     protected function handleText(array $token)
     {
 
@@ -568,6 +743,9 @@ class Parser
             $this->_current = $node;
     }
 
+    /**
+     * @param array $token
+     */
     protected function handleWhen(array $token)
     {
 
@@ -577,6 +755,9 @@ class Parser
         $this->_current = $node;
     }
 
+    /**
+     * @param array $token
+     */
     protected function handleWhile(array $token)
     {
 
@@ -586,6 +767,11 @@ class Parser
     }
 
 
+    /**
+     * @param $message
+     * @param array|null $relatedToken
+     * @throws Exception
+     */
     protected function throwException($message, array $relatedToken = null)
     {
 

@@ -5,22 +5,61 @@ namespace Tale\Jade;
 use Tale\Jade\Compiler\Exception;
 use Tale\Jade\Parser\Node;
 
+/**
+ * Class Compiler
+ * @package Tale\Jade
+ */
 class Compiler
 {
 
+    /**
+     *
+     */
     const MODE_HTML = 0;
+    /**
+     *
+     */
     const MODE_XML = 1;
 
+    /**
+     * @var array
+     */
     private $_options;
+    /**
+     * @var Lexer
+     */
     private $_lexer;
+    /**
+     * @var Parser
+     */
     private $_parser;
 
+    /**
+     * @var
+     */
     private $_files;
+    /**
+     * @var
+     */
     private $_mixins;
+    /**
+     * @var
+     */
     private $_calledMixins;
+    /**
+     * @var
+     */
     private $_blocks;
+    /**
+     * @var
+     */
     private $_level;
 
+    /**
+     * @param array|null $options
+     * @param Parser|null $parser
+     * @param Lexer|null $lexer
+     */
     public function __construct(array $options = null, Parser $parser = null, Lexer $lexer = null)
     {
 
@@ -104,6 +143,10 @@ class Compiler
         return $this->_parser;
     }
 
+    /**
+     * @param $path
+     * @return $this
+     */
     public function addPath($path)
     {
 
@@ -112,6 +155,11 @@ class Compiler
         return $this;
     }
 
+    /**
+     * @param $name
+     * @param $callback
+     * @return $this
+     */
     public function addFilter($name, $callback)
     {
 
@@ -125,6 +173,11 @@ class Compiler
         return $this;
     }
 
+    /**
+     * @param $input
+     * @param null $path
+     * @return mixed|string
+     */
     public function compile($input, $path = null)
     {
 
@@ -170,6 +223,11 @@ class Compiler
         return $phtml;
     }
 
+    /**
+     * @param $path
+     * @return mixed|string
+     * @throws \Exception
+     */
     public function compileFile($path)
     {
 
@@ -183,18 +241,31 @@ class Compiler
         return $this->compile(file_get_contents($fullPath), $fullPath);
     }
 
+    /**
+     * @param $value
+     * @return int
+     */
     protected function isScalar($value)
     {
 
         return preg_match('/^([a-z0-9\_\-]+|"[^"]*"|\'[^\']*\')$/i', $value);
     }
 
+    /**
+     * @param $value
+     * @return int
+     */
     protected function isVariable($value)
     {
 
         return preg_match('/^\$[a-z_][a-z0-9\_\[\]\->\'"]*$/i', $value);
     }
 
+    /**
+     * @param $string
+     * @param bool|false $attribute
+     * @return mixed
+     */
     protected function interpolate($string, $attribute = false)
     {
 
@@ -220,6 +291,9 @@ class Compiler
         return $string;
     }
 
+    /**
+     * @return string
+     */
     protected function newLine()
     {
 
@@ -227,6 +301,11 @@ class Compiler
                ? "\n"
                : '';
     }
+
+    /**
+     * @param int $offset
+     * @return string
+     */
     protected function indent($offset = 0)
     {
 
@@ -235,6 +314,12 @@ class Compiler
                : '';
     }
 
+    /**
+     * @param $code
+     * @param string $prefix
+     * @param string $suffix
+     * @return string
+     */
     protected function createCode($code, $prefix = '<?php ', $suffix = '?>')
     {
 
@@ -249,24 +334,41 @@ class Compiler
         return $prefix.$code.$suffix;
     }
 
+    /**
+     * @param $code
+     * @return string
+     */
     protected function createShortCode($code)
     {
 
         return $this->createCode($code, '<?=');
     }
 
+    /**
+     * @param $code
+     * @return string
+     */
     protected function createPhpComment($code)
     {
 
         return $this->createCode($code, '<?php /* ', ' */ ?>');
     }
 
+    /**
+     * @param $code
+     * @return string
+     */
     protected function createMarkupComment($code)
     {
 
         return $this->createCode($code, '<!-- ', ' -->');
     }
 
+    /**
+     * @param Node $node
+     * @return mixed
+     * @throws Exception
+     */
     protected function compileNode(Node $node)
     {
 
@@ -299,11 +401,20 @@ class Compiler
         return call_user_func([$this, $method], $node);
     }
 
+    /**
+     * @param Node $node
+     * @return string
+     */
     protected function compileDocument(Node $node)
     {
 
         return $this->compileChildren($node->children, false);
     }
+
+    /**
+     * @param Node $node
+     * @return string
+     */
     protected function compileDoctype(Node $node)
     {
 
@@ -317,6 +428,11 @@ class Compiler
         return $value;
     }
 
+    /**
+     * @param $path
+     * @param null $extension
+     * @return bool|string
+     */
     public function resolvePath($path, $extension = null)
     {
 
@@ -346,6 +462,11 @@ class Compiler
         return false;
     }
 
+    /**
+     * @param Node $node
+     * @return $this
+     * @throws Exception
+     */
     protected function handleImports(Node $node)
     {
 
@@ -363,6 +484,11 @@ class Compiler
         return $this;
     }
 
+    /**
+     * @param Node $node
+     * @return $this
+     * @throws Exception
+     */
     protected function handleImport(Node $node)
     {
 
@@ -445,6 +571,10 @@ class Compiler
         return $this;
     }
 
+    /**
+     * @param Node $node
+     * @return $this
+     */
     protected function handleBlocks(Node $node)
     {
 
@@ -455,6 +585,11 @@ class Compiler
         return $this;
     }
 
+    /**
+     * @param Node $node
+     * @return $this
+     * @throws Exception
+     */
     protected function handleBlock(Node $node)
     {
 
@@ -515,6 +650,11 @@ class Compiler
         }
     }
 
+    /**
+     * @param Node $node
+     * @return $this
+     * @throws Exception
+     */
     protected function handleMixins(Node $node)
     {
 
@@ -540,6 +680,10 @@ class Compiler
         return $this;
     }
 
+    /**
+     * @param Node $node
+     * @return $this
+     */
     protected function handleMixin(Node $node)
     {
 
@@ -556,6 +700,9 @@ class Compiler
         return $this;
     }
 
+    /**
+     * @return string
+     */
     protected function compileMixins()
     {
 
@@ -613,6 +760,11 @@ class Compiler
         return $phtml;
     }
 
+    /**
+     * @param Node $node
+     * @return string
+     * @throws Exception
+     */
     protected function compileMixinCall(Node $node)
     {
 
@@ -727,6 +879,10 @@ class Compiler
         return $phtml;
     }
 
+    /**
+     * @param Node $node
+     * @return string
+     */
     protected function compileBlock(Node $node)
     {
 
@@ -739,6 +895,10 @@ class Compiler
         return $this->compileChildren($node->children, false);
     }
 
+    /**
+     * @param Node $node
+     * @return string
+     */
     protected function compileConditional(Node $node)
     {
 
@@ -772,6 +932,11 @@ class Compiler
         return $phtml;
     }
 
+    /**
+     * @param Node $node
+     * @return string
+     * @throws Exception
+     */
     protected function compileCase(Node $node)
     {
 
@@ -813,6 +978,11 @@ class Compiler
         return $phtml;
     }
 
+    /**
+     * @param Node $node
+     * @return string
+     * @throws Exception
+     */
     protected function compileWhen(Node $node)
     {
 
@@ -840,6 +1010,10 @@ class Compiler
         return $phtml;
     }
 
+    /**
+     * @param Node $node
+     * @return string
+     */
     protected function compileEach(Node $node)
     {
 
@@ -864,6 +1038,10 @@ class Compiler
         return $phtml;
     }
 
+    /**
+     * @param Node $node
+     * @return string
+     */
     protected function compileWhile(Node $node)
     {
 
@@ -883,6 +1061,11 @@ class Compiler
         return $phtml;
     }
 
+    /**
+     * @param Node $node
+     * @return string
+     * @throws Exception
+     */
     protected function compileDo(Node $node)
     {
 
@@ -901,6 +1084,11 @@ class Compiler
         return $phtml;
     }
 
+    /**
+     * @param Node $node
+     * @return mixed|string
+     * @throws Exception
+     */
     protected function compileFilter(Node $node)
     {
 
@@ -917,6 +1105,12 @@ class Compiler
         return $result instanceof Node ? $this->compileNode($result) : (string)$result;
     }
 
+    /**
+     * @param array $nodes
+     * @param bool|true $indent
+     * @param bool|false $allowInline
+     * @return string
+     */
     protected function compileChildren(array $nodes, $indent = true, $allowInline = false)
     {
 
@@ -944,6 +1138,10 @@ class Compiler
         return $phtml;
     }
 
+    /**
+     * @param Node $node
+     * @return string
+     */
     protected function compileElement(Node $node)
     {
 
@@ -1108,12 +1306,20 @@ class Compiler
         return $phtml;
     }
 
+    /**
+     * @param Node $node
+     * @return string
+     */
     protected function compileText(Node $node)
     {
 
         return $this->interpolate($node->value).$this->compileChildren($node->children, true, true);
     }
 
+    /**
+     * @param Node $node
+     * @return string
+     */
     protected function compileExpression(Node $node)
     {
 
@@ -1131,6 +1337,10 @@ class Compiler
         return $this->$method(sprintf($code, trim($this->compileChildren($node->children, true, true))));
     }
 
+    /**
+     * @param Node $node
+     * @return string
+     */
     protected function compileComment(Node $node)
     {
 
@@ -1138,6 +1348,9 @@ class Compiler
         return $node->rendered ? $this->createMarkupComment($content) : $this->createPhpComment($content);
     }
 
+    /**
+     * @return string
+     */
     protected function compileErrorHandlerHelper()
     {
 
@@ -1159,6 +1372,11 @@ class Compiler
         return $phtml;
     }
 
+    /**
+     * @param $message
+     * @param Node|null $relatedNode
+     * @throws Exception
+     */
     protected function throwException($message, Node $relatedNode = null)
     {
 
@@ -1173,6 +1391,12 @@ class Compiler
     }
 
 
+    /**
+     * @param $value
+     * @param $quoteStyle
+     * @param $escaped
+     * @return string
+     */
     public static function buildValue($value, $quoteStyle, $escaped)
     {
 
@@ -1182,6 +1406,12 @@ class Compiler
         return $quoteStyle.($escaped ? htmlentities(self::isObjectOrArray($value) ? implode('', $value) : $value, \ENT_QUOTES) : ((string)$value)).$quoteStyle;
     }
 
+    /**
+     * @param $value
+     * @param $quoteStyle
+     * @param $escaped
+     * @return string
+     */
     public static function buildDataValue($value, $quoteStyle, $escaped)
     {
 
@@ -1191,6 +1421,11 @@ class Compiler
         return $quoteStyle.($escaped ? htmlentities($value, \ENT_QUOTES) : ((string)$value)).$quoteStyle;
     }
 
+    /**
+     * @param $value
+     * @param $quoteStyle
+     * @return string
+     */
     public static function buildStyleValue($value, $quoteStyle)
     {
 
@@ -1203,6 +1438,11 @@ class Compiler
         return $quoteStyle.((string)$value).$quoteStyle;
     }
 
+    /**
+     * @param $value
+     * @param $quoteStyle
+     * @return string
+     */
     public static function buildClassValue($value, $quoteStyle)
     {
 
@@ -1215,24 +1455,42 @@ class Compiler
         return $quoteStyle.((string)$value).$quoteStyle;
     }
 
+    /**
+     * @param $value
+     * @return bool
+     */
     public static function isNullOrFalse($value)
     {
 
         return $value === null || $value === false;
     }
 
+    /**
+     * @param array $value
+     * @return bool
+     */
     public static function isArrayNullOrFalse(array $value)
     {
 
         return count(array_filter($value, [self::class, 'isNullOrFalse'])) === count($value);
     }
 
+    /**
+     * @param $value
+     * @return bool
+     */
     public static function isObjectOrArray($value)
     {
 
         return is_object($value) || is_array($value);
     }
 
+    /**
+     * @param array $array
+     * @param string $separator
+     * @param string $argSeparator
+     * @return string
+     */
     public static function flatten(array $array, $separator = ' ', $argSeparator = '=')
     {
 

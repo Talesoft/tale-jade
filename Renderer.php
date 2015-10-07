@@ -2,15 +2,40 @@
 
 namespace Tale\Jade;
 
+/**
+ * Class Renderer
+ * @package Tale\Jade
+ */
 class Renderer
 {
 
+    /**
+     * @var array
+     */
     private $_options;
+    /**
+     * @var Compiler
+     */
     private $_compiler;
+    /**
+     * @var Parser
+     */
     private $_parser;
+    /**
+     * @var Lexer
+     */
     private $_lexer;
+    /**
+     * @var
+     */
     private $_adapter;
 
+    /**
+     * @param array|null $options
+     * @param Compiler|null $compiler
+     * @param Parser|null $parser
+     * @param Lexer|null $lexer
+     */
     public function __construct(
         array $options = null,
         Compiler $compiler = null,
@@ -68,6 +93,9 @@ class Renderer
         return $this->_lexer;
     }
 
+    /**
+     * @return mixed
+     */
     public function getAdapter()
     {
 
@@ -94,18 +122,33 @@ class Renderer
         return $this->_adapter;
     }
 
+    /**
+     * @param $input
+     * @param null $path
+     * @return mixed|string
+     */
     public function compile($input, $path = null)
     {
 
         return $this->_compiler->compile($input, $path);
     }
 
+    /**
+     * @param $path
+     * @return mixed|string
+     * @throws \Exception
+     */
     public function compileFile($path)
     {
 
         return $this->_compiler->compileFile($path);
     }
 
+    /**
+     * @param $file
+     * @param array|null $args
+     * @return mixed
+     */
     public function render($file, array $args = null)
     {
 
