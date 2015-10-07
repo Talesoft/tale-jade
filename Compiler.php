@@ -6,65 +6,110 @@ use Tale\Jade\Compiler\Exception;
 use Tale\Jade\Parser\Node;
 
 /**
- * Class Compiler
+ * The Compiler
+ *
+ * Translates Nodes returned from the Parser into PHTML, a mix
+ * of PHP and HTML
+ *
+ * The main entry point is the `compile` method
+ * Compilation looks like this
+ *
+ * $compiler->compile($inputString)
+ *
+ * The generated PHTML should be evaluated, the best method
+ * is a simple include of a generated file
+ *
  * @package Tale\Jade
  */
 class Compiler
 {
 
     /**
-     *
+     * The Mode for HTML
+     * Recognizes self-closing tags, self-repeating attributes etc.
      */
     const MODE_HTML = 0;
+
     /**
-     *
+     * The Mode of XML
+     * Doesn't do whatever MODE_HTML does
      */
     const MODE_XML = 1;
 
     /**
+     * An array of options
      * @var array
      */
     private $_options;
+
     /**
+     * The lexer that is given to the parser
      * @var Lexer
      */
     private $_lexer;
+
     /**
+     * The parse this compiler instance gets its nodes off
      * @var Parser
      */
     private $_parser;
 
     /**
-     * @var
+     * The current file stack.
+     * The bottom file is the file that is currently compiled.
+     * This is needed for recursive path resolving in imports
+     * @var string[]
      */
     private $_files;
+
     /**
-     * @var
+     * The mixins we found in the whole input
+     * We use this to check if a mixin exists upon call
+     * and to compile them all at the and (with checking,
+     * if they are even called)
+     *
+     * Keys are the name of the mixin
+     * @var \Tale\Jade\Parser\Node[]
      */
     private $_mixins;
+
     /**
-     * @var
+     * A stack of names of the mixins we actually called in the code
+     * @var string[]
      */
     private $_calledMixins;
+
     /**
-     * @var
+     * A list of all blocks in our whole input
+     * They are only used in handleBlocks and handleBlock
+     * @var \Tale\Jade\Parser\Node[]
      */
     private $_blocks;
+
     /**
-     * @var
+     * The level we're currently in.
+     * This doesn't equal the current level in the parser or lexer,
+     * it rather represents the current indentation level
+     * for pretty compiling
+     * @var int
      */
     private $_level;
 
     /**
-     * @param array|null $options
-     * @param Parser|null $parser
-     * @param Lexer|null $lexer
+     * Creates a new compiler instance
+     *
+     * You can pass a modified parser or lexer.
+     * Notice that if you pass both, the lexer inside the parser will be used.
+     *
+     * @param array|null $options An array of options
+     * @param Parser|null $parser An existing parser instance
+     * @param Lexer|null $lexer An existing lexer instance
      */
     public function __construct(array $options = null, Parser $parser = null, Lexer $lexer = null)
     {
 
         $this->_options = array_replace_recursive([
-            'pretty' => true,
+            'pretty' => false,
             'indentStyle' => Lexer::INDENT_SPACE,
             'indentWidth' => 2,
             'mode' => self::MODE_HTML,
@@ -100,6 +145,11 @@ class Compiler
                 'md' => 'markdown',
                 'jade' => 'plain'
             ],
+            'escapeSequences' => [
+                '\n' => "\n",
+                '\r' => "\r",
+                '\t' => "\t"
+            ],
             'handleErrors' => true,
             'compileUncalledMixins' => false,
             'allowImports' => true,
@@ -117,6 +167,7 @@ class Compiler
     }
 
     /**
+     * Returns the current options for the parser
      * @return array
      */
     public function getOptions()
@@ -126,6 +177,7 @@ class Compiler
     }
 
     /**
+     * Returns the current lexer used
      * @return \Tale\Jade\Lexer
      */
     public function getLexer()
@@ -135,6 +187,7 @@ class Compiler
     }
 
     /**
+     * Returns the current parser used
      * @return \Tale\Jade\Parser
      */
     public function getParser()
@@ -144,7 +197,9 @@ class Compiler
     }
 
     /**
-     * @param $path
+     * Adds a path to the compiler
+     * Files will be loaded from this path (or other paths you added before)
+     * @param string $path The directory path
      * @return $this
      */
     public function addPath($path)
@@ -156,8 +211,18 @@ class Compiler
     }
 
     /**
-     * @param $name
-     * @param $callback
+     * Adds a filter to the compiler
+     * This filter can then be used inside jade with the
+     * :<filtername> directive
+     *
+     * The callback should have the following signature:
+     * (\Tale\Jade\Parser\Node $node, $indent, $newLine)
+     * where $node is the filter node found,
+     * $indent is the current indentation respecting level and pretty-option
+     * and newLine is a new-line respecting the pretty-option
+     *
+     * @param string $name The name of the filter
+     * @param callable $callback The filter handler callback
      * @return $this
      */
     public function addFilter($name, $callback)
@@ -174,9 +239,19 @@ class Compiler
     }
 
     /**
-     * @param $input
-     * @param null $path
-     * @return mixed|string
+     * Compiles a Jade-string to PHTML
+     * The result can then be evaluated, the best method is
+     * a simple PHP include
+     *
+     * Look at \Tale\Jade\Renderer to get this done for you
+     *
+     * Before evaluating you should set a $__args variable
+     * that will be passed through mixins.
+     * It like a global scope.
+     *
+     * @param string $input The jade input string
+     * @param string|null $path The path for relative includes
+     * @return mixed|string A PHTML string containing HTML and PHP
      */
     public function compile($input, $path = null)
     {
@@ -224,8 +299,14 @@ class Compiler
     }
 
     /**
-     * @param $path
-     * @return mixed|string
+     * Compiles a file to PHTML
+     *
+     * The given path will automatically passed as
+     * compile()'s $path argument
+     *
+     * @see \Tale\Jade\Compiler->compile()
+     * @param string $path The path to the jade file
+     * @return mixed|string The compiled PHTML
      * @throws \Exception
      */
     public function compileFile($path)
@@ -242,29 +323,84 @@ class Compiler
     }
 
     /**
-     * @param $value
-     * @return int
+     * Checks if a variable is scalar (or "not an expression")
+     * These values don't get much special handling, they are mostly
+     * simple attributes values like `type="button"` or `method='post'`
+     *
+     * A scalar value is either a closed string containing only
+     * a-z, A-Z, 0-9, _ and -, e.g. Some-Static_Value
+     * or a quote-enclosed string that can contain anything
+     * except the quote style it used
+     * e.g. "Some Random String", 'This can" contain quotes"'
+     *
+     * @param string $value The value to be checked
+     * @return bool
      */
     protected function isScalar($value)
     {
 
-        return preg_match('/^([a-z0-9\_\-]+|"[^"]*"|\'[^\']*\')$/i', $value);
+        return preg_match('/^([a-z0-9\_\-]+|"[^"]*"|\'[^\']*\')$/i', $value) ? true : false;
+    }
+
+
+    /**
+     * Compiles and sanitizes a scalar value
+     * @param string $value The scalar value
+     * @param bool|false $attribute Is this an attribute value or not
+     *
+     * @return string
+     */
+    protected function compileScalar($value, $attribute = false)
+    {
+
+        $sequences = $this->_options['escapeSequences'];
+        return $this->interpolate(trim(str_replace(array_keys($sequences), $sequences, $value), '\'"'), $attribute);
     }
 
     /**
-     * @param $value
-     * @return int
+     * Checks if a value is a variable
+     * A variable needs to start with $.
+     * After that only a-z, A-Z and _ can follow
+     * After that you can use any character of
+     * a-z, A-Z, 0-9, _, [, ], -, >, ' and "
+     * This will match all of the following:
+     *
+     * $__someVar
+     * $obj->someProperty
+     * $arr['someKey']
+     * $arr[0]
+     * $obj->someArray['someKey']
+     * etc.
+     *
+     * @param string $value The value to be checked
+     * @return bool
      */
     protected function isVariable($value)
     {
 
-        return preg_match('/^\$[a-z_][a-z0-9\_\[\]\->\'"]*$/i', $value);
+        return preg_match('/^\$[a-z_][a-z0-9\_\[\]\->\'"]*$/i', $value) ? true : false;
     }
 
     /**
-     * @param $string
-     * @param bool|false $attribute
-     * @return mixed
+     * Interpolates a string value
+     * Interpolation is initialized with # (escaped) or ! (not escaped)
+     *
+     * After that use either {} brackets for variable expressions
+     * or [] for Jade-expressions
+     *
+     * e.g.
+     *
+     * #{$someVariable}
+     * !{$someObj->someProperty}
+     *
+     * #[p This is some paragraph]
+     *
+     * If the second paragraph is true, the result will act like it is
+     * inside a string respecting the quoteStyle-option
+     *
+     * @param string $string The string to interpolate
+     * @param bool|false $attribute Is this an attribute value or not
+     * @return string The interpolated PHTML
      */
     protected function interpolate($string, $attribute = false)
     {
@@ -292,6 +428,7 @@ class Compiler
     }
 
     /**
+     * Returns a new line character respecting the pretty-option
      * @return string
      */
     protected function newLine()
@@ -303,7 +440,11 @@ class Compiler
     }
 
     /**
-     * @param int $offset
+     * Returns indentation respecting the current level and the pretty-option
+     *
+     * The $offset will be added to the current level
+     *
+     * @param int $offset An offset added to the level
      * @return string
      */
     protected function indent($offset = 0)
@@ -315,10 +456,13 @@ class Compiler
     }
 
     /**
-     * @param $code
-     * @param string $prefix
-     * @param string $suffix
-     * @return string
+     * Creates a PHP code expression
+     * By default it will have <?php ?>-style
+     *
+     * @param string $code The PHP code
+     * @param string $prefix The PHP start tag
+     * @param string $suffix The PHP end tag
+     * @return string The PHP expression
      */
     protected function createCode($code, $prefix = '<?php ', $suffix = '?>')
     {
@@ -335,8 +479,11 @@ class Compiler
     }
 
     /**
-     * @param $code
-     * @return string
+     * Creates a <?=?>-style PHP expression
+     *
+     * @see \Tale\Jade\Compiler->createCode
+     * @param string $code The PHP expression to output
+     * @return string The PHP expression
      */
     protected function createShortCode($code)
     {
@@ -345,28 +492,44 @@ class Compiler
     }
 
     /**
-     * @param $code
-     * @return string
+     * Creates a PHP comment surrounded by PHP code tags
+     * This creates a "hidden" comment thats still visible in pretty output
+     *
+     * @todo Maybe this should return an empty string if pretty-option is on?
+     * @param string $text The text to wrap into a comment
+     * @return string The compiled PHP comment
      */
-    protected function createPhpComment($code)
+    protected function createPhpComment($text)
     {
 
-        return $this->createCode($code, '<?php /* ', ' */ ?>');
+        return $this->createCode($text, '<?php /* ', ' */ ?>');
     }
 
     /**
-     * @param $code
-     * @return string
+     * Creates a XML-style comment
+     * (<!-- -->)
+     *
+     * @param string $text THe text to wrap into a comment
+     * @return string The compiled XML comment
      */
-    protected function createMarkupComment($code)
+    protected function createMarkupComment($text)
     {
 
-        return $this->createCode($code, '<!-- ', ' -->');
+        return $this->createCode($text, '<!-- ', ' -->');
     }
 
     /**
-     * @param Node $node
-     * @return mixed
+     * Compiles any node that has a matching method
+     * for its type
+     *
+     * e.g.
+     * type: document, method: compileDocument
+     * type: element, method: compileElement
+     *
+     * The result will be PHTML
+     *
+     * @param \Tale\Jade\Parser\Node $node The node to compile
+     * @return string The compiled PHTML
      * @throws Exception
      */
     protected function compileNode(Node $node)
@@ -402,8 +565,9 @@ class Compiler
     }
 
     /**
-     * @param Node $node
-     * @return string
+     * Compiles a document node to PHTML
+     * @param Node $node The document-type node
+     * @return string The compiled PHTML
      */
     protected function compileDocument(Node $node)
     {
@@ -412,8 +576,9 @@ class Compiler
     }
 
     /**
-     * @param Node $node
-     * @return string
+     * Compiles a doctype node to PHTML
+     * @param Node $node The doctype-type node
+     * @return string The compiled PHTML
      */
     protected function compileDoctype(Node $node)
     {
@@ -429,9 +594,15 @@ class Compiler
     }
 
     /**
-     * @param $path
-     * @param null $extension
-     * @return bool|string
+     * Resolves a path respecting the paths
+     * set in the options as well as the last
+     * element in the current $_files stack
+     *
+     * If no paths are given, the current get_include_path() is used
+     *
+     * @param string $path The relative path to resolve
+     * @param null $extension The extension to resolve with
+     * @return string|false The resolved full path or false, if not found
      */
     public function resolvePath($path, $extension = null)
     {
@@ -463,7 +634,9 @@ class Compiler
     }
 
     /**
-     * @param Node $node
+     * Collects all imports and handles them via handleImport()
+     *
+     * @param Node $node The root node to search imports in
      * @return $this
      * @throws Exception
      */
@@ -733,7 +906,7 @@ class Compiler
                     $attrName = substr($attrName, 3);
                     $variadicName = $attrName;
                 }
-                $args[$attrName] = $attr->value;
+                $args[$attrName] = trim($attr->value, '\'"');
                 $i++;
             }
 
@@ -785,9 +958,9 @@ class Compiler
         if (count($node->children) > 0) {
 
             $phtml = $this->createCode(
-                    '$__block = function(array $__callArgs) use($__args, $__mixins) {
+                    '$__block = function(array $__arguments = []) use($__args, $__mixins) {
                 extract($__args);
-                extract($__callArgs);
+                extract($__arguments);
             '
                 ).$this->newLine();
             $phtml .= $this->compileChildren($node->children, false).$this->newLine();
@@ -822,7 +995,7 @@ class Compiler
             $i++;
             if ($this->isScalar($value)) {
 
-                $value = '\''.trim($this->interpolate($value), '\'"').'\'';
+                $value = '\''.$this->compileScalar($value).'\'';
             } else if($this->isVariable($value)) {
 
                 $value = "isset($value) ? $value : null";
@@ -889,7 +1062,7 @@ class Compiler
         $name = $node->name;
 
         if (!$name)
-            return $this->createShortCode('isset($__block) && $__block instanceof \Closure ? $__block(array_replace($__args, $__callArgs)) : \'\'');
+            return $this->createShortCode('isset($__block) && $__block instanceof \Closure ? $__block(array_replace($__args, $__arguments)) : \'\'');
 
         //At this point the code knows this block only, since handleBlock took care of the blocks previously
         return $this->compileChildren($node->children, false);
@@ -1139,6 +1312,7 @@ class Compiler
     }
 
     /**
+     * @todo Attribute escaping seems pretty broken right now
      * @param Node $node
      * @return string
      */
@@ -1152,6 +1326,11 @@ class Compiler
 
         $phtml .= "<{$node->tag}";
 
+
+        //In the following lines we kind of map assignments
+        //to attributes (that's the core of how cross-assignments work)
+        //&href('a', 'b', 'c') will add 3 attributes href=a, href=b and href=b
+        //to the attributes we work on
         $nodeAttributes = $node->attributes;
         foreach ($node->assignments as $assignment) {
 
@@ -1192,12 +1371,7 @@ class Compiler
 
                     if ($value) {
 
-                        if ($this->isScalar($value)) {
-
-                            $value = $this->interpolate($value, true);
-                            $values[] = $value;
-                            continue;
-                        } else if ($this->isVariable($value)) {
+                        if ($this->isVariable($value)) {
 
                             $values[] = 'isset('.$value.') ? '.$value.' : false';
                         } else {
@@ -1241,7 +1415,7 @@ class Compiler
                     //Print the normal pair
                     //We got all scalar values, we can evaluate them directly, so no code needed in the PHTML output
                     $pair .= " $name=";
-                    $values = array_map(function($val) { return trim($val, '\'"'); }, $values);
+                    $values = array_map(function($val) { return $this->compileScalar($val); }, $values);
                     $pair .= call_user_func($builder, count($values) === 1 ? $values[0] : $values , $quot, $escaped === 'true');
                 } else {
 
@@ -1249,9 +1423,11 @@ class Compiler
                     //also check, if something of the expression is false or null
                     //and if it is, we don't print the attribute
 
-                    $values = array_map(function($val) use($quot) {
+                    $values = array_map(function($val) use($quot, $builder, $escaped) {
 
-                        return $this->isScalar($val) ? $quot.trim($val, '\'"').$quot : $val;
+                        return $this->isScalar($val)
+                             ? call_user_func($builder, $this->compileScalar($val, true), $quot, $escaped === 'true')
+                             : $val;
                     }, $values);
 
                     $quot = $quot === '\'' ? '\\\'' : $quot;

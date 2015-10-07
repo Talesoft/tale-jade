@@ -1,0 +1,18 @@
+
+mixin article(title)
+
+    h2= $title
+    p
+        if block
+            block
+
+
+
++article('Article 1')
+    strong Block Content 1
+    | Awesome, isn't it?
+
+
++article('Article 2')
+    strong Block Content 2
+    | And another block content

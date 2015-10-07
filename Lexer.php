@@ -795,7 +795,7 @@ class Lexer
 
         foreach ($this->scanToken(
             'block',
-            'block(?:[\t ]+(?<mode>append|prepend|replace))?[\t ]+(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*)'
+            'block(?:[\t ]+(?<mode>append|prepend|replace))?(?:[\t ]+(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*))?'
         ) as $token) {
 
             yield $token;
@@ -999,15 +999,15 @@ class Lexer
     protected function scanSub()
     {
 
-        foreach ($this->scanExpansion() as $token)
-            yield $token;
-
         if ($this->peek() === '.') {
 
             $this->consume();
             foreach ($this->scanTextBlock() as $token)
                 yield $token;
         }
+
+        foreach ($this->scanExpansion() as $token)
+            yield $token;
     }
 
     /**
@@ -1044,7 +1044,7 @@ class Lexer
     protected function scanClasses()
     {
 
-        foreach ($this->scanToken('class', '(\.(?<name>[a-zA-Z_][a-zA-Z0-9\-_]+))', 'i') as $token) {
+        foreach ($this->scanToken('class', '(\.(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*))', 'i') as $token) {
 
             yield $token;
 
@@ -1063,7 +1063,7 @@ class Lexer
     protected function scanId()
     {
 
-        foreach ($this->scanToken('id', '(#(?<name>[a-zA-Z_][a-zA-Z0-9\-_]+))', 'i') as $token) {
+        foreach ($this->scanToken('id', '(#(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*))', 'i') as $token) {
 
             yield $token;
 

@@ -14,7 +14,7 @@ abstract class AdapterBase
     {
 
         $this->_renderer = $renderer;
-        $this->_options = $options;
+        $this->_options = $options ? $options : [];
     }
 
     public function getRenderer()

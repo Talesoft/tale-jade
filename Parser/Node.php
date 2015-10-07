@@ -37,6 +37,7 @@ class Node
     private $_data;
 
     /**
+     *
      * @param $type
      * @param null $line
      * @param null $offset

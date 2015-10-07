@@ -13,12 +13,12 @@ class File extends AdapterBase
     {
 
         parent::__construct($renderer, array_replace_recursive([
-            'outputDirectory' => './cache/views',
+            'path' => './cache/views',
             'extension' => '.phtml',
             'lifeTime' => 3600
         ], $options ? $options : []));
 
-        $dir = $this->getOption('outputDirectory');
+        $dir = $this->getOption('path');
         if (!is_dir($dir)) {
 
             @mkdir($dir, 0775, true);
@@ -40,7 +40,7 @@ class File extends AdapterBase
         if (substr($path, -strlen($ext)) === $ext)
             $path = substr($path, 0, -strlen($ext));
 
-        $outputPath = rtrim($this->getOption('outputDirectory'), '/\\').'/'.ltrim($path.$this->getOption('extension'), '/\\');
+        $outputPath = rtrim($this->getOption('path'), '/\\').'/'.ltrim($path.$this->getOption('extension'), '/\\');
 
         $render = function($__path, $__args) {
 
