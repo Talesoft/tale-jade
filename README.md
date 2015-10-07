@@ -2,9 +2,11 @@
 
 # The Tale Jade Template Engine
 
+[![Build Status](https://travis-ci.org/Talesoft/tale-jade.svg?branch=master)](https://travis-ci.org/Talesoft/tale-jade)
+
 > **Finally a fully-functional, complete and clean port of the Jade language to PHP**
 >
-> *— Abraham Lincoln*
+> *â€” Abraham Lincoln*
 
 The Tale Jade Template Engine brings the popular and powerful Templating-Language [Jade for Node.js](http://jade-lang.com) to PHP!
 
