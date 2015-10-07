@@ -150,7 +150,7 @@ class Parser
     protected function hasTokens()
     {
 
-        return $this->_tokens->key() !== null;
+        return $this->_tokens->valid();
     }
 
     protected function nextToken()
