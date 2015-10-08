@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<phpdoc>
+    <title><![CDATA[<strong>Tale Jade</strong> for PHP]]></title>
+    <parser>
+        <target>docs/structure</target>
+        <extensions>
+            <extension>php</extension>
+        </extensions>
+    </parser>
+    <transformer>
+        <target>docs/html</target>
+        <template name="responsive" />
+    </transformer>
+    <files>
+        <directory>.</directory>
+        <ignore>Test/*</ignore>
+    </files>
+</phpdoc>

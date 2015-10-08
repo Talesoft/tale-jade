@@ -1,4 +1,24 @@
 <?php
+/**
+ * The Tale Jade Project
+ *
+ * The Renderer File Adapter class
+ *
+ * This file is part of the Tale Jade Template Engine for PHP
+ *
+ * @author Torben Köhn <tk@talesoft.io>
+ * @author Talesoft <info@talesoft.io>
+ * @projectGroup Tale
+ * @project Jade
+ * @component Renderer\Adapter\File
+ *
+ * The code of this file is distributed under the MIT license.
+ * If you didn't receive a copy of the license text, you can
+ * read it here http://licenses.talesoft.io/2015/MIT.txt
+ *
+ * Please do not remove this comment block.
+ * Thank you and have fun with Tale Jade!
+ */
 
 namespace Tale\Jade\Renderer\Adapter;
 
@@ -6,19 +26,61 @@ use Tale\Jade\Renderer;
 use Tale\Jade\Renderer\AdapterBase;
 use Tale\Util\PathUtil;
 
+/**
+ * This adapter handles jade by saving the compiled PHTML
+ * to a file and including it normally
+ *
+ * This is the best adapter for production systems, cheap VPS or any hosts
+ * that don't have 'allow_url_fopen' activated
+ *
+ * The following happens:
+ * 1. The jade gets rendered to markup
+ * 2. The markup is saved into a .phtml-file
+ * 3. The .phtml-file is included
+ *
+ * Advantages:
+ * - Caching integrated
+ * - Next to memory-caching probably the fastest way to render
+ * - Good debugging, especially then compiler:pretty is activated
+ * - No special configuration needed
+ *
+ * Disadvantages:
+ * - You need a cache-directory (Though, most websites have one anyways)
+ * - It needs some configuration in the most cases
+ * - Cache files should be secured, since it's PHP-code!!! (e.g. Deny in .htaccess)
+ *
+ * @package Tale\Jade\Renderer\Adapter
+ */
 class File extends AdapterBase
 {
 
+    /**
+     * Creates a new File renderer adapter
+     *
+     * If the cache directory doesn't exist, it tries to automatically create it
+     *
+     * Possible options are:
+     * path: The path where rendered files are stored
+     * extension: The extension we should store the files with (Default: .phtml)
+     * lifeTime: The Cache lifeTime (Set to 0 to disable cache), (Default: 3600)
+     *
+     * @param \Tale\Jade\Renderer $renderer The renderer instance this renderer was created in
+     * @param array|null          $options  The options array for this renderer adapter
+     *
+     * @throws \Exception
+     */
     public function __construct(Renderer $renderer, array $options = null)
     {
 
         parent::__construct($renderer, array_replace_recursive([
-            'path' => './cache/views',
+            'path'      => './cache/views',
             'extension' => '.phtml',
-            'lifeTime' => 3600
+            'lifeTime'  => 3600
         ], $options ? $options : []));
 
         $dir = $this->getOption('path');
+
+        //Automatically create directory if it doesn't exist (or try to do so)
         if (!is_dir($dir)) {
 
             @mkdir($dir, 0775, true);
@@ -27,10 +89,32 @@ class File extends AdapterBase
                 throw new \Exception("Failed to create output directory $dir");
         }
 
+        //Make sure we can write to it
         if (!is_writable($dir))
             throw new \Exception("Output directory not writable $dir");
     }
 
+    /**
+     * Renders a jade file by a given path
+     *
+     * The extension can be omitted if it's the extension
+     * set in the Compiler-options ('.jade' by default)
+     *
+     * The given $args-argument should be an associative array
+     * and will be passed as variables
+     * that you can use inside the rendered template file
+     *
+     * Notice that the path is relative to the Compiler-option 'paths'
+     * or, if no paths passed, the paths in get_include_path()
+     *
+     * You might just echo the result, cache it or do anything else with it
+     *
+     * @param string     $path The relative path to be rendered
+     * @param array|null $args The variables for the template
+     *
+     * @return string The rendered markup
+     * @throws \Exception
+     */
     public function render($path, array $args = null)
     {
 
@@ -42,7 +126,7 @@ class File extends AdapterBase
 
         $outputPath = rtrim($this->getOption('path'), '/\\').'/'.ltrim($path.$this->getOption('extension'), '/\\');
 
-        $render = function($__path, $__args) {
+        $render = function ($__path, $__args) {
 
             ob_start();
             extract($__args);
