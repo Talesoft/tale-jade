@@ -5,18 +5,25 @@ namespace Tale\Jade;
 use Tale\Jade\Parser\Node;
 
 /**
- * Class Filter
+ * Static filter class
+ *
+ * This class contains the default filters of the template engine.
+ *
+ * @todo: Need moar filters!
  * @package Tale\Jade
  */
 class Filter
 {
 
     /**
-     * @param $tag
-     * @param Node $node
-     * @param $indent
-     * @param $newLine
-     * @return string
+     * Wraps a node $node in tags using $tag and respecting
+     * indentation and new-lines based on $indent and $newLine
+     *
+     * @param string $tag The tag to wrap the node in
+     * @param \Tale\Jade\Parser\Node $node The node to be wrapped
+     * @param string $indent The indentation to use on each child
+     * @param string $newLine The new-line to append after each line
+     * @return string The wrapped PTHML-string
      */
     public static function wrapTag($tag, Node $node, $indent, $newLine)
     {
@@ -25,10 +32,16 @@ class Filter
     }
 
     /**
-     * @param Node $node
-     * @param $indent
-     * @param $newLine
-     * @return string
+     * Similar to wrapTag, but rather puts PHP-instruction-tags around the text
+     * inside the node.
+     * This will create working PHP expressions.
+     *
+     * If <?php or ?> are already found, they will be trimmed and re-appended correctly.
+     *
+     * @param \Tale\Jade\Parser\Node $node The node to be wrapped
+     * @param string $indent The indentation to use on each child
+     * @param string $newLine The new-line to append after each line
+     * @return string The wrapped PHP-string
      */
     public static function wrapCode(Node $node, $indent, $newLine)
     {
@@ -43,10 +56,12 @@ class Filter
 
 
     /**
-     * @param Node $node
-     * @param $indent
-     * @param $newLine
-     * @return string
+     * A plain-text filter that just corrects indentation and new-lines
+     *
+     * @param \Tale\Jade\Parser\Node $node The node to be wrapped
+     * @param string $indent The indentation to use on each child
+     * @param string $newLine The new-line to append after each line
+     * @return string The wrapped PTHML-string
      */
     public static function filterPlain(Node $node, $indent, $newLine)
     {
@@ -68,10 +83,13 @@ class Filter
     }
 
     /**
-     * @param Node $node
-     * @param $indent
-     * @param $newLine
-     * @return string
+     * Wraps the content in <style></style> tags and corrects indentation
+     * and new-lines
+     *
+     * @param \Tale\Jade\Parser\Node $node The node to be wrapped
+     * @param string $indent The indentation to use on each child
+     * @param string $newLine The new-line to append after each line
+     * @return string The wrapped PTHML-string
      */
     public static function filterStyle(Node $node, $indent, $newLine)
     {
@@ -80,10 +98,13 @@ class Filter
     }
 
     /**
-     * @param Node $node
-     * @param $indent
-     * @param $newLine
-     * @return string
+     * Wraps the content in <script></script> tags and corrects indentation
+     * and new-lines
+     *
+     * @param \Tale\Jade\Parser\Node $node The node to be wrapped
+     * @param string $indent The indentation to use on each child
+     * @param string $newLine The new-line to append after each line
+     * @return string The wrapped PTHML-string
      */
     public static function filterScript(Node $node, $indent, $newLine)
     {
@@ -92,26 +113,17 @@ class Filter
     }
 
     /**
-     * @param Node $node
-     * @param $indent
-     * @param $newLine
-     * @return string
+     * Wraps the content in PHP-compiler tags and corrects indentation
+     * and new-lines
+     *
+     * @param \Tale\Jade\Parser\Node $node The node to be wrapped
+     * @param string $indent The indentation to use on each child
+     * @param string $newLine The new-line to append after each line
+     * @return string The wrapped PHP-string
      */
     public static function filterCode(Node $node, $indent, $newLine)
     {
 
         return self::wrapCode($node, $indent, $newLine);
-    }
-
-    /**
-     * @param Node $node
-     * @param $indent
-     * @param $newLine
-     * @return string
-     */
-    public static function filterMarkdown(Node $node, $indent, $newLine)
-    {
-
-        return self::wrapTag('markdown', $node, $indent, $newLine);
     }
 }
