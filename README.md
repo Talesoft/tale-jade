@@ -4,9 +4,11 @@
 
 [![Build Status](https://travis-ci.org/Talesoft/tale-jade.svg?branch=master)](https://travis-ci.org/Talesoft/tale-jade)
 
+
 > **Finally a fully-functional, complete and clean port of the Jade language to PHP**
 >
 > *— Abraham Lincoln*
+
 
 The Tale Jade Template Engine brings the popular and powerful Templating-Language [Jade for Node.js](http://jade-lang.com) to PHP!
 
@@ -15,16 +17,21 @@ implementation of the language utilizing the powerful and very specific features
 
 Build dynamic websites faster than ever before!
 
----
-
-***Notice: Sorry that most documents are down right now, we're still working on them
-Our engine is really new and we're still documenting all functions of our
-insane development process. Below you have a quick-guide to get up and running without the docs right now***
 
 ---
 
 
-## Installing via Composer
+***Notice: Sorry that most documents are down right now, we're still working on them.***
+***Our engine is really new and we're still documenting all functions of our***
+***insane development process. Below you have a quick-guide to get up and running without the docs right now***
+
+
+---
+
+
+Initial API docs online now: [API Docs](http://jade.talesoft.io/docs)
+
+## Getting Started
 
 The composer package for Tale Jade is called [`talesoft/tale-jade`](https://packagist.org/packages/talesoft/tale-jade)
 
@@ -134,12 +141,8 @@ echo $renderer->render('index', [
 
 These can be used inside the templates in several ways (Stick to the Jade-syntax, it works)
 
+
 ---
-
-## Getting started
-
-[Get started](http://jade.talesoft.io/getting-started) now or [dig into the dirt](http://jade.talesoft.io/hacking) by yourself!
-
 
 
 ## Supported features
