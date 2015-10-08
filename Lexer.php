@@ -128,7 +128,7 @@ class Lexer
         $this->_options = array_replace([
             'indentStyle' => null,
             'indentWidth' => null,
-            'encoding' => mb_internal_encoding()
+            'encoding'    => mb_internal_encoding()
         ], $options ? $options : []);
 
         //Validate options
@@ -264,8 +264,8 @@ class Lexer
     {
 
         $this->_input = rtrim(str_replace([
-            "\r", "\0"
-        ], '', $input))."\n";
+                "\r", "\0"
+            ], '', $input))."\n";
         $this->_length = $this->strlen($this->_input);
         $this->_position = 0;
 
@@ -314,7 +314,7 @@ class Lexer
             unset($token['type'], $token['line'], $token['offset']);
 
             echo "[$type($line:$offset)";
-            $vals = implode(', ', array_map(function($key, $value) {
+            $vals = implode(', ', array_map(function ($key, $value) {
 
                 return "$key=$value";
             }, array_keys($token), $token));
@@ -354,6 +354,7 @@ class Lexer
     {
 
         $this->_lastPeekResult = $this->substr($this->_input, 0, $length);
+
         return $this->_lastPeekResult;
     }
 
@@ -389,6 +390,7 @@ class Lexer
         $this->_input = $this->substr($this->_input, $length);
         $this->_position += $length;
         $this->_offset += $length;
+
         return $this;
     }
 
@@ -422,8 +424,7 @@ class Lexer
             );
 
         $result = '';
-        while (!$this->isAtEnd() && $callback($this->peek($length)))
-        {
+        while (!$this->isAtEnd() && $callback($this->peek($length))) {
 
             //Keep $_line and $_offset updated
             $newLines = $this->substr_count($this->_lastPeekResult, "\n");
@@ -459,7 +460,7 @@ class Lexer
     protected function readSpaces()
     {
 
-        return $this->read(function($char) {
+        return $this->read(function ($char) {
 
             return $char === self::INDENT_SPACE || $char === self::INDENT_TAB;
         });
@@ -602,6 +603,7 @@ class Lexer
         //Make sure we don't consume matched newlines (We match for them sometimes)
         //We need the newLine tokens and don't want them consumed here.
         $match = $this->_lastMatches[0] !== "\n" ? rtrim($this->_lastMatches[0], "\n") : $this->_lastMatches[0];
+
         return $this->consume($this->strlen($match));
     }
 
@@ -687,8 +689,8 @@ class Lexer
     {
 
         return [
-            'type' => $type,
-            'line' => $this->_line,
+            'type'   => $type,
+            'line'   => $this->_line,
             'offset' => $this->_offset
         ];
     }
@@ -759,6 +761,7 @@ class Lexer
         foreach ($this->scanNewLine() as $token) {
 
             yield $token;
+
             return;
         }
 
@@ -1151,7 +1154,7 @@ class Lexer
                     );
 
                 $this->consume();
-            } elseif ($this->match("([^:\n]+)")){
+            } elseif ($this->match("([^:\n]+)")) {
 
                 $this->consumeMatch();
                 $token['subject'] = trim($this->getMatch(1));
@@ -1497,7 +1500,7 @@ class Lexer
         if ($this->peek() !== ')') {
 
             $continue = true;
-            while(!$this->isAtEnd() && $continue) {
+            while (!$this->isAtEnd() && $continue) {
 
                 $token = $this->createToken('attribute');
                 $token['name'] = null;
@@ -1554,7 +1557,7 @@ class Lexer
         foreach ($this->scanClasses() as $token)
             yield $token;
 
-        foreach($this->scanSub() as $token)
+        foreach ($this->scanSub() as $token)
             yield $token;
     }
 
