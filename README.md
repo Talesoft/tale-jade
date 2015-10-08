@@ -38,7 +38,7 @@ The composer package for Tale Jade is called [`talesoft/tale-jade`](https://pack
 If you want to get started right now, hook up [composer](https://getcomposer.org/) and run
 
 ```
-$ composer require talesoft/tale-jade:*
+$ composer require "talesoft/tale-jade:*"
 $ composer install
 ```
 
