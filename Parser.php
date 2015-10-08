@@ -1,4 +1,24 @@
 <?php
+/**
+ * The Tale Jade Project
+ *
+ * The Parser Class
+ *
+ * This file is part of the Tale Jade Template Engine for PHP
+ *
+ * @author Torben Köhn <tk@talesoft.io>
+ * @author Talesoft <info@talesoft.io>
+ * @projectGroup Tale
+ * @project Jade
+ * @component Parser
+ *
+ * The code of this file is distributed under the MIT license.
+ * If you didn't receive a copy of the license text, you can
+ * read it here http://licenses.talesoft.io/2015/MIT.txt
+ *
+ * Please do not remove this comment block.
+ * Thank you and have fun with Tale Jade!
+ */
 
 namespace Tale\Jade;
 
@@ -6,66 +26,115 @@ use Tale\Jade\Parser\Node;
 use Tale\Jade\Parser\Exception;
 
 /**
- * Class Parser
+ * The Parser class
+ *
+ * This class takes generated tokens from the Lexer sequentially
+ * and produces an AST out of it.
+ *
+ * The AST is an object-tree containing Node-instances with parent/child relations
+ *
+ * This AST is passed to the compiler to generate PHTML out of it
+ *
  * @package Tale\Jade
  */
 class Parser
 {
 
     /**
+     * The options array used for this parser instance
      * @var array
      */
     private $_options;
+
     /**
+     * The lexer used in this parser instance
      * @var Lexer
      */
     private $_lexer;
 
     /**
-     * @var
+     * The level we're currently on.
+     * This does not equal the Lexer-level or Compiler-level,
+     * it's an internal level to get the child/parent-relation between
+     * nodes right
+     * @var int
      */
     private $_level;
+
     /**
-     * @var
+     * The Generator returned by the ->lex() method of the lexer
+     * @var \Generator
      */
-    private $_subLevel;
-    /**
-     * @var
-     */
-    private $_subLevels;
-    /** @var \Generator */
     private $_tokens;
-    /** @var \Tale\Jade\Node */
-    private $_document;
+
     /**
-     * @var
+     * The root node of the currently parsed document
+     * @var \Tale\Jade\Parser\Node
+     */
+    private $_document;
+
+    /**
+     * The parent that currently found childs are appended to.
+     *
+     * When an <outdent>-token is encountered, it moves one parent up
+     * ($_currentParent->parent becomes the new $_currentParent)
+     * @var \Tale\Jade\Parser\Node
      */
     private $_currentParent;
+
     /**
-     * @var
+     * The current element in the queue.
+     *
+     * Will be appended to $_currentParent when a <newLine>-token is encountered
+     *
+     * It will become the current parent, if an <indent>-token is encountered
+     * @var \Tale\Jade\Parser\Node
      */
     private $_current;
+
     /**
-     * @var
+     * The last element that was completely put together.
+     * Will be set on a <newLine>-token ($_current will become last)
+     * @var \Tale\Jade\Parser\Node
      */
     private $_last;
+
     /**
-     * @var
+     * Are we inside a mixin?
+     * We use this to detect the Mixin-Block correctly
+     * @var bool
      */
     private $_inMixin;
+
     /**
-     * @var
+     * Stores a mixin-level to validate that we're still inside a mixin
+     * to handle the Mixin-Block correctly
+     * @var int
      */
     private $_mixinLevel;
+
     /**
-     * @var
+     * Stores an expanded node to attach it to the expanding node later
+     * @var \Tale\Jade\Parser\Node
      */
     private $_expansion;
 
 
     /**
-     * @param array|null $options
-     * @param Lexer|null $lexer
+     * Creates a new parser instance.
+     *
+     * The parser will run the provided input through the lexer
+     * and generate an AST out of it.
+     *
+     * The AST will be an object-tree consisting of \Tale\Jade\Parser\Node instances
+     *
+     * You can take the AST and either compile it with the Compiler or handle it yourself
+     *
+     * Possible options are:
+     * lexer: The options for the lexer
+     *
+     * @param array|null $options The options array
+     * @param Lexer|null $lexer   An existing lexer instance (lexer-option will be ignored)
      */
     public function __construct(array $options = null, Lexer $lexer = null)
     {
@@ -77,6 +146,7 @@ class Parser
     }
 
     /**
+     * Returns the currently used option-array of the Parser
      * @return array
      */
     public function getOptions()
@@ -86,6 +156,7 @@ class Parser
     }
 
     /**
+     * Returns the currently used Lexer instance
      * @return \Tale\Jade\Lexer
      */
     public function getLexer()
@@ -95,15 +166,23 @@ class Parser
     }
 
     /**
-     * @param $input
-     * @return \Tale\Jade\Node|Node
+     * Parses the provided input-string to an AST.
+     *
+     * The AST will be an object-tree consisting of \Tale\Jade\Parser\Node instances.
+     *
+     * You can either let the compiler compile it or compile it yourself
+     *
+     * The root-node will always be of type 'document',
+     * from there on it can contain several kinds of nodes
+     *
+     * @param string $input The input jade string that is to be parsed
+     *
+     * @return \Tale\Jade\Parser\Node
      */
     public function parse($input)
     {
 
         $this->_level = 0;
-        $this->_subLevel = 0;
-        $this->_subLevels = [];
         $this->_tokens = $this->_lexer->lex($input);
         $this->_document = $this->createNode('document', ['line' => 0, 'offset' => 0]);
         $this->_currentParent = $this->_document;
@@ -114,22 +193,43 @@ class Parser
         $this->_expansion = null;
 
         //Fix HHVM generators needing ->next() before ->current()
+        //This will actually work as expected, no node will be skipped
+        //HHVM always needs a first ->next() (I don't know if this is a bug or
+        //expected behaviour)
         if (defined('HHVM_VERSION')) {
 
             $this->_tokens->next();
         }
 
+        //While we have tokens, handle current token, then go to next token
+        //rinse and repeat
         while ($this->hasTokens()) {
 
             $this->handleToken();
             $this->nextToken();
         }
 
+        //Return the final document node with all its awesome child nodes
         return $this->_document;
     }
 
     /**
-     * @param array|null $token
+     * Handles any kind of token returned by the lexer dynamically
+     *
+     * The token-type will be translated into a method name
+     * e.g.
+     *
+     * newLine => handleNewLine
+     * attribute => handleAttribute
+     * tag => handleTag
+     *
+     * First argument of that method will always be the token array
+     *
+     * If no token is passed, it will take the current token
+     * in the lexer's token generator
+     *
+     * @param array|null $token A token or the current lexer's generator token
+     *
      * @throws Exception
      */
     protected function handleToken(array $token = null)
@@ -137,19 +237,28 @@ class Parser
 
         $token = $token ? $token : $this->getToken();
 
+        //Put together the method name
         $method = 'handle'.ucfirst($token['type']);
 
+        //If the token has no handler, we throw an error
         if (!method_exists($this, $method)) {
             $this->throwException(
                 "Unexpected token `{$token['type']}`, no handler $method found",
                 $token
             );
-        } else
+        } else {
+
+            //Call the handler method and pass the token array as the first argument
             call_user_func([$this, $method], $token);
+        }
     }
 
     /**
-     * @param array $types
+     * Yields tokens of the given types until
+     * a token is encountered, that is not given
+     *
+     * @param array $types The token types that are allowed
+     *
      * @return \Generator
      */
     protected function lookUp(array $types)
@@ -168,7 +277,13 @@ class Parser
     }
 
     /**
-     * @param array $types
+     * Moves on the token generator by one and does ->lookUp() with the
+     * types given
+     *
+     * @see \Tale\Jade\Parser->lookUp
+     *
+     * @param array $types The types that are allowed
+     *
      * @return \Generator
      */
     protected function lookUpNext(array $types)
@@ -178,8 +293,12 @@ class Parser
     }
 
     /**
-     * @param array $types
-     * @return mixed|null
+     * Returns the token, if the current token is of the given
+     * type or null, if not
+     *
+     * @param array $types The types that are expected
+     *
+     * @return \Tale\Jade\Parser\Node|null
      */
     protected function expect(array $types)
     {
@@ -193,8 +312,12 @@ class Parser
     }
 
     /**
-     * @param array $types
-     * @return mixed|null
+     * Moves the generator on by one and does ->expect()
+     * with the types given
+     *
+     * @param array $types The types that are expected
+     *
+     * @return \Tale\Jade\Parser\Node|null
      */
     protected function expectNext(array $types)
     {
@@ -203,7 +326,12 @@ class Parser
     }
 
     /**
-     * @param array|null $relatedToken
+     * Throws an exception if the next token is not a newLine token.
+     *
+     * This states that "a line of instructions should end here"
+     *
+     * @param array|null $relatedToken The token to relate the exception to
+     *
      * @throws Exception
      */
     protected function expectEnd(array $relatedToken = null)
@@ -212,16 +340,24 @@ class Parser
         foreach ($this->lookUpNext(['newLine']) as $token) {
 
             $this->handleToken($token);
+
             return;
         }
 
-        $this->throwException(
-            "The statement should end here.",
-            $relatedToken
-        );
+        if (!$this->expectNext(['newLine'])) {
+
+            $this->throwException(
+                "The statement should end here.",
+                $relatedToken
+            );
+        } else
+            $this->handleToken();
     }
 
     /**
+     * Returns true, if there are still tokens left to be
+     * generated by the lexer-generator or false, if we've iterated all tokens already
+     *
      * @return bool
      */
     protected function hasTokens()
@@ -231,6 +367,9 @@ class Parser
     }
 
     /**
+     * Moves the generator on by one
+     * (It calls ->next() on the generator, look at the PHP doc)
+     *
      * @return $this
      */
     protected function nextToken()
@@ -242,7 +381,9 @@ class Parser
     }
 
     /**
-     * @return mixed
+     * Returns the current token in the lexer generator
+     *
+     * @return array
      */
     protected function getToken()
     {
@@ -252,21 +393,40 @@ class Parser
 
 
     /**
-     * @param $name
-     * @param array|null $token
-     * @return Node
+     * Creates a new node instance with the given type
+     * If a token is given, the location in the code of that token
+     * is also passed to the Node instance
+     *
+     * If no token is passed, a dummy-token with the current
+     * lexer's offset and line is created
+     *
+     * Notice that nodes are expando-objects, you can add properties on-the-fly
+     * and retrieve them as an array later
+     *
+     * @param string     $type  The type the node should have
+     * @param array|null $token The token to relate this node to
+     *
+     * @return \Tale\Jade\Parser\Node The newly created node
      */
-    protected function createNode($name, array $token = null)
+    protected function createNode($type, array $token = null)
     {
 
         $token = $token ? $token : ['line' => $this->_lexer->getLine(), 'offset' => $this->_lexer->getOffset()];
-        $node = new Node($name, $token['line'], $token['offset']);
+        $node = new Node($type, $token['line'], $token['offset']);
+
         return $node;
     }
 
     /**
-     * @param array|null $token
-     * @return Node
+     * Creates an element-node with the properties it should have consistently
+     *
+     * This will create the following properties on the Node instance:
+     *
+     * @todo Do this for a bunch of other elements as well, maybe all, maybe a centralized way?
+     *
+     * @param array|null $token The token to relate this element to
+     *
+     * @return \Tale\Jade\Parser\Node The newly created element-node
      */
     protected function createElement(array $token = null)
     {
@@ -280,7 +440,16 @@ class Parser
     }
 
     /**
-     * @param array $token
+     * Parses an <assignment>-token into element assignments
+     *
+     * If no there is no $_current element, a new one is created
+     *
+     * Assignments are possible on elements and mixinCalls only
+     *
+     * After an assignment, an attribute block is required
+     *
+     * @param array $token The <assignment>-token
+     *
      * @throws Exception
      */
     protected function handleAssignment(array $token)
@@ -311,7 +480,16 @@ class Parser
     }
 
     /**
-     * @param array $token
+     * Parses an <attribute>-token into an attribute-node.
+     *
+     * That node is appended to the $_current element.
+     *
+     * If no $_current element exists, a new one is created
+     *
+     * Attributes in elements and mixins always need a valid name
+     *
+     * @param array $token The <attribute>-token
+     *
      * @throws Exception
      */
     protected function handleAttribute(array $token)
@@ -338,7 +516,16 @@ class Parser
     }
 
     /**
-     * @param array $token
+     * Handles an <attributeStart>-token
+     *
+     * Attributes can only start on elements, assignments, imports, mixins and mixinCalls
+     *
+     * After that, all following <attribute>-tokens are handled.
+     * After that, an <attributeEnd>-token is expected
+     * (When I think about it, the Lexer kind of does that already)
+     *
+     * @param array $token The <attributeStart>-token
+     *
      * @throws Exception
      */
     protected function handleAttributeStart(array $token)
@@ -365,7 +552,10 @@ class Parser
     }
 
     /**
-     * @param array $token
+     * Handles an <attributeEnd>-token
+     * It does nothing (right now?)
+     *
+     * @param array $token The <attributeEnd>-token
      */
     protected function handleAttributeEnd(array $token)
     {
@@ -373,7 +563,11 @@ class Parser
     }
 
     /**
-     * @param array $token
+     * Handles a <block>-token and parses it into a block-node
+     * Blocks outside a mixin always need a name! (That's what $_inMixin is for)
+     *
+     * @param array $token The <block>-token
+     *
      * @throws Exception
      */
     protected function handleBlock(array $token)
@@ -394,7 +588,17 @@ class Parser
     }
 
     /**
-     * @param array $token
+     * Handles a <class>-token and parses it into an element
+     *
+     * If there's no $_current-node, a new one is created
+     *
+     * It will be converted to a regular <attribute>-node on the element
+     * (There is no class-node)
+     *
+     * Classes can only exist on elements and mixinCalls
+     *
+     * @param array $token The <class>-token
+     *
      * @throws Exception
      */
     protected function handleClass(array $token)
@@ -414,7 +618,11 @@ class Parser
     }
 
     /**
-     * @param array $token
+     * Handles a <comment>-token and parses it into a comment-node
+     *
+     * The comment node is set as the $_current element
+     *
+     * @param array $token The <comment>-token
      */
     protected function handleComment(array $token)
     {
@@ -426,7 +634,9 @@ class Parser
     }
 
     /**
-     * @param array $token
+     * Handles a <case>-token and parses it into a case-node
+     *
+     * @param array $token The <case>-token
      */
     protected function handleCase(array $token)
     {
@@ -437,7 +647,9 @@ class Parser
     }
 
     /**
-     * @param array $token
+     * Handles a <conditional>-token and parses it into a <conditional>-node
+     *
+     * @param array $token The <conditional>-token
      */
     protected function handleConditional(array $token)
     {
@@ -450,7 +662,9 @@ class Parser
     }
 
     /**
-     * @param array $token
+     * Handles a <do>-token and parses it into a do-node
+     *
+     * @param array $token The <do>-token
      */
     protected function handleDo(array $token)
     {
@@ -460,7 +674,9 @@ class Parser
     }
 
     /**
-     * @param array $token
+     * Handles a <doctype>-token and parses it into a doctype-node
+     *
+     * @param array $token The <doctype>-token
      */
     protected function handleDoctype(array $token)
     {
@@ -472,7 +688,9 @@ class Parser
     }
 
     /**
-     * @param array $token
+     * Handles an <each>-token and parses it into an each-node
+     *
+     * @param array $token The <each>-token
      */
     protected function handleEach(array $token)
     {
@@ -486,7 +704,14 @@ class Parser
     }
 
     /**
-     * @param array $token
+     * Handles an <expression>-token into an expression-node
+     *
+     * If there's a $_current-element, the expression gets appended
+     * to the $_current-element. If not, the expression itself
+     * becomes the $_current element
+     *
+     * @param array $token The <expression>-token
+     *
      * @throws Exception
      */
     protected function handleExpression(array $token)
@@ -520,7 +745,9 @@ class Parser
     }
 
     /**
-     * @param array $token
+     * Handles a <filter>-token and parses it into a filter-node
+     *
+     * @param array $token The <filter>-token
      */
     protected function handleFilter(array $token)
     {
@@ -531,7 +758,16 @@ class Parser
     }
 
     /**
-     * @param array $token
+     * Handles an <id>-token and parses it into an element
+     *
+     * If no $_current element exists, a new one is created
+     *
+     * IDs can only exist on elements an mixin calls
+     *
+     * They will get converted to attribute-nodes and appended to the current element
+     *
+     * @param array $token The <id>-token
+     *
      * @throws Exception
      */
     protected function handleId(array $token)
@@ -551,19 +787,28 @@ class Parser
     }
 
     /**
-     * @param array $token
+     * Handles an <import>-token and parses it into an import-node
+     *
+     * Notice that "extends" and "include" are basically the same thing.
+     * The only difference is that "extends" can only exist at the very
+     * beginning of a jade-block
+     *
+     * Only "include" can have filters, though.
+     * This gets checked in the Compiler, not here
+     *
+     * @todo ^ Why not?
+     * @todo Maybe this one could need a "createImport" method?
+     *
+     * @param array $token The <import>-token
+     *
      * @throws Exception
      */
     protected function handleImport(array $token)
     {
 
-        //Did you notice that "include" and "extend" are actually the same thing?
-        //The only difference (for the parser) is, that extend will probably
-        //be at indent 0 and PROBABLY the first instruction at all
-
-        if ($this->_current && $token['importType'] === 'extends')
+        if ($token['importType'] === 'extends' && count($this->_document->children) > 0)
             $this->throwException(
-                "extend/include should be the very first statement on a line",
+                "extends should be the very first statement in a document",
                 $token
             );
 
@@ -578,7 +823,24 @@ class Parser
     }
 
     /**
-     * @param array|null $token
+     * Handles an <indent>-token
+     *
+     * The $_level will be increased by 1 for each <indent>
+     *
+     * If there's no $_last element (which is set on a newLine), we do nothing
+     * (because there's nothing to indent into)
+     *
+     * The $_last node is set as the $_currentParent node and acts as a parent-node
+     * for further created nodes (They get appended in handleNewLine)
+     *
+     * import-nodes can't be indented into, because they can't have children (poor imports :'( )
+     *
+     * The opposite of this is, obviously, handleOutdent with <outdent>-tokens
+     *
+     * @todo Are there other nodes that shouldn't have children?
+     *
+     * @param array|null $token The <indent>-token
+     *
      * @throws Exception
      */
     protected function handleIndent(array $token = null)
@@ -599,7 +861,16 @@ class Parser
     }
 
     /**
-     * @param array $token
+     * Handles a <tag>-token and parses it into a tag-node
+     *
+     * If no $_current element exists, a new one is created
+     * A tag can only exist once on an element
+     * Only elements can have tags
+     *
+     * @todo Maybe multiple tags could combine with :? Would be ugly and senseless to write a(...)b tho
+     *
+     * @param array $token The <tag>-token
+     *
      * @throws Exception
      */
     protected function handleTag(array $token)
@@ -618,7 +889,14 @@ class Parser
     }
 
     /**
-     * @param array $token
+     * Handles a <mixin>-token and parses it into a mixin-node
+     *
+     * Mixins can't be inside other mixins.
+     * We use $_inMixin and $_mixinLevel for that
+     * $_mixinLevel gets reset in handleOutdent
+     *
+     * @param array $token The <mixin>-token
+     *
      * @throws Exception
      */
     protected function handleMixin(array $token)
@@ -641,7 +919,9 @@ class Parser
     }
 
     /**
-     * @param array $token
+     * Handles a <mixinCall>-token and parses it into a mixinCall-node
+     *
+     * @param array $token The <mixinCall>-token
      */
     protected function handleMixinCall(array $token)
     {
@@ -655,6 +935,16 @@ class Parser
     }
 
     /**
+     * Handles a <newLine>-token
+     *
+     * If there's no $_current element, it does nothing
+     * If there is one it:
+     *
+     * 1. Checks if we have an $_expansion. If we do, append it to $_current and reset $_expansion
+     * 2. Appends the $_current element to the $_currentParent
+     * 3. Set's the $_last element to the $_current element
+     * 4. Resets $_current to null
+     *
      * @param array|null $token
      */
     protected function handleNewLine(array $token = null)
@@ -662,12 +952,15 @@ class Parser
 
         if ($this->_current) {
 
+            //Is there any expansion?
             if ($this->_expansion) {
 
+                //Tell the current element who expands it
                 $this->_current->expands = $this->_expansion;
                 $this->_expansion = null;
             }
 
+            //Append to current parent
             $this->_currentParent->append($this->_current);
             $this->_last = $this->_current;
             $this->_current = null;
@@ -675,7 +968,17 @@ class Parser
     }
 
     /**
-     * @param array|null $token
+     * Handles an <outdent>-token
+     *
+     * Decreases the current $_level by 1
+     *
+     * Sets the $_currentParent to the ->parent of $_currentParent
+     * (Walking up the tree by 1)
+     *
+     * If we're in a mixin and we're at or below our mixin-level again,
+     * we're not in a mixin anymore
+     *
+     * @param array|null $token The <outdent>-token
      */
     protected function handleOutdent(array $token = null)
     {
@@ -692,11 +995,27 @@ class Parser
     }
 
     /**
-     * @param array $token
-     * @param Node|null $origin
+     * Handles an <expansion>-token
+     *
+     * If there's no current element, we don't expand anything and throw an exception
+     *
+     * If there's no space behind the : and the next token is a <tag>-token,
+     * we don't treat this as an expansion, but rather as a tag-extension
+     * (a:b === <a:b></a:b>, a: b === <a><b></b></a>)
+     * This is important for XML and XML-namespaces
+     *
+     * Notice that, right now, any element that can also land in $_current can be expanded
+     * (so almost all elements there are)
+     * It just makes no sense for some elements ("extends", "include")
+     *
+     * $_current is reset after the expansion so that we can collect the expanding element
+     * and handle it on a newLine or in an indent
+     *
+     * @param array $token The <expansion>-token
+     *
      * @throws Exception
      */
-    protected function handleExpansion(array $token, Node $origin = null)
+    protected function handleExpansion(array $token)
     {
 
         if (!$this->_current)
@@ -715,6 +1034,7 @@ class Parser
 
             $token = $this->getToken();
             $this->_current->tag .= ':'.$token['name'];
+
             return;
         }
 
@@ -727,7 +1047,12 @@ class Parser
 
 
     /**
-     * @param array $token
+     * Handles a <text>-token and parses it into a text-node
+     *
+     * If there's a $_current element, we append it to that element,
+     * if not, it becomes the $_current element
+     *
+     * @param array $token The <text>-token
      */
     protected function handleText(array $token)
     {
@@ -742,7 +1067,9 @@ class Parser
     }
 
     /**
-     * @param array $token
+     * Handles a <when>-token and parses it into a when-node
+     *
+     * @param array $token The <when>-token
      */
     protected function handleWhen(array $token)
     {
@@ -754,7 +1081,9 @@ class Parser
     }
 
     /**
-     * @param array $token
+     * Handles a <while>-token and parses it into a while-node
+     *
+     * @param array $token The <while>-token
      */
     protected function handleWhile(array $token)
     {
@@ -766,8 +1095,14 @@ class Parser
 
 
     /**
-     * @param $message
-     * @param array|null $relatedToken
+     * Throws a \Tale\Jade\Parser\Exception
+     *
+     * If a related token is passed, it will also append
+     * the location in the input of that token
+     *
+     * @param string     $message      A meaningful error-message
+     * @param array|null $relatedToken The token related to this error
+     *
      * @throws Exception
      */
     protected function throwException($message, array $relatedToken = null)
@@ -775,8 +1110,8 @@ class Parser
 
         if ($relatedToken)
             $message .= "\n(".$relatedToken['type']
-                        .' at '.$relatedToken['line']
-                        .':'.$relatedToken['offset'].')';
+                .' at '.$relatedToken['line']
+                .':'.$relatedToken['offset'].')';
 
         throw new Exception(
             "Failed to parse Jade: $message"

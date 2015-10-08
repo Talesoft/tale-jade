@@ -1,9 +1,11 @@
 
 /.idea
 /vendor
+/docs
 /Test/cache
 
 .DS_Store
 Thumbs.db
 composer.lock
+phpdoc.xml
 *.phtml

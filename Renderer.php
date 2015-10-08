@@ -1,4 +1,24 @@
 <?php
+/**
+ * The Tale Jade Project
+ *
+ * The Renderer Class
+ *
+ * This file is part of the Tale Jade Template Engine for PHP
+ *
+ * @author Torben Köhn <tk@talesoft.io>
+ * @author Talesoft <info@talesoft.io>
+ * @projectGroup Tale
+ * @project Jade
+ * @component Renderer
+ *
+ * The code of this file is distributed under the MIT license.
+ * If you didn't receive a copy of the license text, you can
+ * read it here http://licenses.talesoft.io/2015/MIT.txt
+ *
+ * Please do not remove this comment block.
+ * Thank you and have fun with Tale Jade!
+ */
 
 namespace Tale\Jade;
 
@@ -57,10 +77,10 @@ class Renderer
      * parser: The parser-options that get passed to the parser
      * lexer: The lexer options that get passed to the lexer
      *
-     * @param array|null $options The options to pass to the renderer
+     * @param array|null               $options  The options to pass to the renderer
      * @param \Tale\Jade\Compiler|null $compiler The compiler to use inside the renderer
-     * @param \Tale\Jade\Parser|null $parser The parser to use inside the compiler
-     * @param \Tale\Jade\Lexer|null $lexer The lexer to use inside the parser
+     * @param \Tale\Jade\Parser|null   $parser   The parser to use inside the compiler
+     * @param \Tale\Jade\Lexer|null    $lexer    The lexer to use inside the parser
      */
     public function __construct(
         array $options = null,
@@ -177,8 +197,9 @@ class Renderer
      * If you give it a path, the directory of that path will be used
      * for relative includes.
      *
-     * @param string $input The jade input string
-     * @param string|null $path The path for relative includes
+     * @param string      $input The jade input string
+     * @param string|null $path  The path for relative includes
+     *
      * @return mixed|string A PHTML string containing HTML and PHP
      */
     public function compile($input, $path = null)
@@ -196,7 +217,9 @@ class Renderer
      * The path should always be relative to the paths-option paths
      *
      * @see \Tale\Jade\Renderer->compile()
+     *
      * @param string $path The path to the jade file
+     *
      * @return mixed|string The compiled PHTML
      * @throws \Exception
      */
@@ -220,8 +243,9 @@ class Renderer
      * The paths will be relative from the compiler:paths option
      * or from get_include_path(), if no paths have been defined
      *
-     * @param string $file The relative path to the file to render
+     * @param string     $file The relative path to the file to render
      * @param array|null $args An array of variables to pass to the Jade-file
+     *
      * @return string The renderered markup
      */
     public function render($file, array $args = null)

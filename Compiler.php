@@ -1,4 +1,24 @@
 <?php
+/**
+ * The Tale Jade Project
+ *
+ * The Compiler Class
+ *
+ * This file is part of the Tale Jade Template Engine for PHP
+ *
+ * @author Torben Köhn <tk@talesoft.io>
+ * @author Talesoft <info@talesoft.io>
+ * @projectGroup Tale
+ * @project Jade
+ * @component Compiler
+ *
+ * The code of this file is distributed under the MIT license.
+ * If you didn't receive a copy of the license text, you can
+ * read it here http://licenses.talesoft.io/2015/MIT.txt
+ *
+ * Please do not remove this comment block.
+ * Thank you and have fun with Tale Jade!
+ */
 
 namespace Tale\Jade;
 
@@ -132,9 +152,9 @@ class Compiler
      *      lexer: The options for the lexer if none given.
      *
      *
-     * @param array|null $options An array of options
-     * @param Parser|null $parser An existing parser instance
-     * @param Lexer|null $lexer An existing lexer instance
+     * @param array|null  $options An array of options
+     * @param Parser|null $parser  An existing parser instance
+     * @param Lexer|null  $lexer   An existing lexer instance
      */
     public function __construct(array $options = null, Parser $parser = null, Lexer $lexer = null)
     {
@@ -230,7 +250,9 @@ class Compiler
     /**
      * Adds a path to the compiler
      * Files will be loaded from this path (or other paths you added before)
+     *
      * @param string $path The directory path
+     *
      * @return $this
      */
     public function addPath($path)
@@ -254,8 +276,9 @@ class Compiler
      *
      * It should return either a PHTML string or a \Tale\Jade\Parser\Node-instance
      *
-     * @param string $name The name of the filter
+     * @param string   $name     The name of the filter
      * @param callable $callback The filter handler callback
+     *
      * @return $this
      */
     public function addFilter($name, $callback)
@@ -285,8 +308,9 @@ class Compiler
      * If you give it a path, the directory of that path will be used
      * for relative includes.
      *
-     * @param string $input The jade input string
-     * @param string|null $path The path for relative includes
+     * @param string      $input The jade input string
+     * @param string|null $path  The path for relative includes
+     *
      * @return mixed|string A PHTML string containing HTML and PHP
      */
     public function compile($input, $path = null)
@@ -343,7 +367,9 @@ class Compiler
      * The path should always be relative to the paths-option paths
      *
      * @see \Tale\Jade\Compiler->compile()
+     *
      * @param string $path The path to the jade file
+     *
      * @return mixed|string The compiled PHTML
      * @throws \Exception
      */
@@ -372,6 +398,7 @@ class Compiler
      * e.g. "Some Random String", 'This can" contain quotes"'
      *
      * @param string $value The value to be checked
+     *
      * @return bool
      */
     protected function isScalar($value)
@@ -383,7 +410,8 @@ class Compiler
 
     /**
      * Compiles and sanitizes a scalar value
-     * @param string $value The scalar value
+     *
+     * @param string     $value     The scalar value
      * @param bool|false $attribute Is this an attribute value or not
      *
      * @return string
@@ -412,6 +440,7 @@ class Compiler
      * etc.
      *
      * @param string $value The value to be checked
+     *
      * @return bool
      */
     protected function isVariable($value)
@@ -437,8 +466,9 @@ class Compiler
      * If the second paragraph is true, the result will act like it is
      * inside a string respecting the quoteStyle-option
      *
-     * @param string $string The string to interpolate
+     * @param string     $string    The string to interpolate
      * @param bool|false $attribute Is this an attribute value or not
+     *
      * @return string The interpolated PHTML
      */
     protected function interpolate($string, $attribute = false)
@@ -484,6 +514,7 @@ class Compiler
      * The $offset will be added to the current level
      *
      * @param int $offset An offset added to the level
+     *
      * @return string
      */
     protected function indent($offset = 0)
@@ -498,9 +529,10 @@ class Compiler
      * Creates a PHP code expression
      * By default it will have <?php ?>-style
      *
-     * @param string $code The PHP code
+     * @param string $code   The PHP code
      * @param string $prefix The PHP start tag
      * @param string $suffix The PHP end tag
+     *
      * @return string The PHP expression
      */
     protected function createCode($code, $prefix = '<?php ', $suffix = '?>')
@@ -521,7 +553,9 @@ class Compiler
      * Creates a <?=?>-style PHP expression
      *
      * @see \Tale\Jade\Compiler->createCode
+     *
      * @param string $code The PHP expression to output
+     *
      * @return string The PHP expression
      */
     protected function createShortCode($code)
@@ -535,7 +569,9 @@ class Compiler
      * This creates a "hidden" comment thats still visible in pretty output
      *
      * @todo Maybe this should return an empty string if pretty-option is on?
+     *
      * @param string $text The text to wrap into a comment
+     *
      * @return string The compiled PHP comment
      */
     protected function createPhpComment($text)
@@ -549,6 +585,7 @@ class Compiler
      * (<!-- -->)
      *
      * @param string $text THe text to wrap into a comment
+     *
      * @return string The compiled XML comment
      */
     protected function createMarkupComment($text)
@@ -568,6 +605,7 @@ class Compiler
      * The result will be PHTML
      *
      * @param \Tale\Jade\Parser\Node $node The Node to compile
+     *
      * @return string The compiled PHTML
      * @throws Exception
      */
@@ -605,7 +643,9 @@ class Compiler
 
     /**
      * Compiles a document Node to PHTML
+     *
      * @param \Tale\Jade\Parser\Node $node The document-type node
+     *
      * @return string The compiled PHTML
      */
     protected function compileDocument(Node $node)
@@ -616,7 +656,9 @@ class Compiler
 
     /**
      * Compiles a doctype Node to PHTML
+     *
      * @param \Tale\Jade\Parser\Node $node The doctype-type node
+     *
      * @return string The compiled PHTML
      */
     protected function compileDoctype(Node $node)
@@ -639,8 +681,9 @@ class Compiler
      *
      * If no paths are given, the current get_include_path() is used
      *
-     * @param string $path The relative path to resolve
-     * @param null $extension The extension to resolve with
+     * @param string $path      The relative path to resolve
+     * @param null   $extension The extension to resolve with
+     *
      * @return string|false The resolved full path or false, if not found
      */
     public function resolvePath($path, $extension = null)
@@ -676,6 +719,7 @@ class Compiler
      * Collects all imports and handles them via handleImport()
      *
      * @param \Tale\Jade\Parser\Node $node The root Node to search imports in
+     *
      * @return $this
      * @throws Exception
      */
@@ -700,6 +744,7 @@ class Compiler
      * Loads an imported file and merges the nodes with the current tree
      *
      * @param \Tale\Jade\Parser\Node $node The node to import
+     *
      * @return $this
      * @throws Exception
      */
@@ -791,6 +836,7 @@ class Compiler
      * After that it calls handleBlock on each $block
      *
      * @param \Tale\Jade\Parser\Node $node The node to search blocks in
+     *
      * @return $this
      */
     protected function handleBlocks(Node $node)
@@ -809,6 +855,7 @@ class Compiler
      * all other blocks either to append, replace or prepend
      *
      * @param \Tale\Jade\Parser\Node $node The block node to handle
+     *
      * @return $this
      * @throws Exception
      */
@@ -878,6 +925,7 @@ class Compiler
      * is false
      *
      * @param \Tale\Jade\Parser\Node $node The node to search mixins in
+     *
      * @return $this
      * @throws Exception
      */
@@ -915,7 +963,9 @@ class Compiler
      *
      * @see \Tale\Jade\Compiler->_mixins
      * @see \Tale\Jade\Compiler->compileMixins
+     *
      * @param \Tale\Jade\Parser\Node $node The mixin node to compile
+     *
      * @return $this
      */
     protected function handleMixin(Node $node)
@@ -1004,7 +1054,9 @@ class Compiler
      * Compiles a mixin call referencing the mixins in $_mixins
      *
      * @todo I guess the variadic handling in calls is broken right now. Calls can splat with ...
+     *
      * @param \Tale\Jade\Parser\Node $node The mixin call node to compile
+     *
      * @return string The compiled PHTML
      * @throws Exception
      */
@@ -1129,6 +1181,7 @@ class Compiler
      * for blocks inside mixins
      *
      * @param \Tale\Jade\Parser\Node $node The block node to compile
+     *
      * @return string The compiled PHTML
      */
     protected function compileBlock(Node $node)
@@ -1148,6 +1201,7 @@ class Compiler
      * into PHTML
      *
      * @param \Tale\Jade\Parser\Node $node The conditional node to compile
+     *
      * @return string The compiled PHTML
      */
     protected function compileConditional(Node $node)
@@ -1189,7 +1243,9 @@ class Compiler
      * when-children, nothing else is allowed
      *
      * compileCase interacts with compileWhen to skip ?><?php after the switch {
+     *
      * @param \Tale\Jade\Parser\Node $node The case node to compile
+     *
      * @return string The compiled PHTML
      * @throws Exception
      */
@@ -1240,7 +1296,9 @@ class Compiler
      * on a case-parent
      *
      * When interacts with compileCase to skip the first ?><?php after the switch{
+     *
      * @param \Tale\Jade\Parser\Node $node The when-node to compile
+     *
      * @return string The compiled PHTML
      * @throws Exception
      */
@@ -1278,6 +1336,7 @@ class Compiler
      * the $ in the variable names are optional
      *
      * @param \Tale\Jade\Parser\Node $node The each-node to compile
+     *
      * @return string The compiled PHTML
      */
     protected function compileEach(Node $node)
@@ -1311,7 +1370,9 @@ class Compiler
      * and don't print brackets
      *
      * @todo Check for do-instruction via $node->prev()
+     *
      * @param \Tale\Jade\Parser\Node $node The while-node to compile
+     *
      * @return string The compiled PHTML
      */
     protected function compileWhile(Node $node)
@@ -1337,7 +1398,9 @@ class Compiler
      * Compiles a do-instruction into PHTML
      *
      * @todo Check for while-node with $node->next()
+     *
      * @param \Tale\Jade\Parser\Node $node The do-node to compile
+     *
      * @return string The compiled PHTML
      * @throws Exception
      */
@@ -1364,6 +1427,7 @@ class Compiler
      * The filters are drawn from the filters-option
      *
      * @param \Tale\Jade\Parser\Node $node The filter node to compile
+     *
      * @return string The compiled PHTML
      * @throws Exception
      */
@@ -1387,9 +1451,11 @@ class Compiler
      * Compiles an array of nodes like they are children of some other node
      *
      * if $indent is true, the level will be increased
-     * @param array $nodes
-     * @param bool|true $indent
+     *
+     * @param array      $nodes
+     * @param bool|true  $indent
      * @param bool|false $allowInline
+     *
      * @return string
      */
     protected function compileChildren(array $nodes, $indent = true, $allowInline = false)
@@ -1425,7 +1491,9 @@ class Compiler
      * tags, attributes and assignments
      *
      * @todo Attribute escaping seems pretty broken right now
+     *
      * @param \Tale\Jade\Parser\Node $node The element node to compile
+     *
      * @return string The compiled PHTML
      */
     protected function compileElement(Node $node)
@@ -1536,7 +1604,10 @@ class Compiler
                     //Print the normal pair
                     //We got all scalar values, we can evaluate them directly, so no code needed in the PHTML output
                     $pair .= " $name=";
-                    $values = array_map(function ($val) { return $this->compileScalar($val); }, $values);
+                    $values = array_map(function ($val) {
+
+                        return $this->compileScalar($val);
+                    }, $values);
                     $pair .= call_user_func($builder, count($values) === 1 ? $values[0] : $values, $quot, $escaped === 'true');
                 } else {
 
@@ -1610,7 +1681,9 @@ class Compiler
      * Texts get interpolated
      *
      * @see \Tale\Jade\Compiler->interpolate
+     *
      * @param \Tale\Jade\Parser\Node $node The text-node to compile
+     *
      * @return string The compiled PHTML
      */
     protected function compileText(Node $node)
@@ -1624,6 +1697,7 @@ class Compiler
      * into a single PHP expression
      *
      * @param \Tale\Jade\Parser\Node $node The expression node to compile
+     *
      * @return string
      */
     protected function compileExpression(Node $node)
@@ -1650,6 +1724,7 @@ class Compiler
      * if not it will be compiled as a hidden PHP comment
      *
      * @param \Tale\Jade\Parser\Node $node The comment-node to compile
+     *
      * @return string The compiled PHTML
      */
     protected function compileComment(Node $node)
@@ -1689,8 +1764,9 @@ class Compiler
     /**
      * Throws a Tale\Jade\Parser\Exception
      *
-     * @param string $message A meaningful exception message
+     * @param string    $message     A meaningful exception message
      * @param Node|null $relatedNode The node the exception occured on
+     *
      * @throws Exception
      */
     protected function throwException($message, \Tale\Jade\Parser\Node $relatedNode = null)
@@ -1719,9 +1795,10 @@ class Compiler
      *
      * The result will be enclosed by the quotes passed to $quoteStyle
      *
-     * @param mixed $value The value to build
+     * @param mixed  $value      The value to build
      * @param string $quoteStyle The quoting style to use
-     * @param bool $escaped Escape the value or not
+     * @param bool   $escaped    Escape the value or not
+     *
      * @return string The built value
      */
     public static function buildValue($value, $quoteStyle, $escaped)
@@ -1749,9 +1826,10 @@ class Compiler
      * will become
      * '["a", "b"]' (JSON)
      *
-     * @param mixed $value The value to build
+     * @param mixed  $value      The value to build
      * @param string $quoteStyle The quoting style to use
-     * @param bool $escaped Escape the value or not
+     * @param bool   $escaped    Escape the value or not
+     *
      * @return string The built value
      */
     public static function buildDataValue($value, $quoteStyle, $escaped)
@@ -1770,8 +1848,9 @@ class Compiler
      * will become
      * 'color: red; width: 100%; height: 20px;'
      *
-     * @param mixed $value The value to build
+     * @param mixed  $value      The value to build
      * @param string $quoteStyle The quoting style to use
+     *
      * @return string The built value
      */
     public static function buildStyleValue($value, $quoteStyle)
@@ -1793,8 +1872,9 @@ class Compiler
      * will become
      * 'a b c d e'
      *
-     * @param mixed $value The value to build
+     * @param mixed  $value      The value to build
      * @param string $quoteStyle The quoting style to use
+     *
      * @return string The built value
      */
     public static function buildClassValue($value, $quoteStyle)
@@ -1813,6 +1893,7 @@ class Compiler
      * Checks if a value is _exactly_ either null or false
      *
      * @param mixed $value The value to check
+     *
      * @return bool
      */
     public static function isNullOrFalse($value)
@@ -1826,6 +1907,7 @@ class Compiler
      * (Not the array itself, but all values in the array)
      *
      * @param array $value The array to check
+     *
      * @return bool
      */
     public static function isArrayNullOrFalse(array $value)
@@ -1839,6 +1921,7 @@ class Compiler
      * (kind of like !isScalar && !isExpression)
      *
      * @param mixed $value The value to check
+     *
      * @return bool
      */
     public static function isObjectOrArray($value)
@@ -1858,9 +1941,10 @@ class Compiler
      * will become
      * 'a b=c d e=f g=h'
      *
-     * @param array $array The array to flatten
-     * @param string $separator The separator to implode pairs with
+     * @param array  $array        The array to flatten
+     * @param string $separator    The separator to implode pairs with
      * @param string $argSeparator The separator to implode keys and values with
+     *
      * @return string The compiled string
      */
     public static function flatten(array $array, $separator = ' ', $argSeparator = '=')

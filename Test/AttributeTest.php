@@ -37,6 +37,12 @@ class AttributeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('<a href="some value"></a>', $this->_compiler->compile('a(href="some value")'));
     }
 
+    public function testDoubleColonName()
+    {
+
+        $this->assertEquals('<a ns:sub-ns:href="some value"></a>', $this->_compiler->compile('a(ns:sub-ns:href="some value")'));
+    }
+
     public function testLiteralValue()
     {
 
