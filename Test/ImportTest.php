@@ -47,7 +47,7 @@ class ImportTest extends \PHPUnit_Framework_TestCase
     public function testIncludeFilters()
     {
 
-        $this->assertEquals('<style>some, random { css: operations; }  and, .just { some: more; }</style><style>some, random { css: operations; }  and, .just { some: more; }</style><script>function someJs() {  console.log(\'someJs\'); }  someJs();</script><script>function someJs() {  console.log(\'someJs\'); }  someJs();</script>Hello from PHP!Hello from PHP!', $this->_renderer->render(
+        $this->assertEquals('<style>some, random { css: operations; } and, .just { some: more; }</style><style>some, random { css: operations; } and, .just { some: more; }</style><script>function someJs() { console.log(\'someJs\'); } someJs();</script><script>function someJs() { console.log(\'someJs\'); } someJs();</script>Hello from PHP!Hello from PHP!', $this->_renderer->render(
             'include-filters'
         ));
     }
