@@ -68,8 +68,15 @@ class Compiler
      * and to compile them all at the and (with checking,
      * if they are even called)
      *
+     * The array looks like this:
+     * [
+     *     ['node' => \Tale\Jade\Parser\Node, 'phtml' => <compiled phtml> ],
+     *     ['node' => \Tale\Jade\Parser\Node, 'phtml' => <compiled phtml> ],
+     *     ['node' => \Tale\Jade\Parser\Node, 'phtml' => <compiled phtml> ]
+     * ]
+     *
      * Keys are the name of the mixin
-     * @var \Tale\Jade\Parser\Node[]
+     * @var []
      */
     private $_mixins;
 
@@ -217,9 +224,11 @@ class Compiler
      *
      * The callback should have the following signature:
      * (\Tale\Jade\Parser\Node $node, $indent, $newLine)
-     * where $node is the filter node found,
+     * where $node is the filter \Tale\Jade\Parser\Node found,
      * $indent is the current indentation respecting level and pretty-option
      * and newLine is a new-line respecting the pretty-option
+     *
+     * It should return either a PHTML string or a \Tale\Jade\Parser\Node-instance
      *
      * @param string $name The name of the filter
      * @param callable $callback The filter handler callback
@@ -271,7 +280,7 @@ class Compiler
         $this->handleBlocks($node);
         $this->handleMixins($node);
 
-        //The actual compilation process ($node is the very root node of everything)
+        //The actual compilation process ($node is the very root \Tale\Jade\Parser\Node of everything)
         $phtml = $this->compileNode($node);
 
 
@@ -519,7 +528,7 @@ class Compiler
     }
 
     /**
-     * Compiles any node that has a matching method
+     * Compiles any Node that has a matching method
      * for its type
      *
      * e.g.
@@ -528,7 +537,7 @@ class Compiler
      *
      * The result will be PHTML
      *
-     * @param \Tale\Jade\Parser\Node $node The node to compile
+     * @param \Tale\Jade\Parser\Node $node The Node to compile
      * @return string The compiled PHTML
      * @throws Exception
      */
@@ -565,8 +574,8 @@ class Compiler
     }
 
     /**
-     * Compiles a document node to PHTML
-     * @param Node $node The document-type node
+     * Compiles a document Node to PHTML
+     * @param \Tale\Jade\Parser\Node $node The document-type node
      * @return string The compiled PHTML
      */
     protected function compileDocument(Node $node)
@@ -576,8 +585,8 @@ class Compiler
     }
 
     /**
-     * Compiles a doctype node to PHTML
-     * @param Node $node The doctype-type node
+     * Compiles a doctype Node to PHTML
+     * @param \Tale\Jade\Parser\Node $node The doctype-type node
      * @return string The compiled PHTML
      */
     protected function compileDoctype(Node $node)
@@ -636,7 +645,7 @@ class Compiler
     /**
      * Collects all imports and handles them via handleImport()
      *
-     * @param Node $node The root node to search imports in
+     * @param \Tale\Jade\Parser\Node $node The root Node to search imports in
      * @return $this
      * @throws Exception
      */
@@ -658,7 +667,9 @@ class Compiler
     }
 
     /**
-     * @param Node $node
+     * Loads an imported file and merges the nodes with the current tree
+     *
+     * @param \Tale\Jade\Parser\Node $node The node to import
      * @return $this
      * @throws Exception
      */
@@ -702,7 +713,7 @@ class Compiler
                 }
 
                 //Notice that include might have an expansion before
-                //We'd need to resolve that before we remove the import node alltogether
+                //We'd need to resolve that before we remove the import \Tale\Jade\Parser\Node alltogether
                 if (isset($node->expands)) {
 
                     $newNode->expands = $node->expands;
@@ -731,7 +742,7 @@ class Compiler
         array_pop($this->_files);
 
         //Notice that include might have an expansion before
-        //We'd need to resolve that before we remove the import node alltogether
+        //We'd need to resolve that before we remove the import \Tale\Jade\Parser\Node alltogether
         if (isset($node->expands)) {
 
             $importedNode->expands = $node->expands;
@@ -745,7 +756,10 @@ class Compiler
     }
 
     /**
-     * @param Node $node
+     * Collects all blocks and saves them into $_blocks
+     * After that it calls handleBlock on each $block
+     * 
+     * @param \Tale\Jade\Parser\Node $node The node to search blocks in
      * @return $this
      */
     protected function handleBlocks(Node $node)
@@ -759,7 +773,11 @@ class Compiler
     }
 
     /**
-     * @param Node $node
+     * Stacks blocks into each other
+     * The first block found is always the container,
+     * all other blocks either to append, replace or prepend
+     *
+     * @param \Tale\Jade\Parser\Node $node The block node to handle
      * @return $this
      * @throws Exception
      */
@@ -824,7 +842,11 @@ class Compiler
     }
 
     /**
-     * @param Node $node
+     * Finds all mixins and loops them through handleMixin
+     * Duplicated mixins will throw an exception if the replaceMixins-options
+     * is false
+     *
+     * @param \Tale\Jade\Parser\Node $node The node to search mixins in
      * @return $this
      * @throws Exception
      */
@@ -854,7 +876,15 @@ class Compiler
     }
 
     /**
-     * @param Node $node
+     * Pre-compiles a mixin into the $_mixin array
+     * Only the block content of the mixin will be compiled,
+     * not the mixin itself
+     *
+     * The actual mixins get compiled in compileMixins
+     *
+     * @see \Tale\Jade\Compiler->_mixins
+     * @see \Tale\Jade\Compiler->compileMixins
+     * @param \Tale\Jade\Parser\Node $node The mixin node to compile
      * @return $this
      */
     protected function handleMixin(Node $node)
@@ -874,7 +904,13 @@ class Compiler
     }
 
     /**
-     * @return string
+     * Compiles all mixins in $_mixins under each other into a single
+     * PHTML block
+     *
+     * Mixins will be anonymous functions inside a $__mixins array
+     * The mixins also pass the global $__args variable on (so that it _is_ global)
+     *
+     * @return string The compile PHTML
      */
     protected function compileMixins()
     {
@@ -934,8 +970,11 @@ class Compiler
     }
 
     /**
-     * @param Node $node
-     * @return string
+     * Compiles a mixin call referencing the mixins in $_mixins
+     *
+     * @todo I guess the variadic handling in calls is broken right now. Calls can splat with ...
+     * @param \Tale\Jade\Parser\Node $node The mixin call node to compile
+     * @return string The compiled PHTML
      * @throws Exception
      */
     protected function compileMixinCall(Node $node)
@@ -1053,8 +1092,13 @@ class Compiler
     }
 
     /**
-     * @param Node $node
-     * @return string
+     * Compiles a block node into PHTML
+     *
+     * A single block node without a name or mode will act as a wrapper
+     * for blocks inside mixins
+     *
+     * @param \Tale\Jade\Parser\Node $node The block node to compile
+     * @return string The compiled PHTML
      */
     protected function compileBlock(Node $node)
     {
@@ -1069,8 +1113,11 @@ class Compiler
     }
 
     /**
-     * @param Node $node
-     * @return string
+     * Compiles a conditional, either if, elseif, else if or else
+     * into PHTML
+     *
+     * @param \Tale\Jade\Parser\Node $node The conditional node to compile
+     * @return string The compiled PHTML
      */
     protected function compileConditional(Node $node)
     {
@@ -1106,8 +1153,13 @@ class Compiler
     }
 
     /**
-     * @param Node $node
-     * @return string
+     * Compiles a case-node into PHTML
+     * This also checks if all sub-nodes of the case are
+     * when-children, nothing else is allowed
+     *
+     * compileCase interacts with compileWhen to skip ?><?php after the switch {
+     * @param \Tale\Jade\Parser\Node $node The case node to compile
+     * @return string The compiled PHTML
      * @throws Exception
      */
     protected function compileCase(Node $node)
@@ -1152,8 +1204,13 @@ class Compiler
     }
 
     /**
-     * @param Node $node
-     * @return string
+     * Compiles a when-node into PHTML
+     * This also checks, if the when node is defined
+     * on a case-parent
+     *
+     * When interacts with compileCase to skip the first ?><?php after the switch{
+     * @param \Tale\Jade\Parser\Node $node The when-node to compile
+     * @return string The compiled PHTML
      * @throws Exception
      */
     protected function compileWhen(Node $node)
@@ -1184,8 +1241,13 @@ class Compiler
     }
 
     /**
-     * @param Node $node
-     * @return string
+     * Compiles a each-instruction into a foreach-loop
+     * PHTML
+     *
+     * the $ in the variable names are optional
+     *
+     * @param \Tale\Jade\Parser\Node $node The each-node to compile
+     * @return string The compiled PHTML
      */
     protected function compileEach(Node $node)
     {
@@ -1212,8 +1274,14 @@ class Compiler
     }
 
     /**
-     * @param Node $node
-     * @return string
+     * Compiles a while-loop into PHTML
+     *
+     * Notice that if it has no children, we assume it's a do/while loop
+     * and don't print brackets
+     *
+     * @todo Check for do-instruction via $node->prev()
+     * @param \Tale\Jade\Parser\Node $node The while-node to compile
+     * @return string The compiled PHTML
      */
     protected function compileWhile(Node $node)
     {
@@ -1235,8 +1303,11 @@ class Compiler
     }
 
     /**
-     * @param Node $node
-     * @return string
+     * Compiles a do-instruction into PHTML
+     *
+     * @todo Check for while-node with $node->next()
+     * @param \Tale\Jade\Parser\Node $node The do-node to compile
+     * @return string The compiled PHTML
      * @throws Exception
      */
     protected function compileDo(Node $node)
@@ -1258,8 +1329,11 @@ class Compiler
     }
 
     /**
-     * @param Node $node
-     * @return mixed|string
+     * Compiles a filter-node intp PHTML
+     * The filters are drawn from the filters-option
+     *
+     * @param \Tale\Jade\Parser\Node $node The filter node to compile
+     * @return string The compiled PHTML
      * @throws Exception
      */
     protected function compileFilter(Node $node)
@@ -1275,10 +1349,13 @@ class Compiler
 
         $result = call_user_func($this->_options['filters'][$name], $node, $this->indent(), $this->newLine(), $this);
 
-        return $result instanceof Node ? $this->compileNode($result) : (string)$result;
+        return $result instanceof \Tale\Jade\Parser\Node ? $this->compileNode($result) : (string)$result;
     }
 
     /**
+     * Compiles an array of nodes like they are children of some other node
+     *
+     * if $indent is true, the level will be increased
      * @param array $nodes
      * @param bool|true $indent
      * @param bool|false $allowInline
@@ -1313,7 +1390,7 @@ class Compiler
 
     /**
      * @todo Attribute escaping seems pretty broken right now
-     * @param Node $node
+     * @param \Tale\Jade\Parser\Node $node
      * @return string
      */
     protected function compileElement(Node $node)
@@ -1483,7 +1560,7 @@ class Compiler
     }
 
     /**
-     * @param Node $node
+     * @param \Tale\Jade\Parser\Node $node
      * @return string
      */
     protected function compileText(Node $node)
@@ -1493,7 +1570,7 @@ class Compiler
     }
 
     /**
-     * @param Node $node
+     * @param \Tale\Jade\Parser\Node $node
      * @return string
      */
     protected function compileExpression(Node $node)
@@ -1514,7 +1591,7 @@ class Compiler
     }
 
     /**
-     * @param Node $node
+     * @param \Tale\Jade\Parser\Node $node
      * @return string
      */
     protected function compileComment(Node $node)
@@ -1553,7 +1630,7 @@ class Compiler
      * @param Node|null $relatedNode
      * @throws Exception
      */
-    protected function throwException($message, Node $relatedNode = null)
+    protected function throwException($message, \Tale\Jade\Parser\Node $relatedNode = null)
     {
 
         if ($relatedNode)
