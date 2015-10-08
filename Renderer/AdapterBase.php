@@ -25,7 +25,7 @@ namespace Tale\Jade\Renderer;
 use Tale\Jade\Renderer;
 
 /**
- * The base class for Renderer Adapters
+ * Acts as a base class for renderer adapters
  *
  * Provides some requirements for the renderer adapters
  *

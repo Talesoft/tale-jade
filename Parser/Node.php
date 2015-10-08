@@ -23,8 +23,7 @@
 namespace Tale\Jade\Parser;
 
 /**
- * An instance of this class represents a node in the AST of the
- * parser
+ * Represents a node in the AST the parser generates
  *
  * A node has children and always tries to reference its parents
  *

@@ -25,8 +25,7 @@ namespace Tale\Jade;
 use Tale\Jade\Lexer\Exception;
 
 /**
- * The Lexer parses the input string into tokens
- * that can be worked with easier
+ * Performs lexical analysis and provides a token generator
  *
  * Tokens are defined as single units of code
  * (e.g. tag, class, id, attributeStart, attribute, attributeEnd)

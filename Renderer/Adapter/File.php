@@ -27,8 +27,7 @@ use Tale\Jade\Renderer\AdapterBase;
 use Tale\Util\PathUtil;
 
 /**
- * This adapter handles jade by saving the compiled PHTML
- * to a file and including it normally
+ * Handles rendering with cached files and include
  *
  * This is the best adapter for production systems, cheap VPS or any hosts
  * that don't have 'allow_url_fopen' activated

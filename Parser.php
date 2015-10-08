@@ -26,7 +26,7 @@ use Tale\Jade\Parser\Node;
 use Tale\Jade\Parser\Exception;
 
 /**
- * The Parser class
+ * Parses lexer tokens into an AST
  *
  * This class takes generated tokens from the Lexer sequentially
  * and produces an AST out of it.

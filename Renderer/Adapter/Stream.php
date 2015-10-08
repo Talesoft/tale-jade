@@ -27,8 +27,7 @@ use Tale\Jade\Renderer\Adapter\Stream\Wrapper;
 use Tale\Jade\Renderer\AdapterBase;
 
 /**
- * This adapter handles files via a file-stream defined
- * as a PHP stream wrapper.
+ * Handles rendering via Data-URIs and a Stream Wrapper
  *
  * Notice that this only works, if the php.ini setting 'allow_url_fopen' is ON
  * This works through including the PHTML file as an URI

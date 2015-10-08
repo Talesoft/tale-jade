@@ -23,8 +23,7 @@
 namespace Tale\Jade\Renderer\Adapter\Stream;
 
 /**
- * This is the Stream Wrapper that is used by the
- * Stream-Adapter of the Renderer
+ * Provides a Stream Wrapper that reads a special Data-URI
  *
  * See the php docs on Stream Wrappers to get to know about this
  *

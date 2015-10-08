@@ -23,6 +23,8 @@
 namespace Tale\Jade;
 
 /**
+ * Allows easy rendering of Jade-files
+ *
  * The renderer provides utilities to quickly render jade files to
  * HTML-output or/and to files
  *

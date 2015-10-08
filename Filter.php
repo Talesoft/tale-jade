@@ -25,9 +25,7 @@ namespace Tale\Jade;
 use Tale\Jade\Parser\Node;
 
 /**
- * Static filter class
- *
- * This class contains the default filters of the template engine.
+ * Provides some basic filters
  *
  * @todo: Need moar filters!
  * @package Tale\Jade

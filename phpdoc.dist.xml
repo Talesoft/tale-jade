@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <phpdoc>
-    <title><![CDATA[<strong>Tale Jade</strong> for PHP]]></title>
+    <title><![CDATA[Tale Jade for PHP]]></title>
     <parser>
         <target>docs/structure</target>
         <extensions>
@@ -10,9 +10,12 @@
     <transformer>
         <target>docs/html</target>
         <template name="responsive" />
+        <template name="clean" />
+        <template name="checkstyle" />
     </transformer>
     <files>
         <directory>.</directory>
         <ignore>Test/*</ignore>
+        <ignore>vendor/*</ignore>
     </files>
 </phpdoc>

@@ -26,7 +26,7 @@ use Tale\Jade\Compiler\Exception;
 use Tale\Jade\Parser\Node;
 
 /**
- * The Compiler
+ * Compiles the parsed AST into PHTML
  *
  * Translates Nodes returned from the Parser into PHTML, a mix
  * of PHP and HTML
