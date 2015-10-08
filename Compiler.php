@@ -1389,9 +1389,12 @@ class Compiler
     }
 
     /**
+     * Compiles an element-node containing
+     * tags, attributes and assignments
+     *
      * @todo Attribute escaping seems pretty broken right now
-     * @param \Tale\Jade\Parser\Node $node
-     * @return string
+     * @param \Tale\Jade\Parser\Node $node The element node to compile
+     * @return string The compiled PHTML
      */
     protected function compileElement(Node $node)
     {
@@ -1429,6 +1432,9 @@ class Compiler
 
         if (count($nodeAttributes) > 0) {
 
+            //Iterate all attributes.
+            //Multiple attributes will be put together in an array
+            //and passed to the builder method
             $attributes = [];
             foreach ($nodeAttributes as $attr) {
 
@@ -1438,6 +1444,7 @@ class Compiler
                     $attributes[$attr->name] = [$attr];
             }
 
+            //first iteration of sanitizing values
             foreach ($attributes as $name => $attrs) {
 
                 $values = [];
@@ -1461,6 +1468,7 @@ class Compiler
                         $escaped = false;
                 }
 
+                //In HTML-mode, self-repeating attributes are automatically expanded
                 if ($this->_options['mode'] === self::MODE_HTML && count($values) < 1 && in_array($name, $this->_options['selfRepeatingAttributes'])) {
 
                     $values[] = $name;
@@ -1560,8 +1568,12 @@ class Compiler
     }
 
     /**
-     * @param \Tale\Jade\Parser\Node $node
-     * @return string
+     * Compiles a text-node to PTHML
+     * Texts get interpolated
+     *
+     * @see \Tale\Jade\Compiler->interpolate
+     * @param \Tale\Jade\Parser\Node $node The text-node to compile
+     * @return string The compiled PHTML
      */
     protected function compileText(Node $node)
     {
@@ -1570,7 +1582,10 @@ class Compiler
     }
 
     /**
-     * @param \Tale\Jade\Parser\Node $node
+     * Compiles an expression node and it's descending text nodes
+     * into a single PHP expression
+     *
+     * @param \Tale\Jade\Parser\Node $node The expression node to compile
      * @return string
      */
     protected function compileExpression(Node $node)
@@ -1591,8 +1606,12 @@ class Compiler
     }
 
     /**
-     * @param \Tale\Jade\Parser\Node $node
-     * @return string
+     * Compiles a comment-node based on if its rendered or not
+     * If it's rendered, it will be compiled as a HTML-comment,
+     * if not it will be compiled as a hidden PHP comment
+     *
+     * @param \Tale\Jade\Parser\Node $node The comment-node to compile
+     * @return string The compiled PHTML
      */
     protected function compileComment(Node $node)
     {
@@ -1602,7 +1621,9 @@ class Compiler
     }
 
     /**
-     * @return string
+     * Compiles a simple error helper in a string to be prepended to the final PHTML
+     *
+     * @return string The compiled PHTML for the error handler
      */
     protected function compileErrorHandlerHelper()
     {
@@ -1626,8 +1647,10 @@ class Compiler
     }
 
     /**
-     * @param $message
-     * @param Node|null $relatedNode
+     * Throws a Tale\Jade\Parser\Exception
+     *
+     * @param string $message A meaningful exception message
+     * @param Node|null $relatedNode The node the exception occured on
      * @throws Exception
      */
     protected function throwException($message, \Tale\Jade\Parser\Node $relatedNode = null)
@@ -1645,10 +1668,21 @@ class Compiler
 
 
     /**
-     * @param $value
-     * @param $quoteStyle
-     * @param $escaped
-     * @return string
+     * Builds an attribute or argument value
+     *
+     * Objects get converted to arrays
+     * Arrays will be imploded by '' (values are concatenated)
+     *
+     * ['a', 'b', ['c', ['d']]]
+     * will become
+     * 'abcd'
+     *
+     * The result will be enclosed by the quotes passed to $quoteStyle
+     *
+     * @param mixed $value The value to build
+     * @param string $quoteStyle The quoting style to use
+     * @param bool $escaped Escape the value or not
+     * @return string The built value
      */
     public static function buildValue($value, $quoteStyle, $escaped)
     {
@@ -1656,14 +1690,29 @@ class Compiler
         if (is_object($value))
             $value = (array)$value;
 
-        return $quoteStyle.($escaped ? htmlentities(self::isObjectOrArray($value) ? implode('', $value) : $value, \ENT_QUOTES) : ((string)$value)).$quoteStyle;
+        return $quoteStyle.($escaped ? htmlentities(is_array($value) ? self::flatten($value, '') : $value, \ENT_QUOTES) : ((string)$value)).$quoteStyle;
     }
 
     /**
-     * @param $value
-     * @param $quoteStyle
-     * @param $escaped
-     * @return string
+     * Builds a data-attribute value
+     * If it's an object or an array, it gets converted to JSON automatically
+     * If not, the value stays scalar
+     *
+     * JSON will automatically be enclosed by ', other results will use
+     * $quoteStyle respectively
+     *
+     * 'a'
+     * will become
+     * 'a'
+     *
+     * ['a', 'b']
+     * will become
+     * '["a", "b"]' (JSON)
+     *
+     * @param mixed $value The value to build
+     * @param string $quoteStyle The quoting style to use
+     * @param bool $escaped Escape the value or not
+     * @return string The built value
      */
     public static function buildDataValue($value, $quoteStyle, $escaped)
     {
@@ -1675,9 +1724,15 @@ class Compiler
     }
 
     /**
-     * @param $value
-     * @param $quoteStyle
-     * @return string
+     * Builds a style-attribute string from a value
+     *
+     * ['color' => 'red', 'width: 100%', ['height' => '20px']]
+     * will become
+     * 'color: red; width: 100%; height: 20px;'
+     *
+     * @param mixed $value The value to build
+     * @param string $quoteStyle The quoting style to use
+     * @return string The built value
      */
     public static function buildStyleValue($value, $quoteStyle)
     {
@@ -1692,9 +1747,15 @@ class Compiler
     }
 
     /**
-     * @param $value
-     * @param $quoteStyle
-     * @return string
+     * Builds a class-attribute string from a value
+     *
+     *['a', 'b', ['c', ['d', 'e']]]
+     * will become
+     * 'a b c d e'
+     *
+     * @param mixed $value The value to build
+     * @param string $quoteStyle The quoting style to use
+     * @return string The built value
      */
     public static function buildClassValue($value, $quoteStyle)
     {
@@ -1709,7 +1770,9 @@ class Compiler
     }
 
     /**
-     * @param $value
+     * Checks if a value is _exactly_ either null or false
+     *
+     * @param mixed $value The value to check
      * @return bool
      */
     public static function isNullOrFalse($value)
@@ -1719,7 +1782,10 @@ class Compiler
     }
 
     /**
-     * @param array $value
+     * Checks if a whole array is _exactly_ null or false
+     * (Not the array itself, but all values in the array)
+     *
+     * @param array $value The array to check
      * @return bool
      */
     public static function isArrayNullOrFalse(array $value)
@@ -1729,7 +1795,10 @@ class Compiler
     }
 
     /**
-     * @param $value
+     * Checks if a value is either an object or an array
+     * (kind of like !isScalar && !isExpression)
+     *
+     * @param mixed $value The value to check
      * @return bool
      */
     public static function isObjectOrArray($value)
@@ -1739,10 +1808,20 @@ class Compiler
     }
 
     /**
-     * @param array $array
-     * @param string $separator
-     * @param string $argSeparator
-     * @return string
+     * Flattens an array and combines found values with $separator.
+     *
+     * If there are string-keys and an $argSeparator is set, it will
+     * also implode those to to a single value
+     *
+     * With the default options
+     * ['a', 'b' => 'c', ['d', 'e' => 'f', ['g' => 'h']]]
+     * will become
+     * 'a b=c d e=f g=h'
+     *
+     * @param array $array The array to flatten
+     * @param string $separator The separator to implode pairs with
+     * @param string $argSeparator The separator to implode keys and values with
+     * @return string The compiled string
      */
     public static function flatten(array $array, $separator = ' ', $argSeparator = '=')
     {

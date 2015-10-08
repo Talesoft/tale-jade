@@ -1,8 +1,8 @@
 {
     "name": "talesoft/tale-jade",
     "type": "library",
-    "keywords": ["template", "dialect", "html", "presentation", "jade"],
-    "description": "The best implementation of the Jade templating language in PHP",
+    "keywords": ["template", "dialect", "html", "views", "presentation", "jade", "html", "php", "phtml"],
+    "description": "A complete and fully-functional implementation of the Jade template language for PHP",
     "license": "MIT",
     "homepage": "http://jade.talesoft.io",
     "authors": [
@@ -14,6 +14,10 @@
             "name": "Talesoft",
             "homepage": "http://talesoft.io",
             "email": "info@talesoft.io"
+        },
+        {
+            "name": "Torben Koehn",
+            "email": "tk@talesoft.io"
         }
     ],
     "minimum-stability": "dev",
