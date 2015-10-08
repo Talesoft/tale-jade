@@ -108,6 +108,30 @@ class Compiler
      * You can pass a modified parser or lexer.
      * Notice that if you pass both, the lexer inside the parser will be used.
      *
+     * Valid options are:
+     *      pretty: Use indentation and new-lines or compile everything into a single line
+     *      indentStyle: The character that is used for indentation (Space by default)
+     *      indentWidth: The amount of characters to repeat for indentation (Default 2 for 2-space-indentation)
+     *      mode: Compile in HTML or XML mode
+     *      selfClosingTags: The tags that don't need any closing in HTML-style languages
+     *      selfRepeatingAttributes: The attributes that repeat their value to set them to true in HTML-style languages
+     *      doctypes: The different doctypes you can use via the "doctype"-directive [name => doctype-string]
+     *      filters: The different filters you can use via the ":<filterName>"-directive [name => callback]
+     *      filterMap: The extension-to-filter-map for include-filters [extension => filter]
+     *      escapeSequences: The escape-sequences that are possible in scalar strings
+     *      handleErrors: Should the error-handler-helper be appended to the PTHML or not
+     *      compileUncalledMixins: Always compile all mixins or leave out those that aren't called?
+     *      allowImports: Set to false to disable imports for this compiler instance. Importing will throw an exception.
+     *                    Great for demo-pages
+     *      defaultTag: The tag to default to for class/id/attribute-initiated elements (.abc, #abc, (abc))
+     *      quoteStyle: The quote-style in the markup (default: ")
+     *      replaceMixins: Replaces mixins from top to bottom if they have the same name. Allows duplicated mixin names.
+     *      paths: The paths to resolve paths in. If none set, it will default to get_include_path()
+     *      extension: The extension for Jade files (default: .jade), .jd is pretty cool as an example
+     *      parser: The options for the parser if none given
+     *      lexer: The options for the lexer if none given.
+     *
+     *
      * @param array|null $options An array of options
      * @param Parser|null $parser An existing parser instance
      * @param Lexer|null $lexer An existing lexer instance
@@ -116,61 +140,61 @@ class Compiler
     {
 
         $this->_options = array_replace_recursive([
-            'pretty' => false,
-            'indentStyle' => Lexer::INDENT_SPACE,
-            'indentWidth' => 2,
-            'mode' => self::MODE_HTML,
-            'selfClosingTags' => [
+            'pretty'                  => false,
+            'indentStyle'             => Lexer::INDENT_SPACE,
+            'indentWidth'             => 2,
+            'mode'                    => self::MODE_HTML,
+            'selfClosingTags'         => [
                 'input', 'br', 'img', 'link'
             ],
             'selfRepeatingAttributes' => [
                 'selected', 'checked', 'disabled'
             ],
-            'doctypes' => [
-                '5'             => '<!DOCTYPE html>',
-                'xml'           => '<?xml version="1.0" encoding="utf-8"?>',
-                'default'       => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
-                'transitional'  => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
-                'strict'        => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">',
-                'frameset'      => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">',
-                '1.1'           => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">',
-                'basic'         => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">',
-                'mobile'        => '<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.2//EN" "http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd">'
+            'doctypes'                => [
+                '5'            => '<!DOCTYPE html>',
+                'xml'          => '<?xml version="1.0" encoding="utf-8"?>',
+                'default'      => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
+                'transitional' => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
+                'strict'       => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">',
+                'frameset'     => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">',
+                '1.1'          => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">',
+                'basic'        => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">',
+                'mobile'       => '<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.2//EN" "http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd">'
             ],
-            'filters' => [
+            'filters'                 => [
                 'plain' => 'Tale\\Jade\\Filter::filterPlain',
-                'css' => 'Tale\\Jade\\Filter::filterStyle',
-                'js' => 'Tale\\Jade\\Filter::filterScript',
-                'php' => 'Tale\\Jade\\Filter::filterCode',
-                'markdown' => 'Tale\\Jade\\Filter::filterMarkdown'
+                'css'   => 'Tale\\Jade\\Filter::filterStyle',
+                'js'    => 'Tale\\Jade\\Filter::filterScript',
+                'php'   => 'Tale\\Jade\\Filter::filterCode',
+                //'markdown' => 'Tale\\Jade\\Filter::filterMarkdown'
                 //What else?
             ],
-            'filterMap' => [
-                'css' => 'css',
-                'js' => 'js',
-                'php' => 'php',
-                'md' => 'markdown',
+            'filterMap'               => [
+                'css'  => 'css',
+                'js'   => 'js',
+                'php'  => 'php',
+                'md'   => 'markdown',
                 'jade' => 'plain'
             ],
-            'escapeSequences' => [
+            'escapeSequences'         => [
                 '\n' => "\n",
                 '\r' => "\r",
                 '\t' => "\t"
             ],
-            'handleErrors' => true,
-            'compileUncalledMixins' => false,
-            'allowImports' => true,
-            'defaultTag' => 'div',
-            'quoteStyle' => '"',
-            'replaceMixins' => false,
-            'paths' => [],
-            'extension' => '.jade',
-            'parser' => [],
-            'lexer' => []
+            'handleErrors'            => true,
+            'compileUncalledMixins'   => false,
+            'allowImports'            => true,
+            'defaultTag'              => 'div',
+            'quoteStyle'              => '"',
+            'replaceMixins'           => false,
+            'paths'                   => [],
+            'extension'               => '.jade',
+            'parser'                  => [],
+            'lexer'                   => []
         ], $options ? $options : []);
 
         $this->_lexer = $lexer ? $lexer : new Lexer($this->_options['lexer']);
-        $this->_parser = $parser ? $parser : new Parser($this->_options['parser'], $lexer);
+        $this->_parser = $parser ? $parser : new Parser($this->_options['parser'], $this->_lexer);
     }
 
     /**
@@ -258,6 +282,9 @@ class Compiler
      * that will be passed through mixins.
      * It like a global scope.
      *
+     * If you give it a path, the directory of that path will be used
+     * for relative includes.
+     *
      * @param string $input The jade input string
      * @param string|null $path The path for relative includes
      * @return mixed|string A PHTML string containing HTML and PHP
@@ -313,6 +340,8 @@ class Compiler
      * The given path will automatically passed as
      * compile()'s $path argument
      *
+     * The path should always be relative to the paths-option paths
+     *
      * @see \Tale\Jade\Compiler->compile()
      * @param string $path The path to the jade file
      * @return mixed|string The compiled PHTML
@@ -363,6 +392,7 @@ class Compiler
     {
 
         $sequences = $this->_options['escapeSequences'];
+
         return $this->interpolate(trim(str_replace(array_keys($sequences), $sequences, $value), '\'"'), $attribute);
     }
 
@@ -414,7 +444,7 @@ class Compiler
     protected function interpolate($string, $attribute = false)
     {
 
-        $string = preg_replace_callback('/([#!])\{([^\}]+)\}/', function($matches) use($attribute) {
+        $string = preg_replace_callback('/([#!])\{([^\}]+)\}/', function ($matches) use ($attribute) {
 
             $subject = $matches[2];
             $code = "isset($subject) ? $subject : ''";
@@ -425,7 +455,7 @@ class Compiler
             return !$attribute ? $this->createShortCode($code) : '\'.('.$code.').\'';
         }, $string);
 
-        $string = preg_replace_callback('/([#!])\[([^\}]+)\]/', function($matches) use($attribute) {
+        $string = preg_replace_callback('/([#!])\[([^\}]+)\]/', function ($matches) use ($attribute) {
 
             $input = $matches[2];
             $node = $this->_parser->parse($input);
@@ -444,8 +474,8 @@ class Compiler
     {
 
         return $this->_options['pretty']
-               ? "\n"
-               : '';
+            ? "\n"
+            : '';
     }
 
     /**
@@ -460,8 +490,8 @@ class Compiler
     {
 
         return $this->_options['pretty']
-               ? str_repeat($this->_options['indentStyle'], ($this->_level + $offset) * $this->_options['indentWidth'])
-               : '';
+            ? str_repeat($this->_options['indentStyle'], ($this->_level + $offset) * $this->_options['indentWidth'])
+            : '';
     }
 
     /**
@@ -480,7 +510,7 @@ class Compiler
 
             $this->_level++;
             $code = implode($this->newLine().$this->indent(), preg_split("/\n[\t ]*/", $code))
-                  .$this->newLine().$this->indent(-1);
+                .$this->newLine().$this->indent(-1);
             $this->_level--;
         }
 
@@ -695,11 +725,12 @@ class Compiler
                 $fullPath = $this->resolvePath($path, ".$ext");
                 if (!$fullPath)
                     $this->throwException(
-                        "File $path not found in ".implode(', ',$this->_options['paths']).", Include path: ".get_include_path(),
+                        "File $path not found in ".implode(', ', $this->_options['paths']).", Include path: ".get_include_path(),
                         $node
                     );
 
-                $text = file_get_contents($fullPath);
+                //remove annoying \r and \0 chars completely
+                $text = trim(str_replace(["\r", "\0"], '', file_get_contents($fullPath)));
 
                 $newNode = new Node('text');
                 $newNode->value = $this->interpolate($text);
@@ -732,7 +763,7 @@ class Compiler
 
         if (!$fullPath)
             $this->throwException(
-                "File $path wasnt found in ".implode(', ',$this->_options['paths']).", Include path: ".get_include_path(),
+                "File $path wasnt found in ".implode(', ', $this->_options['paths']).", Include path: ".get_include_path(),
                 $node
             );
 
@@ -758,7 +789,7 @@ class Compiler
     /**
      * Collects all blocks and saves them into $_blocks
      * After that it calls handleBlock on each $block
-     * 
+     *
      * @param \Tale\Jade\Parser\Node $node The node to search blocks in
      * @return $this
      */
@@ -892,7 +923,7 @@ class Compiler
 
         //Find the absolute document root
         $root = $node;
-        while($root->parent)
+        while ($root->parent)
             $root = $root->parent;
 
         //Detach
@@ -953,14 +984,14 @@ class Compiler
             }
 
             $phtml .= $this->createCode(
-                '$__mixins[\''.$name.'\'] = function(array $__arguments) use($__args, $__mixins) {
+                    '$__mixins[\''.$name.'\'] = function(array $__arguments) use($__args, $__mixins) {
                     static $__defaults = '.var_export($args, true).';
                     $__arguments = array_replace($__defaults, $__arguments);
                     $__args = array_replace($__args, $__arguments);
                     extract($__args); '.$variadic.'
 
                 '
-            ).$this->newLine();
+                ).$this->newLine();
 
             $phtml .= $mixin['phtml'].$this->newLine();
             $phtml .= $this->createCode('};').$this->newLine();
@@ -1035,7 +1066,7 @@ class Compiler
             if ($this->isScalar($value)) {
 
                 $value = '\''.$this->compileScalar($value).'\'';
-            } else if($this->isVariable($value)) {
+            } else if ($this->isVariable($value)) {
 
                 $value = "isset($value) ? $value : null";
             }
@@ -1081,12 +1112,12 @@ class Compiler
         }
 
         $phtml .= (count($node->children) > 0 ? $this->indent() : '').$this->createCode(
-            '$__mixinCallArgs = ['.implode(', ', $argCodes).'];
+                '$__mixinCallArgs = ['.implode(', ', $argCodes).'];
             $__mixinCallArgs[\'__block\'] = isset($__block) ? $__block : null;
             call_user_func($__mixins[\''.$name.'\'], $__mixinCallArgs);
             unset($__mixinCallArgs);
             unset($__block);'
-        ).$this->newLine();
+            ).$this->newLine();
 
         return $phtml;
     }
@@ -1139,13 +1170,13 @@ class Compiler
 
         $isPrevConditional = $node->prev() && $node->prev()->type === 'conditional';
         $isNextConditional = $node->next()
-                          && $node->next()->type === 'conditional'
-                          && $node->next()->conditionType !== 'if';
+            && $node->next()->type === 'conditional'
+            && $node->next()->conditionType !== 'if';
         $prefix = $isPrevConditional ? '' : '<?php ';
         $suffix = $isNextConditional ? '' : '?>';
         $phtml = $type === 'else'
-               ? $this->createCode(' else {', $prefix)
-               : $this->createCode("$type ($subject) {", $prefix);
+            ? $this->createCode(' else {', $prefix)
+            : $this->createCode("$type ($subject) {", $prefix);
         $phtml .= $this->compileChildren($node->children);
         $phtml .= $this->newLine().$this->indent().$this->createCode("}", '<?php ', $suffix);
 
@@ -1371,6 +1402,7 @@ class Compiler
 
             $compiled = $this->compileNode($nodes[0]);
             $this->_level--;
+
             return trim($compiled);
         }
 
@@ -1389,9 +1421,12 @@ class Compiler
     }
 
     /**
+     * Compiles an element-node containing
+     * tags, attributes and assignments
+     *
      * @todo Attribute escaping seems pretty broken right now
-     * @param \Tale\Jade\Parser\Node $node
-     * @return string
+     * @param \Tale\Jade\Parser\Node $node The element node to compile
+     * @return string The compiled PHTML
      */
     protected function compileElement(Node $node)
     {
@@ -1429,6 +1464,9 @@ class Compiler
 
         if (count($nodeAttributes) > 0) {
 
+            //Iterate all attributes.
+            //Multiple attributes will be put together in an array
+            //and passed to the builder method
             $attributes = [];
             foreach ($nodeAttributes as $attr) {
 
@@ -1438,6 +1476,7 @@ class Compiler
                     $attributes[$attr->name] = [$attr];
             }
 
+            //first iteration of sanitizing values
             foreach ($attributes as $name => $attrs) {
 
                 $values = [];
@@ -1461,6 +1500,7 @@ class Compiler
                         $escaped = false;
                 }
 
+                //In HTML-mode, self-repeating attributes are automatically expanded
                 if ($this->_options['mode'] === self::MODE_HTML && count($values) < 1 && in_array($name, $this->_options['selfRepeatingAttributes'])) {
 
                     $values[] = $name;
@@ -1473,8 +1513,12 @@ class Compiler
                 if ($this->_options['mode'] === self::MODE_HTML) {
 
                     switch ($name) {
-                        case 'class': $builder = '\Tale\Jade\Compiler::buildClassValue'; break;
-                        case 'style': $builder = '\Tale\Jade\Compiler::buildStyleValue'; break;
+                        case 'class':
+                            $builder = '\Tale\Jade\Compiler::buildClassValue';
+                            break;
+                        case 'style':
+                            $builder = '\Tale\Jade\Compiler::buildStyleValue';
+                            break;
                     }
 
                     if (strncmp($name, 'data-', 5) === 0)
@@ -1492,19 +1536,19 @@ class Compiler
                     //Print the normal pair
                     //We got all scalar values, we can evaluate them directly, so no code needed in the PHTML output
                     $pair .= " $name=";
-                    $values = array_map(function($val) { return $this->compileScalar($val); }, $values);
-                    $pair .= call_user_func($builder, count($values) === 1 ? $values[0] : $values , $quot, $escaped === 'true');
+                    $values = array_map(function ($val) { return $this->compileScalar($val); }, $values);
+                    $pair .= call_user_func($builder, count($values) === 1 ? $values[0] : $values, $quot, $escaped === 'true');
                 } else {
 
                     //If there's any kind of expression in the attribute, we
                     //also check, if something of the expression is false or null
                     //and if it is, we don't print the attribute
 
-                    $values = array_map(function($val) use($quot, $builder, $escaped) {
+                    $values = array_map(function ($val) use ($quot, $builder, $escaped) {
 
                         return $this->isScalar($val)
-                             ? call_user_func($builder, $this->compileScalar($val, true), $quot, $escaped === 'true')
-                             : $val;
+                            ? call_user_func($builder, $this->compileScalar($val, true), $quot, $escaped === 'true')
+                            : $val;
                     }, $values);
 
                     $quot = $quot === '\'' ? '\\\'' : $quot;
@@ -1514,7 +1558,7 @@ class Compiler
                         $pair = $this->createCode(
                             '$__value = '.$values[0].'; '
                             .'if (!\\Tale\\Jade\\Compiler::isNullOrFalse($__value)) '
-                                ."echo ' $name='.$builder(\$__value, '$quot', $escaped); "
+                            ."echo ' $name='.$builder(\$__value, '$quot', $escaped); "
                             .'unset($__value);'
                         );
                     } else {
@@ -1522,7 +1566,7 @@ class Compiler
                         $pair = $this->createCode(
                             '$__values = ['.implode(', ', $values).']; '
                             .'if (!\\Tale\\Jade\\Compiler::isArrayNullOrFalse($__values)) '
-                                ."echo ' $name='.$builder(\$__values, '$quot', $escaped); "
+                            ."echo ' $name='.$builder(\$__values, '$quot', $escaped); "
                             .'unset($__values);'
                         );
                     }
@@ -1541,11 +1585,13 @@ class Compiler
 
                 //Force closed tag in HTML
                 $phtml .= "></{$node->tag}>";
+
                 return $phtml;
             }
 
             //Allow /> closing in all other modes
             $phtml .= ' />';
+
             return $phtml;
         } else
             $phtml .= '>';
@@ -1560,8 +1606,12 @@ class Compiler
     }
 
     /**
-     * @param \Tale\Jade\Parser\Node $node
-     * @return string
+     * Compiles a text-node to PTHML
+     * Texts get interpolated
+     *
+     * @see \Tale\Jade\Compiler->interpolate
+     * @param \Tale\Jade\Parser\Node $node The text-node to compile
+     * @return string The compiled PHTML
      */
     protected function compileText(Node $node)
     {
@@ -1570,7 +1620,10 @@ class Compiler
     }
 
     /**
-     * @param \Tale\Jade\Parser\Node $node
+     * Compiles an expression node and it's descending text nodes
+     * into a single PHP expression
+     *
+     * @param \Tale\Jade\Parser\Node $node The expression node to compile
      * @return string
      */
     protected function compileExpression(Node $node)
@@ -1582,6 +1635,7 @@ class Compiler
 
             //We can have a single variable expression that uses isset automatically
             $value = $node->children[0]->value;
+
             return $this->createShortCode(sprintf($code, "isset({$value}) ? {$value} : ''"));
         }
 
@@ -1591,18 +1645,25 @@ class Compiler
     }
 
     /**
-     * @param \Tale\Jade\Parser\Node $node
-     * @return string
+     * Compiles a comment-node based on if its rendered or not
+     * If it's rendered, it will be compiled as a HTML-comment,
+     * if not it will be compiled as a hidden PHP comment
+     *
+     * @param \Tale\Jade\Parser\Node $node The comment-node to compile
+     * @return string The compiled PHTML
      */
     protected function compileComment(Node $node)
     {
 
         $content = $this->compileChildren($node->children, true, true);
+
         return $node->rendered ? $this->createMarkupComment($content) : $this->createPhpComment($content);
     }
 
     /**
-     * @return string
+     * Compiles a simple error helper in a string to be prepended to the final PHTML
+     *
+     * @return string The compiled PHTML for the error handler
      */
     protected function compileErrorHandlerHelper()
     {
@@ -1626,8 +1687,10 @@ class Compiler
     }
 
     /**
-     * @param $message
-     * @param Node|null $relatedNode
+     * Throws a Tale\Jade\Parser\Exception
+     *
+     * @param string $message A meaningful exception message
+     * @param Node|null $relatedNode The node the exception occured on
      * @throws Exception
      */
     protected function throwException($message, \Tale\Jade\Parser\Node $relatedNode = null)
@@ -1635,8 +1698,8 @@ class Compiler
 
         if ($relatedNode)
             $message .= "\n(".$relatedNode->type
-                    .' at '.$relatedNode->line
-                    .':'.$relatedNode->offset.')';
+                .' at '.$relatedNode->line
+                .':'.$relatedNode->offset.')';
 
         throw new Exception(
             "Failed to compile Jade: $message"
@@ -1645,10 +1708,21 @@ class Compiler
 
 
     /**
-     * @param $value
-     * @param $quoteStyle
-     * @param $escaped
-     * @return string
+     * Builds an attribute or argument value
+     *
+     * Objects get converted to arrays
+     * Arrays will be imploded by '' (values are concatenated)
+     *
+     * ['a', 'b', ['c', ['d']]]
+     * will become
+     * 'abcd'
+     *
+     * The result will be enclosed by the quotes passed to $quoteStyle
+     *
+     * @param mixed $value The value to build
+     * @param string $quoteStyle The quoting style to use
+     * @param bool $escaped Escape the value or not
+     * @return string The built value
      */
     public static function buildValue($value, $quoteStyle, $escaped)
     {
@@ -1656,14 +1730,29 @@ class Compiler
         if (is_object($value))
             $value = (array)$value;
 
-        return $quoteStyle.($escaped ? htmlentities(self::isObjectOrArray($value) ? implode('', $value) : $value, \ENT_QUOTES) : ((string)$value)).$quoteStyle;
+        return $quoteStyle.($escaped ? htmlentities(is_array($value) ? self::flatten($value, '') : $value, \ENT_QUOTES) : ((string)$value)).$quoteStyle;
     }
 
     /**
-     * @param $value
-     * @param $quoteStyle
-     * @param $escaped
-     * @return string
+     * Builds a data-attribute value
+     * If it's an object or an array, it gets converted to JSON automatically
+     * If not, the value stays scalar
+     *
+     * JSON will automatically be enclosed by ', other results will use
+     * $quoteStyle respectively
+     *
+     * 'a'
+     * will become
+     * 'a'
+     *
+     * ['a', 'b']
+     * will become
+     * '["a", "b"]' (JSON)
+     *
+     * @param mixed $value The value to build
+     * @param string $quoteStyle The quoting style to use
+     * @param bool $escaped Escape the value or not
+     * @return string The built value
      */
     public static function buildDataValue($value, $quoteStyle, $escaped)
     {
@@ -1675,9 +1764,15 @@ class Compiler
     }
 
     /**
-     * @param $value
-     * @param $quoteStyle
-     * @return string
+     * Builds a style-attribute string from a value
+     *
+     * ['color' => 'red', 'width: 100%', ['height' => '20px']]
+     * will become
+     * 'color: red; width: 100%; height: 20px;'
+     *
+     * @param mixed $value The value to build
+     * @param string $quoteStyle The quoting style to use
+     * @return string The built value
      */
     public static function buildStyleValue($value, $quoteStyle)
     {
@@ -1692,9 +1787,15 @@ class Compiler
     }
 
     /**
-     * @param $value
-     * @param $quoteStyle
-     * @return string
+     * Builds a class-attribute string from a value
+     *
+     *['a', 'b', ['c', ['d', 'e']]]
+     * will become
+     * 'a b c d e'
+     *
+     * @param mixed $value The value to build
+     * @param string $quoteStyle The quoting style to use
+     * @return string The built value
      */
     public static function buildClassValue($value, $quoteStyle)
     {
@@ -1709,7 +1810,9 @@ class Compiler
     }
 
     /**
-     * @param $value
+     * Checks if a value is _exactly_ either null or false
+     *
+     * @param mixed $value The value to check
      * @return bool
      */
     public static function isNullOrFalse($value)
@@ -1719,7 +1822,10 @@ class Compiler
     }
 
     /**
-     * @param array $value
+     * Checks if a whole array is _exactly_ null or false
+     * (Not the array itself, but all values in the array)
+     *
+     * @param array $value The array to check
      * @return bool
      */
     public static function isArrayNullOrFalse(array $value)
@@ -1729,7 +1835,10 @@ class Compiler
     }
 
     /**
-     * @param $value
+     * Checks if a value is either an object or an array
+     * (kind of like !isScalar && !isExpression)
+     *
+     * @param mixed $value The value to check
      * @return bool
      */
     public static function isObjectOrArray($value)
@@ -1739,10 +1848,20 @@ class Compiler
     }
 
     /**
-     * @param array $array
-     * @param string $separator
-     * @param string $argSeparator
-     * @return string
+     * Flattens an array and combines found values with $separator.
+     *
+     * If there are string-keys and an $argSeparator is set, it will
+     * also implode those to to a single value
+     *
+     * With the default options
+     * ['a', 'b' => 'c', ['d', 'e' => 'f', ['g' => 'h']]]
+     * will become
+     * 'a b=c d e=f g=h'
+     *
+     * @param array $array The array to flatten
+     * @param string $separator The separator to implode pairs with
+     * @param string $argSeparator The separator to implode keys and values with
+     * @return string The compiled string
      */
     public static function flatten(array $array, $separator = ' ', $argSeparator = '=')
     {
