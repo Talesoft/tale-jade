@@ -1,33 +1,37 @@
 <?php
 /**
- * The Tale Jade Project
+ * The Tale Jade File Renderer-Adapter.
  *
- * The Renderer File Adapter class
+ * This adapter uses a Cache Directory and PHTML-files to render
+ * the generated markup.
+ *
+ * Make sure the Cache Directory is writable!
  *
  * This file is part of the Tale Jade Template Engine for PHP
  *
- * @author Torben Köhn <tk@talesoft.io>
- * @author Talesoft <info@talesoft.io>
- * @projectGroup Tale
- * @project Jade
- * @component Renderer\Adapter\File
- *
+ * LICENSE:
  * The code of this file is distributed under the MIT license.
  * If you didn't receive a copy of the license text, you can
  * read it here http://licenses.talesoft.io/2015/MIT.txt
  *
- * Please do not remove this comment block.
- * Thank you and have fun with Tale Jade!
+ * @category   Presentation
+ * @package    Tale\Jade\Renderer\Adapter
+ * @author     Torben Koehn <tk@talesoft.io>
+ * @author     Talesoft <info@talesoft.io>
+ * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
+ * @version    1.0.3
+ * @link       http://jade.talesoft.io/docs/files/Renderer.Adapter.File.html
+ * @since      File available since Release 1.0
  */
 
 namespace Tale\Jade\Renderer\Adapter;
 
 use Tale\Jade\Renderer;
 use Tale\Jade\Renderer\AdapterBase;
-use Tale\Util\PathUtil;
 
 /**
- * Handles rendering with cached files and include
+ * Handles rendering with cached files and include.
  *
  * This is the best adapter for production systems, cheap VPS or any hosts
  * that don't have 'allow_url_fopen' activated
@@ -48,25 +52,33 @@ use Tale\Util\PathUtil;
  * - It needs some configuration in the most cases
  * - Cache files should be secured, since it's PHP-code!!! (e.g. Deny in .htaccess)
  *
- * @package Tale\Jade\Renderer\Adapter
+ * @category   Presentation
+ * @package    Tale\Jade\Renderer\Adapter
+ * @author     Torben Koehn <tk@talesoft.io>
+ * @author     Talesoft <info@talesoft.io>
+ * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
+ * @version    1.0.3
+ * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Renderer.Adapter.File.html
+ * @since      File available since Release 1.0
  */
 class File extends AdapterBase
 {
 
     /**
-     * Creates a new File renderer adapter
+     * Creates a new File renderer adapter.
      *
      * If the cache directory doesn't exist, it tries to automatically create it
      *
      * Possible options are:
-     * path: The path where rendered files are stored
-     * extension: The extension we should store the files with (Default: .phtml)
-     * lifeTime: The Cache lifeTime (Set to 0 to disable cache), (Default: 3600)
+     * path:        The path where rendered files are stored
+     * extension:   The extension we should store the files with (Default: .phtml)
+     * lifeTime:    The Cache lifeTime (Set to 0 to disable cache), (Default: 0)
      *
-     * @param \Tale\Jade\Renderer $renderer The renderer instance this renderer was created in
-     * @param array|null          $options  The options array for this renderer adapter
+     * @param Renderer   $renderer the renderer instance this renderer was created in
+     * @param array|null $options  the options array for this renderer adapter
      *
-     * @throws \Exception
+     * @throws \Exception when the Cache Directory is not writable
      */
     public function __construct(Renderer $renderer, array $options = null)
     {
@@ -74,7 +86,7 @@ class File extends AdapterBase
         parent::__construct($renderer, array_replace_recursive([
             'path'      => './cache/views',
             'extension' => '.phtml',
-            'lifeTime'  => 3600
+            'lifeTime'  => 0
         ], $options ? $options : []));
 
         $dir = $this->getOption('path');
@@ -94,7 +106,7 @@ class File extends AdapterBase
     }
 
     /**
-     * Renders a jade file by a given path
+     * Renders a jade file by a given path.
      *
      * The extension can be omitted if it's the extension
      * set in the Compiler-options ('.jade' by default)
@@ -108,11 +120,12 @@ class File extends AdapterBase
      *
      * You might just echo the result, cache it or do anything else with it
      *
-     * @param string     $path The relative path to be rendered
-     * @param array|null $args The variables for the template
+     * @param string     $path the relative path to be rendered
+     * @param array|null $args the variables for the template
      *
-     * @return string The rendered markup
-     * @throws \Exception
+     * @return string the rendered markup
+     * @throws \Exception when the directory can't be created
+     * @throws \Tale\Jade\Compiler\Exception when the file to render wasnt found
      */
     public function render($path, array $args = null)
     {

@@ -1,23 +1,26 @@
 <?php
 /**
- * The Tale Jade Project
+ * The Tale Jade Lexer.
  *
- * The Lexer Class
+ * Contains the a lexer that analyzes the input-jade and generates
+ * tokens out of it via a PHP Generator
  *
  * This file is part of the Tale Jade Template Engine for PHP
  *
- * @author Torben Köhn <tk@talesoft.io>
- * @author Talesoft <info@talesoft.io>
- * @projectGroup Tale
- * @project Jade
- * @component Lexer
- *
+ * LICENSE:
  * The code of this file is distributed under the MIT license.
  * If you didn't receive a copy of the license text, you can
  * read it here http://licenses.talesoft.io/2015/MIT.txt
  *
- * Please do not remove this comment block.
- * Thank you and have fun with Tale Jade!
+ * @category   Presentation
+ * @package    Tale\Jade
+ * @author     Torben Koehn <tk@talesoft.io>
+ * @author     Talesoft <info@talesoft.io>
+ * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
+ * @version    1.0.3
+ * @link       http://jade.talesoft.io/docs/files/Lexer.html
+ * @since      File available since Release 1.0
  */
 
 namespace Tale\Jade;
@@ -25,19 +28,41 @@ namespace Tale\Jade;
 use Tale\Jade\Lexer\Exception;
 
 /**
- * Performs lexical analysis and provides a token generator
+ * Performs lexical analysis and provides a token generator.
  *
  * Tokens are defined as single units of code
  * (e.g. tag, class, id, attributeStart, attribute, attributeEnd)
  *
  * These will run through the parser and be converted to an AST
  *
- * The lexer works sequential, ->lex will return a generator and
+ * The lexer works sequentially, ->lex will return a generator and
  * you can read that generator in any manner you like.
  * The generator will produce valid tokens until the end of the passed
  * input.
  *
- * @package Tale\Jade
+ * Usage example:
+ * <code>
+ *
+ *     use Tale\Jade\Lexer;
+ *
+ *     $lexer = new Lexer();
+ *
+ *     foreach ($lexer->lex($jadeInput) as $token)
+ *          echo $token;
+ *
+ *     //Prints a human-readable dump of the generated tokens
+ *
+ * </code>
+ *
+ * @category   Presentation
+ * @package    Tale\Jade
+ * @author     Torben Koehn <tk@talesoft.io>
+ * @author     Talesoft <info@talesoft.io>
+ * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
+ * @version    1.0.3
+ * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Lexer.html
+ * @since      File available since Release 1.0
  */
 class Lexer
 {
@@ -46,41 +71,43 @@ class Lexer
      * Tab Indentation (\t)
      */
     const INDENT_TAB = "\t";
+
     /**
      * Space Indentation ( )
      */
     const INDENT_SPACE = ' ';
 
     /**
-     * The current input string
+     * The current input string.
      *
      * @var string
      */
     private $_input;
 
     /**
-     * The total length of the current input
+     * The total length of the current input.
      *
      * @var int
      */
     private $_length;
 
     /**
-     * The current position inside the input string
+     * The current position inside the input string.
      *
      * @var int
      */
     private $_position;
 
     /**
-     * The current line we are on
+     * The current line we are on.
      *
      * @var int
      */
     private $_line;
 
     /**
-     * The current offset in a line we are on
+     * The current offset in a line we are on.
+     *
      * Resets on each new line and increases on each read character
      *
      * @var int
@@ -88,21 +115,23 @@ class Lexer
     private $_offset;
 
     /**
-     * The current indentation level we are on
+     * The current indentation level we are on.
      *
      * @var int
      */
     private $_level;
 
     /**
-     * The current indentation character
+     * The current indentation character.
      *
      * @var string
      */
     private $_indentStyle;
 
     /**
-     * The width of the indentation, meaning how often $_indentStyle
+     * The width of the indentation.
+     *
+     * Specifies how often $_indentStyle
      * is repeated for each $_level
      *
      * @var string
@@ -110,8 +139,9 @@ class Lexer
     private $_indentWidth;
 
     /**
-     * The last result gotten via ->peek()
+     * The last result gotten via ->peek().
      *
+     * @see Lexer->peek
      * @var string
      */
     private $_lastPeekResult;
@@ -119,25 +149,33 @@ class Lexer
     /**
      * The last matches gotten via ->match()
      *
+     * @see Lexer->match
      * @var array
      */
     private $_lastMatches;
 
     /**
-     * Creates a new lexer instance
+     * Creates a new lexer instance.
+     *
      * The options should be an associative array
      *
      * Valid options are:
-     *      indentStyle: The indentation character (auto-detected)
-     *      indentWidth: How often to repeat indentStyle (auto-detected)
-     *      encoding: The encoding when working with mb_*-functions
+     *
+     * indentStyle:     The indentation character (auto-detected)
+     * indentWidth:     How often to repeat indentStyle (auto-detected)
+     * encoding:        The encoding when working with mb_*-functions (Default: UTF-8)
+     * scans:           An array of scans that will be performed
      *
      * Passing an indentation-style forces you to stick to that style.
-     * If not, the lexer will assume the first indentation type it finds as the indentation
+     * If not, the lexer will assume the first indentation type it finds as the indentation.
      * Mixed indentation is not possible, since it would be a bitch to calculate without
      * taking away configuration freedom
      *
-     * @param array|null $options The options passed to the lexer instance
+     * Add a new scan to 'scans' to extend the lexer.
+     * Notice that you need the fitting 'handle*'-method in the parser
+     * or you will get unhandled-token-exceptions.
+     *
+     * @param array|null $options the options passed to the lexer instance
      *
      * @throws \Exception
      */
@@ -180,7 +218,7 @@ class Lexer
     }
 
     /**
-     * Returns the current input-string worked on
+     * Returns the current input-string worked on.
      *
      * @return string
      */
@@ -191,7 +229,7 @@ class Lexer
     }
 
     /**
-     * Returns the total length of the current input-string
+     * Returns the total length of the current input-string.
      *
      * @return int
      */
@@ -202,7 +240,7 @@ class Lexer
     }
 
     /**
-     * Returns the total position in the current input-string
+     * Returns the total position in the current input-string.
      *
      * @return int
      */
@@ -213,7 +251,7 @@ class Lexer
     }
 
     /**
-     * Returns the line we are working on in the current input-string
+     * Returns the line we are working on in the current input-string.
      *
      * @return int
      */
@@ -224,8 +262,7 @@ class Lexer
     }
 
     /**
-     * Gets the offset on a line (Line-start is offset 0) in the current
-     * input-string
+     * Gets the offset on a line (Line-start is 0) in the current input-string.
      *
      * @return int
      */
@@ -236,7 +273,7 @@ class Lexer
     }
 
     /**
-     * Returns the current indentation level we are on
+     * Returns the current indentation level we are on.
      *
      * @return int
      */
@@ -247,7 +284,7 @@ class Lexer
     }
 
     /**
-     * Returns the detected or previously passed indentation style
+     * Returns the detected or previously passed indentation style.
      *
      * @return string
      */
@@ -258,7 +295,7 @@ class Lexer
     }
 
     /**
-     * Returns the detected or previously passed indentation width
+     * Returns the detected or previously passed indentation width.
      *
      * @return int
      */
@@ -269,8 +306,9 @@ class Lexer
     }
 
     /**
-     * Returns the last result of ->peek()
+     * Returns the last result of ->peek().
      *
+     * @see Lexer->peek
      * @return string|null
      */
     public function getLastPeekResult()
@@ -280,8 +318,9 @@ class Lexer
     }
 
     /**
-     * Returns the last array of matches through ->match
+     * Returns the last array of matches through ->match.
      *
+     * @see Lexer->match
      * @return array|null
      */
     public function getLastMatches()
@@ -291,18 +330,25 @@ class Lexer
     }
 
     /**
-     * Returns a generator that will lex the passed $input
-     * sequentially.
+     * Returns a generator that will lex the passed $input sequentially.
+     *
      * If you don't move the generator, the lexer does nothing.
      * Only as soon as you iterate the generator or call next()/current() on it
-     * the lexer will start it's work and spit out tokens sequentially
+     * the lexer will start it's work and spit out tokens sequentially.
+     * This approach takes less memory during the lexing process.
      *
      * Tokens are always an array and always provide the following keys:
-     * ['type' => The token type, 'line' => The line this token is on, 'offset' => The offset this token is at]
+     * <samp>
+     * [
+     *      'type' => The token type,
+     *      'line' => The line this token is on,
+     *      'offset' => The offset this token is at
+     * ]
+     * </samp>
      *
-     * @param string $input The Jade-string to lex into tokens
+     * @param string $input the Jade-string to lex into tokens
      *
-     * @return \Generator A generator that can be iterated sequentially
+     * @return \Generator a generator that can be iterated sequentially
      */
     public function lex($input)
     {
@@ -328,10 +374,11 @@ class Lexer
     }
 
     /**
-     * Dumps jade-input into a set of string-represented tokens
+     * Dumps jade-input into a set of string-represented tokens.
+     *
      * This makes debugging the lexer easier.
      *
-     * @param string $input The jade input to dump the tokens of
+     * @param string $input the jade input to dump the tokens of
      */
     public function dump($input)
     {
@@ -360,7 +407,7 @@ class Lexer
     }
 
     /**
-     * Checks if our read pointer is at the end of the code
+     * Checks if our read pointer is at the end of the code.
      *
      * @return bool
      */
@@ -371,14 +418,17 @@ class Lexer
     }
 
     /**
-     * Shows the next characters in our input
+     * Shows the next characters in our input.
+     *
      * Pass a $length to get more than one character.
      * The character's _won't_ be consumed here, they are just shown.
      * The position pointer won't be moved forward
      *
-     * @param int $length The length of the string we want to peek on
+     * The result gets saved in $_lastPeekResult
      *
-     * @return string The peeked string
+     * @param int $length the length of the string we want to peek on
+     *
+     * @return string the peeked string
      */
     protected function peek($length = 1)
     {
@@ -389,20 +439,19 @@ class Lexer
     }
 
     /**
-     * Consumes the last result that has been peeked
-     * or the length you passed from the current input.
+     * Consumes a length or the length of the last peeked string.
      *
      * Internally $input = substr($input, $length) is done,
      * so everything _before_ the consumed length will be cut off and
      * removed from the RAM (since we probably tokenized it already,
      * remember? sequential shit etc.?)
      *
-     * @see \Tale\Jade\Lexer->peek()
+     * @see Lexer->peek
      *
-     * @param int|null $length The length to consume or none, to use the length of the last peeked string
+     * @param int|null $length the length to consume or null, to use the length of the last peeked string
      *
      * @return $this
-     * @throws \Tale\Jade\Lexer\Exception
+     * @throws Exception
      */
     protected function consume($length = null)
     {
@@ -426,8 +475,7 @@ class Lexer
     }
 
     /**
-     * Peeks and consumes characters until the result of
-     * the passed callback is false.
+     * Peeks and consumes chars until the passed callback returns false.
      *
      * The callback takes the current character as the first argument.
      *
@@ -440,10 +488,10 @@ class Lexer
      * $alNumString = $this->read('ctype_alnum')
      * $spaces = $this->read('ctype_space')
      *
-     * @param callable $callback The callback to check the current character against
-     * @param int      $length   The length to peek. This will also increase the length of the characters passed to the callback
+     * @param callable $callback the callback to check the current character against
+     * @param int      $length   the length to peek. This will also increase the length of the characters passed to the callback
      *
-     * @return string The read string
+     * @return string the read string
      * @throws \Exception
      */
     protected function read($callback, $length = 1)
@@ -480,13 +528,13 @@ class Lexer
     }
 
     /**
-     * Reads all TAB (\t) and SPACE ( ) characters until there's none
-     * of those two found anymore
+     * Reads all TAB (\t) and SPACE ( ) chars until something else is found.
      *
-     * This is primarily used to parse the indentation at the begin of each line
+     * This is primarily used to parse the indentation
+     * at the begin of each line.
      *
-     * @return string The spaces that have been found
-     * @throws \Exception
+     * @return string the spaces that have been found
+     * @throws Exception
      */
     protected function readSpaces()
     {
@@ -498,10 +546,9 @@ class Lexer
     }
 
     /**
-     * Reads a "value", 'value', value style string
-     * really gracefully
+     * Reads a "value", 'value' or value style string really gracefully.
      *
-     * It will stop on all chars passed to $breakChars as well as a closing )
+     * It will stop on all chars passed to $breakChars as well as a closing ')'
      * when _not_ inside an expression initiated with either
      * ", ', (, [ or {.
      *
@@ -519,15 +566,16 @@ class Lexer
      * Examples:
      * ('`' marks the parts that are read, understood and returned by this function)
      *
-     * (arg1=`abc`, arg2=`"some expression"`, `'some string expression'`)
-     * some-mixin(`'some arg'`, `[1, 2, 3, 4]`, `(isset($complex) ? $complex : 'complex')`)
-     * and even
-     * some-mixin(callback=function($input) { return trim($input, '\'"'); })
+     * <samp>
+     *      (arg1=`abc`, arg2=`"some expression"`, `'some string expression'`)
+     *      some-mixin(`'some arg'`, `[1, 2, 3, 4]`, `(isset($complex) ? $complex : 'complex')`)
+     *      and even
+     *      some-mixin(callback=`function($input) { return trim($input, '\'"'); }`)
+     * </samp>
      *
+     * @param array|null $breakChars the chars to break on.
      *
-     * @param array|null $breakChars The chars to break on.
-     *
-     * @return string The (possibly quote-enclosed) result string
+     * @return string the (possibly quote-enclosed) result string
      */
     protected function readBracketContents(array $breakChars = null)
     {
@@ -598,7 +646,8 @@ class Lexer
     }
 
     /**
-     * Matches a pattern against the start of the current $input
+     * Matches a pattern against the start of the current $input.
+     *
      * Notice that this always takes the start of the current pointer
      * position as a reference, since `consume` means cutting of the front
      * of the input string
@@ -606,11 +655,11 @@ class Lexer
      * After a match was successful, you can retrieve the matches
      * with ->getMatch() and consume the whole match with ->consumeMatch()
      *
-     * ^ gets automatically prepended to the pattern (since it makes no sense for
-     * a sequential lexer to search _inside_ the input)
+     * ^ gets automatically prepended to the pattern (since it makes no sense
+     * for a sequential lexer to search _inside_ the input)
      *
-     * @param string $pattern   The regular expression without delimeters and a ^-prefix
-     * @param string $modifiers The usual PREG RegEx-modifiers
+     * @param string $pattern   the regular expression without delimeters and a ^-prefix
+     * @param string $modifiers the usual PREG RegEx-modifiers
      *
      * @return bool
      */
@@ -625,9 +674,10 @@ class Lexer
     }
 
     /**
-     * Consumes a match previously read and matched by ->match()
+     * Consumes a match previously read and matched by ->match().
      *
-     * @return \Tale\Jade\Lexer
+     * @see Lexer->match
+     * @return $this
      */
     protected function consumeMatch()
     {
@@ -642,9 +692,11 @@ class Lexer
     /**
      * Gets a match from the last ->match() call
      *
-     * @param int|string $index The index of the usual PREG $matches argument
+     * @see Lexer->match
      *
-     * @return mixed|null The value of the match or null, if none found
+     * @param int|string $index the index of the usual PREG $matches argument
+     *
+     * @return mixed|null the value of the match or null, if none found
      */
     protected function getMatch($index)
     {
@@ -653,8 +705,7 @@ class Lexer
     }
 
     /**
-     * Keeps scanning for all types of tokens passed
-     * as the first argument.
+     * Keeps scanning for all types of tokens passed as the first argument.
      *
      * If one token is encountered that's not in $scans, the function breaks
      * or throws an exception, if the second argument is true
@@ -662,11 +713,11 @@ class Lexer
      * The passed scans get converted to methods
      * e.g. newLine => scanNewLine, blockExpansion => scanBlockExpansion etc.
      *
-     * @param array      $scans          The scans to perform
-     * @param bool|false $throwException Throw an exception if no tokens in $scans found anymore
+     * @param array      $scans          the scans to perform
+     * @param bool|false $throwException throw an exception if no tokens in $scans found anymore
      *
-     * @return \Generator The generator yielding all tokens found
-     * @throws \Tale\Jade\Lexer\Exception
+     * @return \Generator the generator yielding all tokens found
+     * @throws Exception
      */
     protected function scanFor(array $scans, $throwException = false)
     {
@@ -702,20 +753,21 @@ class Lexer
     }
 
     /**
-     * Creates a new token
+     * Creates a new token.
+     *
      * A token is an associative array.
      * The following keys _always_ exist:
      *
-     * type: The type of the node (e.g. newLine, tag, class, id)
-     * line: The line we encountered this token on
-     * offset: The offset on a line we encountered it on
+     * type:    The type of the node (e.g. newLine, tag, class, id)
+     * line:    The line we encountered this token on
+     * offset:  The offset on a line we encountered it on
      *
      * Before adding a new token-type, make sure that the Parser knows how
      * to handle it and the Compiler knows how to compile it.
      *
-     * @param string $type The type to give that token
+     * @param string $type the type to give that token
      *
-     * @return array The token
+     * @return array the token array
      */
     protected function createToken($type)
     {
@@ -729,7 +781,7 @@ class Lexer
 
     /**
      * Scans for a specific token-type based on a pattern
-     * and converts it to a valid token automatically
+     * and converts it to a valid token automatically.
      *
      * All matches that have a name (RegEx (?<name>...)-directive
      * will directly get a key with that name and value
@@ -737,9 +789,11 @@ class Lexer
      *
      * For matching, ->match() is used internally
      *
-     * @param string $type      The token type to create, if matched
-     * @param string $pattern   The pattern to match
-     * @param string $modifiers The regex-modifiers for the pattern
+     * @see Lexer->match
+     *
+     * @param string $type      the token type to create, if matched
+     * @param string $pattern   the pattern to match
+     * @param string $modifiers the regex-modifiers for the pattern
      *
      * @return \Generator
      */
@@ -765,7 +819,8 @@ class Lexer
 
     /**
      * Scans for indentation and automatically keeps
-     * the $_level updated through all tokens
+     * the $_level updated through all tokens.
+     *
      * Upon reaching a higher level, an <indent>-token is
      * yielded, upon reaching a lower level, an <outdent>-token is yielded
      *
@@ -778,7 +833,7 @@ class Lexer
      * other than most Jade implementations
      *
      * @return \Generator|void
-     * @throws \Tale\Jade\Lexer\Exception
+     * @throws Exception
      */
     protected function scanIndent()
     {
@@ -849,7 +904,7 @@ class Lexer
     }
 
     /**
-     * Scans for a new-line character and yields a <newLine>-token if found
+     * Scans for a new-line character and yields a <newLine>-token if found.
      *
      * @return \Generator
      */
@@ -866,7 +921,7 @@ class Lexer
 
     /**
      * Scans for text until the end of the current line
-     * and yields a <text>-token if found
+     * and yields a <text>-token if found.
      *
      * @return \Generator
      */
@@ -888,7 +943,7 @@ class Lexer
 
     /**
      * Scans for text and keeps scanning text, if you indent once
-     * until it is outdented again (e.g. .-text-blocks, expressions, comments)
+     * until it is outdented again (e.g. .-text-blocks, expressions, comments).
      *
      * Yields anything between <text>, <newLine>, <indent> and <outdent> tokens
      * it encounters
@@ -929,7 +984,7 @@ class Lexer
 
     /**
      * Scans for a |-style text-line and yields it along
-     * with a text-block, if it has any
+     * with a text-block, if it has any.
      *
      * @return \Generator
      */
@@ -945,7 +1000,8 @@ class Lexer
     }
 
     /**
-     * Scans for HTML-markup based on a starting <
+     * Scans for HTML-markup based on a starting '<'.
+     *
      * The whole markup will be kept and yielded
      * as a <text>-token
      *
@@ -963,7 +1019,7 @@ class Lexer
 
     /**
      * Scans for //-? comments yielding a <comment>
-     * token if found as well as a stack of text-block tokens
+     * token if found as well as a stack of text-block tokens.
      *
      * @return \Generator
      */
@@ -986,7 +1042,7 @@ class Lexer
 
     /**
      * Scans for :<filterName>-style filters and yields
-     * a <filter> token if found
+     * a <filter> token if found.
      *
      * Filter-tokens always have:
      * name, which is the name of the filter
@@ -1006,7 +1062,7 @@ class Lexer
     }
 
     /**
-     * Scans for imports and yields an <import>-token if found
+     * Scans for imports and yields an <import>-token if found.
      *
      * Import-tokens always have:
      * importType, which is either "extends" or "include
@@ -1028,7 +1084,7 @@ class Lexer
     }
 
     /**
-     * Scans for <block>-tokens
+     * Scans for <block>-tokens.
      *
      * Blocks can have three styles:
      * block append|prepend|replace name
@@ -1070,7 +1126,7 @@ class Lexer
     }
 
     /**
-     * Scans for a <case>-token
+     * Scans for a <case>-token.
      *
      * Case-tokens always have:
      * subject, which is the expression between the parenthesis
@@ -1084,7 +1140,7 @@ class Lexer
     }
 
     /**
-     * Scans for a <when>-token
+     * Scans for a <when>-token.
      *
      * When-tokens always have:
      * name, which is either "when" or "default"
@@ -1108,7 +1164,7 @@ class Lexer
     }
 
     /**
-     * Scans for a <conditional>-token
+     * Scans for a <conditional>-token.
      *
      * Conditional-tokens always have:
      * conditionType, which is either "if", "unless", "elseif", "else if" or "else"
@@ -1125,7 +1181,7 @@ class Lexer
     }
 
     /**
-     * Scans for a control-statement-kind of token
+     * Scans for a control-statement-kind of token.
      *
      * e.g.
      * control-statement-name ($expression)
@@ -1166,8 +1222,7 @@ class Lexer
 
                 if (!$this->match('\$?(?<itemName>[a-zA-Z_][a-zA-Z0-9_]*)(?:[\t ]*,[\t ]*\$?(?<keyName>[a-zA-Z_][a-zA-Z0-9_]*))?[\t ]+in[\t ]+'))
                     $this->throwException(
-                        "The syntax for each is `each [$]itemName[, [$]keyName] in [subject]`",
-                        $token
+                        "The syntax for each is `each [$]itemName[, [$]keyName] in [subject]`"
                     );
 
                 $this->consumeMatch();
@@ -1201,7 +1256,7 @@ class Lexer
     }
 
     /**
-     * Scans for an <each>-token
+     * Scans for an <each>-token.
      *
      * Each-tokens always have:
      * itemName, which is the name of the item for each iteration
@@ -1219,7 +1274,7 @@ class Lexer
     }
 
     /**
-     * Scans for a <while>-token
+     * Scans for a <while>-token.
      *
      * While-tokens always have:
      * subject, which is the expression between the parenthesis
@@ -1233,7 +1288,7 @@ class Lexer
     }
 
     /**
-     * Scans for a <do>-token
+     * Scans for a <do>-token.
      *
      * Do-tokens are always stand-alone
      *
@@ -1246,7 +1301,7 @@ class Lexer
     }
 
     /**
-     * Scans for a - or !?=-style expression
+     * Scans for a - or !?=-style expression.
      *
      * e.g.
      * != expr
@@ -1292,7 +1347,8 @@ class Lexer
     }
 
     /**
-     * Scans for a <expansion>-token
+     * Scans for a <expansion>-token.
+     *
      * (a: b-style expansion or a:b-style tags)
      *
      * Expansion-tokens always have:
@@ -1319,7 +1375,7 @@ class Lexer
 
     /**
      * Scans sub-expressions of elements, e.g. a text-block
-     * initiated with a dot (.) or a block expansion
+     * initiated with a dot (.) or a block expansion.
      *
      * Yields whatever scanTextBlock() and scanExpansion() yield
      *
@@ -1340,7 +1396,7 @@ class Lexer
     }
 
     /**
-     * Scans for a <doctype>-token
+     * Scans for a <doctype>-token.
      *
      * Doctype-tokens always have:
      * name, which is the passed name of the doctype or a custom-doctype,
@@ -1355,7 +1411,7 @@ class Lexer
     }
 
     /**
-     * Scans for a <tag>-token
+     * Scans for a <tag>-token.
      *
      * Tag-tokens always have:
      * name, which is the name of the tag
@@ -1379,7 +1435,7 @@ class Lexer
     }
 
     /**
-     * Scans for a <class>-token (begins with dot (.))
+     * Scans for a <class>-token (begins with dot (.)).
      *
      * Class-tokens always have:
      * name, which is the name of the class
@@ -1403,7 +1459,7 @@ class Lexer
     }
 
     /**
-     * Scans for a <id>-token (begins with hash (#))
+     * Scans for a <id>-token (begins with hash (#)).
      *
      * ID-tokens always have:
      * name, which is the name of the id
@@ -1427,7 +1483,7 @@ class Lexer
     }
 
     /**
-     * Scans for a mixin definition token (<mixin>)
+     * Scans for a mixin definition token (<mixin>).
      *
      * Mixin-token always have:
      * name, which is the name of the mixin you want to define
@@ -1451,7 +1507,7 @@ class Lexer
     }
 
     /**
-     * Scans for a <mixinCall>-token (begins with plus (+))
+     * Scans for a <mixinCall>-token (begins with plus (+)).
      *
      * Mixin-Call-Tokens always have:
      * name, which is the name of the called mixin
@@ -1475,7 +1531,7 @@ class Lexer
     }
 
     /**
-     * Scans for an <assignment>-token (begins with ampersand (&))
+     * Scans for an <assignment>-token (begins with ampersand (&)).
      *
      * Assignment-Tokens always have:
      * name, which is the name of the assignment
@@ -1492,7 +1548,8 @@ class Lexer
     }
 
     /**
-     * Scans for an attribute-block
+     * Scans for an attribute-block.
+     *
      * Attribute blocks always consist of the following tokens:
      *
      * <attributeStart> ('(') -> Indicates that attributes start here
@@ -1518,7 +1575,7 @@ class Lexer
      * spaces and new-lines as you like
      *
      * @return \Generator
-     * @throws \Tale\Jade\Lexer\Exception
+     * @throws Exception
      */
     protected function scanAttributes()
     {
@@ -1595,14 +1652,14 @@ class Lexer
     }
 
     /**
-     * Throws a lexer-exception
+     * Throws a lexer-exception.
      *
      * The current line and offset of the exception
      * get automatically appended to the message
      *
      * @param string $message A meaningful error message
      *
-     * @throws \Tale\Jade\Lexer\Exception
+     * @throws Exception
      */
     protected function throwException($message)
     {
@@ -1612,14 +1669,16 @@ class Lexer
     }
 
     /**
-     * mb_* compatible version of PHP's strlen
+     * mb_* compatible version of PHP's strlen.
+     *
      * (so we don't require mb.func_overload)
      *
      * @see strlen
+     * @see mb_strlen
      *
-     * @param string $string The string to get the length of
+     * @param string $string the string to get the length of
      *
-     * @return int The multi-byte-respecting length of the string
+     * @return int the multi-byte-respecting length of the string
      */
     protected function strlen($string)
     {
@@ -1631,16 +1690,18 @@ class Lexer
     }
 
     /**
-     * mb_* compatible version of PHP's strpos
+     * mb_* compatible version of PHP's strpos.
+     *
      * (so we don't require mb.func_overload)
      *
      * @see strpos
+     * @see mb_strpos
      *
-     * @param string   $haystack The string to search in
-     * @param string   $needle   The string we search for
-     * @param int|null $offset   The offset at which we might expect it
+     * @param string   $haystack the string to search in
+     * @param string   $needle   the string we search for
+     * @param int|null $offset   the offset at which we might expect it
      *
-     * @return int|false The offset of the string or false, if not found
+     * @return int|false the offset of the string or false, if not found
      */
     protected function strpos($haystack, $needle, $offset = null)
     {
@@ -1652,16 +1713,18 @@ class Lexer
     }
 
     /**
-     * mb_* compatible version of PHP's substr
+     * mb_* compatible version of PHP's substr.
+     *
      * (so we don't require mb.func_overload)
      *
      * @see substr
+     * @see mb_substr
      *
-     * @param string   $string The string to get a sub-string of
-     * @param int      $start  The start-index
-     * @param int|null $range  The amount of characters we want to get
+     * @param string   $string the string to get a sub-string of
+     * @param int      $start  the start-index
+     * @param int|null $range  the amount of characters we want to get
      *
-     * @return string The sub-string
+     * @return string the sub-string
      */
     protected function substr($string, $start, $range = null)
     {
@@ -1673,13 +1736,17 @@ class Lexer
     }
 
     /**
-     * mb_* compatible version of PHP's substr_count
+     * mb_* compatible version of PHP's substr_count.
+     *
      * (so we don't require mb.func_overload)
      *
-     * @param string $haystack The string we want to count sub-strings in
-     * @param string $needle   The sub-string we want to count inside $haystack
+     * @see substr_count
+     * @see mb_substr_count
      *
-     * @return int The amount of occurences of $needle in $haystack
+     * @param string $haystack the string we want to count sub-strings in
+     * @param string $needle   the sub-string we want to count inside $haystack
+     *
+     * @return int the amount of occurences of $needle in $haystack
      */
     protected function substr_count($haystack, $needle)
     {

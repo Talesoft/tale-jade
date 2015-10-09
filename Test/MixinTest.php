@@ -19,7 +19,7 @@ class MixinTest extends \PHPUnit_Framework_TestCase
                 'path' => __DIR__.'/cache',
                 'lifeTime' => 0
             ],
-            'compiler' => [
+            'compilerOptions' => [
                 'pretty' => false,
                 'handleErrors' => false,
                 'paths' => [__DIR__.'/views/mixins']
