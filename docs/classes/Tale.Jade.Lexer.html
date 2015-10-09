@@ -1,0 +1,2971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <meta charset="utf-8"/>
+    <title>Tale Jade for PHP</title>
+    <meta name="author" content=""/>
+    <meta name="description" content=""/>
+
+    <link href="../css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/prism.css" rel="stylesheet" media="all"/>
+    <link href="../css/template.css" rel="stylesheet" media="all"/>
+    
+    <!--[if lt IE 9]>
+    <script src="../js/html5.js"></script>
+    <![endif]-->
+    <script src="../js/jquery-1.11.0.min.js"></script>
+    <script src="../js/ui/1.10.4/jquery-ui.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/jquery.smooth-scroll.js"></script>
+    <script src="../js/prism.min.js"></script>
+    <!-- TODO: Add http://jscrollpane.kelvinluck.com/ to style the scrollbars for browsers not using webkit-->
+    <script type="text/javascript">
+    function loadExternalCodeSnippets() {
+        Array.prototype.slice.call(document.querySelectorAll('pre[data-src]')).forEach(function (pre) {
+            var src = pre.getAttribute('data-src');
+            var extension = (src.match(/\.(\w+)$/) || [, ''])[1];
+            var language = 'php';
+
+            var code = document.createElement('code');
+            code.className = 'language-' + language;
+
+            pre.textContent = '';
+
+            code.textContent = 'Loading…';
+
+            pre.appendChild(code);
+
+            var xhr = new XMLHttpRequest();
+
+            xhr.open('GET', src, true);
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+
+                    if (xhr.status < 400 && xhr.responseText) {
+                        code.textContent = xhr.responseText;
+
+                        Prism.highlightElement(code);
+                    }
+                    else if (xhr.status >= 400) {
+                        code.textContent = '✖ Error ' + xhr.status + ' while fetching file: ' + xhr.statusText;
+                    }
+                    else {
+                        code.textContent = '✖ Error: File does not exist or is empty';
+                    }
+                }
+            };
+
+            xhr.send(null);
+        });
+    }
+
+    $(document).ready(function(){
+        loadExternalCodeSnippets();
+    });
+    $('#source-view').on('shown', function () {
+        loadExternalCodeSnippets();
+    })
+</script>
+
+    <link rel="shortcut icon" href="../images/favicon.ico"/>
+    <link rel="apple-touch-icon" href="../images/apple-touch-icon.png"/>
+    <link rel="apple-touch-icon" sizes="72x72" href="../images/apple-touch-icon-72x72.png"/>
+    <link rel="apple-touch-icon" sizes="114x114" href="../images/apple-touch-icon-114x114.png"/>
+</head>
+<body>
+
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <i class="icon-ellipsis-vertical"></i>
+            </a>
+            <a class="brand" href="../index.html">Tale Jade for PHP</a>
+
+            <div class="nav-collapse">
+                <ul class="nav pull-right">
+                                        <li class="dropdown">
+                        <a href="../index.html" class="dropdown-toggle" data-toggle="dropdown">
+                            API Documentation <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                                                        <li><a href="../namespaces/Tale.html">\Tale</a></li>
+                                                    </ul>
+                    </li>
+                                        <li class="dropdown" id="charts-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Charts <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="../graphs/class.html">
+                                    <i class="icon-list-alt"></i>&#160;Class hierarchy diagram
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="dropdown" id="reports-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Reports <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="../reports/errors.html">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">0</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="../reports/markers.html">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Markers <span class="label label-info pull-right">12</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="../reports/deprecated.html">
+                                                                                                            <i class="icon-list-alt"></i>&#160;Deprecated <span class="label label-info pull-right">0</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--<div class="go_to_top">-->
+    <!--<a href="#___" style="color: inherit">Back to top&#160;&#160;<i class="icon-upload icon-white"></i></a>-->
+    <!--</div>-->
+</div>
+
+<div id="___" class="container-fluid">
+        <section class="row-fluid">
+        <div class="span2 sidebar">
+                                <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-2067857791"></a>
+                                <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
+            </div>
+            <div id="namespace-2067857791" class="accordion-body collapse in">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-503310056"></a>
+                                <a href="../namespaces/Tale.html" style="margin-left: 30px; padding-left: 0">Tale</a>
+            </div>
+            <div id="namespace-503310056" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-872079895"></a>
+                                <a href="../namespaces/Tale.Jade.html" style="margin-left: 30px; padding-left: 0">Jade</a>
+            </div>
+            <div id="namespace-872079895" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1414743316"></a>
+                                <a href="../namespaces/Tale.Jade.Compiler.html" style="margin-left: 30px; padding-left: 0">Compiler</a>
+            </div>
+            <div id="namespace-1414743316" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Tale.Jade.Compiler.Exception.html">Exception</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1564823217"></a>
+                                <a href="../namespaces/Tale.Jade.Lexer.html" style="margin-left: 30px; padding-left: 0">Lexer</a>
+            </div>
+            <div id="namespace-1564823217" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Tale.Jade.Lexer.Exception.html">Exception</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1090352086"></a>
+                                <a href="../namespaces/Tale.Jade.Parser.html" style="margin-left: 30px; padding-left: 0">Parser</a>
+            </div>
+            <div id="namespace-1090352086" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Tale.Jade.Parser.Exception.html">Exception</a></li>
+                                                    <li class="class"><a href="../classes/Tale.Jade.Parser.Node.html">Node</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-552440467"></a>
+                                <a href="../namespaces/Tale.Jade.Renderer.html" style="margin-left: 30px; padding-left: 0">Renderer</a>
+            </div>
+            <div id="namespace-552440467" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-145164627"></a>
+                                <a href="../namespaces/Tale.Jade.Renderer.Adapter.html" style="margin-left: 30px; padding-left: 0">Adapter</a>
+            </div>
+            <div id="namespace-145164627" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-739332851"></a>
+                                <a href="../namespaces/Tale.Jade.Renderer.Adapter.Stream.html" style="margin-left: 30px; padding-left: 0">Stream</a>
+            </div>
+            <div id="namespace-739332851" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Tale.Jade.Renderer.Adapter.Stream.Wrapper.html">Wrapper</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Tale.Jade.Renderer.Adapter.File.html">File</a></li>
+                                                    <li class="class"><a href="../classes/Tale.Jade.Renderer.Adapter.Stream.html">Stream</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Tale.Jade.Renderer.AdapterBase.html">AdapterBase</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Tale.Jade.Compiler.html">Compiler</a></li>
+                                                    <li class="class"><a href="../classes/Tale.Jade.Filter.html">Filter</a></li>
+                                                    <li class="class"><a href="../classes/Tale.Jade.Lexer.html">Lexer</a></li>
+                                                    <li class="class"><a href="../classes/Tale.Jade.Parser.html">Parser</a></li>
+                                                    <li class="class"><a href="../classes/Tale.Jade.Renderer.html">Renderer</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        </div>
+    </section>
+    <section class="row-fluid">
+        <div class="span10 offset2">
+            <div class="row-fluid">
+                <div class="span8 content class">
+                    <nav>
+                                                <a href="../namespaces/Tale.Jade.html">\Tale\Jade</a> <i class="icon-level-up"></i>
+                                            </nav>
+                    <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"><i class="icon-code"></i></a>
+
+                    <h1><small>\Tale\Jade</small>Lexer</h1>
+                    <p><em>Performs lexical analysis and provides a token generator.</em></p>
+                    <p>Tokens are defined as single units of code
+(e.g. tag, class, id, attributeStart, attribute, attributeEnd)</p>
+<p>These will run through the parser and be converted to an AST</p>
+<p>The lexer works sequentially, -&gt;lex will return a generator and
+you can read that generator in any manner you like.
+The generator will produce valid tokens until the end of the passed
+input.</p>
+<p>Usage example:
+<code></p>
+<pre><code>use Tale\Jade\Lexer;
+
+$lexer = new Lexer();
+
+foreach ($lexer-&gt;lex($jadeInput) as $token)
+     echo $token;
+
+//Prints a human-readable dump of the generated tokens</code></pre>
+<p></code></p>
+                    
+                                        
+                    <section id="summary">
+                        <h2>Summary</h2>
+                        <section class="row-fluid heading">
+                            <section class="span4">
+                                <a href="#methods">Methods</a>
+                            </section>
+                            <section class="span4">
+                                <a href="#properties">Properties</a>
+                            </section>
+                            <section class="span4">
+                                <a href="#constants">Constants</a>
+                            </section>
+                        </section>
+                        <section class="row-fluid public">
+                            <section class="span4">
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method___construct" class="">__construct()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_getInput" class="">getInput()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_getLength" class="">getLength()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_getPosition" class="">getPosition()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_getLine" class="">getLine()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_getOffset" class="">getOffset()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_getLevel" class="">getLevel()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_getIndentStyle" class="">getIndentStyle()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_getIndentWidth" class="">getIndentWidth()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_getLastPeekResult" class="">getLastPeekResult()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_getLastMatches" class="">getLastMatches()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_lex" class="">lex()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_dump" class="">dump()</a><br />
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No public properties found</em>
+                                                            </section>
+                            <section class="span4">
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#constant_INDENT_TAB" class="">INDENT_TAB</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#constant_INDENT_SPACE" class="">INDENT_SPACE</a><br />
+                                                            </section>
+                        </section>
+                        <section class="row-fluid protected">
+                            <section class="span4">
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_isAtEnd" class="">isAtEnd()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_peek" class="">peek()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_consume" class="">consume()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_read" class="">read()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_readSpaces" class="">readSpaces()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_readBracketContents" class="">readBracketContents()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_match" class="">match()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_consumeMatch" class="">consumeMatch()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_getMatch" class="">getMatch()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanFor" class="">scanFor()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_createToken" class="">createToken()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanToken" class="">scanToken()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanIndent" class="">scanIndent()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanNewLine" class="">scanNewLine()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanText" class="">scanText()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanTextBlock" class="">scanTextBlock()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanTextLine" class="">scanTextLine()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanMarkup" class="">scanMarkup()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanComment" class="">scanComment()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanFilter" class="">scanFilter()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanImport" class="">scanImport()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanBlock" class="">scanBlock()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanCase" class="">scanCase()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanWhen" class="">scanWhen()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanConditional" class="">scanConditional()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanControlStatement" class="">scanControlStatement()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanEach" class="">scanEach()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanWhile" class="">scanWhile()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanDo" class="">scanDo()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanExpression" class="">scanExpression()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanExpansion" class="">scanExpansion()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanSub" class="">scanSub()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanDoctype" class="">scanDoctype()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanTag" class="">scanTag()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanClasses" class="">scanClasses()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanId" class="">scanId()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanMixin" class="">scanMixin()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanMixinCall" class="">scanMixinCall()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanAssignment" class="">scanAssignment()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_scanAttributes" class="">scanAttributes()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_throwException" class="">throwException()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_strlen" class="">strlen()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_strpos" class="">strpos()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_substr" class="">substr()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#method_substr_count" class="">substr_count()</a><br />
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No protected properties found</em>
+                                                            </section>
+                            <section class="span4">
+                                <em>N/A</em>
+                            </section>
+                        </section>
+                        <section class="row-fluid private">
+                            <section class="span4">
+                                                                    <em>No private methods found</em>
+                                                            </section>
+                            <section class="span4">
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#property__input" class="">$_input</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#property__length" class="">$_length</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#property__position" class="">$_position</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#property__line" class="">$_line</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#property__offset" class="">$_offset</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#property__level" class="">$_level</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#property__indentStyle" class="">$_indentStyle</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#property__indentWidth" class="">$_indentWidth</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#property__lastPeekResult" class="">$_lastPeekResult</a><br />
+                                                                    <a href="../classes/Tale.Jade.Lexer.html#property__lastMatches" class="">$_lastMatches</a><br />
+                                                            </section>
+                            <section class="span4">
+                                <em>N/A</em>
+                            </section>
+                        </section>
+                    </section>
+                </div>
+                <aside class="span4 detailsbar">
+                                        
+                    
+                    <dl>
+                        <dt>File</dt>
+                            <dd><a href="../files/Lexer.html"><div class="path-wrapper">Lexer.php</div></a></dd>
+                                                <dt>Package</dt>
+                            <dd><div class="namespace-wrapper">Tale\Jade</div></dd>
+                                                <dt>Class hierarchy</dt>
+                            <dd class="hierarchy">
+                                                                                                                                                                    <div class="namespace-wrapper">\Tale\Jade\Lexer</div>
+                            </dd>
+
+                        
+                        
+                        
+                                                                            <dt>See also</dt>
+                                                                                    <dd><a href="http://jade.talesoft.io/docs/classes/Tale.Jade.Lexer.html"><div class="namespace-wrapper">http://jade.talesoft.io/docs/classes/Tale.Jade.Lexer.html</div></a></dd>
+                                                    
+                                                                        </dl>
+                    <h2>Tags</h2>
+                    <table class="table table-condensed">
+                                            <tr>
+                            <th>
+                                category
+                            </th>
+                            <td>
+                                                                    <p>Presentation</p>
+                                                            </td>
+                        </tr>
+                                            <tr>
+                            <th>
+                                author
+                            </th>
+                            <td>
+                                                                    <p>Torben Koehn <a href="mailto:tk@talesoft.io">tk@talesoft.io</a></p>
+                                                                    <p>Talesoft <a href="mailto:info@talesoft.io">info@talesoft.io</a></p>
+                                                            </td>
+                        </tr>
+                                            <tr>
+                            <th>
+                                copyright
+                            </th>
+                            <td>
+                                                                    <p>Copyright (c) 2015 Talesoft (<a href="http://talesoft.io">http://talesoft.io</a>)</p>
+                                                            </td>
+                        </tr>
+                                            <tr>
+                            <th>
+                                license
+                            </th>
+                            <td>
+                                                                    <p><a href="http://licenses.talesoft.io/2015/MIT.txt">http://licenses.talesoft.io/2015/MIT.txt</a> MIT License</p>
+                                                            </td>
+                        </tr>
+                                            <tr>
+                            <th>
+                                version
+                            </th>
+                            <td>
+                                                                    
+                                                            </td>
+                        </tr>
+                                            <tr>
+                            <th>
+                                since
+                            </th>
+                            <td>
+                                                                    <p>File available since Release 1.0</p>
+                                                            </td>
+                        </tr>
+                                        </table>
+                </aside>
+            </div>
+
+                                    <a id="constants" name="constants"></a>
+            <div class="row-fluid">
+                <div class="span8 content class">
+                    <h2>Constants</h2>
+                </div>
+                <aside class="span4 detailsbar"></aside>
+            </div>
+
+                                <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="constant_INDENT_TAB" name="constant_INDENT_TAB" class="anchor"></a>
+            <article id="constant_INDENT_TAB" class="constant">
+                <h3 class="">INDENT_TAB</h3>
+                <pre class="signature">INDENT_TAB</pre>
+                <p><em>Tab Indentation (\t)</em></p>
+                
+            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="constant_INDENT_SPACE" name="constant_INDENT_SPACE" class="anchor"></a>
+            <article id="constant_INDENT_SPACE" class="constant">
+                <h3 class="">INDENT_SPACE</h3>
+                <pre class="signature">INDENT_SPACE</pre>
+                <p><em>Space Indentation ( )</em></p>
+                
+            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                            
+                                    <a id="properties" name="properties"></a>
+            <div class="row-fluid">
+                <div class="span8 content class">
+                    <h2>Properties</h2>
+                </div>
+                <aside class="span4 detailsbar"></aside>
+            </div>
+
+                                                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__input" name="property__input" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_input</h3>
+                <pre class="signature">$_input : string</pre>
+                <p><em>The current input string.</em></p>
+                
+
+                                <h4>Type</h4>
+                string
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__length" name="property__length" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_length</h3>
+                <pre class="signature">$_length : integer</pre>
+                <p><em>The total length of the current input.</em></p>
+                
+
+                                <h4>Type</h4>
+                integer
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__position" name="property__position" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_position</h3>
+                <pre class="signature">$_position : integer</pre>
+                <p><em>The current position inside the input string.</em></p>
+                
+
+                                <h4>Type</h4>
+                integer
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__line" name="property__line" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_line</h3>
+                <pre class="signature">$_line : integer</pre>
+                <p><em>The current line we are on.</em></p>
+                
+
+                                <h4>Type</h4>
+                integer
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__offset" name="property__offset" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_offset</h3>
+                <pre class="signature">$_offset : integer</pre>
+                <p><em>The current offset in a line we are on.</em></p>
+                <p>Resets on each new line and increases on each read character</p>
+
+                                <h4>Type</h4>
+                integer
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__level" name="property__level" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_level</h3>
+                <pre class="signature">$_level : integer</pre>
+                <p><em>The current indentation level we are on.</em></p>
+                
+
+                                <h4>Type</h4>
+                integer
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__indentStyle" name="property__indentStyle" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_indentStyle</h3>
+                <pre class="signature">$_indentStyle : string</pre>
+                <p><em>The current indentation character.</em></p>
+                
+
+                                <h4>Type</h4>
+                string
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__indentWidth" name="property__indentWidth" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_indentWidth</h3>
+                <pre class="signature">$_indentWidth : string</pre>
+                <p><em>The width of the indentation.</em></p>
+                <p>Specifies how often $_indentStyle
+is repeated for each $_level</p>
+
+                                <h4>Type</h4>
+                string
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__lastPeekResult" name="property__lastPeekResult" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_lastPeekResult</h3>
+                <pre class="signature">$_lastPeekResult : string</pre>
+                <p><em>The last result gotten via -&gt;peek().</em></p>
+                
+
+                                <h4>Type</h4>
+                string
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__lastMatches" name="property__lastMatches" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_lastMatches</h3>
+                <pre class="signature">$_lastMatches : array</pre>
+                <p><em>The last matches gotten via -&gt;match()</em></p>
+                
+
+                                <h4>Type</h4>
+                array
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                            
+                                    <a id="methods" name="methods"></a>
+            <div class="row-fluid">
+                <div class="span8 content class"><h2>Methods</h2></div>
+                <aside class="span4 detailsbar"></aside>
+            </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method___construct" name="method___construct" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">__construct()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">__construct(array|null  <span class="argument">$options = null</span>) </pre>
+                <p><em>Creates a new lexer instance.</em></p>
+                <p>The options should be an associative array</p>
+<p>Valid options are:</p>
+<p>indentStyle:     The indentation character (auto-detected)
+indentWidth:     How often to repeat indentStyle (auto-detected)
+encoding:        The encoding when working with mb_*-functions (Default: UTF-8)
+scans:           An array of scans that will be performed</p>
+<p>Passing an indentation-style forces you to stick to that style.
+If not, the lexer will assume the first indentation type it finds as the indentation.
+Mixed indentation is not possible, since it would be a bitch to calculate without
+taking away configuration freedom</p>
+<p>Add a new scan to 'scans' to extend the lexer.
+Notice that you need the fitting 'handle*'-method in the parser
+or you will get unhandled-token-exceptions.</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array|null</td>
+                                <td>$options </td>
+                                <td><p>the options passed to the lexer instance</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getInput" name="method_getInput" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getInput()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getInput() : string</pre>
+                <p><em>Returns the current input-string worked on.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getLength" name="method_getLength" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getLength()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getLength() : integer</pre>
+                <p><em>Returns the total length of the current input-string.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    integer
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getPosition" name="method_getPosition" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getPosition()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getPosition() : integer</pre>
+                <p><em>Returns the total position in the current input-string.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    integer
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getLine" name="method_getLine" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getLine()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getLine() : integer</pre>
+                <p><em>Returns the line we are working on in the current input-string.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    integer
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getOffset" name="method_getOffset" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getOffset()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getOffset() : integer</pre>
+                <p><em>Gets the offset on a line (Line-start is 0) in the current input-string.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    integer
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getLevel" name="method_getLevel" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getLevel()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getLevel() : integer</pre>
+                <p><em>Returns the current indentation level we are on.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    integer
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getIndentStyle" name="method_getIndentStyle" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getIndentStyle()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getIndentStyle() : string</pre>
+                <p><em>Returns the detected or previously passed indentation style.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getIndentWidth" name="method_getIndentWidth" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getIndentWidth()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getIndentWidth() : integer</pre>
+                <p><em>Returns the detected or previously passed indentation width.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    integer
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getLastPeekResult" name="method_getLastPeekResult" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getLastPeekResult()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getLastPeekResult() : string|null</pre>
+                <p><em>Returns the last result of -&gt;peek().</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    string|null
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getLastMatches" name="method_getLastMatches" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getLastMatches()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getLastMatches() : array|null</pre>
+                <p><em>Returns the last array of matches through -&gt;match.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    array|null
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_lex" name="method_lex" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">lex()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">lex(string  <span class="argument">$input</span>) : \Generator</pre>
+                <p><em>Returns a generator that will lex the passed $input sequentially.</em></p>
+                <p>If you don't move the generator, the lexer does nothing.
+Only as soon as you iterate the generator or call next()/current() on it
+the lexer will start it's work and spit out tokens sequentially.
+This approach takes less memory during the lexing process.</p>
+<p>Tokens are always an array and always provide the following keys:</p>
+<samp>
+[
+     'type' => The token type,
+     'line' => The line this token is on,
+     'offset' => The offset this token is at
+]
+</samp>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$input </td>
+                                <td><p>the Jade-string to lex into tokens</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                            &mdash; <p>a generator that can be iterated sequentially</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_dump" name="method_dump" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">dump()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">dump(string  <span class="argument">$input</span>) </pre>
+                <p><em>Dumps jade-input into a set of string-represented tokens.</em></p>
+                <p>This makes debugging the lexer easier.</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$input </td>
+                                <td><p>the jade input to dump the tokens of</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_isAtEnd" name="method_isAtEnd" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">isAtEnd()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">isAtEnd() : boolean</pre>
+                <p><em>Checks if our read pointer is at the end of the code.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    boolean
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_peek" name="method_peek" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">peek()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">peek(integer  <span class="argument">$length = 1</span>) : string</pre>
+                <p><em>Shows the next characters in our input.</em></p>
+                <p>Pass a $length to get more than one character.
+The character's <em>won't</em> be consumed here, they are just shown.
+The position pointer won't be moved forward</p>
+<p>The result gets saved in $_lastPeekResult</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>integer</td>
+                                <td>$length </td>
+                                <td><p>the length of the string we want to peek on</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>the peeked string</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_consume" name="method_consume" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">consume()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">consume(integer|null  <span class="argument">$length = null</span>) : $this</pre>
+                <p><em>Consumes a length or the length of the last peeked string.</em></p>
+                <p>Internally $input = substr($input, $length) is done,
+so everything <em>before</em> the consumed length will be cut off and
+removed from the RAM (since we probably tokenized it already,
+remember? sequential shit etc.?)</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>integer|null</td>
+                                <td>$length </td>
+                                <td><p>the length to consume or null, to use the length of the last peeked string</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Lexer\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    $this
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_read" name="method_read" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">read()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">read(callable  <span class="argument">$callback</span>, integer  <span class="argument">$length = 1</span>) : string</pre>
+                <p><em>Peeks and consumes chars until the passed callback returns false.</em></p>
+                <p>The callback takes the current character as the first argument.</p>
+<p>This works great with ctype_*-functions</p>
+<p>If the last character doesn't match, it also won't be consumed
+You can always go on reading right after a call to -&gt;read()</p>
+<p>e.g.
+$alNumString = $this-&gt;read('ctype_alnum')
+$spaces = $this-&gt;read('ctype_space')</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>callable</td>
+                                <td>$callback </td>
+                                <td><p>the callback to check the current character against</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>integer</td>
+                                <td>$length </td>
+                                <td><p>the length to peek. This will also increase the length of the characters passed to the callback</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>the read string</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_readSpaces" name="method_readSpaces" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">readSpaces()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">readSpaces() : string</pre>
+                <p><em>Reads all TAB (\t) and SPACE ( ) chars until something else is found.</em></p>
+                <p>This is primarily used to parse the indentation
+at the begin of each line.</p>
+
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Lexer\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>the spaces that have been found</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_readBracketContents" name="method_readBracketContents" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">readBracketContents()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">readBracketContents(array|null  <span class="argument">$breakChars = null</span>) : string</pre>
+                <p><em>Reads a &quot;value&quot;, &#039;value&#039; or value style string really gracefully.</em></p>
+                <p>It will stop on all chars passed to $breakChars as well as a closing ')'
+when <em>not</em> inside an expression initiated with either
+&quot;, ', (, [ or {.</p>
+<p>$breakChars might be [','] as an example to read sequential arguments
+into an array. Scan for ',', skip spaces, repeat readBracketContents</p>
+<p>Brackets are counted, strings are respected.</p>
+<p>Inside a &quot; string, \&quot; escaping is possible, inside a ' string, \' escaping
+is possible</p>
+<p>As soon as a ) is found and we're outside a string and outside any kind of bracket,
+the reading will stop and the value, including any quotes, will be returned</p>
+<p>Examples:
+('`' marks the parts that are read, understood and returned by this function)</p>
+<samp>
+     (arg1=`abc`, arg2=`"some expression"`, `'some string expression'`)
+     some-mixin(`'some arg'`, `[1, 2, 3, 4]`, `(isset($complex) ? $complex : 'complex')`)
+     and even
+     some-mixin(callback=`function($input) { return trim($input, '\'"'); }`)
+</samp>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array|null</td>
+                                <td>$breakChars </td>
+                                <td><p>the chars to break on.</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>the (possibly quote-enclosed) result string</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_match" name="method_match" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">match()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">match(string  <span class="argument">$pattern</span>, string  <span class="argument">$modifiers = &#039;&#039;</span>) : boolean</pre>
+                <p><em>Matches a pattern against the start of the current $input.</em></p>
+                <p>Notice that this always takes the start of the current pointer
+position as a reference, since <code>consume</code> means cutting of the front
+of the input string</p>
+<p>After a match was successful, you can retrieve the matches
+with -&gt;getMatch() and consume the whole match with -&gt;consumeMatch()</p>
+<p>^ gets automatically prepended to the pattern (since it makes no sense
+for a sequential lexer to search <em>inside</em> the input)</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$pattern </td>
+                                <td><p>the regular expression without delimeters and a ^-prefix</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>string</td>
+                                <td>$modifiers </td>
+                                <td><p>the usual PREG RegEx-modifiers</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    boolean
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_consumeMatch" name="method_consumeMatch" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">consumeMatch()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">consumeMatch() : $this</pre>
+                <p><em>Consumes a match previously read and matched by -&gt;match().</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    $this
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getMatch" name="method_getMatch" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">getMatch()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getMatch(integer|string  <span class="argument">$index</span>) : mixed|null</pre>
+                <p><em>Gets a match from the last -&gt;match() call</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>integer|string</td>
+                                <td>$index </td>
+                                <td><p>the index of the usual PREG $matches argument</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    mixed|null
+                                            &mdash; <p>the value of the match or null, if none found</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanFor" name="method_scanFor" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanFor()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanFor(array  <span class="argument">$scans</span>, boolean|false  <span class="argument">$throwException = false</span>) : \Generator</pre>
+                <p><em>Keeps scanning for all types of tokens passed as the first argument.</em></p>
+                <p>If one token is encountered that's not in $scans, the function breaks
+or throws an exception, if the second argument is true</p>
+<p>The passed scans get converted to methods
+e.g. newLine =&gt; scanNewLine, blockExpansion =&gt; scanBlockExpansion etc.</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$scans </td>
+                                <td><p>the scans to perform</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>boolean|false</td>
+                                <td>$throwException </td>
+                                <td><p>throw an exception if no tokens in $scans found anymore</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Lexer\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                            &mdash; <p>the generator yielding all tokens found</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_createToken" name="method_createToken" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">createToken()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">createToken(string  <span class="argument">$type</span>) : array</pre>
+                <p><em>Creates a new token.</em></p>
+                <p>A token is an associative array.
+The following keys <em>always</em> exist:</p>
+<p>type:    The type of the node (e.g. newLine, tag, class, id)
+line:    The line we encountered this token on
+offset:  The offset on a line we encountered it on</p>
+<p>Before adding a new token-type, make sure that the Parser knows how
+to handle it and the Compiler knows how to compile it.</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$type </td>
+                                <td><p>the type to give that token</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                            &mdash; <p>the token array</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanToken" name="method_scanToken" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanToken()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanToken(string  <span class="argument">$type</span>, string  <span class="argument">$pattern</span>, string  <span class="argument">$modifiers = &#039;&#039;</span>) : \Generator</pre>
+                <p><em>Scans for a specific token-type based on a pattern
+and converts it to a valid token automatically.</em></p>
+                <p>All matches that have a name (RegEx (?<name>...)-directive
+will directly get a key with that name and value
+on the token array</p>
+<p>For matching, -&gt;match() is used internally</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$type </td>
+                                <td><p>the token type to create, if matched</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>string</td>
+                                <td>$pattern </td>
+                                <td><p>the pattern to match</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>string</td>
+                                <td>$modifiers </td>
+                                <td><p>the regex-modifiers for the pattern</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanIndent" name="method_scanIndent" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanIndent()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanIndent() : \Generator|void</pre>
+                <p><em>Scans for indentation and automatically keeps
+the $_level updated through all tokens.</em></p>
+                <p>Upon reaching a higher level, an <indent>-token is
+yielded, upon reaching a lower level, an <outdent>-token is yielded</p>
+<p>If you outdented 3 levels, 3 <outdent>-tokens are yielded</p>
+<p>The first indentation this function encounters will be used
+as the indentation style for this document.</p>
+<p>You can indent with everything between 1 space and a few million tabs
+other than most Jade implementations</p>
+
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Lexer\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    \Generator|void
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanNewLine" name="method_scanNewLine" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanNewLine()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanNewLine() : \Generator</pre>
+                <p><em>Scans for a new-line character and yields a &lt;newLine&gt;-token if found.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanText" name="method_scanText" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanText()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanText() : \Generator</pre>
+                <p><em>Scans for text until the end of the current line
+and yields a &lt;text&gt;-token if found.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanTextBlock" name="method_scanTextBlock" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanTextBlock()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanTextBlock() : \Generator</pre>
+                <p><em>Scans for text and keeps scanning text, if you indent once
+until it is outdented again (e.g. .-text-blocks, expressions, comments).</em></p>
+                <p>Yields anything between <text>, <newLine>, <indent> and <outdent> tokens
+it encounters</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanTextLine" name="method_scanTextLine" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanTextLine()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanTextLine() : \Generator</pre>
+                <p><em>Scans for a |-style text-line and yields it along
+with a text-block, if it has any.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanMarkup" name="method_scanMarkup" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanMarkup()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanMarkup() : \Generator</pre>
+                <p><em>Scans for HTML-markup based on a starting &#039;&lt;&#039;.</em></p>
+                <p>The whole markup will be kept and yielded
+as a <text>-token</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanComment" name="method_scanComment" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanComment()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanComment() : \Generator</pre>
+                <p><em>Scans for //-? comments yielding a &lt;comment&gt;
+token if found as well as a stack of text-block tokens.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanFilter" name="method_scanFilter" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanFilter()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanFilter() : \Generator</pre>
+                <p><em>Scans for :&lt;filterName&gt;-style filters and yields
+a &lt;filter&gt; token if found.</em></p>
+                <p>Filter-tokens always have:
+name, which is the name of the filter</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanImport" name="method_scanImport" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanImport()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanImport() : \Generator</pre>
+                <p><em>Scans for imports and yields an &lt;import&gt;-token if found.</em></p>
+                <p>Import-tokens always have:
+importType, which is either &quot;extends&quot; or &quot;include
+path, the (relative) path to which the import points</p>
+<p>Import-tokens may have:
+filter, which is an optional filter that should be only
+usable on &quot;include&quot;</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanBlock" name="method_scanBlock" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanBlock()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanBlock() : \Generator</pre>
+                <p><em>Scans for &lt;block&gt;-tokens.</em></p>
+                <p>Blocks can have three styles:
+block append|prepend|replace name
+append|prepend|replace name
+or simply
+block (for mixin blocks)</p>
+<p>Block-tokens may have:
+mode, which is either &quot;append&quot;, &quot;prepend&quot; or &quot;replace&quot;
+name, which is the name of the block</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanCase" name="method_scanCase" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanCase()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanCase() : \Generator</pre>
+                <p><em>Scans for a &lt;case&gt;-token.</em></p>
+                <p>Case-tokens always have:
+subject, which is the expression between the parenthesis</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanWhen" name="method_scanWhen" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanWhen()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanWhen() : \Generator</pre>
+                <p><em>Scans for a &lt;when&gt;-token.</em></p>
+                <p>When-tokens always have:
+name, which is either &quot;when&quot; or &quot;default&quot;
+subject, which is the expression behind &quot;when ...&quot;</p>
+<p>When-tokens may have:
+default, which indicates that this is the &quot;default&quot;-case</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanConditional" name="method_scanConditional" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanConditional()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanConditional() : \Generator</pre>
+                <p><em>Scans for a &lt;conditional&gt;-token.</em></p>
+                <p>Conditional-tokens always have:
+conditionType, which is either &quot;if&quot;, &quot;unless&quot;, &quot;elseif&quot;, &quot;else if&quot; or &quot;else&quot;
+subject, which is the expression the between the parenthesis</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanControlStatement" name="method_scanControlStatement" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanControlStatement()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanControlStatement(string  <span class="argument">$type</span>, array  <span class="argument">$names</span>, string|null  <span class="argument">$nameAttribute = null</span>) : \Generator</pre>
+                <p><em>Scans for a control-statement-kind of token.</em></p>
+                <p>e.g.
+control-statement-name ($expression)</p>
+<p>Since the <each>-statement is a special little unicorn, it
+get's handled very specifically inside this function (But correctly!)</p>
+<p>If the condition can have a subject, the subject
+will be set as the &quot;subject&quot;-value of the token</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$type </td>
+                                <td><p>The token type that should be created if scan is successful</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>array</td>
+                                <td>$names </td>
+                                <td><p>The names the statement can have (e.g. do, while, if, else etc.)</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>string|null</td>
+                                <td>$nameAttribute </td>
+                                <td><p>The attribute the name gets saved into, if wanted</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Lexer\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                                                            <p>Avoid block parsing on <do>-loops</p>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanEach" name="method_scanEach" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanEach()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanEach() : \Generator</pre>
+                <p><em>Scans for an &lt;each&gt;-token.</em></p>
+                <p>Each-tokens always have:
+itemName, which is the name of the item for each iteration
+subject, which is the expression to iterate</p>
+<p>Each-tokens may have:
+keyName, which is the name of the key for each iteration</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanWhile" name="method_scanWhile" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanWhile()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanWhile() : \Generator</pre>
+                <p><em>Scans for a &lt;while&gt;-token.</em></p>
+                <p>While-tokens always have:
+subject, which is the expression between the parenthesis</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanDo" name="method_scanDo" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanDo()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanDo() : \Generator</pre>
+                <p><em>Scans for a &lt;do&gt;-token.</em></p>
+                <p>Do-tokens are always stand-alone</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanExpression" name="method_scanExpression" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanExpression()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanExpression() : \Generator</pre>
+                <p><em>Scans for a - or !?=-style expression.</em></p>
+                <p>e.g.
+!= expr
+= expr</p>
+<ul>
+<li>expr
+multiline
+expr</li>
+</ul>
+<p>Expression-tokens always have:
+escaped, which indicates that the expression result should be escaped
+return, which indicates if the expression should return or just evaluate the result</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanExpansion" name="method_scanExpansion" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanExpansion()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanExpansion() : \Generator</pre>
+                <p><em>Scans for a &lt;expansion&gt;-token.</em></p>
+                <p>(a: b-style expansion or a:b-style tags)</p>
+<p>Expansion-tokens always have:
+withSpace, which indicates wether there's a space after the double-colon</p>
+<p>Usually, if there's no space, it should be handled as part of a tag-name</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanSub" name="method_scanSub" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanSub()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanSub() : \Generator</pre>
+                <p><em>Scans sub-expressions of elements, e.g. a text-block
+initiated with a dot (.) or a block expansion.</em></p>
+                <p>Yields whatever scanTextBlock() and scanExpansion() yield</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanDoctype" name="method_scanDoctype" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanDoctype()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanDoctype() : \Generator</pre>
+                <p><em>Scans for a &lt;doctype&gt;-token.</em></p>
+                <p>Doctype-tokens always have:
+name, which is the passed name of the doctype or a custom-doctype,
+if the named doctype isn't provided</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanTag" name="method_scanTag" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanTag()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanTag() : \Generator</pre>
+                <p><em>Scans for a &lt;tag&gt;-token.</em></p>
+                <p>Tag-tokens always have:
+name, which is the name of the tag</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanClasses" name="method_scanClasses" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanClasses()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanClasses() : \Generator</pre>
+                <p><em>Scans for a &lt;class&gt;-token (begins with dot (.)).</em></p>
+                <p>Class-tokens always have:
+name, which is the name of the class</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanId" name="method_scanId" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanId()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanId() : \Generator</pre>
+                <p><em>Scans for a &lt;id&gt;-token (begins with hash (#)).</em></p>
+                <p>ID-tokens always have:
+name, which is the name of the id</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanMixin" name="method_scanMixin" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanMixin()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanMixin() : \Generator</pre>
+                <p><em>Scans for a mixin definition token (&lt;mixin&gt;).</em></p>
+                <p>Mixin-token always have:
+name, which is the name of the mixin you want to define</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanMixinCall" name="method_scanMixinCall" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanMixinCall()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanMixinCall() : \Generator</pre>
+                <p><em>Scans for a &lt;mixinCall&gt;-token (begins with plus (+)).</em></p>
+                <p>Mixin-Call-Tokens always have:
+name, which is the name of the called mixin</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanAssignment" name="method_scanAssignment" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanAssignment()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanAssignment() : \Generator</pre>
+                <p><em>Scans for an &lt;assignment&gt;-token (begins with ampersand (&amp;)).</em></p>
+                <p>Assignment-Tokens always have:
+name, which is the name of the assignment</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_scanAttributes" name="method_scanAttributes" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">scanAttributes()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">scanAttributes() : \Generator</pre>
+                <p><em>Scans for an attribute-block.</em></p>
+                <p>Attribute blocks always consist of the following tokens:</p>
+<attributeStart> ('(') -> Indicates that attributes start here
+<attribute>... (name*=*value*) -> Name and Value are both optional, but one of both needs to be provided
+                                  Multiple attributes are separated by a Comma (,)
+<attributeEnd> (')') -> Required. Indicates the end of the attribute block
+
+This function will always yield an <attributeStart>-token first, if there's an attribute block
+Attribute-blocks can be split across multiple lines and don't respect indentation of any kind
+except for the <attributeStart> token
+
+After that it will continue to yield <attribute>-tokens containing
+ > name, which is the name of the attribute (Default: null)
+ > value, which is the value of the attribute (Default: null)
+ > escaped, which indicates that the attribute expression result should be escaped
+
+After that it will always require and yield an <attributeEnd> token
+
+If the <attributeEnd> is not found, this function will throw an exception
+
+Between <attributeStart>, <attribute>, and <attributeEnd>
+as well as around = and , of the attributes you can utilize as many
+spaces and new-lines as you like
+
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Lexer\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_throwException" name="method_throwException" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">throwException()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">throwException(string  <span class="argument">$message</span>) </pre>
+                <p><em>Throws a lexer-exception.</em></p>
+                <p>The current line and offset of the exception
+get automatically appended to the message</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$message </td>
+                                <td><p>A meaningful error message</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Lexer\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_strlen" name="method_strlen" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">strlen()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">strlen(string  <span class="argument">$string</span>) : integer</pre>
+                <p><em>mb_* compatible version of PHP&#039;s strlen.</em></p>
+                <p>(so we don't require mb.func_overload)</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$string </td>
+                                <td><p>the string to get the length of</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    integer
+                                            &mdash; <p>the multi-byte-respecting length of the string</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                            <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_strpos" name="method_strpos" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">strpos()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">strpos(string  <span class="argument">$haystack</span>, string  <span class="argument">$needle</span>, integer|null  <span class="argument">$offset = null</span>) : integer|false</pre>
+                <p><em>mb_* compatible version of PHP&#039;s strpos.</em></p>
+                <p>(so we don't require mb.func_overload)</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$haystack </td>
+                                <td><p>the string to search in</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>string</td>
+                                <td>$needle </td>
+                                <td><p>the string we search for</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>integer|null</td>
+                                <td>$offset </td>
+                                <td><p>the offset at which we might expect it</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    integer|false
+                                            &mdash; <p>the offset of the string or false, if not found</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                            <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_substr" name="method_substr" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">substr()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">substr(string  <span class="argument">$string</span>, integer  <span class="argument">$start</span>, integer|null  <span class="argument">$range = null</span>) : string</pre>
+                <p><em>mb_* compatible version of PHP&#039;s substr.</em></p>
+                <p>(so we don't require mb.func_overload)</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$string </td>
+                                <td><p>the string to get a sub-string of</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>integer</td>
+                                <td>$start </td>
+                                <td><p>the start-index</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>integer|null</td>
+                                <td>$range </td>
+                                <td><p>the amount of characters we want to get</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>the sub-string</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                            <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_substr_count" name="method_substr_count" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">substr_count()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">substr_count(string  <span class="argument">$haystack</span>, string  <span class="argument">$needle</span>) : integer</pre>
+                <p><em>mb_* compatible version of PHP&#039;s substr_count.</em></p>
+                <p>(so we don't require mb.func_overload)</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$haystack </td>
+                                <td><p>the string we want to count sub-strings in</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>string</td>
+                                <td>$needle </td>
+                                <td><p>the sub-string we want to count inside $haystack</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    integer
+                                            &mdash; <p>the amount of occurences of $needle in $haystack</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                            <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                                    </div>
+    </section>
+
+    <div id="source-view" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="source-view-label" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="source-view-label">Lexer.php</h3>
+        </div>
+        <div class="modal-body">
+            <pre data-src="../files/Lexer.php.txt" class="language-php line-numbers"></pre>
+        </div>
+    </div>
+
+    <footer class="row-fluid">
+        <section class="span10 offset2">
+            <section class="row-fluid">
+                <section class="span10 offset1">
+                    <section class="row-fluid footer-sections">
+                        <section class="span4">
+                                                        <h1><i class="icon-code"></i></h1>
+                            <div>
+                                <ul>
+                                                                            <li><a href="../namespaces/Tale.html">\Tale</a></li>
+                                                                    </ul>
+                            </div>
+                        </section>
+                        <section class="span4">
+                                                        <h1><i class="icon-bar-chart"></i></h1>
+                            <div>
+                                <ul>
+                                    <li><a href="../graphs/class.html">Class Hierarchy Diagram</a></li>
+                                </ul>
+                            </div>
+                        </section>
+                        <section class="span4">
+                                                        <h1><i class="icon-pushpin"></i></h1>
+                            <div>
+                                <ul>
+                                    <li><a href="../reports/errors.html">Errors</a></li>
+                                    <li><a href="../reports/markers.html">Markers</a></li>
+                                </ul>
+                            </div>
+                        </section>
+                    </section>
+                </section>
+            </section>
+            <section class="row-fluid">
+                <section class="span10 offset1">
+                    <hr />
+                    Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
+                    on October 10th, 2015 at 01:42.
+                </section>
+            </section>
+        </section>
+    </footer>
+</div>
+
+</body>
+</html>

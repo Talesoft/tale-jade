@@ -1,0 +1,3107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <meta charset="utf-8"/>
+    <title>Tale Jade for PHP</title>
+    <meta name="author" content=""/>
+    <meta name="description" content=""/>
+
+    <link href="../css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/prism.css" rel="stylesheet" media="all"/>
+    <link href="../css/template.css" rel="stylesheet" media="all"/>
+    
+    <!--[if lt IE 9]>
+    <script src="../js/html5.js"></script>
+    <![endif]-->
+    <script src="../js/jquery-1.11.0.min.js"></script>
+    <script src="../js/ui/1.10.4/jquery-ui.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/jquery.smooth-scroll.js"></script>
+    <script src="../js/prism.min.js"></script>
+    <!-- TODO: Add http://jscrollpane.kelvinluck.com/ to style the scrollbars for browsers not using webkit-->
+    <script type="text/javascript">
+    function loadExternalCodeSnippets() {
+        Array.prototype.slice.call(document.querySelectorAll('pre[data-src]')).forEach(function (pre) {
+            var src = pre.getAttribute('data-src');
+            var extension = (src.match(/\.(\w+)$/) || [, ''])[1];
+            var language = 'php';
+
+            var code = document.createElement('code');
+            code.className = 'language-' + language;
+
+            pre.textContent = '';
+
+            code.textContent = 'Loading…';
+
+            pre.appendChild(code);
+
+            var xhr = new XMLHttpRequest();
+
+            xhr.open('GET', src, true);
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+
+                    if (xhr.status < 400 && xhr.responseText) {
+                        code.textContent = xhr.responseText;
+
+                        Prism.highlightElement(code);
+                    }
+                    else if (xhr.status >= 400) {
+                        code.textContent = '✖ Error ' + xhr.status + ' while fetching file: ' + xhr.statusText;
+                    }
+                    else {
+                        code.textContent = '✖ Error: File does not exist or is empty';
+                    }
+                }
+            };
+
+            xhr.send(null);
+        });
+    }
+
+    $(document).ready(function(){
+        loadExternalCodeSnippets();
+    });
+    $('#source-view').on('shown', function () {
+        loadExternalCodeSnippets();
+    })
+</script>
+
+    <link rel="shortcut icon" href="../images/favicon.ico"/>
+    <link rel="apple-touch-icon" href="../images/apple-touch-icon.png"/>
+    <link rel="apple-touch-icon" sizes="72x72" href="../images/apple-touch-icon-72x72.png"/>
+    <link rel="apple-touch-icon" sizes="114x114" href="../images/apple-touch-icon-114x114.png"/>
+</head>
+<body>
+
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <i class="icon-ellipsis-vertical"></i>
+            </a>
+            <a class="brand" href="../index.html">Tale Jade for PHP</a>
+
+            <div class="nav-collapse">
+                <ul class="nav pull-right">
+                                        <li class="dropdown">
+                        <a href="../index.html" class="dropdown-toggle" data-toggle="dropdown">
+                            API Documentation <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                                                        <li><a href="../namespaces/Tale.html">\Tale</a></li>
+                                                    </ul>
+                    </li>
+                                        <li class="dropdown" id="charts-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Charts <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="../graphs/class.html">
+                                    <i class="icon-list-alt"></i>&#160;Class hierarchy diagram
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="dropdown" id="reports-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Reports <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="../reports/errors.html">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">0</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="../reports/markers.html">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Markers <span class="label label-info pull-right">12</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="../reports/deprecated.html">
+                                                                                                            <i class="icon-list-alt"></i>&#160;Deprecated <span class="label label-info pull-right">0</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--<div class="go_to_top">-->
+    <!--<a href="#___" style="color: inherit">Back to top&#160;&#160;<i class="icon-upload icon-white"></i></a>-->
+    <!--</div>-->
+</div>
+
+<div id="___" class="container-fluid">
+        <section class="row-fluid">
+        <div class="span2 sidebar">
+                                <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1415904014"></a>
+                                <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
+            </div>
+            <div id="namespace-1415904014" class="accordion-body collapse in">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-2030288441"></a>
+                                <a href="../namespaces/Tale.html" style="margin-left: 30px; padding-left: 0">Tale</a>
+            </div>
+            <div id="namespace-2030288441" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-207856634"></a>
+                                <a href="../namespaces/Tale.Jade.html" style="margin-left: 30px; padding-left: 0">Jade</a>
+            </div>
+            <div id="namespace-207856634" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1655038583"></a>
+                                <a href="../namespaces/Tale.Jade.Compiler.html" style="margin-left: 30px; padding-left: 0">Compiler</a>
+            </div>
+            <div id="namespace-1655038583" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Tale.Jade.Compiler.Exception.html">Exception</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-945632245"></a>
+                                <a href="../namespaces/Tale.Jade.Lexer.html" style="margin-left: 30px; padding-left: 0">Lexer</a>
+            </div>
+            <div id="namespace-945632245" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Tale.Jade.Lexer.Exception.html">Exception</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1951646627"></a>
+                                <a href="../namespaces/Tale.Jade.Parser.html" style="margin-left: 30px; padding-left: 0">Parser</a>
+            </div>
+            <div id="namespace-1951646627" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Tale.Jade.Parser.Exception.html">Exception</a></li>
+                                                    <li class="class"><a href="../classes/Tale.Jade.Parser.Node.html">Node</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1329531678"></a>
+                                <a href="../namespaces/Tale.Jade.Renderer.html" style="margin-left: 30px; padding-left: 0">Renderer</a>
+            </div>
+            <div id="namespace-1329531678" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1312043783"></a>
+                                <a href="../namespaces/Tale.Jade.Renderer.Adapter.html" style="margin-left: 30px; padding-left: 0">Adapter</a>
+            </div>
+            <div id="namespace-1312043783" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-323085590"></a>
+                                <a href="../namespaces/Tale.Jade.Renderer.Adapter.Stream.html" style="margin-left: 30px; padding-left: 0">Stream</a>
+            </div>
+            <div id="namespace-323085590" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Tale.Jade.Renderer.Adapter.Stream.Wrapper.html">Wrapper</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Tale.Jade.Renderer.Adapter.File.html">File</a></li>
+                                                    <li class="class"><a href="../classes/Tale.Jade.Renderer.Adapter.Stream.html">Stream</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Tale.Jade.Renderer.AdapterBase.html">AdapterBase</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Tale.Jade.Compiler.html">Compiler</a></li>
+                                                    <li class="class"><a href="../classes/Tale.Jade.Filter.html">Filter</a></li>
+                                                    <li class="class"><a href="../classes/Tale.Jade.Lexer.html">Lexer</a></li>
+                                                    <li class="class"><a href="../classes/Tale.Jade.Parser.html">Parser</a></li>
+                                                    <li class="class"><a href="../classes/Tale.Jade.Renderer.html">Renderer</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        </div>
+    </section>
+    <section class="row-fluid">
+        <div class="span10 offset2">
+            <div class="row-fluid">
+                <div class="span8 content class">
+                    <nav>
+                                                <a href="../namespaces/Tale.Jade.html">\Tale\Jade</a> <i class="icon-level-up"></i>
+                                            </nav>
+                    <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"><i class="icon-code"></i></a>
+
+                    <h1><small>\Tale\Jade</small>Compiler</h1>
+                    <p><em>Compiles an AST got from the parser to valid PHTML, HTML or XML.</em></p>
+                    <p>You can control the output-style via the options
+passed to the constructor.</p>
+<p>Different output types are possible (Currently, XML and HTML)</p>
+<p>The main entry point is the <code>compile</code> method</p>
+<p>The generated PHTML should be evaluated, the best method
+is a simple include of a generated file</p>
+<p>Usage example:
+<code></p>
+<pre><code>use Tale\Jade\Compiler;
+
+$compiler = new Compiler();
+
+$phtml = $compiler-&gt;compile($jadeInput);
+//or
+$phtml = $compiler-&gt;compileFile($jadeFilePath);</code></pre>
+<p></code></p>
+<p>There are different approachs to handle the compiled PHTML.
+The best and most explaining one is saving the PHTML to a file and
+including it like this:</p>
+<p><code></p>
+<pre><code>file_put_contents('rendered.phtml', $phtml);</code></pre>
+<p>//Define some variables to pass to our template
+$variables = [
+'title' =&gt; 'My Page Title!',
+'posts' =&gt; []
+];</p>
+<p>//Make sure the variables are accessible by the included template
+extract($variables);</p>
+<p>//Compiler needs an $<strong>args variable to pass arguments on to mixins
+$</strong>args = $variables;</p>
+<p>//Include the rendered PHTML directly
+include('rendered.phtml');
+</code></p>
+<p>You may fetch the included content with ob_start() and ob_get_clean()
+and pass it on to anything, e.g. a cache handler or return it as an
+AJAX response.</p>
+                    
+                                        
+                    <section id="summary">
+                        <h2>Summary</h2>
+                        <section class="row-fluid heading">
+                            <section class="span4">
+                                <a href="#methods">Methods</a>
+                            </section>
+                            <section class="span4">
+                                <a href="#properties">Properties</a>
+                            </section>
+                            <section class="span4">
+                                <a href="#constants">Constants</a>
+                            </section>
+                        </section>
+                        <section class="row-fluid public">
+                            <section class="span4">
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method___construct" class="">__construct()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_getOptions" class="">getOptions()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_getLexer" class="">getLexer()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_getParser" class="">getParser()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_addPath" class="">addPath()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_addFilter" class="">addFilter()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_compile" class="">compile()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_compileFile" class="">compileFile()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_resolvePath" class="">resolvePath()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_buildValue" class="">buildValue()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_buildDataValue" class="">buildDataValue()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_buildStyleValue" class="">buildStyleValue()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_buildClassValue" class="">buildClassValue()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_isNullOrFalse" class="">isNullOrFalse()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_isArrayNullOrFalse" class="">isArrayNullOrFalse()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_isObjectOrArray" class="">isObjectOrArray()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_flatten" class="">flatten()</a><br />
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No public properties found</em>
+                                                            </section>
+                            <section class="span4">
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#constant_MODE_HTML" class="">MODE_HTML</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#constant_MODE_XML" class="">MODE_XML</a><br />
+                                                            </section>
+                        </section>
+                        <section class="row-fluid protected">
+                            <section class="span4">
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_isScalar" class="">isScalar()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_compileScalar" class="">compileScalar()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_isVariable" class="">isVariable()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_interpolate" class="">interpolate()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_newLine" class="">newLine()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_indent" class="">indent()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_createCode" class="">createCode()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_createShortCode" class="">createShortCode()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_createPhpComment" class="">createPhpComment()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_createMarkupComment" class="">createMarkupComment()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_compileNode" class="">compileNode()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_compileDocument" class="">compileDocument()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_compileDoctype" class="">compileDoctype()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_handleImports" class="">handleImports()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_handleImport" class="">handleImport()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_handleBlocks" class="">handleBlocks()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_handleBlock" class="">handleBlock()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_handleMixins" class="">handleMixins()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_handleMixin" class="">handleMixin()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_compileMixins" class="">compileMixins()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_compileMixinCall" class="">compileMixinCall()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_compileBlock" class="">compileBlock()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_compileConditional" class="">compileConditional()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_compileCase" class="">compileCase()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_compileWhen" class="">compileWhen()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_compileEach" class="">compileEach()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_compileWhile" class="">compileWhile()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_compileDo" class="">compileDo()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_compileFilter" class="">compileFilter()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_compileChildren" class="">compileChildren()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_compileElement" class="">compileElement()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_compileText" class="">compileText()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_compileExpression" class="">compileExpression()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_compileComment" class="">compileComment()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_compileErrorHandlerHelper" class="">compileErrorHandlerHelper()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#method_throwException" class="">throwException()</a><br />
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No protected properties found</em>
+                                                            </section>
+                            <section class="span4">
+                                <em>N/A</em>
+                            </section>
+                        </section>
+                        <section class="row-fluid private">
+                            <section class="span4">
+                                                                    <em>No private methods found</em>
+                                                            </section>
+                            <section class="span4">
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#property__options" class="">$_options</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#property__lexer" class="">$_lexer</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#property__parser" class="">$_parser</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#property__files" class="">$_files</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#property__mixins" class="">$_mixins</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#property__calledMixins" class="">$_calledMixins</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#property__blocks" class="">$_blocks</a><br />
+                                                                    <a href="../classes/Tale.Jade.Compiler.html#property__level" class="">$_level</a><br />
+                                                            </section>
+                            <section class="span4">
+                                <em>N/A</em>
+                            </section>
+                        </section>
+                    </section>
+                </div>
+                <aside class="span4 detailsbar">
+                                        
+                    
+                    <dl>
+                        <dt>File</dt>
+                            <dd><a href="../files/Compiler.html"><div class="path-wrapper">Compiler.php</div></a></dd>
+                                                <dt>Package</dt>
+                            <dd><div class="namespace-wrapper">Tale\Jade</div></dd>
+                                                <dt>Class hierarchy</dt>
+                            <dd class="hierarchy">
+                                                                                                                                                                    <div class="namespace-wrapper">\Tale\Jade\Compiler</div>
+                            </dd>
+
+                        
+                        
+                        
+                                                                            <dt>See also</dt>
+                                                                                    <dd><a href="http://jade.talesoft.io/docs/classes/Tale.Jade.Compiler.html"><div class="namespace-wrapper">http://jade.talesoft.io/docs/classes/Tale.Jade.Compiler.html</div></a></dd>
+                                                    
+                                                                        </dl>
+                    <h2>Tags</h2>
+                    <table class="table table-condensed">
+                                            <tr>
+                            <th>
+                                category
+                            </th>
+                            <td>
+                                                                    <p>Presentation</p>
+                                                            </td>
+                        </tr>
+                                            <tr>
+                            <th>
+                                author
+                            </th>
+                            <td>
+                                                                    <p>Torben Koehn <a href="mailto:tk@talesoft.io">tk@talesoft.io</a></p>
+                                                                    <p>Talesoft <a href="mailto:info@talesoft.io">info@talesoft.io</a></p>
+                                                            </td>
+                        </tr>
+                                            <tr>
+                            <th>
+                                copyright
+                            </th>
+                            <td>
+                                                                    <p>Copyright (c) 2015 Talesoft (<a href="http://talesoft.io">http://talesoft.io</a>)</p>
+                                                            </td>
+                        </tr>
+                                            <tr>
+                            <th>
+                                license
+                            </th>
+                            <td>
+                                                                    <p><a href="http://licenses.talesoft.io/2015/MIT.txt">http://licenses.talesoft.io/2015/MIT.txt</a> MIT License</p>
+                                                            </td>
+                        </tr>
+                                            <tr>
+                            <th>
+                                version
+                            </th>
+                            <td>
+                                                                    
+                                                            </td>
+                        </tr>
+                                            <tr>
+                            <th>
+                                since
+                            </th>
+                            <td>
+                                                                    <p>File available since Release 1.0</p>
+                                                            </td>
+                        </tr>
+                                        </table>
+                </aside>
+            </div>
+
+                                    <a id="constants" name="constants"></a>
+            <div class="row-fluid">
+                <div class="span8 content class">
+                    <h2>Constants</h2>
+                </div>
+                <aside class="span4 detailsbar"></aside>
+            </div>
+
+                                <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="constant_MODE_HTML" name="constant_MODE_HTML" class="anchor"></a>
+            <article id="constant_MODE_HTML" class="constant">
+                <h3 class="">MODE_HTML</h3>
+                <pre class="signature">MODE_HTML</pre>
+                <p><em>The Mode for HTML.</em></p>
+                <p>Recognizes self-closing tags, self-repeating attributes etc.</p>
+            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="constant_MODE_XML" name="constant_MODE_XML" class="anchor"></a>
+            <article id="constant_MODE_XML" class="constant">
+                <h3 class="">MODE_XML</h3>
+                <pre class="signature">MODE_XML</pre>
+                <p><em>The Mode of XML.</em></p>
+                <p>Doesn't do whatever MODE_HTML does</p>
+            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                            
+                                    <a id="properties" name="properties"></a>
+            <div class="row-fluid">
+                <div class="span8 content class">
+                    <h2>Properties</h2>
+                </div>
+                <aside class="span4 detailsbar"></aside>
+            </div>
+
+                                                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__options" name="property__options" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_options</h3>
+                <pre class="signature">$_options : array</pre>
+                <p><em>An array of options.</em></p>
+                
+
+                                <h4>Type</h4>
+                array
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__lexer" name="property__lexer" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_lexer</h3>
+                <pre class="signature">$_lexer : \Tale\Jade\Lexer</pre>
+                <p><em>The lexer that is given to the parser.</em></p>
+                
+
+                                <h4>Type</h4>
+                <a href="../classes/Tale.Jade.Lexer.html">\Tale\Jade\Lexer</a>
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__parser" name="property__parser" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_parser</h3>
+                <pre class="signature">$_parser : \Tale\Jade\Parser</pre>
+                <p><em>The parse this compiler instance gets its nodes off.</em></p>
+                
+
+                                <h4>Type</h4>
+                <a href="../classes/Tale.Jade.Parser.html">\Tale\Jade\Parser</a>
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__files" name="property__files" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_files</h3>
+                <pre class="signature">$_files : array&lt;mixed,string&gt;</pre>
+                <p><em>The current file stack.</em></p>
+                <p>The bottom file is the file that is currently compiled.
+This is needed for recursive path resolving in imports</p>
+
+                                <h4>Type</h4>
+                array&lt;mixed,string&gt;
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__mixins" name="property__mixins" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_mixins</h3>
+                <pre class="signature">$_mixins : array</pre>
+                <p><em>The mixins we found in the whole input.</em></p>
+                <p>We use this to check if a mixin exists upon call
+and to compile them all at the and (with checking,
+if they are even called)</p>
+<p>The array looks like this:</p>
+<samp>
+[
+    ['node' => Node, 'phtml' => <compiled phtml> ],
+    ['node' => Node, 'phtml' => <compiled phtml> ],
+    ['node' => Node, 'phtml' => <compiled phtml> ]
+]
+</samp>
+<p>Keys are the name of the mixin</p>
+
+                                <h4>Type</h4>
+                array
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__calledMixins" name="property__calledMixins" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_calledMixins</h3>
+                <pre class="signature">$_calledMixins : array&lt;mixed,string&gt;</pre>
+                <p><em>A stack of names of the mixins we actually called in the code.</em></p>
+                
+
+                                <h4>Type</h4>
+                array&lt;mixed,string&gt;
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__blocks" name="property__blocks" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_blocks</h3>
+                <pre class="signature">$_blocks : array&lt;mixed,\Tale\Jade\Parser\Node&gt;</pre>
+                <p><em>A list of all blocks in our whole input.</em></p>
+                <p>They are only used in handleBlocks and handleBlock</p>
+
+                                <h4>Type</h4>
+                array&lt;mixed,<a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a>&gt;
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__level" name="property__level" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_level</h3>
+                <pre class="signature">$_level : integer</pre>
+                <p><em>The level we&#039;re currently in.</em></p>
+                <p>This doesn't equal the current level in the parser or lexer,
+it rather represents the current indentation level
+for pretty compiling</p>
+
+                                <h4>Type</h4>
+                integer
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                            
+                                    <a id="methods" name="methods"></a>
+            <div class="row-fluid">
+                <div class="span8 content class"><h2>Methods</h2></div>
+                <aside class="span4 detailsbar"></aside>
+            </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method___construct" name="method___construct" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">__construct()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">__construct(array|null  <span class="argument">$options = null</span>, \Tale\Jade\Parser|null  <span class="argument">$parser = null</span>, \Tale\Jade\Lexer|null  <span class="argument">$lexer = null</span>) </pre>
+                <p><em>Creates a new compiler instance.</em></p>
+                <p>You can pass a modified parser or lexer.
+Notice that if you pass both, the lexer inside the parser will be used.</p>
+<p>Valid options are:</p>
+<p>pretty:                      Use indentation and new-lines
+or compile everything into a single line
+indentStyle:                 The character that is used for
+indentation (Space by default)
+indentWidth:                 The amount of characters to repeat for
+indentation (Default 2 for 2-space-indentation)
+mode:                        Compile in HTML or XML mode
+selfClosingTags:             The tags that don't need any closing in
+HTML-style languages
+selfRepeatingAttributes:     The attributes that repeat their value to
+set them to true in HTML-style languages
+doctypes:                    The different doctypes you can use via the
+&quot;doctype&quot;-directive [name =&gt; doctype-string]
+filters:                     The different filters you can use via the
+&quot;:<filterName>&quot;-directive [name =&gt; callback]
+filterMap:                   The extension-to-filter-map for
+include-filters [extension =&gt; filter]
+escapeSequences:             The escape-sequences that are possible in
+scalar strings
+handleErrors:                Should the error-handler-helper be appended
+to the PTHML or not
+compileUncalledMixins:       Always compile all mixins or leave out
+those that aren't called?
+allowImports:                Set to false to disable imports for this
+compiler instance. Importing will throw an
+exception. Great for demo-pages
+defaultTag:                  The tag to default to for
+class/id/attribute-initiated elements
+(.abc, #abc, (abc))
+quoteStyle:                  The quote-style in the markup (default: &quot;)
+replaceMixins:               Replaces mixins from top to bottom if they
+have the same name. Allows duplicated mixin names.
+paths:                       The paths to resolve paths in.
+If none set, it will default to get_include_path()
+extension:                   The extension for Jade files
+(default: .jade), .jd is pretty cool as an example
+parserOptions:               The options for the parser if none given
+lexerOptions:                The options for the lexer if none given.</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array|null</td>
+                                <td>$options </td>
+                                <td><p>an array of options</p></td>
+                            </tr>
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Parser.html">\Tale\Jade\Parser</a>|null</td>
+                                <td>$parser </td>
+                                <td><p>an existing parser instance</p></td>
+                            </tr>
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Lexer.html">\Tale\Jade\Lexer</a>|null</td>
+                                <td>$lexer </td>
+                                <td><p>an existing lexer instance</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getOptions" name="method_getOptions" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getOptions()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getOptions() : array</pre>
+                <p><em>Returns the current options for the parser.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getLexer" name="method_getLexer" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getLexer()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getLexer() : \Tale\Jade\Lexer</pre>
+                <p><em>Returns the current lexer used.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    <a href="../classes/Tale.Jade.Lexer.html">\Tale\Jade\Lexer</a>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getParser" name="method_getParser" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getParser()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getParser() : \Tale\Jade\Parser</pre>
+                <p><em>Returns the current parser used.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    <a href="../classes/Tale.Jade.Parser.html">\Tale\Jade\Parser</a>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_addPath" name="method_addPath" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">addPath()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">addPath(string  <span class="argument">$path</span>) : $this</pre>
+                <p><em>Adds a path to the compiler.</em></p>
+                <p>Files will be loaded from this path (or other paths you added before)</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$path </td>
+                                <td><p>the directory path</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    $this
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_addFilter" name="method_addFilter" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">addFilter()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">addFilter(string  <span class="argument">$name</span>, callable  <span class="argument">$callback</span>) : $this</pre>
+                <p><em>Adds a filter to the compiler.</em></p>
+                <p>This filter can then be used inside jade with the
+:<filtername> directive</p>
+<p>The callback should have the following signature:
+(\Tale\Jade\Parser\Node $node, $indent, $newLine)
+where $node is the filter-Node found,
+$indent is the current indentation respecting level and pretty-option
+and newLine is a new-line respecting the pretty-option</p>
+<p>It should return either a PHTML string or a Node-instance</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$name </td>
+                                <td><p>the name of the filter</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>callable</td>
+                                <td>$callback </td>
+                                <td><p>the filter handler callback</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    $this
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_compile" name="method_compile" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">compile()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">compile(string  <span class="argument">$input</span>, string|null  <span class="argument">$path = null</span>) : mixed|string</pre>
+                <p><em>Compiles a Jade-string to PHTML.</em></p>
+                <p>The result can then be evaluated, the best method is
+a simple PHP include</p>
+<p>Look at Renderer to get this done for you</p>
+<p>Before evaluating you should set a $__args variable
+that will be passed through mixins.
+It like a global scope.</p>
+<p>If you give it a path, the directory of that path will be used
+for relative includes.</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$input </td>
+                                <td><p>the jade input string</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>string|null</td>
+                                <td>$path </td>
+                                <td><p>the path for relative includes</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Compiler\Exception</dt>
+                            <dd><p>when the compilation fails</p></dd>
+                                                    <dt>\Tale\Jade\Parser\Exception</dt>
+                            <dd><p>when the parsing fails</p></dd>
+                                                    <dt>\Tale\Jade\Lexer\Exception</dt>
+                            <dd><p>when the lexing fails</p></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    mixed|string
+                                            &mdash; <p>a PHTML string containing HTML and PHP</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_compileFile" name="method_compileFile" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">compileFile()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">compileFile(string  <span class="argument">$path</span>) : mixed|string</pre>
+                <p><em>Compiles a file to PHTML.</em></p>
+                <p>The given path will automatically passed as
+compile()'s $path argument</p>
+<p>The path should always be relative to the paths-option paths</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$path </td>
+                                <td><p>the path to the jade file</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Exception</dt>
+                            <dd><p>when the file is not found</p></dd>
+                                                    <dt>\Tale\Jade\Compiler\Exception</dt>
+                            <dd><p>when the compilation fails</p></dd>
+                                                    <dt>\Tale\Jade\Parser\Exception</dt>
+                            <dd><p>when the parsing fails</p></dd>
+                                                    <dt>\Tale\Jade\Lexer\Exception</dt>
+                            <dd><p>when the lexing fails</p></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    mixed|string
+                                            &mdash; <p>the compiled PHTML</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_resolvePath" name="method_resolvePath" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">resolvePath()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">resolvePath(string  <span class="argument">$path</span>, null  <span class="argument">$extension = null</span>) : string|false</pre>
+                <p><em>Resolves a path respecting the paths given in the options.</em></p>
+                <p>The final paths for resolving are put together as follows:</p>
+<p>when paths options not empty      =&gt; Add paths of paths-option
+when paths option empty           =&gt; Add paths of get_include_path()
+when current file stack not empty =&gt; Add directory of last file we
+were compiling</p>
+<p>We then look for a path with the given extension inside
+all paths we work on currently</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$path </td>
+                                <td><p>the relative path to resolve</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>null</td>
+                                <td>$extension </td>
+                                <td><p>the extension to resolve with</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string|false
+                                            &mdash; <p>the resolved full path or false, if not found</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_buildValue" name="method_buildValue" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">buildValue()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">buildValue(mixed  <span class="argument">$value</span>, string  <span class="argument">$quoteStyle</span>, boolean  <span class="argument">$escaped</span>) : string</pre>
+                <p><em>Builds an attribute or argument value.</em></p>
+                <p>Objects get converted to arrays
+Arrays will be imploded by '' (values are concatenated)</p>
+<p>['a', 'b', ['c', ['d']]]
+will become
+'abcd'</p>
+<p>The result will be enclosed by the quotes passed to $quoteStyle</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>mixed</td>
+                                <td>$value </td>
+                                <td><p>The value to build</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>string</td>
+                                <td>$quoteStyle </td>
+                                <td><p>The quoting style to use</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>boolean</td>
+                                <td>$escaped </td>
+                                <td><p>Escape the value or not</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The built value</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                            <span class="label label-info">static</span>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_buildDataValue" name="method_buildDataValue" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">buildDataValue()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">buildDataValue(mixed  <span class="argument">$value</span>, string  <span class="argument">$quoteStyle</span>, boolean  <span class="argument">$escaped</span>) : string</pre>
+                <p><em>Builds a data-attribute value.</em></p>
+                <p>If it's an object or an array, it gets converted to JSON automatically
+If not, the value stays scalar</p>
+<p>JSON will automatically be enclosed by ', other results will use
+$quoteStyle respectively</p>
+<p>'a'
+will become
+'a'</p>
+<p>['a', 'b']
+will become
+'[&quot;a&quot;, &quot;b&quot;]' (JSON)</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>mixed</td>
+                                <td>$value </td>
+                                <td><p>The value to build</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>string</td>
+                                <td>$quoteStyle </td>
+                                <td><p>The quoting style to use</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>boolean</td>
+                                <td>$escaped </td>
+                                <td><p>Escape the value or not</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The built value</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                            <span class="label label-info">static</span>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_buildStyleValue" name="method_buildStyleValue" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">buildStyleValue()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">buildStyleValue(mixed  <span class="argument">$value</span>, string  <span class="argument">$quoteStyle</span>) : string</pre>
+                <p><em>Builds a style-attribute string from a value.</em></p>
+                <p>['color' =&gt; 'red', 'width: 100%', ['height' =&gt; '20px']]
+will become
+'color: red; width: 100%; height: 20px;'</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>mixed</td>
+                                <td>$value </td>
+                                <td><p>The value to build</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>string</td>
+                                <td>$quoteStyle </td>
+                                <td><p>The quoting style to use</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The built value</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                            <span class="label label-info">static</span>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_buildClassValue" name="method_buildClassValue" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">buildClassValue()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">buildClassValue(mixed  <span class="argument">$value</span>, string  <span class="argument">$quoteStyle</span>) : string</pre>
+                <p><em>Builds a class-attribute string from a value.</em></p>
+                <p>['a', 'b', ['c', ['d', 'e']]]
+will become
+'a b c d e'</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>mixed</td>
+                                <td>$value </td>
+                                <td><p>The value to build</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>string</td>
+                                <td>$quoteStyle </td>
+                                <td><p>The quoting style to use</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The built value</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                            <span class="label label-info">static</span>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_isNullOrFalse" name="method_isNullOrFalse" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">isNullOrFalse()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">isNullOrFalse(mixed  <span class="argument">$value</span>) : boolean</pre>
+                <p><em>Checks if a value is _exactly_ either null or false.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>mixed</td>
+                                <td>$value </td>
+                                <td><p>The value to check</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    boolean
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                            <span class="label label-info">static</span>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_isArrayNullOrFalse" name="method_isArrayNullOrFalse" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">isArrayNullOrFalse()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">isArrayNullOrFalse(array  <span class="argument">$value</span>) : boolean</pre>
+                <p><em>Checks if a whole array is _exactly_ null or false.</em></p>
+                <p>Not the array itself, but all values in the array</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$value </td>
+                                <td><p>The array to check</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    boolean
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                            <span class="label label-info">static</span>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_isObjectOrArray" name="method_isObjectOrArray" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">isObjectOrArray()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">isObjectOrArray(mixed  <span class="argument">$value</span>) : boolean</pre>
+                <p><em>Checks if a value is either an object or an array.</em></p>
+                <p>Kind of like !isScalar &amp;&amp; !isExpression</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>mixed</td>
+                                <td>$value </td>
+                                <td><p>The value to check</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    boolean
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                            <span class="label label-info">static</span>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_flatten" name="method_flatten" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">flatten()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">flatten(array  <span class="argument">$array</span>, string  <span class="argument">$separator = &#039; &#039;</span>, string  <span class="argument">$argSeparator = &#039;=&#039;</span>) : string</pre>
+                <p><em>Flattens an array and combines found values with $separator.</em></p>
+                <p>If there are string-keys and an $argSeparator is set, it will
+also implode those to to a single value</p>
+<p>With the default options
+['a', 'b' =&gt; 'c', ['d', 'e' =&gt; 'f', ['g' =&gt; 'h']]]
+will become
+'a b=c d e=f g=h'</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$array </td>
+                                <td><p>The array to flatten</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>string</td>
+                                <td>$separator </td>
+                                <td><p>The separator to implode pairs with</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>string</td>
+                                <td>$argSeparator </td>
+                                <td><p>The separator to implode keys and values with</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The compiled string</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                            <span class="label label-info">static</span>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_isScalar" name="method_isScalar" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">isScalar()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">isScalar(string  <span class="argument">$value</span>) : boolean</pre>
+                <p><em>Checks if a variable is scalar (or &quot;not an expression&quot;).</em></p>
+                <p>These values don't get much special handling, they are mostly
+simple attributes values like <code>type="button"</code> or <code>method='post'</code></p>
+<p>A scalar value is either a closed string containing only
+a-z, A-Z, 0-9, _ and -, e.g. Some-Static_Value
+or a quote-enclosed string that can contain anything
+except the quote style it used
+e.g. &quot;Some Random String&quot;, 'This can&quot; contain quotes&quot;'</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$value </td>
+                                <td><p>the value to be checked</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    boolean
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_compileScalar" name="method_compileScalar" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">compileScalar()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">compileScalar(string  <span class="argument">$value</span>, boolean|false  <span class="argument">$attribute = false</span>) : string</pre>
+                <p><em>Compiles and sanitizes a scalar value.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$value </td>
+                                <td><p>the scalar value</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>boolean|false</td>
+                                <td>$attribute </td>
+                                <td><p>is this an attribute value or not</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_isVariable" name="method_isVariable" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">isVariable()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">isVariable(string  <span class="argument">$value</span>) : boolean</pre>
+                <p><em>Checks if a value is a variable.</em></p>
+                <p>A variable needs to start with $.
+After that only a-z, A-Z and <em> can follow
+After that you can use any character of
+a-z, A-Z, 0-9, </em>, [, ], -, &gt;, ' and &quot;
+This will match all of the following:</p>
+<p>$__someVar
+$obj-&gt;someProperty
+$arr['someKey']
+$arr[0]
+$obj-&gt;someArray['someKey']
+etc.</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$value </td>
+                                <td><p>the value to be checked</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    boolean
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_interpolate" name="method_interpolate" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">interpolate()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">interpolate(string  <span class="argument">$string</span>, boolean|false  <span class="argument">$attribute = false</span>) : string</pre>
+                <p><em>Interpolates a string value.</em></p>
+                <p>Interpolation is initialized with # (escaped) or ! (not escaped)</p>
+<p>After that use either {} brackets for variable expressions
+or [] for Jade-expressions</p>
+<p>e.g.</p>
+<h1>{$someVariable}</h1>
+<p>!{$someObj-&gt;someProperty}</p>
+<h1>[p This is some paragraph]</h1>
+<p>If the second paragraph is true, the result will act like it is
+inside a string respecting the quoteStyle-option</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$string </td>
+                                <td><p>The string to interpolate</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>boolean|false</td>
+                                <td>$attribute </td>
+                                <td><p>Is this an attribute value or not</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>the interpolated PHTML</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_newLine" name="method_newLine" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">newLine()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">newLine() : string</pre>
+                <p><em>Returns a new line character respecting the pretty-option.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_indent" name="method_indent" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">indent()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">indent(integer  <span class="argument">$offset</span>) : string</pre>
+                <p><em>Returns indentation respecting the current level and the pretty-option.</em></p>
+                <p>The $offset will be added to the current level</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>integer</td>
+                                <td>$offset </td>
+                                <td><p>an offset added to the level</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_createCode" name="method_createCode" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">createCode()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">createCode(string  <span class="argument">$code</span>, string  <span class="argument">$prefix = &#039;&lt;?php &#039;</span>, string  <span class="argument">$suffix = &#039;?&gt;&#039;</span>) : string</pre>
+                <p><em>Creates a PHP code expression.</em></p>
+                <p>By default it will have &lt;?php ? &gt;-style</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$code </td>
+                                <td><p>the PHP code</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>string</td>
+                                <td>$prefix </td>
+                                <td><p>the PHP start tag</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>string</td>
+                                <td>$suffix </td>
+                                <td><p>the PHP end tag</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>the PHP expression</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_createShortCode" name="method_createShortCode" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">createShortCode()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">createShortCode(string  <span class="argument">$code</span>) : string</pre>
+                <p><em>Creates a &lt;?=?&gt;-style PHP expression.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$code </td>
+                                <td><p>the PHP expression to output</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The PHP expression</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_createPhpComment" name="method_createPhpComment" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">createPhpComment()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">createPhpComment(string  <span class="argument">$text</span>) : string</pre>
+                <p><em>Creates a PHP comment surrounded by PHP code tags.</em></p>
+                <p>This creates a &quot;hidden&quot; comment thats still visible in the PHTML</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$text </td>
+                                <td><p>the text to wrap into a comment</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>the compiled PHP comment</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                                                            <p>Maybe this should return an empty string if pretty-option is on?</p>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_createMarkupComment" name="method_createMarkupComment" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">createMarkupComment()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">createMarkupComment(string  <span class="argument">$text</span>) : string</pre>
+                <p><em>Creates a XML-style comment (&lt;!-- --&gt;).</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$text </td>
+                                <td><p>the text to wrap into a comment</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>the compiled XML comment</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_compileNode" name="method_compileNode" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">compileNode()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">compileNode(\Tale\Jade\Parser\Node  <span class="argument">$node</span>) : string</pre>
+                <p><em>Compiles any Node that has a matching method for its type.</em></p>
+                <p>e.g.
+type: document, method: compileDocument
+type: element, method: compileElement</p>
+<p>The result will be PHTML</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a></td>
+                                <td>$node </td>
+                                <td><p>the Node to compile</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Compiler\Exception</dt>
+                            <dd><p>when the compilation fails</p></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>the compiled PHTML</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_compileDocument" name="method_compileDocument" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">compileDocument()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">compileDocument(\Tale\Jade\Parser\Node  <span class="argument">$node</span>) : string</pre>
+                <p><em>Compiles a document Node to PHTML.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a></td>
+                                <td>$node </td>
+                                <td><p>The document-type node</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>the compiled PHTML</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_compileDoctype" name="method_compileDoctype" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">compileDoctype()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">compileDoctype(\Tale\Jade\Parser\Node  <span class="argument">$node</span>) : string</pre>
+                <p><em>Compiles a doctype Node to PHTML.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a></td>
+                                <td>$node </td>
+                                <td><p>the doctype-type node</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>the compiled PHTML</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleImports" name="method_handleImports" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleImports()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleImports(\Tale\Jade\Parser\Node  <span class="argument">$node</span>) : $this</pre>
+                <p><em>Collects all imports and handles them via -&gt;handleImport.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a></td>
+                                <td>$node </td>
+                                <td><p>the root Node to search imports in</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Compiler\Exception</dt>
+                            <dd><p>when the allowImports-options is set to false</p></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    $this
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleImport" name="method_handleImport" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleImport()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleImport(\Tale\Jade\Parser\Node  <span class="argument">$node</span>) : $this</pre>
+                <p><em>Loads an imported file and merges the nodes with the current tree.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a></td>
+                                <td>$node </td>
+                                <td><p>the node to import</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Compiler\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    $this
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleBlocks" name="method_handleBlocks" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleBlocks()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleBlocks(\Tale\Jade\Parser\Node  <span class="argument">$node</span>) : $this</pre>
+                <p><em>Collects all blocks and saves them into $_blocks.</em></p>
+                <p>After that it calls handleBlock on each $block</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a></td>
+                                <td>$node </td>
+                                <td><p>the node to search blocks in</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    $this
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleBlock" name="method_handleBlock" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleBlock()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleBlock(\Tale\Jade\Parser\Node  <span class="argument">$node</span>) : $this</pre>
+                <p><em>Stacks blocks into each other.</em></p>
+                <p>The first block found is always the container,
+all other blocks either to append, replace or prepend
+to/the first block.</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a></td>
+                                <td>$node </td>
+                                <td><p>the block node to handle</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    $this
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleMixins" name="method_handleMixins" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleMixins()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleMixins(\Tale\Jade\Parser\Node  <span class="argument">$node</span>) : $this</pre>
+                <p><em>Finds all mixins and loops them through handleMixin.</em></p>
+                <p>Duplicated mixins will throw an exception if the replaceMixins-options
+is false</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a></td>
+                                <td>$node </td>
+                                <td><p>the node to search mixins in</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Compiler\Exception</dt>
+                            <dd><p>when a mixin name occurs twice and replaceMixins is false</p></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    $this
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleMixin" name="method_handleMixin" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleMixin()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleMixin(\Tale\Jade\Parser\Node  <span class="argument">$node</span>) : $this</pre>
+                <p><em>Pre-compiles a mixin into the $_mixin array.</em></p>
+                <p>Only the block content of the mixin will be compiled,
+not the mixin itself</p>
+<p>The actual mixins get compiled in compileMixins</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a></td>
+                                <td>$node </td>
+                                <td><p>the mixin node to compile</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    $this
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                            <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_compileMixins" name="method_compileMixins" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">compileMixins()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">compileMixins() : string</pre>
+                <p><em>Compiles found mixins under each other into a single PHTML block.</em></p>
+                <p>Mixins will be anonymous functions inside a $<strong>mixins array
+The mixins also pass the global $</strong>args variable on (so that it <em>is</em> global)</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The compile PHTML</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_compileMixinCall" name="method_compileMixinCall" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">compileMixinCall()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">compileMixinCall(\Tale\Jade\Parser\Node  <span class="argument">$node</span>) : string</pre>
+                <p><em>Compiles a mixin call referencing the mixins in $_mixins.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a></td>
+                                <td>$node </td>
+                                <td><p>the mixin call node to compile</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Compiler\Exception</dt>
+                            <dd><p>when the called mixin doesnt exist in this instance</p></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The compiled PHTML</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                                                            <p>I guess the variadic handling in calls is broken right now. Calls should splat with '...'</p>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_compileBlock" name="method_compileBlock" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">compileBlock()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">compileBlock(\Tale\Jade\Parser\Node  <span class="argument">$node</span>) : string</pre>
+                <p><em>Compiles a block node into PHTML.</em></p>
+                <p>A single block node without a name or mode will act as a wrapper
+for blocks inside mixins</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a></td>
+                                <td>$node </td>
+                                <td><p>the block node to compile</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The compiled PHTML</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_compileConditional" name="method_compileConditional" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">compileConditional()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">compileConditional(\Tale\Jade\Parser\Node  <span class="argument">$node</span>) : string</pre>
+                <p><em>Compiles a conditional, either if, elseif, else if or else into PHTML.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a></td>
+                                <td>$node </td>
+                                <td><p>the conditional node to compile</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The compiled PHTML</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_compileCase" name="method_compileCase" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">compileCase()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">compileCase(\Tale\Jade\Parser\Node  <span class="argument">$node</span>) : string</pre>
+                <p><em>Compiles a case-node into PHTML.</em></p>
+                <p>This also checks if all sub-nodes of the case are
+when-children, nothing else is allowed</p>
+<p>compileCase interacts with compileWhen to skip ?&gt;&lt;?php after the switch {</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a></td>
+                                <td>$node </td>
+                                <td><p>the case node to compile</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Compiler\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The compiled PHTML</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_compileWhen" name="method_compileWhen" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">compileWhen()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">compileWhen(\Tale\Jade\Parser\Node  <span class="argument">$node</span>) : string</pre>
+                <p><em>Compiles a when-node into PHTML.</em></p>
+                <p>This also checks, if the when node is defined
+on a case-parent</p>
+<p>When interacts with compileCase to skip the first ?&gt;&lt;?php after the switch{</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a></td>
+                                <td>$node </td>
+                                <td><p>the when-node to compile</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Compiler\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The compiled PHTML</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_compileEach" name="method_compileEach" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">compileEach()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">compileEach(\Tale\Jade\Parser\Node  <span class="argument">$node</span>) : string</pre>
+                <p><em>Compiles a each-instruction into a foreach-loop PHTML block.</em></p>
+                <p>the $ in the variable names are optional</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a></td>
+                                <td>$node </td>
+                                <td><p>the each-node to compile</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The compiled PHTML</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_compileWhile" name="method_compileWhile" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">compileWhile()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">compileWhile(\Tale\Jade\Parser\Node  <span class="argument">$node</span>) : string</pre>
+                <p><em>Compiles a while-loop into PHTML.</em></p>
+                <p>Notice that if it has no children, we assume it's a do/while loop
+and don't print brackets</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a></td>
+                                <td>$node </td>
+                                <td><p>the while-node to compile</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The compiled PHTML</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                                                            <p>Check for do-instruction via $node-&gt;prev()</p>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_compileDo" name="method_compileDo" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">compileDo()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">compileDo(\Tale\Jade\Parser\Node  <span class="argument">$node</span>) : string</pre>
+                <p><em>Compiles a do-instruction into PHTML.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a></td>
+                                <td>$node </td>
+                                <td><p>the do-node to compile</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Compiler\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The compiled PHTML</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                                                            <p>Check for while-node with $node-&gt;next()</p>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_compileFilter" name="method_compileFilter" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">compileFilter()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">compileFilter(\Tale\Jade\Parser\Node  <span class="argument">$node</span>) : string</pre>
+                <p><em>Compiles a filter-node intp PHTML.</em></p>
+                <p>The filters are drawn from the filters-option</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a></td>
+                                <td>$node </td>
+                                <td><p>the filter node to compile</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Compiler\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The compiled PHTML</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_compileChildren" name="method_compileChildren" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">compileChildren()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">compileChildren(array&lt;mixed,\Tale\Jade\Parser\Node&gt;  <span class="argument">$nodes</span>, boolean|true  <span class="argument">$indent = true</span>, boolean|false  <span class="argument">$allowInline = false</span>) : string</pre>
+                <p><em>Compiles an array of nodes like they are children of some other node.</em></p>
+                <p>if $indent is true, the level will be increased</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array&lt;mixed,<a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a>&gt;</td>
+                                <td>$nodes </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td>boolean|true</td>
+                                <td>$indent </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td>boolean|false</td>
+                                <td>$allowInline </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_compileElement" name="method_compileElement" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">compileElement()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">compileElement(\Tale\Jade\Parser\Node  <span class="argument">$node</span>) : string</pre>
+                <p><em>Compiles an element-node containing a tag, attributes and assignments.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a></td>
+                                <td>$node </td>
+                                <td><p>the element node to compile</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The compiled PHTML</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                                                            <p>Attribute escaping seems pretty broken right now</p>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_compileText" name="method_compileText" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">compileText()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">compileText(\Tale\Jade\Parser\Node  <span class="argument">$node</span>) : string</pre>
+                <p><em>Compiles a text-node to PTHML.</em></p>
+                <p>Texts get interpolated</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a></td>
+                                <td>$node </td>
+                                <td><p>the text-node to compile</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The compiled PHTML</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_compileExpression" name="method_compileExpression" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">compileExpression()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">compileExpression(\Tale\Jade\Parser\Node  <span class="argument">$node</span>) : string</pre>
+                <p><em>Compiles an expression node and it&#039;s descending text nodes
+into a single PHP expression.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a></td>
+                                <td>$node </td>
+                                <td><p>the expression node to compile</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_compileComment" name="method_compileComment" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">compileComment()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">compileComment(\Tale\Jade\Parser\Node  <span class="argument">$node</span>) : string</pre>
+                <p><em>Compiles a comment-node based on if its rendered or not.</em></p>
+                <p>If it's rendered, it will be compiled as a HTML-comment,
+if not it will be compiled as a hidden PHP comment</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a></td>
+                                <td>$node </td>
+                                <td><p>the comment-node to compile</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The compiled PHTML</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_compileErrorHandlerHelper" name="method_compileErrorHandlerHelper" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">compileErrorHandlerHelper()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">compileErrorHandlerHelper() : string</pre>
+                <p><em>Compiles a simple error helper in a string to be prepended to the final PHTML.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>The compiled PHTML for the error handler</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_throwException" name="method_throwException" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">throwException()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">throwException(string  <span class="argument">$message</span>, \Tale\Jade\Parser\Node|null  <span class="argument">$relatedNode = null</span>) </pre>
+                <p><em>Throws a Compiler-Exception.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$message </td>
+                                <td><p>A meaningful exception message</p></td>
+                            </tr>
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a>|null</td>
+                                <td>$relatedNode </td>
+                                <td><p>The node the exception occured on</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Compiler\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                                    </div>
+    </section>
+
+    <div id="source-view" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="source-view-label" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="source-view-label">Compiler.php</h3>
+        </div>
+        <div class="modal-body">
+            <pre data-src="../files/Compiler.php.txt" class="language-php line-numbers"></pre>
+        </div>
+    </div>
+
+    <footer class="row-fluid">
+        <section class="span10 offset2">
+            <section class="row-fluid">
+                <section class="span10 offset1">
+                    <section class="row-fluid footer-sections">
+                        <section class="span4">
+                                                        <h1><i class="icon-code"></i></h1>
+                            <div>
+                                <ul>
+                                                                            <li><a href="../namespaces/Tale.html">\Tale</a></li>
+                                                                    </ul>
+                            </div>
+                        </section>
+                        <section class="span4">
+                                                        <h1><i class="icon-bar-chart"></i></h1>
+                            <div>
+                                <ul>
+                                    <li><a href="../graphs/class.html">Class Hierarchy Diagram</a></li>
+                                </ul>
+                            </div>
+                        </section>
+                        <section class="span4">
+                                                        <h1><i class="icon-pushpin"></i></h1>
+                            <div>
+                                <ul>
+                                    <li><a href="../reports/errors.html">Errors</a></li>
+                                    <li><a href="../reports/markers.html">Markers</a></li>
+                                </ul>
+                            </div>
+                        </section>
+                    </section>
+                </section>
+            </section>
+            <section class="row-fluid">
+                <section class="span10 offset1">
+                    <hr />
+                    Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
+                    on October 10th, 2015 at 01:42.
+                </section>
+            </section>
+        </section>
+    </footer>
+</div>
+
+</body>
+</html>

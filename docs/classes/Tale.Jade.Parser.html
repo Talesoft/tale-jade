@@ -1,0 +1,2461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <meta charset="utf-8"/>
+    <title>Tale Jade for PHP</title>
+    <meta name="author" content=""/>
+    <meta name="description" content=""/>
+
+    <link href="../css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/prism.css" rel="stylesheet" media="all"/>
+    <link href="../css/template.css" rel="stylesheet" media="all"/>
+    
+    <!--[if lt IE 9]>
+    <script src="../js/html5.js"></script>
+    <![endif]-->
+    <script src="../js/jquery-1.11.0.min.js"></script>
+    <script src="../js/ui/1.10.4/jquery-ui.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/jquery.smooth-scroll.js"></script>
+    <script src="../js/prism.min.js"></script>
+    <!-- TODO: Add http://jscrollpane.kelvinluck.com/ to style the scrollbars for browsers not using webkit-->
+    <script type="text/javascript">
+    function loadExternalCodeSnippets() {
+        Array.prototype.slice.call(document.querySelectorAll('pre[data-src]')).forEach(function (pre) {
+            var src = pre.getAttribute('data-src');
+            var extension = (src.match(/\.(\w+)$/) || [, ''])[1];
+            var language = 'php';
+
+            var code = document.createElement('code');
+            code.className = 'language-' + language;
+
+            pre.textContent = '';
+
+            code.textContent = 'Loading…';
+
+            pre.appendChild(code);
+
+            var xhr = new XMLHttpRequest();
+
+            xhr.open('GET', src, true);
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+
+                    if (xhr.status < 400 && xhr.responseText) {
+                        code.textContent = xhr.responseText;
+
+                        Prism.highlightElement(code);
+                    }
+                    else if (xhr.status >= 400) {
+                        code.textContent = '✖ Error ' + xhr.status + ' while fetching file: ' + xhr.statusText;
+                    }
+                    else {
+                        code.textContent = '✖ Error: File does not exist or is empty';
+                    }
+                }
+            };
+
+            xhr.send(null);
+        });
+    }
+
+    $(document).ready(function(){
+        loadExternalCodeSnippets();
+    });
+    $('#source-view').on('shown', function () {
+        loadExternalCodeSnippets();
+    })
+</script>
+
+    <link rel="shortcut icon" href="../images/favicon.ico"/>
+    <link rel="apple-touch-icon" href="../images/apple-touch-icon.png"/>
+    <link rel="apple-touch-icon" sizes="72x72" href="../images/apple-touch-icon-72x72.png"/>
+    <link rel="apple-touch-icon" sizes="114x114" href="../images/apple-touch-icon-114x114.png"/>
+</head>
+<body>
+
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <i class="icon-ellipsis-vertical"></i>
+            </a>
+            <a class="brand" href="../index.html">Tale Jade for PHP</a>
+
+            <div class="nav-collapse">
+                <ul class="nav pull-right">
+                                        <li class="dropdown">
+                        <a href="../index.html" class="dropdown-toggle" data-toggle="dropdown">
+                            API Documentation <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                                                        <li><a href="../namespaces/Tale.html">\Tale</a></li>
+                                                    </ul>
+                    </li>
+                                        <li class="dropdown" id="charts-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Charts <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="../graphs/class.html">
+                                    <i class="icon-list-alt"></i>&#160;Class hierarchy diagram
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="dropdown" id="reports-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Reports <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="../reports/errors.html">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">0</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="../reports/markers.html">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Markers <span class="label label-info pull-right">12</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="../reports/deprecated.html">
+                                                                                                            <i class="icon-list-alt"></i>&#160;Deprecated <span class="label label-info pull-right">0</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--<div class="go_to_top">-->
+    <!--<a href="#___" style="color: inherit">Back to top&#160;&#160;<i class="icon-upload icon-white"></i></a>-->
+    <!--</div>-->
+</div>
+
+<div id="___" class="container-fluid">
+        <section class="row-fluid">
+        <div class="span2 sidebar">
+                                <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-811689603"></a>
+                                <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
+            </div>
+            <div id="namespace-811689603" class="accordion-body collapse in">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-2138091098"></a>
+                                <a href="../namespaces/Tale.html" style="margin-left: 30px; padding-left: 0">Tale</a>
+            </div>
+            <div id="namespace-2138091098" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1854700357"></a>
+                                <a href="../namespaces/Tale.Jade.html" style="margin-left: 30px; padding-left: 0">Jade</a>
+            </div>
+            <div id="namespace-1854700357" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-766623689"></a>
+                                <a href="../namespaces/Tale.Jade.Compiler.html" style="margin-left: 30px; padding-left: 0">Compiler</a>
+            </div>
+            <div id="namespace-766623689" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Tale.Jade.Compiler.Exception.html">Exception</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1129433266"></a>
+                                <a href="../namespaces/Tale.Jade.Lexer.html" style="margin-left: 30px; padding-left: 0">Lexer</a>
+            </div>
+            <div id="namespace-1129433266" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Tale.Jade.Lexer.Exception.html">Exception</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1435251089"></a>
+                                <a href="../namespaces/Tale.Jade.Parser.html" style="margin-left: 30px; padding-left: 0">Parser</a>
+            </div>
+            <div id="namespace-1435251089" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Tale.Jade.Parser.Exception.html">Exception</a></li>
+                                                    <li class="class"><a href="../classes/Tale.Jade.Parser.Node.html">Node</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-697297294"></a>
+                                <a href="../namespaces/Tale.Jade.Renderer.html" style="margin-left: 30px; padding-left: 0">Renderer</a>
+            </div>
+            <div id="namespace-697297294" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-380837644"></a>
+                                <a href="../namespaces/Tale.Jade.Renderer.Adapter.html" style="margin-left: 30px; padding-left: 0">Adapter</a>
+            </div>
+            <div id="namespace-380837644" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-171467299"></a>
+                                <a href="../namespaces/Tale.Jade.Renderer.Adapter.Stream.html" style="margin-left: 30px; padding-left: 0">Stream</a>
+            </div>
+            <div id="namespace-171467299" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Tale.Jade.Renderer.Adapter.Stream.Wrapper.html">Wrapper</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Tale.Jade.Renderer.Adapter.File.html">File</a></li>
+                                                    <li class="class"><a href="../classes/Tale.Jade.Renderer.Adapter.Stream.html">Stream</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Tale.Jade.Renderer.AdapterBase.html">AdapterBase</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/Tale.Jade.Compiler.html">Compiler</a></li>
+                                                    <li class="class"><a href="../classes/Tale.Jade.Filter.html">Filter</a></li>
+                                                    <li class="class"><a href="../classes/Tale.Jade.Lexer.html">Lexer</a></li>
+                                                    <li class="class"><a href="../classes/Tale.Jade.Parser.html">Parser</a></li>
+                                                    <li class="class"><a href="../classes/Tale.Jade.Renderer.html">Renderer</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        </div>
+    </section>
+    <section class="row-fluid">
+        <div class="span10 offset2">
+            <div class="row-fluid">
+                <div class="span8 content class">
+                    <nav>
+                                                <a href="../namespaces/Tale.Jade.html">\Tale\Jade</a> <i class="icon-level-up"></i>
+                                            </nav>
+                    <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"><i class="icon-code"></i></a>
+
+                    <h1><small>\Tale\Jade</small>Parser</h1>
+                    <p><em>Takes tokens from the Lexer and creates an AST out of it.</em></p>
+                    <p>This class takes generated tokens from the Lexer sequentially
+and produces an Abstract Syntax Tree (AST) out of it</p>
+<p>The AST is an object-tree containing Node-instances
+with parent/child relations</p>
+<p>This AST is passed to the compiler to generate PHTML out of it</p>
+<p>Usage example:
+<code></p>
+<pre><code>use Tale\Jade\Parser;
+
+$parser = new Parser();
+
+echo $parser-&gt;parse($jadeInput);
+//Prints a human-readable dump of the parsed nodes</code></pre>
+<p></code></p>
+                    
+                                        
+                    <section id="summary">
+                        <h2>Summary</h2>
+                        <section class="row-fluid heading">
+                            <section class="span4">
+                                <a href="#methods">Methods</a>
+                            </section>
+                            <section class="span4">
+                                <a href="#properties">Properties</a>
+                            </section>
+                            <section class="span4">
+                                <a href="#constants">Constants</a>
+                            </section>
+                        </section>
+                        <section class="row-fluid public">
+                            <section class="span4">
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method___construct" class="">__construct()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_getOptions" class="">getOptions()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_getLexer" class="">getLexer()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_parse" class="">parse()</a><br />
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No public properties found</em>
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No constants found</em>
+                                                            </section>
+                        </section>
+                        <section class="row-fluid protected">
+                            <section class="span4">
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleToken" class="">handleToken()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_lookUp" class="">lookUp()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_lookUpNext" class="">lookUpNext()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_expect" class="">expect()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_expectNext" class="">expectNext()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_expectEnd" class="">expectEnd()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_hasTokens" class="">hasTokens()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_nextToken" class="">nextToken()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_getToken" class="">getToken()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_createNode" class="">createNode()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_createElement" class="">createElement()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleAssignment" class="">handleAssignment()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleAttribute" class="">handleAttribute()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleAttributeStart" class="">handleAttributeStart()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleAttributeEnd" class="">handleAttributeEnd()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleBlock" class="">handleBlock()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleClass" class="">handleClass()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleComment" class="">handleComment()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleCase" class="">handleCase()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleConditional" class="">handleConditional()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleDo" class="">handleDo()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleDoctype" class="">handleDoctype()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleEach" class="">handleEach()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleExpression" class="">handleExpression()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleFilter" class="">handleFilter()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleId" class="">handleId()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleImport" class="">handleImport()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleIndent" class="">handleIndent()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleTag" class="">handleTag()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleMixin" class="">handleMixin()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleMixinCall" class="">handleMixinCall()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleNewLine" class="">handleNewLine()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleOutdent" class="">handleOutdent()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleExpansion" class="">handleExpansion()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleText" class="">handleText()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleWhen" class="">handleWhen()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_handleWhile" class="">handleWhile()</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#method_throwException" class="">throwException()</a><br />
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No protected properties found</em>
+                                                            </section>
+                            <section class="span4">
+                                <em>N/A</em>
+                            </section>
+                        </section>
+                        <section class="row-fluid private">
+                            <section class="span4">
+                                                                    <em>No private methods found</em>
+                                                            </section>
+                            <section class="span4">
+                                                                    <a href="../classes/Tale.Jade.Parser.html#property__options" class="">$_options</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#property__lexer" class="">$_lexer</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#property__level" class="">$_level</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#property__tokens" class="">$_tokens</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#property__document" class="">$_document</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#property__currentParent" class="">$_currentParent</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#property__current" class="">$_current</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#property__last" class="">$_last</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#property__inMixin" class="">$_inMixin</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#property__mixinLevel" class="">$_mixinLevel</a><br />
+                                                                    <a href="../classes/Tale.Jade.Parser.html#property__expansion" class="">$_expansion</a><br />
+                                                            </section>
+                            <section class="span4">
+                                <em>N/A</em>
+                            </section>
+                        </section>
+                    </section>
+                </div>
+                <aside class="span4 detailsbar">
+                                        
+                    
+                    <dl>
+                        <dt>File</dt>
+                            <dd><a href="../files/Parser.html"><div class="path-wrapper">Parser.php</div></a></dd>
+                                                <dt>Package</dt>
+                            <dd><div class="namespace-wrapper">Tale\Jade</div></dd>
+                                                <dt>Class hierarchy</dt>
+                            <dd class="hierarchy">
+                                                                                                                                                                    <div class="namespace-wrapper">\Tale\Jade\Parser</div>
+                            </dd>
+
+                        
+                        
+                        
+                                                                            <dt>See also</dt>
+                                                                                    <dd><a href="http://jade.talesoft.io/docs/classes/Tale.Jade.Parser.html"><div class="namespace-wrapper">http://jade.talesoft.io/docs/classes/Tale.Jade.Parser.html</div></a></dd>
+                                                    
+                                                                        </dl>
+                    <h2>Tags</h2>
+                    <table class="table table-condensed">
+                                            <tr>
+                            <th>
+                                category
+                            </th>
+                            <td>
+                                                                    <p>Presentation</p>
+                                                            </td>
+                        </tr>
+                                            <tr>
+                            <th>
+                                author
+                            </th>
+                            <td>
+                                                                    <p>Torben Koehn <a href="mailto:tk@talesoft.io">tk@talesoft.io</a></p>
+                                                                    <p>Talesoft <a href="mailto:info@talesoft.io">info@talesoft.io</a></p>
+                                                            </td>
+                        </tr>
+                                            <tr>
+                            <th>
+                                copyright
+                            </th>
+                            <td>
+                                                                    <p>Copyright (c) 2015 Talesoft (<a href="http://talesoft.io">http://talesoft.io</a>)</p>
+                                                            </td>
+                        </tr>
+                                            <tr>
+                            <th>
+                                license
+                            </th>
+                            <td>
+                                                                    <p><a href="http://licenses.talesoft.io/2015/MIT.txt">http://licenses.talesoft.io/2015/MIT.txt</a> MIT License</p>
+                                                            </td>
+                        </tr>
+                                            <tr>
+                            <th>
+                                version
+                            </th>
+                            <td>
+                                                                    
+                                                            </td>
+                        </tr>
+                                            <tr>
+                            <th>
+                                since
+                            </th>
+                            <td>
+                                                                    <p>File available since Release 1.0</p>
+                                                            </td>
+                        </tr>
+                                        </table>
+                </aside>
+            </div>
+
+                        
+                                    <a id="properties" name="properties"></a>
+            <div class="row-fluid">
+                <div class="span8 content class">
+                    <h2>Properties</h2>
+                </div>
+                <aside class="span4 detailsbar"></aside>
+            </div>
+
+                                                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__options" name="property__options" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_options</h3>
+                <pre class="signature">$_options : array</pre>
+                <p><em>The options array used for this parser instance.</em></p>
+                
+
+                                <h4>Type</h4>
+                array
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__lexer" name="property__lexer" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_lexer</h3>
+                <pre class="signature">$_lexer : \Tale\Jade\Lexer</pre>
+                <p><em>The lexer used in this parser instance.</em></p>
+                
+
+                                <h4>Type</h4>
+                <a href="../classes/Tale.Jade.Lexer.html">\Tale\Jade\Lexer</a>
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__level" name="property__level" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_level</h3>
+                <pre class="signature">$_level : integer</pre>
+                <p><em>The level we&#039;re currently on.</em></p>
+                <p>This does not equal the Lexer-level or Compiler-level,
+it's an internal level to get the child/parent-relation between
+nodes right</p>
+
+                                <h4>Type</h4>
+                integer
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__tokens" name="property__tokens" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_tokens</h3>
+                <pre class="signature">$_tokens : \Generator</pre>
+                <p><em>The Generator returned by the -&gt;lex() method of the lexer.</em></p>
+                
+
+                                <h4>Type</h4>
+                \Generator
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__document" name="property__document" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_document</h3>
+                <pre class="signature">$_document : \Tale\Jade\Parser\Node</pre>
+                <p><em>The root node of the currently parsed document.</em></p>
+                
+
+                                <h4>Type</h4>
+                <a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a>
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__currentParent" name="property__currentParent" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_currentParent</h3>
+                <pre class="signature">$_currentParent : \Tale\Jade\Parser\Node</pre>
+                <p><em>The parent that currently found childs are appended to.</em></p>
+                <p>When an <outdent>-token is encountered, it moves one parent up
+($_currentParent-&gt;parent becomes the new $_currentParent)</p>
+
+                                <h4>Type</h4>
+                <a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a>
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__current" name="property__current" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_current</h3>
+                <pre class="signature">$_current : \Tale\Jade\Parser\Node</pre>
+                <p><em>The current element in the queue.</em></p>
+                <p>Will be appended to $_currentParent when a <newLine>-token is encountered
+It will become the current parent, if an <indent>-token is encountered</p>
+
+                                <h4>Type</h4>
+                <a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a>
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__last" name="property__last" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_last</h3>
+                <pre class="signature">$_last : \Tale\Jade\Parser\Node</pre>
+                <p><em>The last element that was completely put together.</em></p>
+                <p>Will be set on a <newLine>-token ($_current will become last)</p>
+
+                                <h4>Type</h4>
+                <a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a>
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__inMixin" name="property__inMixin" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_inMixin</h3>
+                <pre class="signature">$_inMixin : boolean</pre>
+                <p><em>States if we&#039;re in a mixin or not.</em></p>
+                <p>Used to check for the mixin-block and nested mixins</p>
+
+                                <h4>Type</h4>
+                boolean
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__mixinLevel" name="property__mixinLevel" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_mixinLevel</h3>
+                <pre class="signature">$_mixinLevel : integer</pre>
+                <p><em>The level we&#039;re on inside a mixin.</em></p>
+                <p>Used to check for the mixin-block and nested mixins</p>
+
+                                <h4>Type</h4>
+                integer
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property__expansion" name="property__expansion" class="anchor"></a>
+            <article class="property">
+                <h3 class="private ">$_expansion</h3>
+                <pre class="signature">$_expansion : \Tale\Jade\Parser\Node</pre>
+                <p><em>Stores an expanded node to attach it to the expanding node later.</em></p>
+                
+
+                                <h4>Type</h4>
+                <a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a>
+                                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                            
+                                    <a id="methods" name="methods"></a>
+            <div class="row-fluid">
+                <div class="span8 content class"><h2>Methods</h2></div>
+                <aside class="span4 detailsbar"></aside>
+            </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method___construct" name="method___construct" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">__construct()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">__construct(array|null  <span class="argument">$options = null</span>, \Tale\Jade\Lexer|null  <span class="argument">$lexer = null</span>) </pre>
+                <p><em>Creates a new parser instance.</em></p>
+                <p>The parser will run the provided input through the lexer
+and generate an AST out of it.</p>
+<p>The AST will be an object-tree consisting of \Tale\Jade\Parser\Node instances</p>
+<p>You can take the AST and either compile it with the Compiler or handle it yourself</p>
+<p>Possible options are:</p>
+<p>lexerOptions:   The options for the lexer</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array|null</td>
+                                <td>$options </td>
+                                <td><p>the options array</p></td>
+                            </tr>
+                                                    <tr>
+                                <td><a href="../classes/Tale.Jade.Lexer.html">\Tale\Jade\Lexer</a>|null</td>
+                                <td>$lexer </td>
+                                <td><p>an existing lexer instance (lexer-option will be ignored)</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getOptions" name="method_getOptions" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getOptions()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getOptions() : array</pre>
+                <p><em>Returns the currently used option-array of the Parser.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getLexer" name="method_getLexer" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getLexer()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getLexer() : \Tale\Jade\Lexer</pre>
+                <p><em>Returns the currently used Lexer instance.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    <a href="../classes/Tale.Jade.Lexer.html">\Tale\Jade\Lexer</a>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_parse" name="method_parse" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">parse()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">parse(string  <span class="argument">$input</span>) : \Tale\Jade\Parser\Node</pre>
+                <p><em>Parses the provided input-string to an AST.</em></p>
+                <p>The Abstract Syntax Tree (AST) will be an object-tree consisting of \Tale\Jade\Parser\Node instances.</p>
+<p>You can either let the compiler compile it or compile it yourself</p>
+<p>The root-node will always be of type 'document',
+from there on it can contain several kinds of nodes</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$input </td>
+                                <td><p>the input jade string that is to be parsed</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    <a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a>
+                                            &mdash; <p>the root-node of the parsed AST</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleToken" name="method_handleToken" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleToken()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleToken(array|null  <span class="argument">$token = null</span>) </pre>
+                <p><em>Handles any kind of token returned by the lexer dynamically.</em></p>
+                <p>The token-type will be translated into a method name
+e.g.</p>
+<p>newLine      =&gt; handleNewLine
+attribute    =&gt; handleAttribute
+tag          =&gt; handleTag</p>
+<p>First argument of that method will always be the token array</p>
+<p>If no token is passed, it will take the current token
+in the lexer's token generator</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array|null</td>
+                                <td>$token </td>
+                                <td><p>a token or the current lexer's generator token</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Parser\Exception</dt>
+                            <dd><p>when no token handler has been found</p></dd>
+                                                                    </dl>
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_lookUp" name="method_lookUp" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">lookUp()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">lookUp(array  <span class="argument">$types</span>) : \Generator</pre>
+                <p><em>Yields tokens as long as the given types match.</em></p>
+                <p>Yields tokens of the given types until
+a token is encountered, that is not given
+in the types-array</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$types </td>
+                                <td><p>the token types that are allowed</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_lookUpNext" name="method_lookUpNext" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">lookUpNext()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">lookUpNext(array  <span class="argument">$types</span>) : \Generator</pre>
+                <p><em>Moves on the token generator by one and does -&gt;lookUp().</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$types </td>
+                                <td><p>the types that are allowed</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    \Generator
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                            <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_expect" name="method_expect" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">expect()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">expect(array  <span class="argument">$types</span>) : \Tale\Jade\Parser\Node|null</pre>
+                <p><em>Returns the token of the given type if it is in the token queue.</em></p>
+                <p>If the given token in the queue is not of the given type,
+this method returns null</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$types </td>
+                                <td><p>the types that are expected</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    <a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a>|null
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_expectNext" name="method_expectNext" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">expectNext()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">expectNext(array  <span class="argument">$types</span>) : \Tale\Jade\Parser\Node|null</pre>
+                <p><em>Moves the generator on by one and does -&gt;expect().</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$types </td>
+                                <td><p>the types that are expected</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    <a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a>|null
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                            <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_expectEnd" name="method_expectEnd" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">expectEnd()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">expectEnd(array|null  <span class="argument">$relatedToken = null</span>) </pre>
+                <p><em>Throws an exception if the next token is not a newLine token.</em></p>
+                <p>This states that &quot;a line of instructions should end here&quot;</p>
+<p>Notice that if the next token is <em>not</em> a newLine, it gets
+handled through handleToken automatically</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array|null</td>
+                                <td>$relatedToken </td>
+                                <td><p>the token to relate the exception to</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Parser\Exception</dt>
+                            <dd><p>when the next token is not a newLine token</p></dd>
+                                                                    </dl>
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_hasTokens" name="method_hasTokens" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">hasTokens()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">hasTokens() : boolean</pre>
+                <p><em>Returns true, if there are still tokens left to be generated.</em></p>
+                <p>If the lexer-generator still has tokens to generate,
+this returns true and false, if it doesn't</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    boolean
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_nextToken" name="method_nextToken" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">nextToken()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">nextToken() : $this</pre>
+                <p><em>Moves the generator on by one token.</em></p>
+                <p>(It calls -&gt;next() on the generator, look at the PHP doc)</p>
+
+                
+                
+                                    <h4>Returns</h4>
+                    $this
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getToken" name="method_getToken" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">getToken()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getToken() : array</pre>
+                <p><em>Returns the current token in the lexer generator.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                            &mdash; <p>the token array (always <em>one</em> token, as an array)</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                                            <dt>See also</dt>
+                                                                <dd><a href=""><span class="namespace-wrapper"></span></a></dd>
+                                                                </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_createNode" name="method_createNode" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">createNode()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">createNode(string  <span class="argument">$type</span>, array|null  <span class="argument">$token = null</span>) : \Tale\Jade\Parser\Node</pre>
+                <p><em>Creates a new node instance with the given type.</em></p>
+                <p>If a token is given, the location in the code of that token
+is also passed to the Node instance</p>
+<p>If no token is passed, a dummy-token with the current
+lexer's offset and line is created</p>
+<p>Notice that nodes are expando-objects, you can add properties on-the-fly
+and retrieve them as an array later</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$type </td>
+                                <td><p>the type the node should have</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>array|null</td>
+                                <td>$token </td>
+                                <td><p>the token to relate this node to</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    <a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a>
+                                            &mdash; <p>The newly created node</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_createElement" name="method_createElement" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">createElement()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">createElement(array|null  <span class="argument">$token = null</span>) : \Tale\Jade\Parser\Node</pre>
+                <p><em>Creates an element-node with the properties it should have consistently.</em></p>
+                <p>This will create the following properties on the Node instance:</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array|null</td>
+                                <td>$token </td>
+                                <td><p>the token to relate this element to</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    <a href="../classes/Tale.Jade.Parser.Node.html">\Tale\Jade\Parser\Node</a>
+                                            &mdash; <p>the newly created element-node</p>
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                                                            <p>Do this for a bunch of other elements as well, maybe all, maybe a centralized way?</p>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleAssignment" name="method_handleAssignment" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleAssignment()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleAssignment(array  <span class="argument">$token</span>) </pre>
+                <p><em>Parses an &lt;assignment&gt;-token into element assignments.</em></p>
+                <p>If no there is no $_current element, a new one is created</p>
+<p>Assignments are possible on elements and mixinCalls only</p>
+<p>After an assignment, an attribute block is required</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$token </td>
+                                <td><p>the <assignment>-token</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Parser\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleAttribute" name="method_handleAttribute" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleAttribute()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleAttribute(array  <span class="argument">$token</span>) </pre>
+                <p><em>Parses an &lt;attribute&gt;-token into an attribute-node.</em></p>
+                <p>That node is appended to the $_current element.</p>
+<p>If no $_current element exists, a new one is created</p>
+<p>Attributes in elements and mixins always need a valid name</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$token </td>
+                                <td><p>the <attribute>-token</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Parser\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleAttributeStart" name="method_handleAttributeStart" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleAttributeStart()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleAttributeStart(array  <span class="argument">$token</span>) </pre>
+                <p><em>Handles an &lt;attributeStart&gt;-token.</em></p>
+                <p>Attributes can only start on elements, assignments, imports, mixins and mixinCalls</p>
+<p>After that, all following <attribute>-tokens are handled.
+After that, an <attributeEnd>-token is expected
+(When I think about it, the Lexer kind of does that already)</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$token </td>
+                                <td><p>the <attributeStart>-token</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Parser\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleAttributeEnd" name="method_handleAttributeEnd" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleAttributeEnd()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleAttributeEnd(array  <span class="argument">$token</span>) </pre>
+                <p><em>Handles an &lt;attributeEnd&gt;-token.</em></p>
+                <p>It does nothing (right now?)</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$token </td>
+                                <td><p>the <attributeEnd>-token</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleBlock" name="method_handleBlock" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleBlock()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleBlock(array  <span class="argument">$token</span>) </pre>
+                <p><em>Handles a &lt;block&gt;-token and parses it into a block-node.</em></p>
+                <p>Blocks outside a mixin always need a name! (That's what $_inMixin is for)</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$token </td>
+                                <td><p>the <block>-token</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Parser\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleClass" name="method_handleClass" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleClass()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleClass(array  <span class="argument">$token</span>) </pre>
+                <p><em>Handles a &lt;class&gt;-token and parses it into an element.</em></p>
+                <p>If there's no $_current-node, a new one is created</p>
+<p>It will be converted to a regular <attribute>-node on the element
+(There is no class-node)</p>
+<p>Classes can only exist on elements and mixinCalls</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$token </td>
+                                <td><p>the <class>-token</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Parser\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleComment" name="method_handleComment" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleComment()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleComment(array  <span class="argument">$token</span>) </pre>
+                <p><em>Handles a &lt;comment&gt;-token and parses it into a comment-node.</em></p>
+                <p>The comment node is set as the $_current element</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$token </td>
+                                <td><p>the <comment>-token</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleCase" name="method_handleCase" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleCase()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleCase(array  <span class="argument">$token</span>) </pre>
+                <p><em>Handles a &lt;case&gt;-token and parses it into a case-node.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$token </td>
+                                <td><p>the <case>-token</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleConditional" name="method_handleConditional" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleConditional()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleConditional(array  <span class="argument">$token</span>) </pre>
+                <p><em>Handles a &lt;conditional&gt;-token and parses it into a conditional-node.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$token </td>
+                                <td><p>the <conditional>-token</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleDo" name="method_handleDo" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleDo()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleDo(array  <span class="argument">$token</span>) </pre>
+                <p><em>Handles a &lt;do&gt;-token and parses it into a do-node.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$token </td>
+                                <td><p>the <do>-token</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleDoctype" name="method_handleDoctype" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleDoctype()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleDoctype(array  <span class="argument">$token</span>) </pre>
+                <p><em>Handles a &lt;doctype&gt;-token and parses it into a doctype-node.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$token </td>
+                                <td><p>the <doctype>-token</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleEach" name="method_handleEach" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleEach()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleEach(array  <span class="argument">$token</span>) </pre>
+                <p><em>Handles an &lt;each&gt;-token and parses it into an each-node.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$token </td>
+                                <td><p>the <each>-token</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleExpression" name="method_handleExpression" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleExpression()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleExpression(array  <span class="argument">$token</span>) </pre>
+                <p><em>Handles an &lt;expression&gt;-token into an expression-node.</em></p>
+                <p>If there's a $_current-element, the expression gets appended
+to the $_current-element. If not, the expression itself
+becomes the $_current element</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$token </td>
+                                <td><p>the <expression>-token</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Parser\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleFilter" name="method_handleFilter" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleFilter()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleFilter(array  <span class="argument">$token</span>) </pre>
+                <p><em>Handles a &lt;filter&gt;-token and parses it into a filter-node.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$token </td>
+                                <td><p>the <filter>-token</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleId" name="method_handleId" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleId()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleId(array  <span class="argument">$token</span>) </pre>
+                <p><em>Handles an &lt;id&gt;-token and parses it into an element.</em></p>
+                <p>If no $_current element exists, a new one is created</p>
+<p>IDs can only exist on elements an mixin calls</p>
+<p>They will get converted to attribute-nodes and appended to the current element</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$token </td>
+                                <td><p>the <id>-token</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Parser\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleImport" name="method_handleImport" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleImport()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleImport(array  <span class="argument">$token</span>) </pre>
+                <p><em>Handles an &lt;import&gt;-token and parses it into an import-node.</em></p>
+                <p>Notice that &quot;extends&quot; and &quot;include&quot; are basically the same thing.
+The only difference is that &quot;extends&quot; can only exist at the very
+beginning of a jade-block</p>
+<p>Only &quot;include&quot; can have filters, though.
+This gets checked in the Compiler, not here</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$token </td>
+                                <td><p>the <import>-token</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Parser\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                                                            <p>^ Why not?</p>
+                                                                                            <p>Maybe this one could need a &quot;createImport&quot; method?</p>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleIndent" name="method_handleIndent" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleIndent()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleIndent(array|null  <span class="argument">$token = null</span>) </pre>
+                <p><em>Handles an &lt;indent&gt;-token.</em></p>
+                <p>The $_level will be increased by 1 for each <indent></p>
+<p>If there's no $_last element (which is set on a newLine), we do nothing
+(because there's nothing to indent into)</p>
+<p>The $_last node is set as the $_currentParent node and acts as a parent-node
+for further created nodes (They get appended in handleNewLine)</p>
+<p>import-nodes can't be indented into, because they can't have children (poor imports :'( )</p>
+<p>The opposite of this is, obviously, handleOutdent with <outdent>-tokens</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array|null</td>
+                                <td>$token </td>
+                                <td><p>the <indent>-token</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Parser\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                                                            <p>Are there other nodes that shouldn't have children?</p>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleTag" name="method_handleTag" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleTag()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleTag(array  <span class="argument">$token</span>) </pre>
+                <p><em>Handles a &lt;tag&gt;-token and parses it into a tag-node.</em></p>
+                <p>If no $_current element exists, a new one is created
+A tag can only exist once on an element
+Only elements can have tags</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$token </td>
+                                <td><p>the <tag>-token</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Parser\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                                                            <p>Maybe multiple tags could combine with :? Would be ugly and senseless to write a(...)b tho</p>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleMixin" name="method_handleMixin" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleMixin()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleMixin(array  <span class="argument">$token</span>) </pre>
+                <p><em>Handles a &lt;mixin&gt;-token and parses it into a mixin-node.</em></p>
+                <p>Mixins can't be inside other mixins.
+We use $_inMixin and $_mixinLevel for that
+$_mixinLevel gets reset in handleOutdent</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$token </td>
+                                <td><p>the <mixin>-token</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Parser\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleMixinCall" name="method_handleMixinCall" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleMixinCall()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleMixinCall(array  <span class="argument">$token</span>) </pre>
+                <p><em>Handles a &lt;mixinCall&gt;-token and parses it into a mixinCall-node.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$token </td>
+                                <td><p>the <mixinCall>-token</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleNewLine" name="method_handleNewLine" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleNewLine()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleNewLine() </pre>
+                <p><em>Handles a &lt;newLine&gt;-token.</em></p>
+                <p>If there's no $_current element, it does nothing
+If there is one it:</p>
+<ol>
+<li>Checks if we have an $_expansion. If we do, append it to $_current and reset $_expansion</li>
+<li>Appends the $_current element to the $_currentParent</li>
+<li>Set's the $_last element to the $_current element</li>
+<li>Resets $_current to null</li>
+</ol>
+
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleOutdent" name="method_handleOutdent" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleOutdent()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleOutdent() </pre>
+                <p><em>Handles an &lt;outdent&gt;-token.</em></p>
+                <p>Decreases the current $_level by 1</p>
+<p>Sets the $_currentParent to the -&gt;parent of $_currentParent
+(Walking up the tree by 1)</p>
+<p>If we're in a mixin and we're at or below our mixin-level again,
+we're not in a mixin anymore</p>
+
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleExpansion" name="method_handleExpansion" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleExpansion()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleExpansion(array  <span class="argument">$token</span>) </pre>
+                <p><em>Handles an &lt;expansion&gt;-token.</em></p>
+                <p>If there's no current element, we don't expand anything and throw an exception</p>
+<p>If there's no space behind the : and the next token is a <tag>-token,
+we don't treat this as an expansion, but rather as a tag-extension
+(a:b === <a:b>&lt;/a:b&gt;, a: b === <a><b></b></a>)
+This is important for XML and XML-namespaces</p>
+<p>Notice that, right now, any element that can also land in $_current can be expanded
+(so almost all elements there are)
+It just makes no sense for some elements (&quot;extends&quot;, &quot;include&quot;)</p>
+<p>$_current is reset after the expansion so that we can collect the expanding element
+and handle it on a newLine or in an indent</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$token </td>
+                                <td><p>the <expansion>-token</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Parser\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleText" name="method_handleText" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleText()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleText(array  <span class="argument">$token</span>) </pre>
+                <p><em>Handles a &lt;text&gt;-token and parses it into a text-node.</em></p>
+                <p>If there's a $_current element, we append it to that element,
+if not, it becomes the $_current element</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$token </td>
+                                <td><p>the <text>-token</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleWhen" name="method_handleWhen" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleWhen()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleWhen(array  <span class="argument">$token</span>) </pre>
+                <p><em>Handles a &lt;when&gt;-token and parses it into a when-node.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$token </td>
+                                <td><p>the <when>-token</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_handleWhile" name="method_handleWhile" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">handleWhile()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">handleWhile(array  <span class="argument">$token</span>) </pre>
+                <p><em>Handles a &lt;while&gt;-token and parses it into a while-node.</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>array</td>
+                                <td>$token </td>
+                                <td><p>the <while>-token</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_throwException" name="method_throwException" class="anchor"></a>
+            <article class="method">
+                <h3 class="protected ">throwException()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">throwException(string  <span class="argument">$message</span>, array|null  <span class="argument">$relatedToken = null</span>) </pre>
+                <p><em>Throws a Parser-Exception.</em></p>
+                <p>If a related token is passed, it will also append
+the location in the input of that token</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$message </td>
+                                <td><p>a meaningful error-message</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>array|null</td>
+                                <td>$relatedToken </td>
+                                <td><p>the token related to this error</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\Tale\Jade\Parser\Exception</dt>
+                            <dd></dd>
+                                                                    </dl>
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                                    </div>
+    </section>
+
+    <div id="source-view" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="source-view-label" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="source-view-label">Parser.php</h3>
+        </div>
+        <div class="modal-body">
+            <pre data-src="../files/Parser.php.txt" class="language-php line-numbers"></pre>
+        </div>
+    </div>
+
+    <footer class="row-fluid">
+        <section class="span10 offset2">
+            <section class="row-fluid">
+                <section class="span10 offset1">
+                    <section class="row-fluid footer-sections">
+                        <section class="span4">
+                                                        <h1><i class="icon-code"></i></h1>
+                            <div>
+                                <ul>
+                                                                            <li><a href="../namespaces/Tale.html">\Tale</a></li>
+                                                                    </ul>
+                            </div>
+                        </section>
+                        <section class="span4">
+                                                        <h1><i class="icon-bar-chart"></i></h1>
+                            <div>
+                                <ul>
+                                    <li><a href="../graphs/class.html">Class Hierarchy Diagram</a></li>
+                                </ul>
+                            </div>
+                        </section>
+                        <section class="span4">
+                                                        <h1><i class="icon-pushpin"></i></h1>
+                            <div>
+                                <ul>
+                                    <li><a href="../reports/errors.html">Errors</a></li>
+                                    <li><a href="../reports/markers.html">Markers</a></li>
+                                </ul>
+                            </div>
+                        </section>
+                    </section>
+                </section>
+            </section>
+            <section class="row-fluid">
+                <section class="span10 offset1">
+                    <hr />
+                    Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
+                    on October 10th, 2015 at 01:42.
+                </section>
+            </section>
+        </section>
+    </footer>
+</div>
+
+</body>
+</html>
