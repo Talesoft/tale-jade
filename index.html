@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Tale Jade for PHP by Talesoft</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Tale Jade for PHP</h1>
+      <h2 class="project-tagline">A complete and fully-functional implementation of the Jade template language for PHP</h2>
+      <a href="https://github.com/Talesoft/tale-jade" class="btn">View on GitHub</a>
+      <a href="https://github.com/Talesoft/tale-jade/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/Talesoft/tale-jade/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="tale-jade-for-php" class="anchor" href="#tale-jade-for-php" aria-hidden="true"><span class="octicon octicon-link"></span></a>Tale Jade for PHP</h1>
+
+<p><a href="https://travis-ci.org/Talesoft/tale-jade"><img src="https://travis-ci.org/Talesoft/tale-jade.svg?branch=master" alt="Build Status"></a></p>
+
+<blockquote>
+<p><strong>Finally a fully-functional, complete and clean port of the Jade language to PHP</strong></p>
+
+<p><em>— Abraham Lincoln</em></p>
+</blockquote>
+
+<p>The Tale Jade Template Engine brings the popular and powerful Templating-Language <a href="http://jade-lang.com">Jade for Node.js</a> to PHP!</p>
+
+<p>Tale Jade is the first complete and most powerful Jade implementation in PHP.</p>
+
+<hr>
+
+<h2>
+<a id="getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting Started</h2>
+
+<h3>
+<a id="install-with-composer" class="anchor" href="#install-with-composer" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install with <a href="https://getcomposer.org">Composer</a>
+</h3>
+
+<p><a href="https://getcomposer.org/download/">Download Composer</a></p>
+
+<p>The composer package for Tale Jade is called <a href="https://packagist.org/packages/talesoft/tale-jade"><code>talesoft/tale-jade</code></a></p>
+
+<p>If you want to get started right now, hook up <a href="https://getcomposer.org/">composer</a> and run</p>
+
+<div class="highlight highlight-source-shell"><pre>$ composer require <span class="pl-s"><span class="pl-pds">"</span>talesoft/tale-jade:*<span class="pl-pds">"</span></span>
+$ composer install</pre></div>
+
+<p>or add it to your <code>composer.json</code> by yourself</p>
+
+<div class="highlight highlight-source-json"><pre>{
+    <span class="pl-s"><span class="pl-pds">"</span>require<span class="pl-pds">"</span></span>: {
+        <span class="pl-s"><span class="pl-pds">"</span>talesoft/tale-jade<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>*<span class="pl-pds">"</span></span>
+    }
+}</pre></div>
+
+<h3>
+<a id="install-by-downloading-the-sources" class="anchor" href="#install-by-downloading-the-sources" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install by downloading the sources</h3>
+
+<p>You can also download the sources by yourself.</p>
+
+<p>Tale Jade is compatible with the <a href="http://www.php-fig.org/psr/psr-0/">PSR-0</a> and <a href="http://www.php-fig.org/psr/psr-4/">PSR-4</a> autoloading standards.</p>
+
+<p>Put the sources inside your a <code>Tale/Jade</code> subfolder inside your autoloading directories, e.g. <code>library/Tale/Jade</code> and you're ready to go!</p>
+
+<p>The easiest way might be to just put a clone of the repository there, that way you can update it easier</p>
+
+<div class="highlight highlight-source-shell"><pre>$ git clone git@github.com:Talesoft/tale-jade.git library/Tale/Jade</pre></div>
+
+<p>or as a sub-module if you're using git for your project as well</p>
+
+<div class="highlight highlight-source-shell"><pre>$ git submodule add git@github.com:Talesoft/tale-jade.git library/Tale/Jade</pre></div>
+
+<p>You can also just include all necessary files by yourself if you like</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-k">include</span>(<span class="pl-s"><span class="pl-pds">'</span>path/to/tale-jade/Lexer/Exception.php<span class="pl-pds">'</span></span>);</span>
+<span class="pl-s1"><span class="pl-k">include</span>(<span class="pl-s"><span class="pl-pds">'</span>path/to/tale-jade/Lexer.php<span class="pl-pds">'</span></span>);</span>
+<span class="pl-s1"><span class="pl-k">include</span>(<span class="pl-s"><span class="pl-pds">'</span>path/to/tale-jade/Parser/Exception.php<span class="pl-pds">'</span></span>);</span>
+<span class="pl-s1"><span class="pl-k">include</span>(<span class="pl-s"><span class="pl-pds">'</span>path/to/tale-jade/Parser/Node.php<span class="pl-pds">'</span></span>);</span>
+<span class="pl-s1"><span class="pl-k">include</span>(<span class="pl-s"><span class="pl-pds">'</span>path/to/tale-jade/Parser.php<span class="pl-pds">'</span></span>);</span>
+<span class="pl-s1"><span class="pl-k">include</span>(<span class="pl-s"><span class="pl-pds">'</span>path/to/tale-jade/Compiler/Exception.php<span class="pl-pds">'</span></span>);</span>
+<span class="pl-s1"><span class="pl-k">include</span>(<span class="pl-s"><span class="pl-pds">'</span>path/to/tale-jade/Compiler.php<span class="pl-pds">'</span></span>);</span>
+<span class="pl-s1"><span class="pl-k">include</span>(<span class="pl-s"><span class="pl-pds">'</span>path/to/tale-jade/Renderer.php<span class="pl-pds">'</span></span>);</span>
+<span class="pl-s1"><span class="pl-k">include</span>(<span class="pl-s"><span class="pl-pds">'</span>path/to/tale-jade/Filter.php<span class="pl-pds">'</span></span>);</span>
+<span class="pl-s1"><span class="pl-k">include</span>(<span class="pl-s"><span class="pl-pds">'</span>path/to/tale-jade/Renderer/AdapterBase.php<span class="pl-pds">'</span></span>);</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-c">//and the adapter you want to use ('file' by default)</span></span>
+<span class="pl-s1"><span class="pl-k">include</span>(<span class="pl-s"><span class="pl-pds">'</span>path/to/tale-jade/Renderer/Adapter/File.php<span class="pl-pds">'</span></span>);</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-c">//or</span></span>
+<span class="pl-s1"><span class="pl-k">include</span>(<span class="pl-s"><span class="pl-pds">'</span>path/to/tale-jade/Renderer/Adapter/Stream/Wrapper.php<span class="pl-pds">'</span></span>);</span>
+<span class="pl-s1"><span class="pl-k">include</span>(<span class="pl-s"><span class="pl-pds">'</span>path/to/tale-jade/Renderer/Adapter/Stream.php<span class="pl-pds">'</span></span>);</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-c">//optional helper functions</span></span>
+<span class="pl-s1"><span class="pl-k">include</span>(<span class="pl-s"><span class="pl-pds">'</span>path/to/tale-jade/functions.php<span class="pl-pds">'</span></span>);</span></pre></div>
+
+<h3>
+<a id="rendering-a-jade-template" class="anchor" href="#rendering-a-jade-template" aria-hidden="true"><span class="octicon octicon-link"></span></a>Rendering a Jade Template</h3>
+
+<p>Include the <code>vendor/autoload.php</code> file of composer in your PHP script and get started with Tale Jade!</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-k">use</span> <span class="pl-c1">Tale\Jade</span>;</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-c">//Include the vendor/autoload.php if you're using composer!</span></span>
+<span class="pl-s1"><span class="pl-k">include</span>(<span class="pl-s"><span class="pl-pds">'</span>vendor/autoload.php<span class="pl-pds">'</span></span>);</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-smi">$renderer</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-c1">Jade\</span><span class="pl-c1">Renderer</span>();</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-smi">$renderer</span><span class="pl-k">-&gt;</span>render(<span class="pl-s"><span class="pl-pds">'</span>your-jade-file<span class="pl-pds">'</span></span>);</span></pre></div>
+
+<p>This way, the renderer will search for <code>your-jade-file.jade</code> in your <code>get_include_path()</code>-paths.
+Notice that the path passed to <code>render</code> needs to be relative, <em>always</em>.
+We show you how to add alternative search paths further in the <strong>Basic configuration</strong> section below.</p>
+
+<p>When the Jade-file gets rendered, a <code>./cache/views</code>-directory is created automatically and the compiled PHTML will be stored in that directory.</p>
+
+<p>To change this directory, use the <code>path</code>-option in the <code>adapterOptions</code></p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-smi">$renderer</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-c1">Jade\</span><span class="pl-c1">Renderer</span>([</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>adapterOptions<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> [</span>
+<span class="pl-s1">        <span class="pl-s"><span class="pl-pds">'</span>path<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>/your/absolute/cache/path<span class="pl-pds">'</span></span></span>
+<span class="pl-s1">    ]</span>
+<span class="pl-s1">]);</span></pre></div>
+
+<p>The Jade-file will now be rendered to that directory on each call.</p>
+
+<p>To enable a cache that won't render the files on each call, use the <code>lifeTime</code> option of the <code>file</code>-adapter</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-smi">$renderer</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-c1">Jade\</span><span class="pl-c1">Renderer</span>([</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>adapterOptions<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> [</span>
+<span class="pl-s1">        <span class="pl-s"><span class="pl-pds">'</span>lifeTime<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">3600</span> <span class="pl-c">//Will cache the file for 3600 seconds (one hour)</span></span>
+<span class="pl-s1">    ]</span>
+<span class="pl-s1">]);</span></pre></div>
+
+<h3>
+<a id="basic-configuration" class="anchor" href="#basic-configuration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Basic configuration</h3>
+
+<p>To enable formatting of the PHTML-output, use the <code>pretty</code>-option</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-smi">$renderer</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-c1">Jade\</span><span class="pl-c1">Renderer</span>([</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>pretty<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">true</span></span>
+<span class="pl-s1">]);</span></pre></div>
+
+<p>If you don't want to use the <code>get_include_path()</code>-paths (which could actually harbor a security risk in some cases), pass your own search paths to the Renderer.
+Rendered and included Jade-files will be searched in those paths and not in the <code>get_include_path()</code>-paths anymore.</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-c">//Either with</span></span>
+<span class="pl-s1"><span class="pl-smi">$renderer</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-c1">Jade\</span><span class="pl-c1">Renderer</span>([</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>paths<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> [<span class="pl-c1">__DIR__</span><span class="pl-k">.</span><span class="pl-s"><span class="pl-pds">'</span>/views<span class="pl-pds">'</span></span>]</span>
+<span class="pl-s1">]);</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-c">//or with</span></span>
+<span class="pl-s1"><span class="pl-smi">$renderer</span><span class="pl-k">-&gt;</span>addPath(<span class="pl-c1">__DIR__</span><span class="pl-k">.</span><span class="pl-s"><span class="pl-pds">'</span>/views<span class="pl-pds">'</span></span>);</span></pre></div>
+
+<p>As soon as you pass <em>any</em> path, the loading from the <code>get_include_path()</code>-paths will be disabled and you always load from your passed directory/ies.</p>
+
+<p>To pass variables to your Jade-file, use the second argument of the <code>render</code>-method</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-c1">echo</span> <span class="pl-smi">$renderer</span><span class="pl-k">-&gt;</span>render(<span class="pl-s"><span class="pl-pds">'</span>index<span class="pl-pds">'</span></span>, [</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>title<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>Jade is awesome!<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>content<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>Oh yeah, it is.<span class="pl-pds">'</span></span></span>
+<span class="pl-s1">]);</span></pre></div>
+
+<p>These can be used inside Jade as normal variables</p>
+
+<div class="highlight highlight-source-jade"><pre>
+<span class="pl-ent">h1</span><span class="pl-c1">=</span> $title
+
+<span class="pl-k">+</span><span class="pl-en">content-block</span>($content)</pre></div>
+
+<h3>
+<a id="learning-jade" class="anchor" href="#learning-jade" aria-hidden="true"><span class="octicon octicon-link"></span></a>Learning Jade</h3>
+
+<p>We're still working on our tutorials, so for now you have to stick with the <a href="http://jade-lang.com/reference/">original Jade documentation</a>.</p>
+
+<p>The only difference between it and Tale Jade is, that Tale Jade uses PHP Expressions everywhere</p>
+
+<p>In loops:
+<code>each $itemName, $keyName in $items</code></p>
+
+<p>In attributes:
+<code>a(href=$url, href='/some/sub/path')</code></p>
+
+<p>In conditionals:
+<code>if $someCondition</code></p>
+
+<p>In interpolation:
+<code>| This is some text and this was #{$interpolated}!</code></p>
+
+<p>PHP Expressions are possible in most cases 
+e.g. <code>(empty($someVar) ? 'Default Value' : "$someVar!")</code>
+and you can use functions and classes normally
+e.g. <code>h1= strtoupper('Tale Jade is awesome!')</code></p>
+
+<hr>
+
+<h2>
+<a id="supported-features" class="anchor" href="#supported-features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Supported features</h2>
+
+<p>We support every single feature the <a href="http://jade-lang.com/reference/">original Jade implementation</a> supports!
+This always has been and will always be our main target.</p>
+
+<p><strong>But why stop there?</strong>
+PHP has it's own features that are surely different from JavaScript's.
+By utilizing those features we aim to bring in more, compatible features into the language to make the fastest template development ever possible!</p>
+
+<hr>
+
+<p><strong><em>Notice: Sorry that most documents are down right now, we're still working on them.</em></strong>
+<strong><em>Our engine is really new and we're still documenting all functions of our insane development process. The features actually are in and work.</em></strong></p>
+
+<p><strong>We uploaded some example resources for you to get a grasp of the possibilities</strong></p>
+
+<p><a href="http://jade.talesoft.io/docs">The Tale Jade API Docs</a>
+The documentation of the Tale Jade source code.
+Generated with phpDocumentor, but is's fairly enlightening.</p>
+
+<p><a href="https://github.com/Talesoft/tale-jade-bootstrap">Tale Jade Bootstrap</a> 
+A quick-start project to get you up and running. Fork it, download it, play with it. 
+Don't forget to run <code>composer install</code> before launching (<a href="https://getcomposer.org/download/">Download Composer</a>)</p>
+
+<p><a href="https://github.com/Talesoft/tale-jade-examples">Development Test Files</a>
+The example files we tested the engine with.
+We cover all features somewhere in there, for sure!</p>
+
+<p><a href="https://github.com/Talesoft/tale-jade/tree/master/Test">Tale Jade Unit Tests</a>
+The Unit Tests we're using to ensure stability.
+There will be new tests added constantly and most features are covered here.
+It's PHP code, though.</p>
+
+<hr>
+
+<h3>
+<a id="supported-official-nodejs-jade-features" class="anchor" href="#supported-official-nodejs-jade-features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Supported official Node.js Jade Features</h3>
+
+<ul>
+<li><a href="http://jade.talesoft.io/examples/tags">Tags</a></li>
+<li><a href="http://jade.talesoft.io/examples/classes">Classes</a></li>
+<li><a href="http://jade.talesoft.io/examples/ids">IDs</a></li>
+<li><a href="http://jade.talesoft.io/examples/doctypes">Doctypes</a></li>
+<li><a href="http://jade.talesoft.io/examples/attributes">Attributes</a></li>
+<li><a href="http://jade.talesoft.io/examples/mixins">Mixins</a></li>
+<li><a href="http://jade.talesoft.io/examples/blocks">Blocks (with prepend, append and replace support)</a></li>
+<li><a href="http://jade.talesoft.io/examples/expressions">Expressions &amp; Escaping</a></li>
+<li><a href="http://jade.talesoft.io/examples/block-expansion">Block Expansion</a></li>
+<li><a href="http://jade.talesoft.io/examples/assignments">Assignments (&amp;attributes)</a></li>
+<li><a href="http://jade.talesoft.io/examples/comments">Comments</a></li>
+<li><a href="http://jade.talesoft.io/examples/code">Inline Code</a></li>
+<li><a href="http://jade.talesoft.io/examples/inheritance">Inheritance</a></li>
+<li><a href="http://jade.talesoft.io/examples/includes">Includes (with filters)</a></li>
+<li><a href="http://jade.talesoft.io/examples/conditionals">Conditionals (if, else, elseif, case, when, unless)</a></li>
+<li><a href="http://jade.talesoft.io/examples/loops">Loops (each, while)</a></li>
+<li><a href="http://jade.talesoft.io/examples/interpolation">Interpolation (with Element Interpolation)</a></li>
+<li><a href="http://jade.talesoft.io/examples/filters">Filters</a></li>
+<li><a href="http://jade.talesoft.io/examples/mixin-blocks">Mixin Blocks</a></li>
+<li><a href="http://jade.talesoft.io/examples/variadics">Variadics</a></li>
+</ul>
+
+<h3>
+<a id="supported-tale-jade-features" class="anchor" href="#supported-tale-jade-features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Supported Tale Jade Features</h3>
+
+<ul>
+<li><a href="http://jade.talesoft.io/examples/named-parameters">Named Mixin Parameters</a></li>
+<li><a href="http://jade.talesoft.io/examples/attribute-stacking">Attribute Stacking</a></li>
+<li><a href="http://jade.talesoft.io/examples/filter-map">Filter Maps</a></li>
+<li><a href="http://jade.talesoft.io/examples/cross-assignments">Cross Assignments</a></li>
+<li><a href="http://jade.talesoft.io/examples/more-loops">More Loops (do)</a></li>
+</ul>
+
+<h3>
+<a id="other-unrelated-cool-features" class="anchor" href="#other-unrelated-cool-features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Other, unrelated, cool features</h3>
+
+<ul>
+<li>UTF-8 support via PHP's mb_* extension</li>
+<li>Hackable and customizable renderer, compiler, parser and lexer</li>
+<li>Huge amount of (optional) configuration possibilities</li>
+<li>Graceful compiler forgiving many mistakes (e.g. spaces around the code)</li>
+<li>Lightning fast and clean compilation</li>
+<li>Detailed error handling</li>
+<li>Renderer with different adapters (ease-of-use vs. performance)</li>
+<li>Intelligent expression parsing</li>
+<li>Huge documentation available</li>
+<li>Tested well and maintained actively</li>
+</ul>
+
+<h2>
+<a id="theres-more-to-come" class="anchor" href="#theres-more-to-come" aria-hidden="true"><span class="octicon octicon-link"></span></a>There's more to come...</h2>
+
+<p>Tale Jade is actively used and developed in many projects and is improved constantly.</p>
+
+<p>We don't stick to the Jade-convention, but we'll always provide compatibility to Node.js Jade to help reducing confusion.</p>
+
+<p>We love Jade, we love PHP, we love Node.js and we love the official and original Jade-contributors.
+We just don't love the way people implement existing stuff in PHP :)</p>
+
+<p>Planned features:</p>
+
+<ul>
+<li>[ ] Command line tools</li>
+<li>[ ] Import Attributes (<code>include some-file(some-var='some-value')</code>)</li>
+<li>[ ] Helper Libraries (Own custom helper libraries)</li>
+<li>[ ] Aliases (Like mixins, just smaller)</li>
+<li>[ ] Stylus integration</li>
+<li>[ ] CoffeeScript integration</li>
+<li>[ ] Markdown integration</li>
+<li>[ ] Extensions and package manager</li>
+</ul>
+
+<h2>
+<a id="get-in-touch" class="anchor" href="#get-in-touch" aria-hidden="true"><span class="octicon octicon-link"></span></a>Get in touch</h2>
+
+<p>If you find a bug or miss a function, please use the <a href="https://github.com/Talesoft/tale-jade/issues">Issues</a> on this page
+to tell us about it. We will gladly hear you out :)</p>
+
+<p>If you'd like to contribute, fork us, send us pull requests and we'll take a deep look at what you've been working at!
+We're completely <strong>Open Source</strong>! You can do anything you like with our code as long as you stick to the
+<strong>MIT-license</strong> we've appended.</p>
+
+<p>You can also contact us via E-Mail.</p>
+
+<p>If you're interested in other projects, you might contact us via E-Mail as well</p>
+
+<p><strong>E-Mail: <a href="mailto:info@talesoft.io">info@talesoft.io</a></strong></p>
+
+<p><strong>Thank you for using Tale Jade. Let us spread the Jade-language together!</strong></p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/Talesoft/tale-jade">Tale Jade for PHP</a> is maintained by <a href="https://github.com/Talesoft">Talesoft</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-65722154-2");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
