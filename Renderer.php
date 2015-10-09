@@ -1,88 +1,120 @@
 <?php
 /**
- * The Tale Jade Project
+ * The Tale Jade Renderer.
  *
- * The Renderer Class
+ * Contains the renderer that compiles Jade for you
+ * and renders it through different, configurable adapters
  *
  * This file is part of the Tale Jade Template Engine for PHP
  *
- * @author Torben Köhn <tk@talesoft.io>
- * @author Talesoft <info@talesoft.io>
- * @projectGroup Tale
- * @project Jade
- * @component Renderer
- *
+ * LICENSE:
  * The code of this file is distributed under the MIT license.
  * If you didn't receive a copy of the license text, you can
  * read it here http://licenses.talesoft.io/2015/MIT.txt
  *
- * Please do not remove this comment block.
- * Thank you and have fun with Tale Jade!
+ * @category   Presentation
+ * @package    Tale\Jade
+ * @author     Torben Koehn <tk@talesoft.io>
+ * @author     Talesoft <info@talesoft.io>
+ * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
+ * @version    1.0.3
+ * @link       http://jade.talesoft.io/docs/files/Renderer.html
+ * @since      File available since Release 1.0
  */
 
 namespace Tale\Jade;
 
+use Tale\Jade\Renderer\AdapterBase;
+
 /**
- * Allows easy rendering of Jade-files
+ * Allows easy rendering of Jade-files to markup.
  *
  * The renderer provides utilities to quickly render jade files to
- * HTML-output or/and to files
+ * HTML/XML-output or/and to files
  *
- * @package Tale\Jade
+ * Usage example:
+ * <code>
+ *
+ *     use Tale\Jade\Renderer;
+ *
+ *     $renderer = new Renderer();
+ *
+ *     echo $renderer->render('index');
+ *     //Where "index" is a "index.jade" jade source file
+ *
+ * </code>
+ *
+ * @category   Presentation
+ * @package    Tale\Jade
+ * @author     Torben Koehn <tk@talesoft.io>
+ * @author     Talesoft <info@talesoft.io>
+ * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
+ * @version    1.0.3
+ * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Renderer.html
+ * @since      File available since Release 1.0
  */
 class Renderer
 {
 
     /**
-     * The options-array for the renderer instance
+     * The options-array for the renderer instance.
      *
      * @var array
      */
     private $_options;
 
     /**
-     * The compiler that is used in this renderer instance
-     * @var \Tale\Jade\Compiler
+     * The compiler that is used in this renderer instance.
+     *
+     * @var Compiler
      */
     private $_compiler;
 
     /**
-     * The parser that is used in this renderer instance
-     * @var \Tale\Jade\Parser
+     * The parser that is used in this renderer instance.
+     *
+     * @var Parser
      */
     private $_parser;
 
     /**
-     * The lexer that is used in this renderer instance
-     * @var \Tale\Jade\Lexer
+     * The lexer that is used in this renderer instance.
+     *
+     * @var Lexer
      */
     private $_lexer;
 
     /**
-     * The adapter that actually renders the files in a dynamic manner
-     * @var \Tale\Jade\Renderer\AdapterBase
+     * The adapter that actually renders the files in a dynamic manner.
+     *
+     * @var AdapterBase
      */
     private $_adapter;
 
     /**
-     * Creates a new Tale Jade Renderer instance to render Jade files
+     * Creates a new Tale Jade Renderer instance to render Jade files.
      *
      * Use the ->render() method on the resulting object to render
      * your jade files
      *
      * Possible options are:
-     * adapter: The name of the adapter to use, either a short-name
-     *          for an internal adapter or a class-name for a custom
-     *          adapter
-     * adapterOptions: The option-array that gets passed to the adapter
-     * compiler: The compiler-options that get passed to the compiler
-     * parser: The parser-options that get passed to the parser
-     * lexer: The lexer options that get passed to the lexer
      *
-     * @param array|null               $options  The options to pass to the renderer
-     * @param \Tale\Jade\Compiler|null $compiler The compiler to use inside the renderer
-     * @param \Tale\Jade\Parser|null   $parser   The parser to use inside the compiler
-     * @param \Tale\Jade\Lexer|null    $lexer    The lexer to use inside the parser
+     * adapter:         The name of the adapter to use, either a short-name
+     *                  for an internal adapter or a class-name for a custom
+     *                  adapter
+     * adapterOptions:  The option-array that gets passed to the adapter
+     * compiler:        The compiler-options that get passed to the compiler
+     * parser:          The parser-options that get passed to the parser
+     * lexer:           The lexer options that get passed to the lexer
+     *
+     * @todo: Abstract a few of settings (e.g. compiler:paths, compiler:pretty)
+     *
+     * @param array|null    $options  the options to pass to the renderer
+     * @param Compiler|null $compiler the compiler to use inside the renderer
+     * @param Parser|null   $parser   the parser to use inside the compiler
+     * @param Lexer|null    $lexer    the lexer to use inside the parser
      */
     public function __construct(
         array $options = null,
@@ -106,8 +138,7 @@ class Renderer
     }
 
     /**
-     * Returns the current option-array used in this
-     * renderer instance
+     * Returns the current option-array used in this renderer instance.
      *
      * @return array
      */
@@ -118,9 +149,9 @@ class Renderer
     }
 
     /**
-     * Return the compiler instance used in this
-     * renderer instance
-     * @return \Tale\Jade\Compiler
+     * Return the compiler instance used in this renderer instance.
+     *
+     * @return Compiler
      */
     public function getCompiler()
     {
@@ -129,9 +160,9 @@ class Renderer
     }
 
     /**
-     * Returns the parser instance used in this
-     * renderer instance
-     * @return \Tale\Jade\Parser
+     * Returns the parser instance used in this renderer instance.
+     *
+     * @return Parser
      */
     public function getParser()
     {
@@ -140,9 +171,9 @@ class Renderer
     }
 
     /**
-     * Returns the lexer used in this
-     * renderer instance
-     * @return \Tale\Jade\Lexer
+     * Returns the lexer used in this renderer instance.
+     *
+     * @return Lexer
      */
     public function getLexer()
     {
@@ -151,13 +182,13 @@ class Renderer
     }
 
     /**
-     * Returns the adapter that actually renders the files
+     * Returns the adapter that actually renders the files.
      *
      * This is lazy, meaning that the adapter gets created and stored as soon
      * as the method is called the first time.
      * After that all calls will return the same adapter instance
      *
-     * @return \Tale\Jade\Renderer\AdapterBase
+     * @return AdapterBase
      */
     public function getAdapter()
     {
@@ -186,7 +217,8 @@ class Renderer
     }
 
     /**
-     * Compiles a Jade-string to PHTML
+     * Compiles a Jade-string to PHTML.
+     *
      * The result can then be evaluated, the best method is
      * a simple PHP include
      *
@@ -199,8 +231,8 @@ class Renderer
      * If you give it a path, the directory of that path will be used
      * for relative includes.
      *
-     * @param string      $input The jade input string
-     * @param string|null $path  The path for relative includes
+     * @param string      $input the jade input string
+     * @param string|null $path  the path for relative includes
      *
      * @return mixed|string A PHTML string containing HTML and PHP
      */
@@ -211,19 +243,20 @@ class Renderer
     }
 
     /**
-     * Compiles a file to PHTML
+     * Compiles a file to PHTML.
      *
      * The given path will automatically passed as
      * compile()'s $path argument
      *
      * The path should always be relative to the paths-option paths
      *
-     * @see \Tale\Jade\Renderer->compile()
+     * @see Renderer->compile
      *
      * @param string $path The path to the jade file
      *
-     * @return mixed|string The compiled PHTML
-     * @throws \Exception
+     * @return mixed|string the compiled PHTML
+     * @throws \Exception when the file wasnt found or the compilation,
+     *                    lexing or parsing failed
      */
     public function compileFile($path)
     {
@@ -232,8 +265,7 @@ class Renderer
     }
 
     /**
-     * Compiles and includes a Jade-file correctly so that
-     * you directly get the desired HTML output
+     * Renders a jade-file to a markup-string directly.
      *
      * This is the essence of the Jade-renderer and is
      * the shortest and easiest way to get Jade running
@@ -245,8 +277,8 @@ class Renderer
      * The paths will be relative from the compiler:paths option
      * or from get_include_path(), if no paths have been defined
      *
-     * @param string     $file The relative path to the file to render
-     * @param array|null $args An array of variables to pass to the Jade-file
+     * @param string     $file the relative path to the file to render
+     * @param array|null $args an array of variables to pass to the Jade-file
      *
      * @return string The renderered markup
      */

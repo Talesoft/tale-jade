@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<ruleset name="Tale Coding Standard">
+
+    <description>The Tale Coding Standard</description>
+
+    <file>.</file>
+
+    <exclude-pattern type="relative">^/Tests/*</exclude-pattern>
+    <exclude-pattern type="relative">^/vendor/*</exclude-pattern>
+    <exclude-pattern type="relative">^/docs/*</exclude-pattern>
+
+    <rule ref="PSR2" />
+</ruleset>

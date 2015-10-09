@@ -1,23 +1,29 @@
 <?php
 /**
- * The Tale Jade Project
+ * The Tale Jade Compiler.
  *
- * The Compiler Class
+ * Contains a compiler that takes an Abstract Syntax Tree (AST) from
+ * the parser and generates Markup out of it.
+ *
+ * The Compiler can handle different markup-types.
+ * Currently XML and HTML5 are supported.
  *
  * This file is part of the Tale Jade Template Engine for PHP
  *
- * @author Torben Köhn <tk@talesoft.io>
- * @author Talesoft <info@talesoft.io>
- * @projectGroup Tale
- * @project Jade
- * @component Compiler
- *
+ * LICENSE:
  * The code of this file is distributed under the MIT license.
  * If you didn't receive a copy of the license text, you can
  * read it here http://licenses.talesoft.io/2015/MIT.txt
  *
- * Please do not remove this comment block.
- * Thank you and have fun with Tale Jade!
+ * @category   Presentation
+ * @package    Tale\Jade
+ * @author     Torben Koehn <tk@talesoft.io>
+ * @author     Talesoft <info@talesoft.io>
+ * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
+ * @version    1.0.3
+ * @link       http://jade.talesoft.io/docs/files/Compiler.html
+ * @since      File available since Release 1.0
  */
 
 namespace Tale\Jade;
@@ -26,135 +32,217 @@ use Tale\Jade\Compiler\Exception;
 use Tale\Jade\Parser\Node;
 
 /**
- * Compiles the parsed AST into PHTML
+ * Compiles an AST got from the parser to valid PHTML, HTML or XML.
  *
- * Translates Nodes returned from the Parser into PHTML, a mix
- * of PHP and HTML
+ * You can control the output-style via the options
+ * passed to the constructor.
+ *
+ * Different output types are possible (Currently, XML and HTML)
  *
  * The main entry point is the `compile` method
- * Compilation looks like this
- *
- * $compiler->compile($inputString)
  *
  * The generated PHTML should be evaluated, the best method
  * is a simple include of a generated file
  *
- * @package Tale\Jade
+ * Usage example:
+ * <code>
+ *
+ *     use Tale\Jade\Compiler;
+ *
+ *     $compiler = new Compiler();
+ *
+ *     $phtml = $compiler->compile($jadeInput);
+ *     //or
+ *     $phtml = $compiler->compileFile($jadeFilePath);
+ *
+ * </code>
+ *
+ * There are different approachs to handle the compiled PHTML.
+ * The best and most explaining one is saving the PHTML to a file and
+ * including it like this:
+ *
+ * <code>
+ *
+ *     file_put_contents('rendered.phtml', $phtml);
+ *
+ *    //Define some variables to pass to our template
+ *    $variables = [
+ *        'title' => 'My Page Title!',
+ *        'posts' => []
+ *    ];
+ *
+ *    //Make sure the variables are accessible by the included template
+ *    extract($variables);
+ *
+ *    //Compiler needs an $__args variable to pass arguments on to mixins
+ *    $__args = $variables;
+ *
+ *    //Include the rendered PHTML directly
+ *    include('rendered.phtml');
+ * </code>
+ *
+ * You may fetch the included content with ob_start() and ob_get_clean()
+ * and pass it on to anything, e.g. a cache handler or return it as an
+ * AJAX response.
+ *
+ * @category   Presentation
+ * @package    Tale\Jade
+ * @author     Torben Koehn <tk@talesoft.io>
+ * @author     Talesoft <info@talesoft.io>
+ * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
+ * @version    1.0.3
+ * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Compiler.html
+ * @since      File available since Release 1.0
  */
 class Compiler
 {
 
     /**
-     * The Mode for HTML
+     * The Mode for HTML.
+     *
      * Recognizes self-closing tags, self-repeating attributes etc.
      */
     const MODE_HTML = 0;
 
     /**
-     * The Mode of XML
+     * The Mode of XML.
+     *
      * Doesn't do whatever MODE_HTML does
      */
     const MODE_XML = 1;
 
     /**
-     * An array of options
+     * An array of options.
+     *
      * @var array
      */
     private $_options;
 
     /**
-     * The lexer that is given to the parser
+     * The lexer that is given to the parser.
+     *
      * @var Lexer
      */
     private $_lexer;
 
     /**
-     * The parse this compiler instance gets its nodes off
+     * The parse this compiler instance gets its nodes off.
+     *
      * @var Parser
      */
     private $_parser;
 
     /**
      * The current file stack.
+     *
      * The bottom file is the file that is currently compiled.
      * This is needed for recursive path resolving in imports
+     *
      * @var string[]
      */
     private $_files;
 
     /**
-     * The mixins we found in the whole input
+     * The mixins we found in the whole input.
+     *
      * We use this to check if a mixin exists upon call
      * and to compile them all at the and (with checking,
      * if they are even called)
      *
      * The array looks like this:
+     * <samp>
      * [
-     *     ['node' => \Tale\Jade\Parser\Node, 'phtml' => <compiled phtml> ],
-     *     ['node' => \Tale\Jade\Parser\Node, 'phtml' => <compiled phtml> ],
-     *     ['node' => \Tale\Jade\Parser\Node, 'phtml' => <compiled phtml> ]
+     *     ['node' => Node, 'phtml' => <compiled phtml> ],
+     *     ['node' => Node, 'phtml' => <compiled phtml> ],
+     *     ['node' => Node, 'phtml' => <compiled phtml> ]
      * ]
+     * </samp>
      *
      * Keys are the name of the mixin
-     * @var []
+     *
+     * @var array
      */
     private $_mixins;
 
     /**
-     * A stack of names of the mixins we actually called in the code
+     * A stack of names of the mixins we actually called in the code.
+     *
      * @var string[]
      */
     private $_calledMixins;
 
     /**
-     * A list of all blocks in our whole input
+     * A list of all blocks in our whole input.
+     *
      * They are only used in handleBlocks and handleBlock
-     * @var \Tale\Jade\Parser\Node[]
+     *
+     * @var Node[]
      */
     private $_blocks;
 
     /**
      * The level we're currently in.
+     *
      * This doesn't equal the current level in the parser or lexer,
      * it rather represents the current indentation level
      * for pretty compiling
+     *
      * @var int
      */
     private $_level;
 
     /**
-     * Creates a new compiler instance
+     * Creates a new compiler instance.
      *
      * You can pass a modified parser or lexer.
      * Notice that if you pass both, the lexer inside the parser will be used.
      *
      * Valid options are:
-     *      pretty: Use indentation and new-lines or compile everything into a single line
-     *      indentStyle: The character that is used for indentation (Space by default)
-     *      indentWidth: The amount of characters to repeat for indentation (Default 2 for 2-space-indentation)
-     *      mode: Compile in HTML or XML mode
-     *      selfClosingTags: The tags that don't need any closing in HTML-style languages
-     *      selfRepeatingAttributes: The attributes that repeat their value to set them to true in HTML-style languages
-     *      doctypes: The different doctypes you can use via the "doctype"-directive [name => doctype-string]
-     *      filters: The different filters you can use via the ":<filterName>"-directive [name => callback]
-     *      filterMap: The extension-to-filter-map for include-filters [extension => filter]
-     *      escapeSequences: The escape-sequences that are possible in scalar strings
-     *      handleErrors: Should the error-handler-helper be appended to the PTHML or not
-     *      compileUncalledMixins: Always compile all mixins or leave out those that aren't called?
-     *      allowImports: Set to false to disable imports for this compiler instance. Importing will throw an exception.
-     *                    Great for demo-pages
-     *      defaultTag: The tag to default to for class/id/attribute-initiated elements (.abc, #abc, (abc))
-     *      quoteStyle: The quote-style in the markup (default: ")
-     *      replaceMixins: Replaces mixins from top to bottom if they have the same name. Allows duplicated mixin names.
-     *      paths: The paths to resolve paths in. If none set, it will default to get_include_path()
-     *      extension: The extension for Jade files (default: .jade), .jd is pretty cool as an example
-     *      parser: The options for the parser if none given
-     *      lexer: The options for the lexer if none given.
+     *
+     * pretty:                      Use indentation and new-lines
+     *                              or compile everything into a single line
+     * indentStyle:                 The character that is used for
+     *                              indentation (Space by default)
+     * indentWidth:                 The amount of characters to repeat for
+     *                              indentation (Default 2 for 2-space-indentation)
+     * mode:                        Compile in HTML or XML mode
+     * selfClosingTags:             The tags that don't need any closing in
+     *                              HTML-style languages
+     * selfRepeatingAttributes:     The attributes that repeat their value to
+     *                              set them to true in HTML-style languages
+     * doctypes:                    The different doctypes you can use via the
+     *                              "doctype"-directive [name => doctype-string]
+     * filters:                     The different filters you can use via the
+     *                              ":<filterName>"-directive [name => callback]
+     * filterMap:                   The extension-to-filter-map for
+     *                              include-filters [extension => filter]
+     * escapeSequences:             The escape-sequences that are possible in
+     *                              scalar strings
+     * handleErrors:                Should the error-handler-helper be appended
+     *                              to the PTHML or not
+     * compileUncalledMixins:       Always compile all mixins or leave out
+     *                              those that aren't called?
+     * allowImports:                Set to false to disable imports for this
+     *                              compiler instance. Importing will throw an
+     *                              exception. Great for demo-pages
+     * defaultTag:                  The tag to default to for
+     *                              class/id/attribute-initiated elements
+     *                              (.abc, #abc, (abc))
+     * quoteStyle:                  The quote-style in the markup (default: ")
+     * replaceMixins:               Replaces mixins from top to bottom if they
+     *                              have the same name. Allows duplicated mixin names.
+     * paths:                       The paths to resolve paths in.
+     *                              If none set, it will default to get_include_path()
+     * extension:                   The extension for Jade files
+     *                              (default: .jade), .jd is pretty cool as an example
+     * parser:                      The options for the parser if none given
+     * lexer:                       The options for the lexer if none given.
      *
      *
-     * @param array|null  $options An array of options
-     * @param Parser|null $parser  An existing parser instance
-     * @param Lexer|null  $lexer   An existing lexer instance
+     * @param array|null  $options an array of options
+     * @param Parser|null $parser  an existing parser instance
+     * @param Lexer|null  $lexer   an existing lexer instance
      */
     public function __construct(array $options = null, Parser $parser = null, Lexer $lexer = null)
     {
@@ -218,7 +306,8 @@ class Compiler
     }
 
     /**
-     * Returns the current options for the parser
+     * Returns the current options for the parser.
+     *
      * @return array
      */
     public function getOptions()
@@ -228,8 +317,9 @@ class Compiler
     }
 
     /**
-     * Returns the current lexer used
-     * @return \Tale\Jade\Lexer
+     * Returns the current lexer used.
+     *
+     * @return Lexer
      */
     public function getLexer()
     {
@@ -238,8 +328,9 @@ class Compiler
     }
 
     /**
-     * Returns the current parser used
-     * @return \Tale\Jade\Parser
+     * Returns the current parser used.
+     *
+     * @return Parser
      */
     public function getParser()
     {
@@ -248,10 +339,11 @@ class Compiler
     }
 
     /**
-     * Adds a path to the compiler
+     * Adds a path to the compiler.
+     *
      * Files will be loaded from this path (or other paths you added before)
      *
-     * @param string $path The directory path
+     * @param string $path the directory path
      *
      * @return $this
      */
@@ -264,20 +356,21 @@ class Compiler
     }
 
     /**
-     * Adds a filter to the compiler
+     * Adds a filter to the compiler.
+     *
      * This filter can then be used inside jade with the
      * :<filtername> directive
      *
      * The callback should have the following signature:
      * (\Tale\Jade\Parser\Node $node, $indent, $newLine)
-     * where $node is the filter \Tale\Jade\Parser\Node found,
+     * where $node is the filter-Node found,
      * $indent is the current indentation respecting level and pretty-option
      * and newLine is a new-line respecting the pretty-option
      *
-     * It should return either a PHTML string or a \Tale\Jade\Parser\Node-instance
+     * It should return either a PHTML string or a Node-instance
      *
-     * @param string   $name     The name of the filter
-     * @param callable $callback The filter handler callback
+     * @param string   $name     the name of the filter
+     * @param callable $callback the filter handler callback
      *
      * @return $this
      */
@@ -295,11 +388,12 @@ class Compiler
     }
 
     /**
-     * Compiles a Jade-string to PHTML
+     * Compiles a Jade-string to PHTML.
+     *
      * The result can then be evaluated, the best method is
      * a simple PHP include
      *
-     * Look at \Tale\Jade\Renderer to get this done for you
+     * Look at Renderer to get this done for you
      *
      * Before evaluating you should set a $__args variable
      * that will be passed through mixins.
@@ -308,10 +402,14 @@ class Compiler
      * If you give it a path, the directory of that path will be used
      * for relative includes.
      *
-     * @param string      $input The jade input string
-     * @param string|null $path  The path for relative includes
+     * @param string      $input the jade input string
+     * @param string|null $path  the path for relative includes
      *
-     * @return mixed|string A PHTML string containing HTML and PHP
+     * @return mixed|string a PHTML string containing HTML and PHP
+     *
+     * @throws Exception when the compilation fails
+     * @throws Parser\Exception when the parsing fails
+     * @throws Lexer\Exception when the lexing fails
      */
     public function compile($input, $path = null)
     {
@@ -359,19 +457,23 @@ class Compiler
     }
 
     /**
-     * Compiles a file to PHTML
+     * Compiles a file to PHTML.
      *
      * The given path will automatically passed as
      * compile()'s $path argument
      *
      * The path should always be relative to the paths-option paths
      *
-     * @see \Tale\Jade\Compiler->compile()
+     * @see Compiler->compile
      *
-     * @param string $path The path to the jade file
+     * @param string $path the path to the jade file
      *
-     * @return mixed|string The compiled PHTML
-     * @throws \Exception
+     * @return mixed|string the compiled PHTML
+     *                      
+     * @throws \Exception when the file is not found
+     * @throws Exception when the compilation fails
+     * @throws Parser\Exception when the parsing fails
+     * @throws Lexer\Exception when the lexing fails
      */
     public function compileFile($path)
     {
@@ -387,7 +489,8 @@ class Compiler
     }
 
     /**
-     * Checks if a variable is scalar (or "not an expression")
+     * Checks if a variable is scalar (or "not an expression").
+     * 
      * These values don't get much special handling, they are mostly
      * simple attributes values like `type="button"` or `method='post'`
      *
@@ -397,7 +500,7 @@ class Compiler
      * except the quote style it used
      * e.g. "Some Random String", 'This can" contain quotes"'
      *
-     * @param string $value The value to be checked
+     * @param string $value the value to be checked
      *
      * @return bool
      */
@@ -409,10 +512,10 @@ class Compiler
 
 
     /**
-     * Compiles and sanitizes a scalar value
+     * Compiles and sanitizes a scalar value.
      *
-     * @param string     $value     The scalar value
-     * @param bool|false $attribute Is this an attribute value or not
+     * @param string     $value     the scalar value
+     * @param bool|false $attribute is this an attribute value or not
      *
      * @return string
      */
@@ -425,7 +528,8 @@ class Compiler
     }
 
     /**
-     * Checks if a value is a variable
+     * Checks if a value is a variable.
+     * 
      * A variable needs to start with $.
      * After that only a-z, A-Z and _ can follow
      * After that you can use any character of
@@ -439,7 +543,7 @@ class Compiler
      * $obj->someArray['someKey']
      * etc.
      *
-     * @param string $value The value to be checked
+     * @param string $value the value to be checked
      *
      * @return bool
      */
@@ -450,7 +554,8 @@ class Compiler
     }
 
     /**
-     * Interpolates a string value
+     * Interpolates a string value.
+     * 
      * Interpolation is initialized with # (escaped) or ! (not escaped)
      *
      * After that use either {} brackets for variable expressions
@@ -469,7 +574,7 @@ class Compiler
      * @param string     $string    The string to interpolate
      * @param bool|false $attribute Is this an attribute value or not
      *
-     * @return string The interpolated PHTML
+     * @return string the interpolated PHTML
      */
     protected function interpolate($string, $attribute = false)
     {
@@ -497,7 +602,8 @@ class Compiler
     }
 
     /**
-     * Returns a new line character respecting the pretty-option
+     * Returns a new line character respecting the pretty-option.
+     *
      * @return string
      */
     protected function newLine()
@@ -509,11 +615,11 @@ class Compiler
     }
 
     /**
-     * Returns indentation respecting the current level and the pretty-option
+     * Returns indentation respecting the current level and the pretty-option.
      *
      * The $offset will be added to the current level
      *
-     * @param int $offset An offset added to the level
+     * @param int $offset an offset added to the level
      *
      * @return string
      */
@@ -526,14 +632,15 @@ class Compiler
     }
 
     /**
-     * Creates a PHP code expression
-     * By default it will have <?php ?>-style
+     * Creates a PHP code expression.
+     * 
+     * By default it will have <?php ? >-style
      *
-     * @param string $code   The PHP code
-     * @param string $prefix The PHP start tag
-     * @param string $suffix The PHP end tag
+     * @param string $code   the PHP code
+     * @param string $prefix the PHP start tag
+     * @param string $suffix the PHP end tag
      *
-     * @return string The PHP expression
+     * @return string the PHP expression
      */
     protected function createCode($code, $prefix = '<?php ', $suffix = '?>')
     {
@@ -550,11 +657,11 @@ class Compiler
     }
 
     /**
-     * Creates a <?=?>-style PHP expression
+     * Creates a <?=?>-style PHP expression.
      *
-     * @see \Tale\Jade\Compiler->createCode
+     * @see Compiler->createCode
      *
-     * @param string $code The PHP expression to output
+     * @param string $code the PHP expression to output
      *
      * @return string The PHP expression
      */
@@ -565,14 +672,15 @@ class Compiler
     }
 
     /**
-     * Creates a PHP comment surrounded by PHP code tags
-     * This creates a "hidden" comment thats still visible in pretty output
+     * Creates a PHP comment surrounded by PHP code tags.
+     * 
+     * This creates a "hidden" comment thats still visible in the PHTML
      *
      * @todo Maybe this should return an empty string if pretty-option is on?
      *
-     * @param string $text The text to wrap into a comment
+     * @param string $text the text to wrap into a comment
      *
-     * @return string The compiled PHP comment
+     * @return string the compiled PHP comment
      */
     protected function createPhpComment($text)
     {
@@ -581,12 +689,11 @@ class Compiler
     }
 
     /**
-     * Creates a XML-style comment
-     * (<!-- -->)
+     * Creates a XML-style comment (<!-- -->).
      *
-     * @param string $text THe text to wrap into a comment
+     * @param string $text the text to wrap into a comment
      *
-     * @return string The compiled XML comment
+     * @return string the compiled XML comment
      */
     protected function createMarkupComment($text)
     {
@@ -595,8 +702,7 @@ class Compiler
     }
 
     /**
-     * Compiles any Node that has a matching method
-     * for its type
+     * Compiles any Node that has a matching method for its type.
      *
      * e.g.
      * type: document, method: compileDocument
@@ -604,10 +710,10 @@ class Compiler
      *
      * The result will be PHTML
      *
-     * @param \Tale\Jade\Parser\Node $node The Node to compile
+     * @param Node $node the Node to compile
      *
-     * @return string The compiled PHTML
-     * @throws Exception
+     * @return string the compiled PHTML
+     * @throws Exception when the compilation fails
      */
     protected function compileNode(Node $node)
     {
@@ -642,11 +748,11 @@ class Compiler
     }
 
     /**
-     * Compiles a document Node to PHTML
+     * Compiles a document Node to PHTML.
      *
-     * @param \Tale\Jade\Parser\Node $node The document-type node
+     * @param Node $node The document-type node
      *
-     * @return string The compiled PHTML
+     * @return string the compiled PHTML
      */
     protected function compileDocument(Node $node)
     {
@@ -655,11 +761,11 @@ class Compiler
     }
 
     /**
-     * Compiles a doctype Node to PHTML
+     * Compiles a doctype Node to PHTML.
      *
-     * @param \Tale\Jade\Parser\Node $node The doctype-type node
+     * @param Node $node the doctype-type node
      *
-     * @return string The compiled PHTML
+     * @return string the compiled PHTML
      */
     protected function compileDoctype(Node $node)
     {
@@ -675,16 +781,22 @@ class Compiler
     }
 
     /**
-     * Resolves a path respecting the paths
-     * set in the options as well as the last
-     * element in the current $_files stack
+     * Resolves a path respecting the paths given in the options.
      *
-     * If no paths are given, the current get_include_path() is used
+     * The final paths for resolving are put together as follows:
      *
-     * @param string $path      The relative path to resolve
-     * @param null   $extension The extension to resolve with
+     * when paths options not empty      => Add paths of paths-option
+     * when paths option empty           => Add paths of get_include_path()
+     * when current file stack not empty => Add directory of last file we
+     *                                      were compiling
      *
-     * @return string|false The resolved full path or false, if not found
+     * We then look for a path with the given extension inside
+     * all paths we work on currently
+     *
+     * @param string $path      the relative path to resolve
+     * @param null   $extension the extension to resolve with
+     *
+     * @return string|false the resolved full path or false, if not found
      */
     public function resolvePath($path, $extension = null)
     {
@@ -716,9 +828,9 @@ class Compiler
     }
 
     /**
-     * Collects all imports and handles them via handleImport()
+     * Collects all imports and handles them via ->handleImport.
      *
-     * @param \Tale\Jade\Parser\Node $node The root Node to search imports in
+     * @param Node $node the root Node to search imports in
      *
      * @return $this
      * @throws Exception
@@ -743,7 +855,7 @@ class Compiler
     /**
      * Loads an imported file and merges the nodes with the current tree
      *
-     * @param \Tale\Jade\Parser\Node $node The node to import
+     * @param Node $node the node to import
      *
      * @return $this
      * @throws Exception
@@ -835,7 +947,7 @@ class Compiler
      * Collects all blocks and saves them into $_blocks
      * After that it calls handleBlock on each $block
      *
-     * @param \Tale\Jade\Parser\Node $node The node to search blocks in
+     * @param Node $node the node to search blocks in
      *
      * @return $this
      */
@@ -854,7 +966,7 @@ class Compiler
      * The first block found is always the container,
      * all other blocks either to append, replace or prepend
      *
-     * @param \Tale\Jade\Parser\Node $node The block node to handle
+     * @param Node $node the block node to handle
      *
      * @return $this
      * @throws Exception
@@ -924,7 +1036,7 @@ class Compiler
      * Duplicated mixins will throw an exception if the replaceMixins-options
      * is false
      *
-     * @param \Tale\Jade\Parser\Node $node The node to search mixins in
+     * @param Node $node the node to search mixins in
      *
      * @return $this
      * @throws Exception
@@ -964,7 +1076,7 @@ class Compiler
      * @see \Tale\Jade\Compiler->_mixins
      * @see \Tale\Jade\Compiler->compileMixins
      *
-     * @param \Tale\Jade\Parser\Node $node The mixin node to compile
+     * @param Node $node the mixin node to compile
      *
      * @return $this
      */
@@ -1055,7 +1167,7 @@ class Compiler
      *
      * @todo I guess the variadic handling in calls is broken right now. Calls can splat with ...
      *
-     * @param \Tale\Jade\Parser\Node $node The mixin call node to compile
+     * @param Node $node the mixin call node to compile
      *
      * @return string The compiled PHTML
      * @throws Exception
@@ -1180,7 +1292,7 @@ class Compiler
      * A single block node without a name or mode will act as a wrapper
      * for blocks inside mixins
      *
-     * @param \Tale\Jade\Parser\Node $node The block node to compile
+     * @param Node $node the block node to compile
      *
      * @return string The compiled PHTML
      */
@@ -1200,7 +1312,7 @@ class Compiler
      * Compiles a conditional, either if, elseif, else if or else
      * into PHTML
      *
-     * @param \Tale\Jade\Parser\Node $node The conditional node to compile
+     * @param Node $node the conditional node to compile
      *
      * @return string The compiled PHTML
      */
@@ -1244,7 +1356,7 @@ class Compiler
      *
      * compileCase interacts with compileWhen to skip ?><?php after the switch {
      *
-     * @param \Tale\Jade\Parser\Node $node The case node to compile
+     * @param Node $node the case node to compile
      *
      * @return string The compiled PHTML
      * @throws Exception
@@ -1297,7 +1409,7 @@ class Compiler
      *
      * When interacts with compileCase to skip the first ?><?php after the switch{
      *
-     * @param \Tale\Jade\Parser\Node $node The when-node to compile
+     * @param Node $node the when-node to compile
      *
      * @return string The compiled PHTML
      * @throws Exception
@@ -1335,7 +1447,7 @@ class Compiler
      *
      * the $ in the variable names are optional
      *
-     * @param \Tale\Jade\Parser\Node $node The each-node to compile
+     * @param Node $node the each-node to compile
      *
      * @return string The compiled PHTML
      */
@@ -1371,7 +1483,7 @@ class Compiler
      *
      * @todo Check for do-instruction via $node->prev()
      *
-     * @param \Tale\Jade\Parser\Node $node The while-node to compile
+     * @param Node $node the while-node to compile
      *
      * @return string The compiled PHTML
      */
@@ -1399,7 +1511,7 @@ class Compiler
      *
      * @todo Check for while-node with $node->next()
      *
-     * @param \Tale\Jade\Parser\Node $node The do-node to compile
+     * @param Node $node the do-node to compile
      *
      * @return string The compiled PHTML
      * @throws Exception
@@ -1426,7 +1538,7 @@ class Compiler
      * Compiles a filter-node intp PHTML
      * The filters are drawn from the filters-option
      *
-     * @param \Tale\Jade\Parser\Node $node The filter node to compile
+     * @param Node $node the filter node to compile
      *
      * @return string The compiled PHTML
      * @throws Exception
@@ -1492,7 +1604,7 @@ class Compiler
      *
      * @todo Attribute escaping seems pretty broken right now
      *
-     * @param \Tale\Jade\Parser\Node $node The element node to compile
+     * @param Node $node the element node to compile
      *
      * @return string The compiled PHTML
      */
@@ -1682,7 +1794,7 @@ class Compiler
      *
      * @see \Tale\Jade\Compiler->interpolate
      *
-     * @param \Tale\Jade\Parser\Node $node The text-node to compile
+     * @param Node $node the text-node to compile
      *
      * @return string The compiled PHTML
      */
@@ -1696,7 +1808,7 @@ class Compiler
      * Compiles an expression node and it's descending text nodes
      * into a single PHP expression
      *
-     * @param \Tale\Jade\Parser\Node $node The expression node to compile
+     * @param Node $node the expression node to compile
      *
      * @return string
      */
@@ -1723,7 +1835,7 @@ class Compiler
      * If it's rendered, it will be compiled as a HTML-comment,
      * if not it will be compiled as a hidden PHP comment
      *
-     * @param \Tale\Jade\Parser\Node $node The comment-node to compile
+     * @param Node $node the comment-node to compile
      *
      * @return string The compiled PHTML
      */

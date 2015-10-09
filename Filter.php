@@ -1,23 +1,28 @@
 <?php
 /**
- * The Tale Jade Project
+ * The Tale Jade Default Filters.
  *
- * The Filter Class
+ * Contains a static filter class that provides some basic
+ * filters for use inside Jade-files. You can define own filters
+ * by passing the 'filter'-option to the Compiler you compile
+ * your Jade files with
  *
  * This file is part of the Tale Jade Template Engine for PHP
  *
- * @author Torben Köhn <tk@talesoft.io>
- * @author Talesoft <info@talesoft.io>
- * @projectGroup Tale
- * @project Jade
- * @component Filter
- *
+ * LICENSE:
  * The code of this file is distributed under the MIT license.
  * If you didn't receive a copy of the license text, you can
  * read it here http://licenses.talesoft.io/2015/MIT.txt
  *
- * Please do not remove this comment block.
- * Thank you and have fun with Tale Jade!
+ * @category   Presentation
+ * @package    Tale\Jade
+ * @author     Torben Koehn <tk@talesoft.io>
+ * @author     Talesoft <info@talesoft.io>
+ * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
+ * @version    1.0.3
+ * @link       http://jade.talesoft.io/docs/files/Filter.html
+ * @since      File available since Release 1.0
  */
 
 namespace Tale\Jade;
@@ -25,50 +30,69 @@ namespace Tale\Jade;
 use Tale\Jade\Parser\Node;
 
 /**
- * Provides some basic filters
+ * Provides basic, static filters for the compiler.
  *
- * @todo: Need moar filters!
- * @package Tale\Jade
+ * The only reason this class exists is so that you don't have do write
+ * this basic stuff yourself.
+ *
+ * This class provides the following filters for the Compiler:
+ *
+ * :plain   => Converts to plain text
+ * :js      => Converts to <script></script>
+ * :css     => Converts to <style></style>
+ * :php     => converts to <?php ? >
+ *
+ * @category   Presentation
+ * @package    Tale\Jade
+ * @author     Torben Koehn <tk@talesoft.io>
+ * @author     Talesoft <info@talesoft.io>
+ * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
+ * @version    1.0.3
+ * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Filter.html
+ * @since      File available since Release 1.0
  */
 class Filter
 {
 
     /**
-     * Wraps a node $node in tags using $tag and respecting
-     * indentation and new-lines based on $indent and $newLine
+     * Wraps a node $node in tags using $tag.
      *
-     * @param string                 $tag     The tag to wrap the node in
-     * @param \Tale\Jade\Parser\Node $node    The node to be wrapped
-     * @param string                 $indent  The indentation to use on each child
-     * @param string                 $newLine The new-line to append after each line
+     * Respects indentation and new-lines based on $indent and $newLine
      *
-     * @return string The wrapped PTHML-string
+     * @param string $tag     the tag to wrap the node in
+     * @param Node   $node    the node to be wrapped
+     * @param string $indent  the indentation to use on each child
+     * @param string $newLine the new-line to append after each line
+     *
+     * @return string the wrapped PTHML-string
      */
     public static function wrapTag($tag, Node $node, $indent, $newLine)
     {
 
-        return "<$tag>".$newLine.self::filterPlain($node, $indent, $newLine).$indent."</$tag>".$newLine;
+        return "<$tag>".$newLine.self::filterPlain($node, $indent, $newLine)
+               .$indent."</$tag>".$newLine;
     }
 
     /**
-     * Similar to wrapTag, but rather puts PHP-instruction-tags around the text
-     * inside the node.
+     * Similar to wrapTag, but rather puts PHP-instruction-tags around the text.
+     *
      * This will create working PHP expressions.
      *
-     * If <?php or ?> are already found, they will be trimmed and re-appended correctly.
+     * If <?php or ? > are already found, they will be trimmed and re-appended
+     * correctly to avoid failing nested expressions (<?php cant be used
+     * _inside_ <?php)
      *
-     * @param \Tale\Jade\Parser\Node $node    The node to be wrapped
-     * @param string                 $indent  The indentation to use on each child
-     * @param string                 $newLine The new-line to append after each line
+     * @param Node   $node    the node to be wrapped
+     * @param string $indent  the indentation to use on each child
+     * @param string $newLine the new-line to append after each line
      *
-     * @return string The wrapped PHP-string
+     * @return string the wrapped PHP-string
      */
     public static function wrapCode(Node $node, $indent, $newLine)
     {
 
-        $strlen = function_exists('mb_strlen') ? 'mb_strlen' : 'strlen';
         $text = self::filterPlain($node, $indent, $newLine);
-
         $text = preg_replace(['/^\s*<\?php ?/i', '/\?>\s*$/'], '', $text);
 
         return $indent.'<?php '.$newLine.$text.$newLine.$indent.'?>'.$newLine;
@@ -76,13 +100,13 @@ class Filter
 
 
     /**
-     * A plain-text filter that just corrects indentation and new-lines
+     * A plain-text filter that just corrects indentation and new-lines.
      *
-     * @param \Tale\Jade\Parser\Node $node    The node to be wrapped
-     * @param string                 $indent  The indentation to use on each child
-     * @param string                 $newLine The new-line to append after each line
+     * @param Node   $node    the node to be wrapped
+     * @param string $indent  the indentation to use on each child
+     * @param string $newLine the new-line to append after each line
      *
-     * @return string The wrapped PTHML-string
+     * @return string the wrapped PTHML-string
      */
     public static function filterPlain(Node $node, $indent, $newLine)
     {
@@ -92,7 +116,9 @@ class Filter
         //Normalize newlines to $newLine and append our indent
         $i = 0;
 
-        return implode($newLine, array_map(function ($value) use ($indent, $newLine, &$i) {
+        return implode($newLine, array_map(function ($value) use (
+            $indent, $newLine, &$i
+        ) {
 
             if (strlen($indent) < 1 && $i++ !== 0 && strlen($value) > 0) {
 
@@ -106,11 +132,11 @@ class Filter
 
     /**
      * Wraps the content in <style></style> tags and corrects indentation
-     * and new-lines
+     * and new-lines.
      *
-     * @param \Tale\Jade\Parser\Node $node    The node to be wrapped
-     * @param string                 $indent  The indentation to use on each child
-     * @param string                 $newLine The new-line to append after each line
+     * @param Node   $node    the node to be wrapped
+     * @param string $indent  the indentation to use on each child
+     * @param string $newLine the new-line to append after each line
      *
      * @return string The wrapped PTHML-string
      */
@@ -122,13 +148,13 @@ class Filter
 
     /**
      * Wraps the content in <script></script> tags and corrects indentation
-     * and new-lines
+     * and new-lines.
      *
-     * @param \Tale\Jade\Parser\Node $node    The node to be wrapped
-     * @param string                 $indent  The indentation to use on each child
-     * @param string                 $newLine The new-line to append after each line
+     * @param Node   $node    the node to be wrapped
+     * @param string $indent  the indentation to use on each child
+     * @param string $newLine the new-line to append after each line
      *
-     * @return string The wrapped PTHML-string
+     * @return string the wrapped PTHML-string
      */
     public static function filterScript(Node $node, $indent, $newLine)
     {
@@ -138,13 +164,13 @@ class Filter
 
     /**
      * Wraps the content in PHP-compiler tags and corrects indentation
-     * and new-lines
+     * and new-lines.
      *
-     * @param \Tale\Jade\Parser\Node $node    The node to be wrapped
-     * @param string                 $indent  The indentation to use on each child
-     * @param string                 $newLine The new-line to append after each line
+     * @param Node   $node    the node to be wrapped
+     * @param string $indent  the indentation to use on each child
+     * @param string $newLine the new-line to append after each line
      *
-     * @return string The wrapped PHP-string
+     * @return string the wrapped PHP-string
      */
     public static function filterCode(Node $node, $indent, $newLine)
     {

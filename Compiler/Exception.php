@@ -6,7 +6,7 @@
  *
  * This file is part of the Tale Jade Template Engine for PHP
  *
- * @author Torben Köhn <tk@talesoft.io>
+ * @author Torben K?hn <tk@talesoft.io>
  * @author Talesoft <info@talesoft.io>
  * @projectGroup Tale
  * @project Jade
