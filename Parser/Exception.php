@@ -1,32 +1,42 @@
 <?php
 /**
- * The Tale Jade Project
+ * The Tale Jade Parser Exception.
  *
- * The Exception class for the Parser
+ * Contains an exception that is thrown when the parser encounters
+ * invalid node relations
  *
- * This file is part of the Tale Jade Template Engine for PHP
- *
- * @author Torben K?hn <tk@talesoft.io>
- * @author Talesoft <info@talesoft.io>
- * @projectGroup Tale
- * @project Jade
- * @component Parser\Exception
- *
+ * LICENSE:
  * The code of this file is distributed under the MIT license.
  * If you didn't receive a copy of the license text, you can
  * read it here http://licenses.talesoft.io/2015/MIT.txt
  *
- * Please do not remove this comment block.
- * Thank you and have fun with Tale Jade!
+ * @category   Presentation
+ * @package    Tale\Jade\Parser
+ * @author     Torben Koehn <tk@talesoft.io>
+ * @author     Talesoft <info@talesoft.io>
+ * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
+ * @version    1.0.3
+ * @link       http://jade.talesoft.io/docs/files/Parser.Exception.html
+ * @since      File available since Release 1.0
  */
 
 namespace Tale\Jade\Parser;
 
 /**
- * Represents an exception that is thrown
- * during the parsing process
+ * Represents an exception that is thrown during the parsing process.
  *
- * @package Tale\Jade\Parser
+ * This exception is thrown when the parser encounters invalid node relations
+ *
+ * @category   Presentation
+ * @package    Tale\Jade\Parser
+ * @author     Torben Koehn <tk@talesoft.io>
+ * @author     Talesoft <info@talesoft.io>
+ * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
+ * @version    1.0.3
+ * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Parser.Exception.html
+ * @since      File available since Release 1.0
  */
 class Exception extends \Exception
 {

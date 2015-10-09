@@ -1,23 +1,26 @@
 <?php
 /**
- * The Tale Jade Project
+ * The Tale Jade Renderer-Adapter Prototype.
  *
- * The Renderer AdapterBase class
+ * All adapters that the renderer can use should extend this class
+ * and implement its ->render() method.
  *
  * This file is part of the Tale Jade Template Engine for PHP
  *
- * @author Torben K?hn <tk@talesoft.io>
- * @author Talesoft <info@talesoft.io>
- * @projectGroup Tale
- * @project Jade
- * @component Renderer\AdapterBase
- *
+ * LICENSE:
  * The code of this file is distributed under the MIT license.
  * If you didn't receive a copy of the license text, you can
  * read it here http://licenses.talesoft.io/2015/MIT.txt
  *
- * Please do not remove this comment block.
- * Thank you and have fun with Tale Jade!
+ * @category   Presentation
+ * @package    Tale\Jade\Renderer
+ * @author     Torben Koehn <tk@talesoft.io>
+ * @author     Talesoft <info@talesoft.io>
+ * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
+ * @version    1.0.3
+ * @link       http://jade.talesoft.io/docs/files/Renderer.AdapterBase.html
+ * @since      File available since Release 1.0
  */
 
 namespace Tale\Jade\Renderer;
@@ -25,40 +28,54 @@ namespace Tale\Jade\Renderer;
 use Tale\Jade\Renderer;
 
 /**
- * Acts as a base class for renderer adapters
+ * Acts as a base class for renderer adapters.
  *
- * Provides some requirements for the renderer adapters
+ * Provides some requirements for the renderer adapters.
+ * The key is the ->render() method with actually
+ * does the rendering.
  *
- * @package Tale\Jade\Renderer
+ * @category   Presentation
+ * @package    Tale\Jade\Renderer
+ * @author     Torben Koehn <tk@talesoft.io>
+ * @author     Talesoft <info@talesoft.io>
+ * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
+ * @version    1.0.3
+ * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Renderer.AdapterBase.html
+ * @since      File available since Release 1.0
  */
 abstract class AdapterBase
 {
 
     /**
-     * The renderer this adapter got created in
-     * @var \Tale\Jade\Renderer
+     * The renderer this adapter got created in.
+     *
+     * @var Renderer
      */
     private $_renderer;
 
     /**
-     * The options array for this adapter
+     * The options array for this adapter.
+     *
      * @var array
      */
     private $_options;
 
     /**
-     * Creates a new adapter
+     * Creates a new adapter.
      *
      * If you create a child-adapter, make sure to set your default options correctly
      *
      * Something along these lines:
-     * parent::__construct($renderer, array_replace_recursive([
-     *    'your' => 'default',
-     *    'option' => 'array'
-     * ], $options ? $options : []);
+     * <code>
+     *    parent::__construct($renderer, array_replace_recursive([
+     *        'your' => 'default',
+     *        'option' => 'array'
+     *    ], $options ? $options : []);
+     * </code>
      *
-     * @param \Tale\Jade\Renderer $renderer The renderer this adapter is created in
-     * @param array|null          $options  The options array for the adapter
+     * @param Renderer   $renderer the renderer this adapter is created in
+     * @param array|null $options  the options array for the adapter
      */
     public function __construct(Renderer $renderer, array $options = null)
     {
@@ -68,9 +85,9 @@ abstract class AdapterBase
     }
 
     /**
-     * Returns the attached renderer this adapter was created in
+     * Returns the attached renderer this adapter was created in.
      *
-     * @return \Tale\Jade\Renderer
+     * @return Renderer
      */
     public function getRenderer()
     {
@@ -79,12 +96,13 @@ abstract class AdapterBase
     }
 
     /**
-     * Returns an option by a given name
+     * Returns an option by a given name.
+     *
      * The existence of the option is not checked
      *
-     * @param string $name The name of the option
+     * @param string $name the name of the option
      *
-     * @return mixed The value of the option
+     * @return mixed the value of the option
      */
     protected function getOption($name)
     {
@@ -93,7 +111,7 @@ abstract class AdapterBase
     }
 
     /**
-     * Renders a jade file by a given path
+     * Renders a jade file by a given path.
      *
      * The extension can be omitted if it's the extension
      * set in the Compiler-options ('.jade' by default)
@@ -107,10 +125,10 @@ abstract class AdapterBase
      *
      * You might just echo the result, cache it or do anything else with it
      *
-     * @param string     $path The relative path to be rendered
-     * @param array|null $args The variables for the template
+     * @param string     $path the relative path to be rendered
+     * @param array|null $args the variables for the template
      *
-     * @return string The rendered markup
+     * @return string the rendered markup
      */
     abstract public function render($path, array $args = null);
 }

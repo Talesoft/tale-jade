@@ -1,78 +1,98 @@
 <?php
 /**
- * The Tale Jade Project
+ * The Tale Jade Parser Node.
  *
- * The Node class for the Parser Nodes
+ * Contains a Node-class that keeps parent-child relations and builds
+ * a tree this way.
+ *
+ * It's used to build the Abstract Syntax Tree (AST) in the Parser
  *
  * This file is part of the Tale Jade Template Engine for PHP
  *
- * @author Torben K?hn <tk@talesoft.io>
- * @author Talesoft <info@talesoft.io>
- * @projectGroup Tale
- * @project Jade
- * @component Parser\Node
- *
+ * LICENSE:
  * The code of this file is distributed under the MIT license.
  * If you didn't receive a copy of the license text, you can
  * read it here http://licenses.talesoft.io/2015/MIT.txt
  *
- * Please do not remove this comment block.
- * Thank you and have fun with Tale Jade!
+ * @category   Presentation
+ * @package    Tale\Jade\Parser
+ * @author     Torben Koehn <tk@talesoft.io>
+ * @author     Talesoft <info@talesoft.io>
+ * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
+ * @version    1.0.3
+ * @link       http://jade.talesoft.io/docs/files/Parser.Node.html
+ * @since      File available since Release 1.0
  */
 
 namespace Tale\Jade\Parser;
 
 /**
- * Represents a node in the AST the parser generates
+ * Represents a node in the AST the parser generates.
  *
  * A node has children and always tries to reference its parents
  *
  * It also has some utility methods to work with those nodes
- * @package Tale\Jade\Parser
+ *
+ * @category   Presentation
+ * @package    Tale\Jade\Parser
+ * @author     Torben Koehn <tk@talesoft.io>
+ * @author     Talesoft <info@talesoft.io>
+ * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
+ * @version    1.0.3
+ * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Parser.Node.html
+ * @since      File available since Release 1.0
  */
 class Node
 {
 
     /**
-     * The type of the node. Can be a string of any kind
+     * The type of the node, can be a string of any kind.
+     *
      * @var string
      */
     public $type;
 
     /**
-     * The line this node was created on
+     * The line this node was created on.
+     *
      * @var int|null
      */
     public $line;
 
     /**
-     * The offset in a line this node was created on
+     * The offset in a line this node was created on.
+     *
      * @var int|null
      */
     public $offset;
 
     /**
-     * The parent-node of this node
-     * @var \Tale\Jade\Parser\Node|null
+     * The parent-node of this node.
+     *
+     * @var Node|null
      */
     public $parent;
 
     /**
-     * The children of this node
-     * @var \Tale\Jade\Parser\Node[]
+     * The children of this node.
+     *
+     * @var Node[]
      */
     public $children;
 
     /**
-     * The data associated with this node
+     * The data associated with this node.
      *
      * These get set via __get and __set
+     *
      * @var array
      */
     private $_data;
 
     /**
-     * Creates a new, detached node without children or a parent
+     * Creates a new, detached node without children or a parent.
      *
      * It can be appended to any node after that
      *
@@ -80,9 +100,9 @@ class Node
      *
      * @todo Maybe switch to privates above?
      *
-     * @param string   $type   The type of this node
-     * @param int|null $line   The line at which we found this node
-     * @param int|null $offset The offset in a line we found this node at
+     * @param string   $type   the type of this node
+     * @param int|null $line   the line at which we found this node
+     * @param int|null $offset the offset in a line we found this node at
      */
     public function __construct($type, $line = null, $offset = null)
     {
@@ -98,7 +118,7 @@ class Node
     }
 
     /**
-     * Returns the position of the given node inside this node
+     * Returns the position of the given node inside this node.
      *
      * [element:a]
      *    (0)[element:b]
@@ -109,7 +129,7 @@ class Node
      *
      * @see array_search
      *
-     * @param \Tale\Jade\Parser\Node $node
+     * @param Node $node the child-node to get the index of
      *
      * @return int|false
      */
@@ -120,7 +140,7 @@ class Node
     }
 
     /**
-     * Returns the previous sibling of this element or null, if if there isn't any
+     * Returns the previous sibling of this element or null, if if there isn't any.
      *
      * [element:a]
      *    (0)[element:b]
@@ -128,7 +148,7 @@ class Node
      *
      * [element:c]->prev() === [element:b]
      *
-     * @return \Tale\Jade\Parser\Node|null
+     * @return Node|null
      */
     public function prev()
     {
@@ -139,7 +159,7 @@ class Node
     }
 
     /**
-     * Returns the next sibling of this element or null, if if there isn't any
+     * Returns the next sibling of this element or null, if if there isn't any.
      *
      * [element:a]
      *    (0)[element:b]
@@ -147,7 +167,7 @@ class Node
      *
      * [element:b]->next() === [element:c]
      *
-     * @return \Tale\Jade\Parser\Node|null
+     * @return Node|null
      */
     public function next()
     {
@@ -158,7 +178,7 @@ class Node
     }
 
     /**
-     * Appends the given node to this node's children
+     * Appends the given node to this node's children.
      *
      * This also sets the parent of the given child to this node
      *
@@ -173,7 +193,7 @@ class Node
      *    (1)[element:c]
      *    (2)[element:d]
      *
-     * @param \Tale\Jade\Parser\Node $node The new child node to be appended
+     * @param Node $node the new child node to be appended
      *
      * @return $this
      */
@@ -187,7 +207,7 @@ class Node
     }
 
     /**
-     * Prepends the given node to this node's children
+     * Prepends the given node to this node's children.
      *
      * This also sets the parent of the given child to this node
      *
@@ -202,7 +222,7 @@ class Node
      *    (1)[element:b]
      *    (2)[element:c]
      *
-     * @param \Tale\Jade\Parser\Node $node The new child node to be prepended
+     * @param Node $node the new child node to be prepended
      *
      * @return $this
      */
@@ -216,7 +236,7 @@ class Node
     }
 
     /**
-     * Removes the given child node from this node's children
+     * Removes the given child node from this node's children.
      *
      * The parent of the given child node will be set to null
      *
@@ -231,7 +251,7 @@ class Node
      *    (0)[element:b]
      *    (1)[element:d]
      *
-     * @param \Tale\Jade\Parser\Node $node The node to remove from this node's children
+     * @param Node $node the node to remove from this node's children
      *
      * @return $this
      */
@@ -251,7 +271,7 @@ class Node
 
     /**
      * Inserts the second given node after the first given node
-     * inside this node's children
+     * inside this node's children.
      *
      * This allows fine control over the node's children
      *
@@ -268,8 +288,10 @@ class Node
      *    (1)[element:d]
      *    (2)[element:c]
      *
-     * @param \Tale\Jade\Parser\Node $node    The child node of this node's children the new node will be inserted after
-     * @param \Tale\Jade\Parser\Node $newNode The new node that will be inserted after the first node
+     * @param Node $node    the child node of this node's children the new
+     *                      node will be inserted after
+     * @param Node $newNode the new node that will be inserted after the
+     *                      first node
      *
      * @return $this
      */
@@ -289,7 +311,7 @@ class Node
 
     /**
      * Inserts the second given node before the first given node
-     * inside this node's children
+     * inside this node's children.
      *
      * This allows fine control over the node's children
      *
@@ -306,8 +328,10 @@ class Node
      *    (1)[element:d]
      *    (2)[element:c]
      *
-     * @param \Tale\Jade\Parser\Node $node    The child node of this node's children the new node will be inserted before
-     * @param \Tale\Jade\Parser\Node $newNode The new node that will be inserted before the first node
+     * @param Node $node    the child node of this node's children the new
+     *                      node will be inserted before
+     * @param Node $newNode the new node that will be inserted before
+     *                      the first node
      *
      * @return $this
      */
@@ -326,8 +350,9 @@ class Node
     }
 
     /**
-     * Finds nodes with the given type inside this nodes children
-     * and all it's children-children recursively and returns a generator
+     * Finds nodes with the given type inside this nodes children.
+     *
+     * Plus all it's children-children recursively and returns a generator
      * providing them
      *
      * This is used to collect all blocks, imports and mixins and handle them
@@ -335,9 +360,9 @@ class Node
      *
      * If you need a normal array, use ->findArray() instead instead
      *
-     * @param string $type The node type to search for
+     * @param string $type the node type to search for
      *
-     * @return \Generator A generator of the found children
+     * @return \Generator a generator of the found children
      */
     public function find($type)
     {
@@ -353,16 +378,17 @@ class Node
     }
 
     /**
-     * Finds nodes with the given type inside this nodes children
-     * and all it's children-children recursively and returns an array
+     * Finds nodes with the given type inside this nodes children.
+     *
+     * Plus all it's children-children recursively and returns an array
      * with all of them
      *
      * I you want to do further searching on it, you should
      * rather use the Generator-version ->find() to improve memory-usage
      *
-     * @param string $type The node type to search for
+     * @param string $type the node type to search for
      *
-     * @return array An array containing all found children
+     * @return array an array containing all found children
      */
     public function findArray($type)
     {
@@ -372,15 +398,15 @@ class Node
 
 
     /**
-     * Returns all text and child-texts in a single text
+     * Returns all text and child-texts in a single text.
      *
      * You can control the text-style with the arguments
      *
-     * @param string $indentStyle The indentation to use (multiplies with level)
-     * @param string $newLine     The new-line style to use
-     * @param int    $level       The initial indentation level
+     * @param string $indentStyle the indentation to use (multiplies with level)
+     * @param string $newLine     the new-line style to use
+     * @param int    $level       the initial indentation level
      *
-     * @return string The compiled text-block
+     * @return string the compiled text-block
      */
     public function text($indentStyle = '  ', $newLine = "\n", $level = 0)
     {
@@ -401,7 +427,7 @@ class Node
 
 
     /**
-     * Dumps the node as a string to ease up debugging
+     * Dumps the node as a string to ease up debugging.
      *
      * This is also the default-action for __toString on every node
      *
@@ -410,9 +436,9 @@ class Node
      * [element tag=a expands=[element tag=b]]
      *    [element tag=c attributes={[attribute name=d name=e]}]
      *
-     * @param int $level The initial indentation level
+     * @param int $level the initial indentation level
      *
-     * @return string The string to debug the node-tree
+     * @return string the string to debug the node-tree
      */
     public function dump($level = 0)
     {
@@ -440,11 +466,11 @@ class Node
     }
 
     /**
-     * Gets called when isset() is called on this node's properties
+     * Gets called when isset() is called on this node's properties.
      *
      * Redirects the call to the $_data storage
      *
-     * @param string $key The name of the property to check
+     * @param string $key the name of the property to check
      *
      * @return bool
      */
@@ -455,11 +481,11 @@ class Node
     }
 
     /**
-     * Gets called when unset() is called on this node's properties
+     * Gets called when unset() is called on this node's properties.
      *
      * Redirects the call to $_data storage
      *
-     * @param string $key The name of the property to unset
+     * @param string $key the name of the property to unset
      */
     public function __unset($key)
     {
@@ -468,13 +494,13 @@ class Node
     }
 
     /**
-     * Gets called when a property is read from this node
+     * Gets called when a property is read from this node.
      *
      * Redirects to the $_data storage and returns a reference to that value
      *
-     * @param string $key The name of the property that is read
+     * @param string $key the name of the property that is read
      *
-     * @return mixed A reference to the value of the property
+     * @return mixed a reference to the value of the property
      */
     public function &__get($key)
     {
@@ -483,12 +509,12 @@ class Node
     }
 
     /**
-     * Gets called when a property is written on this node instance
+     * Gets called when a property is written on this node instance.
      *
      * Redirects to the $_data storage and sets a key with that value there
      *
-     * @param string $key   The name of the property to be written
-     * @param mixed  $value The value of that property
+     * @param string $key   the name of the property to be written
+     * @param mixed  $value the value of that property
      */
     public function __set($key, $value)
     {
@@ -498,12 +524,13 @@ class Node
 
     /**
      * Gets called when this node instance is casted to a string in any way
+     *
      * (echo, (string), strval, string operations, ., etc.)
      *
      * Calls ->dump() and dumps a debuggable text-representation of this node
      * and all of its child-nodes
      *
-     * @return string A debuggable text-representation of this node tree
+     * @return string a debuggable text-representation of this node tree
      */
     public function __toString()
     {

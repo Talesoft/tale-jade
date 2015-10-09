@@ -236,8 +236,8 @@ class Compiler
      *                              If none set, it will default to get_include_path()
      * extension:                   The extension for Jade files
      *                              (default: .jade), .jd is pretty cool as an example
-     * parser:                      The options for the parser if none given
-     * lexer:                       The options for the lexer if none given.
+     * parserOptions:               The options for the parser if none given
+     * lexerOptions:                The options for the lexer if none given.
      *
      *
      * @param array|null  $options an array of options
@@ -297,12 +297,12 @@ class Compiler
             'replaceMixins'           => false,
             'paths'                   => [],
             'extension'               => '.jade',
-            'parser'                  => [],
-            'lexer'                   => []
+            'parserOptions'           => [],
+            'lexerOptions'            => []
         ], $options ? $options : []);
 
-        $this->_lexer = $lexer ? $lexer : new Lexer($this->_options['lexer']);
-        $this->_parser = $parser ? $parser : new Parser($this->_options['parser'], $this->_lexer);
+        $this->_lexer = $lexer ? $lexer : new Lexer($this->_options['lexerOptions']);
+        $this->_parser = $parser ? $parser : new Parser($this->_options['parserOptions'], $this->_lexer);
     }
 
     /**
@@ -469,7 +469,7 @@ class Compiler
      * @param string $path the path to the jade file
      *
      * @return mixed|string the compiled PHTML
-     *                      
+     *
      * @throws \Exception when the file is not found
      * @throws Exception when the compilation fails
      * @throws Parser\Exception when the parsing fails
@@ -490,7 +490,7 @@ class Compiler
 
     /**
      * Checks if a variable is scalar (or "not an expression").
-     * 
+     *
      * These values don't get much special handling, they are mostly
      * simple attributes values like `type="button"` or `method='post'`
      *
@@ -529,7 +529,7 @@ class Compiler
 
     /**
      * Checks if a value is a variable.
-     * 
+     *
      * A variable needs to start with $.
      * After that only a-z, A-Z and _ can follow
      * After that you can use any character of
@@ -555,7 +555,7 @@ class Compiler
 
     /**
      * Interpolates a string value.
-     * 
+     *
      * Interpolation is initialized with # (escaped) or ! (not escaped)
      *
      * After that use either {} brackets for variable expressions
@@ -633,7 +633,7 @@ class Compiler
 
     /**
      * Creates a PHP code expression.
-     * 
+     *
      * By default it will have <?php ? >-style
      *
      * @param string $code   the PHP code
@@ -673,7 +673,7 @@ class Compiler
 
     /**
      * Creates a PHP comment surrounded by PHP code tags.
-     * 
+     *
      * This creates a "hidden" comment thats still visible in the PHTML
      *
      * @todo Maybe this should return an empty string if pretty-option is on?
@@ -833,7 +833,7 @@ class Compiler
      * @param Node $node the root Node to search imports in
      *
      * @return $this
-     * @throws Exception
+     * @throws Exception when the allowImports-options is set to false
      */
     protected function handleImports(Node $node)
     {
@@ -853,7 +853,7 @@ class Compiler
     }
 
     /**
-     * Loads an imported file and merges the nodes with the current tree
+     * Loads an imported file and merges the nodes with the current tree.
      *
      * @param Node $node the node to import
      *
@@ -944,7 +944,8 @@ class Compiler
     }
 
     /**
-     * Collects all blocks and saves them into $_blocks
+     * Collects all blocks and saves them into $_blocks.
+     *
      * After that it calls handleBlock on each $block
      *
      * @param Node $node the node to search blocks in
@@ -962,14 +963,15 @@ class Compiler
     }
 
     /**
-     * Stacks blocks into each other
+     * Stacks blocks into each other.
+     *
      * The first block found is always the container,
      * all other blocks either to append, replace or prepend
+     * to/the first block.
      *
      * @param Node $node the block node to handle
      *
      * @return $this
-     * @throws Exception
      */
     protected function handleBlock(Node $node)
     {
@@ -982,12 +984,6 @@ class Compiler
 
             if ($block === $node || $block->name !== $node->name)
                 continue;
-
-            if ($block->expands)
-                $this->throwException(
-                    "It makes no sense for a sub-block to expand anything",
-                    $block
-                );
 
             $mode = $block->mode;
             //detach from parent
@@ -1032,14 +1028,15 @@ class Compiler
     }
 
     /**
-     * Finds all mixins and loops them through handleMixin
+     * Finds all mixins and loops them through handleMixin.
+     *
      * Duplicated mixins will throw an exception if the replaceMixins-options
      * is false
      *
      * @param Node $node the node to search mixins in
      *
      * @return $this
-     * @throws Exception
+     * @throws Exception when a mixin name occurs twice and replaceMixins is false
      */
     protected function handleMixins(Node $node)
     {
@@ -1067,14 +1064,15 @@ class Compiler
     }
 
     /**
-     * Pre-compiles a mixin into the $_mixin array
+     * Pre-compiles a mixin into the $_mixin array.
+     *
      * Only the block content of the mixin will be compiled,
      * not the mixin itself
      *
      * The actual mixins get compiled in compileMixins
      *
-     * @see \Tale\Jade\Compiler->_mixins
-     * @see \Tale\Jade\Compiler->compileMixins
+     * @see Compiler->_mixins
+     * @see Tale\Jade\Compiler->compileMixins
      *
      * @param Node $node the mixin node to compile
      *
@@ -1097,8 +1095,7 @@ class Compiler
     }
 
     /**
-     * Compiles all mixins in $_mixins under each other into a single
-     * PHTML block
+     * Compiles found mixins under each other into a single PHTML block.
      *
      * Mixins will be anonymous functions inside a $__mixins array
      * The mixins also pass the global $__args variable on (so that it _is_ global)
@@ -1163,14 +1160,14 @@ class Compiler
     }
 
     /**
-     * Compiles a mixin call referencing the mixins in $_mixins
+     * Compiles a mixin call referencing the mixins in $_mixins.
      *
-     * @todo I guess the variadic handling in calls is broken right now. Calls can splat with ...
+     * @todo I guess the variadic handling in calls is broken right now. Calls should splat with '...'
      *
      * @param Node $node the mixin call node to compile
      *
      * @return string The compiled PHTML
-     * @throws Exception
+     * @throws Exception when the called mixin doesnt exist in this instance
      */
     protected function compileMixinCall(Node $node)
     {
@@ -1287,7 +1284,7 @@ class Compiler
     }
 
     /**
-     * Compiles a block node into PHTML
+     * Compiles a block node into PHTML.
      *
      * A single block node without a name or mode will act as a wrapper
      * for blocks inside mixins
@@ -1309,8 +1306,7 @@ class Compiler
     }
 
     /**
-     * Compiles a conditional, either if, elseif, else if or else
-     * into PHTML
+     * Compiles a conditional, either if, elseif, else if or else into PHTML.
      *
      * @param Node $node the conditional node to compile
      *
@@ -1350,7 +1346,8 @@ class Compiler
     }
 
     /**
-     * Compiles a case-node into PHTML
+     * Compiles a case-node into PHTML.
+     *
      * This also checks if all sub-nodes of the case are
      * when-children, nothing else is allowed
      *
@@ -1403,7 +1400,8 @@ class Compiler
     }
 
     /**
-     * Compiles a when-node into PHTML
+     * Compiles a when-node into PHTML.
+     *
      * This also checks, if the when node is defined
      * on a case-parent
      *
@@ -1442,8 +1440,7 @@ class Compiler
     }
 
     /**
-     * Compiles a each-instruction into a foreach-loop
-     * PHTML
+     * Compiles a each-instruction into a foreach-loop PHTML block.
      *
      * the $ in the variable names are optional
      *
@@ -1476,7 +1473,7 @@ class Compiler
     }
 
     /**
-     * Compiles a while-loop into PHTML
+     * Compiles a while-loop into PHTML.
      *
      * Notice that if it has no children, we assume it's a do/while loop
      * and don't print brackets
@@ -1507,7 +1504,7 @@ class Compiler
     }
 
     /**
-     * Compiles a do-instruction into PHTML
+     * Compiles a do-instruction into PHTML.
      *
      * @todo Check for while-node with $node->next()
      *
@@ -1535,7 +1532,8 @@ class Compiler
     }
 
     /**
-     * Compiles a filter-node intp PHTML
+     * Compiles a filter-node intp PHTML.
+     *
      * The filters are drawn from the filters-option
      *
      * @param Node $node the filter node to compile
@@ -1560,11 +1558,11 @@ class Compiler
     }
 
     /**
-     * Compiles an array of nodes like they are children of some other node
+     * Compiles an array of nodes like they are children of some other node.
      *
      * if $indent is true, the level will be increased
      *
-     * @param array      $nodes
+     * @param Node[]     $nodes
      * @param bool|true  $indent
      * @param bool|false $allowInline
      *
@@ -1599,8 +1597,7 @@ class Compiler
     }
 
     /**
-     * Compiles an element-node containing
-     * tags, attributes and assignments
+     * Compiles an element-node containing a tag, attributes and assignments.
      *
      * @todo Attribute escaping seems pretty broken right now
      *
@@ -1789,10 +1786,11 @@ class Compiler
     }
 
     /**
-     * Compiles a text-node to PTHML
+     * Compiles a text-node to PTHML.
+     *
      * Texts get interpolated
      *
-     * @see \Tale\Jade\Compiler->interpolate
+     * @see Compiler->interpolate
      *
      * @param Node $node the text-node to compile
      *
@@ -1806,7 +1804,7 @@ class Compiler
 
     /**
      * Compiles an expression node and it's descending text nodes
-     * into a single PHP expression
+     * into a single PHP expression.
      *
      * @param Node $node the expression node to compile
      *
@@ -1831,7 +1829,8 @@ class Compiler
     }
 
     /**
-     * Compiles a comment-node based on if its rendered or not
+     * Compiles a comment-node based on if its rendered or not.
+     *
      * If it's rendered, it will be compiled as a HTML-comment,
      * if not it will be compiled as a hidden PHP comment
      *
@@ -1848,7 +1847,7 @@ class Compiler
     }
 
     /**
-     * Compiles a simple error helper in a string to be prepended to the final PHTML
+     * Compiles a simple error helper in a string to be prepended to the final PHTML.
      *
      * @return string The compiled PHTML for the error handler
      */
@@ -1874,7 +1873,7 @@ class Compiler
     }
 
     /**
-     * Throws a Tale\Jade\Parser\Exception
+     * Throws a Compiler-Exception.
      *
      * @param string    $message     A meaningful exception message
      * @param Node|null $relatedNode The node the exception occured on
@@ -1896,7 +1895,7 @@ class Compiler
 
 
     /**
-     * Builds an attribute or argument value
+     * Builds an attribute or argument value.
      *
      * Objects get converted to arrays
      * Arrays will be imploded by '' (values are concatenated)
@@ -1923,7 +1922,8 @@ class Compiler
     }
 
     /**
-     * Builds a data-attribute value
+     * Builds a data-attribute value.
+     *
      * If it's an object or an array, it gets converted to JSON automatically
      * If not, the value stays scalar
      *
@@ -1954,7 +1954,7 @@ class Compiler
     }
 
     /**
-     * Builds a style-attribute string from a value
+     * Builds a style-attribute string from a value.
      *
      * ['color' => 'red', 'width: 100%', ['height' => '20px']]
      * will become
@@ -1978,7 +1978,7 @@ class Compiler
     }
 
     /**
-     * Builds a class-attribute string from a value
+     * Builds a class-attribute string from a value.
      *
      *['a', 'b', ['c', ['d', 'e']]]
      * will become
@@ -2002,7 +2002,7 @@ class Compiler
     }
 
     /**
-     * Checks if a value is _exactly_ either null or false
+     * Checks if a value is _exactly_ either null or false.
      *
      * @param mixed $value The value to check
      *
@@ -2015,8 +2015,9 @@ class Compiler
     }
 
     /**
-     * Checks if a whole array is _exactly_ null or false
-     * (Not the array itself, but all values in the array)
+     * Checks if a whole array is _exactly_ null or false.
+     *
+     * Not the array itself, but all values in the array
      *
      * @param array $value The array to check
      *
@@ -2029,8 +2030,9 @@ class Compiler
     }
 
     /**
-     * Checks if a value is either an object or an array
-     * (kind of like !isScalar && !isExpression)
+     * Checks if a value is either an object or an array.
+     *
+     * Kind of like !isScalar && !isExpression
      *
      * @param mixed $value The value to check
      *

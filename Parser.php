@@ -170,7 +170,7 @@ class Parser
      *
      * Possible options are:
      *
-     * lexer:       The options for the lexer
+     * lexerOptions:   The options for the lexer
      *
      * @param array|null $options the options array
      * @param Lexer|null $lexer   an existing lexer instance (lexer-option will be ignored)
@@ -179,9 +179,9 @@ class Parser
     {
 
         $this->_options = array_replace([
-            'lexer' => []
+            'lexerOptions' => []
         ], $options ? $options : []);
-        $this->_lexer = $lexer ? $lexer : new Lexer($this->_options['lexer']);
+        $this->_lexer = $lexer ? $lexer : new Lexer($this->_options['lexerOptions']);
     }
 
     /**

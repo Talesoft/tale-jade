@@ -53,7 +53,7 @@ function create_renderer(array $options = null, Compiler $compiler = null, Parse
  * <code>
  *
  *      render('some-file', [<args>], [
- *          'compiler' => ['paths' => [__DIR__.'/path/to/views']]
+ *          'paths' => [__DIR__.'/path/to/views']
  *      ]);
  *
  * @param string     $file    the relative file path to compile

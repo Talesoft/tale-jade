@@ -1,23 +1,28 @@
 <?php
 /**
- * The Tale Jade Project
+ * The Tale Jade Stream Renderer-Adapter.
  *
- * The Renderer Stream Adapter class
+ * This adapter uses PHP Stream Wrappers to realize a clutter-less,
+ * RAM-based rendering approach.
+ *
+ * Notice that the php.ini-setting `allow_url_fopen` should be `On`
  *
  * This file is part of the Tale Jade Template Engine for PHP
  *
- * @author Torben K?hn <tk@talesoft.io>
- * @author Talesoft <info@talesoft.io>
- * @projectGroup Tale
- * @project Jade
- * @component Renderer\Adapter\Stream
- *
+ * LICENSE:
  * The code of this file is distributed under the MIT license.
  * If you didn't receive a copy of the license text, you can
  * read it here http://licenses.talesoft.io/2015/MIT.txt
  *
- * Please do not remove this comment block.
- * Thank you and have fun with Tale Jade!
+ * @category   Presentation
+ * @package    Tale\Jade\Renderer\Adapter
+ * @author     Torben Koehn <tk@talesoft.io>
+ * @author     Talesoft <info@talesoft.io>
+ * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
+ * @version    1.0.3
+ * @link       http://jade.talesoft.io/docs/files/Renderer.Adapter.Stream.html
+ * @since      File available since Release 1.0
  */
 
 namespace Tale\Jade\Renderer\Adapter;
@@ -27,7 +32,7 @@ use Tale\Jade\Renderer\Adapter\Stream\Wrapper;
 use Tale\Jade\Renderer\AdapterBase;
 
 /**
- * Handles rendering via Data-URIs and a Stream Wrapper
+ * Handles rendering via Data-URIs and a PHP Stream Wrapper.
  *
  * Notice that this only works, if the php.ini setting 'allow_url_fopen' is ON
  * This works through including the PHTML file as an URI
@@ -59,13 +64,21 @@ use Tale\Jade\Renderer\AdapterBase;
  * - It may be slower than a usual file-adapter through the encoding
  * - May or may not be easier to cache (depending on the cache system)
  *
- * @package Tale\Jade\Renderer\Adapter
+ * @category   Presentation
+ * @package    Tale\Jade\Renderer\Adapter
+ * @author     Torben Koehn <tk@talesoft.io>
+ * @author     Talesoft <info@talesoft.io>
+ * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
+ * @version    1.0.3
+ * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Renderer.Adapter.Stream.html
+ * @since      File available since Release 1.0
  */
 class Stream extends AdapterBase
 {
 
     /**
-     * Creates a new stream adapter
+     * Creates a new stream adapter.
      *
      * Possible options are:
      * scheme: The scheme to register the wrapper as (default: 'jade-phtml')
@@ -74,8 +87,8 @@ class Stream extends AdapterBase
      * it is registered
      * The stream wrapper used is \Tale\Jade\Renderer\Adapter\Stream\Wrapper
      *
-     * @param \Tale\Jade\Renderer $renderer The renderer instance this adapter was created in
-     * @param array|null          $options  An array of options for the adapter
+     * @param Renderer   $renderer the renderer instance this adapter was created in
+     * @param array|null $options  an array of options for the adapter
      */
     public function __construct(Renderer $renderer, array $options = null)
     {
@@ -89,7 +102,7 @@ class Stream extends AdapterBase
     }
 
     /**
-     * Renders a jade file by a given path
+     * Renders a jade file by a given path.
      *
      * The extension can be omitted if it's the extension
      * set in the Compiler-options ('.jade' by default)
@@ -103,10 +116,10 @@ class Stream extends AdapterBase
      *
      * You might just echo the result, cache it or do anything else with it
      *
-     * @param string     $path The relative path to be rendered
-     * @param array|null $args The variables for the template
+     * @param string     $path the relative path to be rendered
+     * @param array|null $args the variables for the template
      *
-     * @return string The rendered markup
+     * @return string the rendered markup
      */
     public function render($path, array $args = null)
     {

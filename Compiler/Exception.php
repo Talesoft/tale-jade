@@ -1,32 +1,43 @@
 <?php
 /**
- * The Tale Jade Project
+ * The Tale Jade Compiler Exception.
  *
- * The Exception class for the Compiler
+ * Contains an exception that is thrown when the compiler doesnt find files
+ * or encounters invalid node relations
  *
- * This file is part of the Tale Jade Template Engine for PHP
- *
- * @author Torben K?hn <tk@talesoft.io>
- * @author Talesoft <info@talesoft.io>
- * @projectGroup Tale
- * @project Jade
- * @component Compiler\Exception
- *
+ * LICENSE:
  * The code of this file is distributed under the MIT license.
  * If you didn't receive a copy of the license text, you can
  * read it here http://licenses.talesoft.io/2015/MIT.txt
  *
- * Please do not remove this comment block.
- * Thank you and have fun with Tale Jade!
+ * @category   Presentation
+ * @package    Tale\Jade\Compiler
+ * @author     Torben Koehn <tk@talesoft.io>
+ * @author     Talesoft <info@talesoft.io>
+ * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
+ * @version    1.0.3
+ * @link       http://jade.talesoft.io/docs/files/Compiler.Exception.html
+ * @since      File available since Release 1.0
  */
 
 namespace Tale\Jade\Compiler;
 
 /**
- * Represents an exception that is thrown
- * during the compiling process
+ * Represents an exception that is thrown during the compilation process.
  *
- * @package Tale\Jade\Compiler
+ * This exception is thrown when the compiler doesnt find
+ * a file or encounters invalid node relations
+ *
+ * @category   Presentation
+ * @package    Tale\Jade\Compiler
+ * @author     Torben Koehn <tk@talesoft.io>
+ * @author     Talesoft <info@talesoft.io>
+ * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
+ * @version    1.0.3
+ * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Compiler.Exception.html
+ * @since      File available since Release 1.0
  */
 class Exception extends \Exception
 {

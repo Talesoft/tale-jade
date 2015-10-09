@@ -9,12 +9,13 @@
     </parser>
     <transformer>
         <target>docs/html</target>
-        <template name="responsive" />
-        <template name="clean" />
-        <template name="checkstyle" />
     </transformer>
+    <transformations>
+        <template name="clean" />
+    </transformations>
     <files>
         <directory>.</directory>
+        <ignore>tasks.php</ignore>
         <ignore>Test/*</ignore>
         <ignore>vendor/*</ignore>
     </files>

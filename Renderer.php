@@ -106,10 +106,11 @@ class Renderer
      *                  adapter
      * adapterOptions:  The option-array that gets passed to the adapter
      * compiler:        The compiler-options that get passed to the compiler
-     * parser:          The parser-options that get passed to the parser
-     * lexer:           The lexer options that get passed to the lexer
+     * parserOptions:   The parser-options that get passed to the parser
+     * lexerOptions:    The lexer options that get passed to the lexer
      *
-     * @todo: Abstract a few of settings (e.g. compiler:paths, compiler:pretty)
+     * pretty:          Compile with indentations and newlines (default: false)
+     * paths:           The paths the compiler should search the jade files in
      *
      * @param array|null    $options  the options to pass to the renderer
      * @param Compiler|null $compiler the compiler to use inside the renderer
@@ -125,16 +126,26 @@ class Renderer
     {
 
         $this->_options = array_replace_recursive([
-            'adapter'        => 'stream',
-            'adapterOptions' => [],
-            'compiler'       => [],
-            'parser'         => [],
-            'lexer'          => []
+            'adapter'           => 'file',
+            'adapterOptions'    => [],
+            'compilerOptions'   => [],
+            'parserOptions'     => [],
+            'lexerOptions'      => [],
+
+            //Abstracted settings
+            'pretty'            => false,
+            'paths'             => []
         ], $options ? $options : []);
 
-        $this->_lexer = $lexer ? $lexer : new Lexer($this->_options['lexer']);
-        $this->_parser = $parser ? $parser : new Parser($this->_options['parser'], $lexer);
-        $this->_compiler = $compiler ? $compiler : new Compiler($this->_options['compiler'], $parser);
+        if (!isset($this->_options['compilerOptions']['paths']))
+            $this->_options['compilerOptions']['paths'] = $this->_options['paths'];
+
+        if (!isset($this->_options['compilerOptions']['pretty']))
+            $this->_options['compilerOptions']['pretty'] = $this->_options['pretty'];
+
+        $this->_lexer = $lexer ? $lexer : new Lexer($this->_options['lexerOptions']);
+        $this->_parser = $parser ? $parser : new Parser($this->_options['parserOptions'], $lexer);
+        $this->_compiler = $compiler ? $compiler : new Compiler($this->_options['compilerOptions'], $parser);
     }
 
     /**
@@ -179,6 +190,53 @@ class Renderer
     {
 
         return $this->_lexer;
+    }
+
+    /**
+     * Adds a path to the compiler to search files in.
+     *
+     * This is just a proxy for the addPath-method of the Compiler
+     *
+     * @see Compiler->addPath
+     *
+     * @param string $path the path to add
+     *
+     * @return $this
+     */
+    public function addPath($path)
+    {
+
+        $this->getCompiler()->addPath($path);
+
+        return $this;
+    }
+
+    /**
+     * Adds a new filter to the compiler.
+     *
+     * The filter can be called inside jade via the :<filterName>-syntax
+     *
+     * The signature of the callback should be
+     * (Node $node, $indent, $newLine)
+     * where $node is the filter node that was encountered (including its children)
+     * and $indent and $newLine are indentation and the new line character
+     * as a string respecting the compiler's 'pretty' option
+     *
+     * This is just a proxy for the Compiler's addFilter method
+     *
+     * @see Compiler->addFilter
+     *
+     * @param string $name
+     * @param callable $callback
+     *
+     * @return $this
+     */
+    public function addFilter($name, $callback)
+    {
+
+        $this->getCompiler()->addFilter($name, $callback);
+
+        return $this;
     }
 
     /**

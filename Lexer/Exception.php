@@ -1,32 +1,42 @@
 <?php
 /**
- * The Tale Jade Project
+ * The Tale Jade Lexer Exception.
  *
- * The Exception class for the Lexer
+ * Contains an exception that is thrown when the lexer encounters
+ * invalid token relations
  *
- * This file is part of the Tale Jade Template Engine for PHP
- *
- * @author Torben K?hn <tk@talesoft.io>
- * @author Talesoft <info@talesoft.io>
- * @projectGroup Tale
- * @project Jade
- * @component Lexer\Exception
- *
+ * LICENSE:
  * The code of this file is distributed under the MIT license.
  * If you didn't receive a copy of the license text, you can
  * read it here http://licenses.talesoft.io/2015/MIT.txt
  *
- * Please do not remove this comment block.
- * Thank you and have fun with Tale Jade!
+ * @category   Presentation
+ * @package    Tale\Jade\Lexer
+ * @author     Torben Koehn <tk@talesoft.io>
+ * @author     Talesoft <info@talesoft.io>
+ * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
+ * @version    1.0.3
+ * @link       http://jade.talesoft.io/docs/files/Lexer.Exception.html
+ * @since      File available since Release 1.0
  */
 
 namespace Tale\Jade\Lexer;
 
 /**
- * Represents an exception that is thrown
- * during the lexing process
+ * Represents an exception that is thrown during the lexical analysis.
  *
- * @package Tale\Jade\Lexer
+ * This exception is thrown when the lexer encounters invalid token relations
+ *
+ * @category   Presentation
+ * @package    Tale\Jade\Lexer
+ * @author     Torben Koehn <tk@talesoft.io>
+ * @author     Talesoft <info@talesoft.io>
+ * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
+ * @version    1.0.3
+ * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Lexer.Exception.html
+ * @since      File available since Release 1.0
  */
 class Exception extends \Exception
 {
