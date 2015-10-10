@@ -8,18 +8,21 @@ $ignore = [
     './tasks.php'
 ];
 
+$newVersion = '1.1';
 
 
-$tags = glob('.git/refs/tags/*');
+if (!$newVersion) {
+    $tags = glob('.git/refs/tags/*');
 
-if (count($tags) < 1)
-    throw new Exception(
-        "No tags found. Make sure the .git directory is there and you have any tags yet."
-    );
+    if (count($tags) < 1)
+        throw new Exception(
+            "No tags found. Make sure the .git directory is there and you have any tags yet."
+        );
 
-sort($tags);
+    sort($tags);
 
-$lastTag = basename(end($tags));
+    $lastTag = basename(end($tags));
+}
 
 
 $dirIterator = new RecursiveDirectoryIterator('./');
@@ -33,7 +36,7 @@ $ignore = array_map(function($val) {
 
 
 var_dump($ignore);
-echo "Last tag: $lastTag\n";
+echo "Set Version: $newVersion\n";
 
 //Do eeet
 foreach ($codeFiles as $codeFile) {
@@ -56,7 +59,7 @@ foreach ($codeFiles as $codeFile) {
     $content = str_replace(["\r", "\0"], '', $content);
 
     //Automatically append version to @version (auto): tags
-    $content = preg_replace("/@version.*\n/iU", "@version    {$lastTag}\n", $content);
+    $content = preg_replace("/@version.*\n/iU", "@version    {$newVersion}\n", $content);
 
     file_put_contents($codeFile, $content);
 }
