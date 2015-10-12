@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<url>
+  <loc>http://jade.talesoft.io/</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/index.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/namespaces/Tale.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/graphs/class.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/reports/errors.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/reports/markers.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/reports/deprecated.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/namespaces/default.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/namespaces/Tale.Jade.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/namespaces/Tale.Jade.Compiler.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/classes/Tale.Jade.Compiler.Exception.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/namespaces/Tale.Jade.Lexer.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/classes/Tale.Jade.Lexer.Exception.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/namespaces/Tale.Jade.Parser.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/classes/Tale.Jade.Parser.Exception.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/classes/Tale.Jade.Parser.Node.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/namespaces/Tale.Jade.Renderer.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/namespaces/Tale.Jade.Renderer.Adapter.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/namespaces/Tale.Jade.Renderer.Adapter.Stream.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/classes/Tale.Jade.Renderer.Adapter.Stream.Wrapper.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/classes/Tale.Jade.Renderer.Adapter.File.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/classes/Tale.Jade.Renderer.Adapter.Stream.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/classes/Tale.Jade.Renderer.AdapterBase.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/classes/Tale.Jade.Compiler.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/classes/Tale.Jade.Filter.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/classes/Tale.Jade.Lexer.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/classes/Tale.Jade.Parser.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/classes/Tale.Jade.Renderer.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/files/Compiler.Exception.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/files/Lexer.Exception.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/files/Parser.Exception.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/files/Parser.Node.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/files/Renderer.Adapter.Stream.Wrapper.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/files/Renderer.Adapter.File.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/files/Renderer.Adapter.Stream.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/files/Renderer.AdapterBase.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/files/Compiler.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/files/Filter.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/files/Lexer.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/files/Parser.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+<url>
+  <loc>http://jade.talesoft.io/docs/files/Renderer.html</loc>
+  <lastmod>2015-10-12T13:29:40+00:00</lastmod>
+  <changefreq>monthly</changefreq>
+</url>
+</urlset>
