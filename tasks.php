@@ -8,7 +8,7 @@ $ignore = [
     './tasks.php'
 ];
 
-$newVersion = '1.1';
+$newVersion = '1.1.1';
 
 
 if (!$newVersion) {
@@ -35,7 +35,6 @@ $ignore = array_map(function($val) {
 }, $ignore);
 
 
-var_dump($ignore);
 echo "Set Version: $newVersion\n";
 
 //Do eeet

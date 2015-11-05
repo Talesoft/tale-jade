@@ -18,7 +18,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.1
+ * @version    1.1.1
  * @link       http://jade.talesoft.io/docs/files/Lexer.html
  * @since      File available since Release 1.0
  */
@@ -60,7 +60,7 @@ use Tale\Jade\Lexer\Exception;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.1
+ * @version    1.1.1
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Lexer.html
  * @since      File available since Release 1.0
  */
@@ -197,6 +197,7 @@ class Lexer
                 'assignment',
                 'comment', 'filter',
                 'expression',
+                'code',
                 'markup',
                 'textLine',
                 'text'
@@ -1301,48 +1302,71 @@ class Lexer
     }
 
     /**
-     * Scans for a - or !?=-style expression.
+     * Scans for !=-style expression.
      *
      * e.g.
      * != expr
      * = expr
-     * - expr
-     *      multiline
-     *      expr
      *
      * Expression-tokens always have:
      * escaped, which indicates that the expression result should be escaped
-     * return, which indicates if the expression should return or just evaluate the result
+     * value, which is the code of the expression
      *
      * @return \Generator
      */
     protected function scanExpression()
     {
 
-        if ($this->peek() === '-') {
-
-            $this->consume();
-            $token = $this->createToken('expression');
-            $token['escaped'] = false;
-            $token['return'] = false;
-            yield $token;
-            $this->readSpaces();
-
-            foreach ($this->scanTextBlock() as $subToken)
-                yield $subToken;
-        }
-
         foreach ($this->scanToken(
             'expression',
-            "([!]?[=])[\t ]*"
+            "([!]?[=])[\t ]*(?<value>[^\n]*)"
         ) as $token) {
 
             $token['escaped'] = $this->getMatch(1) === '!=' ? false : true;
-            $token['return'] = true;
+            yield $token;
+        }
+    }
+
+    /**
+     * Scans for a code-block initiated with a dash (-) character.
+     *
+     * If the dash-character stands alone on a line, a multi-line code
+     * block will be opened
+     *
+     * Examples:
+     * - if ($something):
+     *     p Do something
+     * - endif;
+     *
+     * -
+     *     doSomething();
+     *     doSomethingElse();
+     *
+     * Code-tokens always have:
+     * single, which indicates that the expression is not multi-line
+     *
+     * @return \Generator
+     */
+    protected function scanCode()
+    {
+
+        foreach ($this->scanToken(
+            'code',
+            "\\-[\t ]*(?<value>[^\n]*)"
+        ) as $token) {
+
+            $token['value'] = trim($token['value']);
+            $token['block'] = empty($token['value']);
             yield $token;
 
-            foreach ($this->scanText() as $subToken)
-                yield $subToken;
+            if ($token['block']) {
+
+                //Expect a multi-line code block
+                foreach ($this->scanTextBlock() as $subToken) {
+
+                    yield $subToken;
+                }
+            }
         }
     }
 

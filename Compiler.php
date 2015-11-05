@@ -21,7 +21,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.1
+ * @version    1.1.1
  * @link       http://jade.talesoft.io/docs/files/Compiler.html
  * @since      File available since Release 1.0
  */
@@ -91,7 +91,7 @@ use Tale\Jade\Parser\Node;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.1
+ * @version    1.1.1
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Compiler.html
  * @since      File available since Release 1.0
  */
@@ -1803,8 +1803,7 @@ class Compiler
     }
 
     /**
-     * Compiles an expression node and it's descending text nodes
-     * into a single PHP expression.
+     * Compiles an expression node and into a PHP expression.
      *
      * @param Node $node the expression node to compile
      *
@@ -1815,17 +1814,33 @@ class Compiler
 
         $code = $node->escaped ? 'htmlentities(%s, \\ENT_QUOTES)' : '%s';
 
-        if (count($node->children) === 1 && $node->children[0]->type === 'text' && $this->isVariable($node->children[0]->value)) {
+        $value = rtrim(trim($node->value), ';');
 
-            //We can have a single variable expression that uses isset automatically
-            $value = $node->children[0]->value;
+        if ($this->isVariable($value))
+            $value = "isset({$value}) ? {$value} : ''";
 
-            return $this->createShortCode(sprintf($code, "isset({$value}) ? {$value} : ''"));
+        return $this->createShortCode(sprintf($code, $value));
+    }
+
+    /**
+     * Compiles a code node and it's descending text nodes
+     * into a single PHP code block.
+     *
+     * @param Node $node the code node to compile
+     *
+     * @return string
+     */
+    protected function compileCode(Node $node)
+    {
+
+        if (!$node->block) {
+
+            return $this->createCode($node->value)
+                  .$this->newLine()
+                  .$this->compileChildren($node->children, true, true);
         }
 
-        $method = $node->return ? 'createShortCode' : 'createCode';
-
-        return $this->$method(sprintf($code, trim($this->compileChildren($node->children, true, true))));
+        return $this->createCode(trim($this->compileChildren($node->children, true, true)));
     }
 
     /**

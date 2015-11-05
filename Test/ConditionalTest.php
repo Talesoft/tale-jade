@@ -57,10 +57,12 @@ else
 
         $jade = <<<JADE
 div
-  -\$menuItems[] = ['label' => 'Issues',
+  -
+    \$menuItems[] = ['label' => 'Issues',
     'url' => ['/issue/index']]
   if (Yii::\$app->user->isGuest)
-    -\$menuItems[] = ['label' => 'Login',
+    -
+      \$menuItems[] = ['label' => 'Login',
       'url' => ['/site/login']]
     -\$menuItems[] = ['label' => 'Users', 'url' => ['/user/index']]
   else
@@ -82,9 +84,11 @@ JADE;
       \'url\' => [\'/site/login\']]
     ?>
     <?php $menuItems[] = [\'label\' => \'Users\', \'url\' => [\'/user/index\']]?>
+
   <?php }
    else {?>
     <?php $menuItems[] = [\'label\' => \'Gii\', \'url\' => [\'/gii\']]?>
+
   <?php }?>
 </div>', $prettyCompiler->compile($jade));
 
@@ -96,10 +100,12 @@ JADE;
 
         $jade = <<<JADE
 div
-    -\$menuItems[] = ['label' => 'Issues',
+    -
+        \$menuItems[] = ['label' => 'Issues',
         'url' => ['/issue/index']]
     if (Yii::\$app->user->isGuest)
-        -\$menuItems[] = ['label' => 'Login',
+        -
+            \$menuItems[] = ['label' => 'Login',
             'url' => ['/site/login']]
         -\$menuItems[] = ['label' => 'Users', 'url' => ['/user/index']]
     else
@@ -120,9 +126,11 @@ JADE;
       \'url\' => [\'/site/login\']]
     ?>
     <?php $menuItems[] = [\'label\' => \'Users\', \'url\' => [\'/user/index\']]?>
+
   <?php }
    else {?>
     <?php $menuItems[] = [\'label\' => \'Gii\', \'url\' => [\'/gii\']]?>
+
   <?php }?>
 </div>', $prettyCompiler->compile($jade));
 
@@ -136,10 +144,12 @@ JADE;
 
         $jade = "
 div
-\t-\$menuItems[] = ['label' => 'Issues',
+\t-
+\t\t\$menuItems[] = ['label' => 'Issues',
 \t\t'url' => ['/issue/index']]
 \tif (Yii::\$app->user->isGuest)
-\t\t-\$menuItems[] = ['label' => 'Login',
+\t\t-
+\t\t\t\$menuItems[] = ['label' => 'Login',
 \t\t\t'url' => ['/site/login']]
 \t\t-\$menuItems[] = ['label' => 'Users', 'url' => ['/user/index']]
 \telse
@@ -160,10 +170,52 @@ div
       \'url\' => [\'/site/login\']]
     ?>
     <?php $menuItems[] = [\'label\' => \'Users\', \'url\' => [\'/user/index\']]?>
+
   <?php }
    else {?>
     <?php $menuItems[] = [\'label\' => \'Gii\', \'url\' => [\'/gii\']]?>
+
   <?php }?>
 </div>', $prettyCompiler->compile($jade));
+    }
+
+
+    public function testIssue18()
+    {
+
+
+        $jade = <<<JADE
+- if (\$something):
+    p Do something
+- endif;
+
+
+
+- if (\$something && \$somethingElse) {
+    p Do some random stuff
+- }
+
+
+
+-
+    if (\$something && \$somethingElse) {
+        echo "No jade handling here";
+    }
+
+    \$array = ["a","b"
+        "c", "d",
+            "e", "f",
+        "g",
+    "h"];
+
+p and it goes on normally...
+JADE;
+
+
+        $this->assertEquals(
+            '<?php if ($something):?><p>Do something</p><?php endif;?><?php if ($something && $somethingElse) {?><p>Do some random stuff</p><?php }?><?php if ($something && $somethingElse) {echo "No jade handling here"; } $array = ["a","b""c", "d","e", "f", "g", "h"];?><p>and it goes on normally...</p>',
+            $this->_compiler->compile($jade)
+        );
+
     }
 }

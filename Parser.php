@@ -18,7 +18,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.1
+ * @version    1.1.1
  * @link       http://jade.talesoft.io/docs/files/Parser.html
  * @since      File available since Release 1.0
  */
@@ -57,7 +57,7 @@ use Tale\Jade\Parser\Exception;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.1
+ * @version    1.1.1
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Parser.html
  * @since      File available since Release 1.0
  */
@@ -782,29 +782,29 @@ class Parser
 
         $node = $this->createNode('expression', $token);
         $node->escaped = $token['escaped'];
-        $node->return = $token['return'];
+        $node->value = $token['value'];
 
-        if ($this->_current) {
-
-            if (!in_array($this->_current->type, ['element']))
-                $this->throwException(
-                    "Only elements can have expressions appended",
-                    $token
-                );
-
+        if ($this->_current)
             $this->_current->append($node);
-
-            if ($this->expectNext(['text'])) {
-
-                $old = $this->_current;
-                $this->_current = $node;
-                $this->handleToken();
-                $this->_current = $old;
-            } else
-                $this->handleToken();
-
-        } else
+        else
             $this->_current = $node;
+    }
+
+    /**
+     * Handles an <code>-token into an code-node.
+     *
+     * @param array $token the <code>-token
+     *
+     * @throws Exception
+     */
+    protected function handleCode(array $token)
+    {
+
+        $node = $this->createNode('code', $token);
+        $node->value = $token['value'];
+        $node->block = $token['block'];
+
+        $this->_current = $node;
     }
 
     /**
