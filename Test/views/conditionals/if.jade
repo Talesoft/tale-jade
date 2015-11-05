@@ -1,0 +1,40 @@
+
+if $condition
+    p 1 This should be printed
+
+if !$condition
+    p 2 This should not be printed
+
+if $negativeCondition
+    p 3 This should not be printed
+
+if !$negativeCondition
+    p 4 This should be printed
+
+if 'abc' === 'abc'
+    p 5 This should be printed
+
+if 5 > 3
+    p 6 This should be printed
+
+
+if $negativeCondition
+
+    if $condition
+        p 7 This should not be printed
+
+if $condition
+
+    if $negativeCondition
+        p 8 This should not be printed
+
+
+if $condition
+
+    if !$negativeCondition
+
+        if $condition
+            p 9 This should be printed
+
+        if $negativeCondition
+            p 10 This should not be printed

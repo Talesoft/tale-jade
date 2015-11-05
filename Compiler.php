@@ -294,6 +294,7 @@ class Compiler
             'allowImports'            => true,
             'defaultTag'              => 'div',
             'quoteStyle'              => '"',
+            'escapeCharset'           => 'UTF-8',
             'replaceMixins'           => false,
             'paths'                   => [],
             'extension'               => '.jade',
@@ -438,7 +439,6 @@ class Compiler
         //Now we append/prepend specific stuff (like mixin functions and helpers)
         $errorHandler = $this->compileErrorHandlerHelper();
         $mixins = $this->compileMixins();
-
 
         //Put everything together
         $phtml = implode('', [$errorHandler, $mixins, $phtml]);
@@ -585,7 +585,7 @@ class Compiler
             $code = "isset($subject) ? $subject : ''";
 
             if ($matches[1] !== '!')
-                $code = "htmlentities($code, \\ENT_QUOTES)";
+                $code = "htmlentities($code, \\ENT_QUOTES, '".$this->_options['escapeCharset']."')";
 
             return !$attribute ? $this->createShortCode($code) : '\'.('.$code.').\'';
         }, $string);
@@ -1330,10 +1330,11 @@ class Compiler
             $subject = "!($subject)";
         }
 
-        $isPrevConditional = $node->prev() && $node->prev()->type === 'conditional';
+        $isPrevConditional = $node->prev() && $node->prev()->type === 'conditional' && $type !== 'if';
         $isNextConditional = $node->next()
             && $node->next()->type === 'conditional'
-            && $node->next()->conditionType !== 'if';
+            && $node->next()->conditionType !== 'if'
+            && $node->next()->conditionType !== 'unless';
         $prefix = $isPrevConditional ? '' : '<?php ';
         $suffix = $isNextConditional ? '' : '?>';
         $phtml = $type === 'else'
@@ -1812,7 +1813,7 @@ class Compiler
     protected function compileExpression(Node $node)
     {
 
-        $code = $node->escaped ? 'htmlentities(%s, \\ENT_QUOTES)' : '%s';
+        $code = $node->escaped ? 'htmlentities(%s, \\ENT_QUOTES, \''.$this->_options['escapeCharset'].'\')' : '%s';
 
         $value = rtrim(trim($node->value), ';');
 

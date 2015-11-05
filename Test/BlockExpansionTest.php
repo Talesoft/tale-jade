@@ -42,8 +42,8 @@ class BlockExpansionTest extends \PHPUnit_Framework_TestCase
 
     public function testIfExpansion()
     {
-        $this->assertEquals('<?php if (isset($someVar) ? $someVar : false) {?><p>Hello <?=htmlentities(isset($someVar) ? $someVar : \'\', \ENT_QUOTES)?>!</p><?php }?>', $this->_compiler->compile('if $someVar: p Hello #{$someVar}!'));
-        $this->assertEquals('<?php if (isset($someVar) ? $someVar : \'abc\') {?><p>Hello <?=htmlentities(isset($someVar) ? $someVar : \'\', \ENT_QUOTES)?>!</p><?php }?>', $this->_compiler->compile('if (isset($someVar) ? $someVar : \'abc\'): p Hello #{$someVar}!'));
+        $this->assertEquals('<?php if (isset($someVar) ? $someVar : false) {?><p>Hello <?=htmlentities(isset($someVar) ? $someVar : \'\', \ENT_QUOTES, \'UTF-8\')?>!</p><?php }?>', $this->_compiler->compile('if $someVar: p Hello #{$someVar}!'));
+        $this->assertEquals('<?php if (isset($someVar) ? $someVar : \'abc\') {?><p>Hello <?=htmlentities(isset($someVar) ? $someVar : \'\', \ENT_QUOTES, \'UTF-8\')?>!</p><?php }?>', $this->_compiler->compile('if (isset($someVar) ? $someVar : \'abc\'): p Hello #{$someVar}!'));
     }
 
     public function tesComplexExpansion()
