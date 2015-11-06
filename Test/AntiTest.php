@@ -56,4 +56,11 @@ class AntiTest extends \PHPUnit_Framework_TestCase
 
         $this->_compiler->compile("mixin some-mixin()\n\tmixin some-sub-mixin()");
     }
+
+    public function testDoWithoutWhile()
+    {
+        $this->setExpectedException(Compiler\Exception::class);
+
+        $this->_compiler->compile("do\n\tp Something\nnot-a-while-element");
+    }
 }

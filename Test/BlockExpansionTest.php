@@ -53,12 +53,12 @@ class BlockExpansionTest extends \PHPUnit_Framework_TestCase
 a: b: c
     d: .e: #f
 a: b: c(aa='bb'): d
-    d: e:
+    d: e
         f: g: h
     d: e
         f: g: h
 JADE;
 
-        $this->assertEquals("<input value=\"Line 1\rLine 2\">", $this->_compiler->compile($jade));
+        $this->assertEquals('<a><b><c><d><div class="e"><div id="f"></div></div></d></c></b></a><a><b><c aa="bb"><d><d><e><f><g><h></h></g></f></e></d><d><e><f><g><h></h></g></f></e></d></d></c></b></a>', $this->_compiler->compile($jade));
     }
 }

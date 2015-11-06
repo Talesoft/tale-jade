@@ -1525,6 +1525,11 @@ class Compiler
                 $node
             );
 
+        if (!$node->next() || $node->next()->type !== 'while')
+            $this->throwException(
+                "A do-statement needs a while-statement following immediately"
+            );
+
         $phtml = $this->createCode("do {").$this->newLine();
         $phtml .= $this->compileChildren($node->children).$this->newLine();
         $phtml .= $this->indent().$this->createCode('}').$this->newLine();
