@@ -22,7 +22,7 @@ class ExpressionAndCodeTest extends \PHPUnit_Framework_TestCase
     public function testSimpleExpression()
     {
 
-        $this->assertEquals('<?=htmlentities(isset($someExpression) ? $someExpression : \'\', \ENT_QUOTES)?>', $this->_compiler->compile('= $someExpression'));
+        $this->assertEquals('<?=htmlentities(isset($someExpression) ? $someExpression : \'\', \ENT_QUOTES, \'UTF-8\')?>', $this->_compiler->compile('= $someExpression'));
     }
 
     public function testUnescapedExpression()
@@ -34,7 +34,7 @@ class ExpressionAndCodeTest extends \PHPUnit_Framework_TestCase
     public function testFunctionExpression()
     {
 
-        $this->assertEquals('<?=htmlentities(someFunctionCall(), \ENT_QUOTES)?>', $this->_compiler->compile('= someFunctionCall()'));
+        $this->assertEquals('<?=htmlentities(someFunctionCall(), \ENT_QUOTES, \'UTF-8\')?>', $this->_compiler->compile('= someFunctionCall()'));
     }
 
     public function testUnescapedFunctionExpression()

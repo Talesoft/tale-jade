@@ -1,0 +1,18 @@
+
+unless $condition
+    p 1 This should not be printed
+
+unless !$condition
+    p 2 This should be printed
+
+unless $negativeCondition
+    p 3 This should be printed
+
+unless !$negativeCondition
+    p 4 This should not be printed
+
+unless 'abc' === 'abc'
+    p 5 This should not be printed
+
+unless 5 > 3
+    p 6 This should not be printed

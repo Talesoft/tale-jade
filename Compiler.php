@@ -294,6 +294,7 @@ class Compiler
             'allowImports'            => true,
             'defaultTag'              => 'div',
             'quoteStyle'              => '"',
+            'escapeCharset'           => 'UTF-8',
             'replaceMixins'           => false,
             'paths'                   => [],
             'extension'               => '.jade',
@@ -438,7 +439,6 @@ class Compiler
         //Now we append/prepend specific stuff (like mixin functions and helpers)
         $errorHandler = $this->compileErrorHandlerHelper();
         $mixins = $this->compileMixins();
-
 
         //Put everything together
         $phtml = implode('', [$errorHandler, $mixins, $phtml]);
@@ -585,7 +585,7 @@ class Compiler
             $code = "isset($subject) ? $subject : ''";
 
             if ($matches[1] !== '!')
-                $code = "htmlentities($code, \\ENT_QUOTES)";
+                $code = "htmlentities($code, \\ENT_QUOTES, '".$this->_options['escapeCharset']."')";
 
             return !$attribute ? $this->createShortCode($code) : '\'.('.$code.').\'';
         }, $string);
@@ -1330,10 +1330,11 @@ class Compiler
             $subject = "!($subject)";
         }
 
-        $isPrevConditional = $node->prev() && $node->prev()->type === 'conditional';
+        $isPrevConditional = $node->prev() && $node->prev()->type === 'conditional' && $type !== 'if';
         $isNextConditional = $node->next()
             && $node->next()->type === 'conditional'
-            && $node->next()->conditionType !== 'if';
+            && $node->next()->conditionType !== 'if'
+            && $node->next()->conditionType !== 'unless';
         $prefix = $isPrevConditional ? '' : '<?php ';
         $suffix = $isNextConditional ? '' : '?>';
         $phtml = $type === 'else'
@@ -1524,6 +1525,11 @@ class Compiler
                 $node
             );
 
+        if (!$node->next() || $node->next()->type !== 'while')
+            $this->throwException(
+                "A do-statement needs a while-statement following immediately"
+            );
+
         $phtml = $this->createCode("do {").$this->newLine();
         $phtml .= $this->compileChildren($node->children).$this->newLine();
         $phtml .= $this->indent().$this->createCode('}').$this->newLine();
@@ -1615,12 +1621,12 @@ class Compiler
 
         $phtml .= "<{$node->tag}";
 
+        $nodeAttributes = $node->attributes;
 
         //In the following lines we kind of map assignments
         //to attributes (that's the core of how cross-assignments work)
         //&href('a', 'b', 'c') will add 3 attributes href=a, href=b and href=b
         //to the attributes we work on
-        $nodeAttributes = $node->attributes;
         foreach ($node->assignments as $assignment) {
 
             $name = $assignment->name;
@@ -1628,6 +1634,31 @@ class Compiler
             //This line provides compatibility to the offical jade method
             if ($this->_options['mode'] === self::MODE_HTML && $name === 'classes')
                 $name = 'class';
+
+            if ($this->_options['mode'] === self::MODE_HTML && $name === 'styles')
+                $name = 'style';
+
+            if ($this->_options['mode'] === self::MODE_HTML && $name === 'attributes') {
+
+                foreach ($assignment->attributes as $attr) {
+
+                    if ($attr->name) {
+
+                        $nodeAttributes[] = $attr;
+                        continue;
+                    }
+
+                    //TODO: implement cross-assigning attributes
+                    //e.g. &attributes(['class' => 'abc', 'style' => ['width' => '100%']])
+                    $this->throwException(
+                        "Cross-assigning an array of attributes"
+                        ." is not supported right now, but we're working"
+                        ." on it!",
+                        $node
+                    );
+                }
+                continue;
+            }
 
             foreach ($assignment->attributes as $attr) {
 
@@ -1642,8 +1673,9 @@ class Compiler
         if (count($nodeAttributes) > 0) {
 
             //Iterate all attributes.
-            //Multiple attributes will be put together in an array
-            //and passed to the builder method
+            //Multiple attributes with the same name
+            //will be put together in an array
+            //and passed to the respective builder method
             $attributes = [];
             foreach ($nodeAttributes as $attr) {
 
@@ -1812,7 +1844,7 @@ class Compiler
     protected function compileExpression(Node $node)
     {
 
-        $code = $node->escaped ? 'htmlentities(%s, \\ENT_QUOTES)' : '%s';
+        $code = $node->escaped ? 'htmlentities(%s, \\ENT_QUOTES, \''.$this->_options['escapeCharset'].'\')' : '%s';
 
         $value = rtrim(trim($node->value), ';');
 

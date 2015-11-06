@@ -1089,11 +1089,16 @@ class Parser
 
         if ($this->_current->type === 'element' && !$token['withSpace']) {
 
-            if (!$this->expectNext(['tag']))
+            if (!$this->expectNext(['tag'])) {
                 $this->throwException(
-                    "Expected tag name after double colon",
+                    sprintf(
+                        "Expected tag name or expansion after double colon, "
+                        ."%s received",
+                        $this->getToken()['type']
+                    ),
                     $token
                 );
+            }
 
             $token = $this->getToken();
             $this->_current->tag .= ':'.$token['name'];

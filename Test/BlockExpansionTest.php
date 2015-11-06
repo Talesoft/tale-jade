@@ -42,23 +42,23 @@ class BlockExpansionTest extends \PHPUnit_Framework_TestCase
 
     public function testIfExpansion()
     {
-        $this->assertEquals('<?php if (isset($someVar) ? $someVar : false) {?><p>Hello <?=htmlentities(isset($someVar) ? $someVar : \'\', \ENT_QUOTES)?>!</p><?php }?>', $this->_compiler->compile('if $someVar: p Hello #{$someVar}!'));
-        $this->assertEquals('<?php if (isset($someVar) ? $someVar : \'abc\') {?><p>Hello <?=htmlentities(isset($someVar) ? $someVar : \'\', \ENT_QUOTES)?>!</p><?php }?>', $this->_compiler->compile('if (isset($someVar) ? $someVar : \'abc\'): p Hello #{$someVar}!'));
+        $this->assertEquals('<?php if (isset($someVar) ? $someVar : false) {?><p>Hello <?=htmlentities(isset($someVar) ? $someVar : \'\', \ENT_QUOTES, \'UTF-8\')?>!</p><?php }?>', $this->_compiler->compile('if $someVar: p Hello #{$someVar}!'));
+        $this->assertEquals('<?php if (isset($someVar) ? $someVar : \'abc\') {?><p>Hello <?=htmlentities(isset($someVar) ? $someVar : \'\', \ENT_QUOTES, \'UTF-8\')?>!</p><?php }?>', $this->_compiler->compile('if (isset($someVar) ? $someVar : \'abc\'): p Hello #{$someVar}!'));
     }
 
-    public function tesComplexExpansion()
+    public function testComplexExpansion()
     {
 
         $jade = <<<JADE
 a: b: c
     d: .e: #f
 a: b: c(aa='bb'): d
-    d: e:
+    d: e
         f: g: h
     d: e
         f: g: h
 JADE;
 
-        $this->assertEquals("<input value=\"Line 1\rLine 2\">", $this->_compiler->compile($jade));
+        $this->assertEquals('<a><b><c><d><div class="e"><div id="f"></div></div></d></c></b></a><a><b><c aa="bb"><d><d><e><f><g><h></h></g></f></e></d><d><e><f><g><h></h></g></f></e></d></d></c></b></a>', $this->_compiler->compile($jade));
     }
 }
