@@ -1621,12 +1621,12 @@ class Compiler
 
         $phtml .= "<{$node->tag}";
 
+        $nodeAttributes = $node->attributes;
 
         //In the following lines we kind of map assignments
         //to attributes (that's the core of how cross-assignments work)
         //&href('a', 'b', 'c') will add 3 attributes href=a, href=b and href=b
         //to the attributes we work on
-        $nodeAttributes = $node->attributes;
         foreach ($node->assignments as $assignment) {
 
             $name = $assignment->name;
@@ -1634,6 +1634,31 @@ class Compiler
             //This line provides compatibility to the offical jade method
             if ($this->_options['mode'] === self::MODE_HTML && $name === 'classes')
                 $name = 'class';
+
+            if ($this->_options['mode'] === self::MODE_HTML && $name === 'styles')
+                $name = 'style';
+
+            if ($this->_options['mode'] === self::MODE_HTML && $name === 'attributes') {
+
+                foreach ($assignment->attributes as $attr) {
+
+                    if ($attr->name) {
+
+                        $nodeAttributes[] = $attr;
+                        continue;
+                    }
+
+                    //TODO: implement cross-assigning attributes
+                    //e.g. &attributes(['class' => 'abc', 'style' => ['width' => '100%']])
+                    $this->throwException(
+                        "Cross-assigning an array of attributes"
+                        ." is not supported right now, but we're working"
+                        ." on it!",
+                        $node
+                    );
+                }
+                continue;
+            }
 
             foreach ($assignment->attributes as $attr) {
 
@@ -1648,8 +1673,9 @@ class Compiler
         if (count($nodeAttributes) > 0) {
 
             //Iterate all attributes.
-            //Multiple attributes will be put together in an array
-            //and passed to the builder method
+            //Multiple attributes with the same name
+            //will be put together in an array
+            //and passed to the respective builder method
             $attributes = [];
             foreach ($nodeAttributes as $attr) {
 
