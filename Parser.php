@@ -18,7 +18,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.1.1
+ * @version    1.2
  * @link       http://jade.talesoft.io/docs/files/Parser.html
  * @since      File available since Release 1.0
  */
@@ -57,7 +57,7 @@ use Tale\Jade\Parser\Exception;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.1.1
+ * @version    1.2
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Parser.html
  * @since      File available since Release 1.0
  */
@@ -595,9 +595,9 @@ class Parser
         if (!$this->_current)
             $this->_current = $this->createElement();
 
-        if (!in_array($this->_current->type, ['element', 'assignment', 'import', 'mixin', 'mixinCall']))
+        if (!in_array($this->_current->type, ['element', 'assignment', 'import', 'variable', 'mixin', 'mixinCall']))
             $this->throwException(
-                "Attributes can only be placed on element, assignment, import, mixin and mixinCall"
+                "Attributes can only be placed on element, assignment, import, variable, mixin and mixinCall"
             );
 
         foreach ($this->lookUpNext(['attribute']) as $subToken) {
@@ -850,6 +850,22 @@ class Parser
     }
 
     /**
+     * Handles a <variable>-token and parses it into a variable assignment.
+     *
+     * @param array $token the <variable>-token
+     *
+     * @throws Exception
+     */
+    protected function handleVariable(array $token)
+    {
+
+        $node = $this->createNode('variable');
+        $node->name = $token['name'];
+        $node->attributes = [];
+        $this->_current = $node;
+    }
+
+    /**
      * Handles an <import>-token and parses it into an import-node.
      *
      * Notice that "extends" and "include" are basically the same thing.
@@ -858,9 +874,6 @@ class Parser
      *
      * Only "include" can have filters, though.
      * This gets checked in the Compiler, not here
-     *
-     * @todo ^ Why not?
-     * @todo Maybe this one could need a "createImport" method?
      *
      * @param array $token the <import>-token
      *
@@ -1157,6 +1170,20 @@ class Parser
     {
 
         $node = $this->createNode('while', $token);
+        $node->subject = $token['subject'];
+        $this->_current = $node;
+    }
+
+
+    /**
+     * Handles a <for>-token and parses it into a for-node.
+     *
+     * @param array $token the <while>-token
+     */
+    protected function handleFor(array $token)
+    {
+
+        $node = $this->createNode('for', $token);
         $node->subject = $token['subject'];
         $this->_current = $node;
     }
