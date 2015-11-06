@@ -257,34 +257,339 @@ It's PHP code, though.
 
 
 ### Supported official Node.js Jade Features
+
 - [Tags](http://jade.talesoft.io/examples/tags)
+
+```jade
+nav
+    ul
+        li: a(href='#')
+        li: a(href='#')
+        li: a(href='#')
+```
+
 - [Classes](http://jade.talesoft.io/examples/classes)
+
+```jade
+div.row
+    .col-md-6.col-sm-6
+        p First half
+    .col-md-6.col-sm-6
+        p Second half
+```
+
 - [IDs](http://jade.talesoft.io/examples/ids)
+
+```jade
+form#mainForm
+    
+    .form-group
+        input.input-lg#userNameInput(name='userName')
+    
+    .form-group
+        input.input-lg#passwordInput(name='password')
+        
+    button#submitButton(type='submit')
+```
+
 - [Doctypes](http://jade.talesoft.io/examples/doctypes)
+
+```jade
+doctype html
+doctype 5
+//- will compile to <!DOCTYPE html>
+
+doctype xml
+//- will compile to <?xml version="1.0" encoding="utf-8"?>
+```
+
 - [Attributes](http://jade.talesoft.io/examples/attributes)
+
+```jade
+
+a(href='/my/path.html', target='_blank')
+
+.col(class=col-md-6, class='col-sm-6')
+//- will compile to <div class="col col-md-6 col-sm-6"></div>
+```
+
 - [Mixins](http://jade.talesoft.io/examples/mixins)
+
+```jade
+
+mixin custom-button(label, theme= 'default')
+    a.btn(class='btn-#{$theme}')= $label
+    
++custom-button('Button A')
++custom-button('Button B')
+```
+
 - [Blocks (with prepend, append and replace support)](http://jade.talesoft.io/examples/blocks)
+
+```jade
+
+block scripts
+    script(src='/js/jquery.js')
+    
+append scripts
+    script(src='/js/plugin.jquery.js')
+    script(src='/js/plugin-2.jquery.js')
+    
+replace scripts
+    //- rather take another framework?!
+    script(src='/js/mootools.js')
+```
+
 - [Expressions & Escaping](http://jade.talesoft.io/examples/expressions)
+
+```jade
+
+p= $greeting
+
+p!= $someVariableContainingHTML
+
+input(value=$defaultValue)
+```
+
 - [Block Expansion](http://jade.talesoft.io/examples/block-expansion)
-- [Assignments (&attributes)](http://jade.talesoft.io/examples/assignments)
+
+```jade
+li: a(href='#'): i.fa.fa-gear
+
+if $something: p Do Something
+```
+
+- [Cross Assignments (&attributes)](http://jade.talesoft.io/examples/assignments)
+
+```jade
+//- Other than the official Node.js, this works with any attribute
+//- The official &attributes is not implemented fully right now
+
+a&classes('btn', 'btn-default')
+
+a&classes($classesFromScript)
+
+a&href('http://host', '/sub-url', '/file.html')
+
+$stylesArray= ['width' => '100%', 'background' => 'red']
+div&styles($stylesArray)
+```
+
 - [Comments](http://jade.talesoft.io/examples/comments)
+
+```jade
+
+//- This will be compiled to a PHP comment and will not be visible in client output
+
+// This will be compiled to a HTML comment and will be visible in client output
+
+//
+    you can easily
+    go one level deeper
+    and span a comment
+    across multiple
+    lines
+```
+
 - [Inline Code](http://jade.talesoft.io/examples/code)
+
+```jade
+
+<?php $i = 15; ?>
+p Do something
+- $i = 100
+p Do something else
+-
+    $i = [
+        'a',
+        'b',
+        'c'
+    ]
+```
+
 - [Inheritance](http://jade.talesoft.io/examples/inheritance)
+
+```jade
+
+extends layouts/master
+
+block content
+    p This here will replace the "content"-block in the master-layout!
+```
+
 - [Includes (with filters)](http://jade.talesoft.io/examples/includes)
+
+```jade
+
+include some-jade-file
+
+include some-php-file.php
+// will be compiled to <?php ?> correctly
+
+include some-css-file.css
+// will be compiled to <style>..included content...</style>
+
+include some-js-file.js
+// will be compiled to <script>...included content...</script>
+```
+
 - [Conditionals (if, else, elseif, case, when, unless)](http://jade.talesoft.io/examples/conditionals)
+
+```jade
+
+if $something
+    p Do something
+else
+    p Do something else
+    
+unless $error
+    p.success Success!
+    
+case $someState
+    when 'state-1': p Do anything
+    when 'state-2'
+        p Do some larger thing
+    default
+        p Do the default thing
+```
+
 - [Loops (each, while)](http://jade.talesoft.io/examples/loops)
+
+```jade
+
+each $item, $key in $items
+    p Item at #{$key} is #{$item}!
+    
+while $i < 100
+    p Do something until $i is 100
+    - $i++
+```
+
 - [Interpolation (with Element Interpolation)](http://jade.talesoft.io/examples/interpolation)
+
+```jade
+
+p Hello, #{$user->name}, how are you today?
+
+p.
+    I'm in a really long text, but I need a link!
+    I can simply use #[a(href='jade-interpolation.html') Jade Interpolation!]
+```
+
 - [Filters](http://jade.talesoft.io/examples/filters)
+
+```jade
+
+:css
+    body, html {
+        height: 100%;
+    }
+    
+:js
+    do.something();
+    
+    
+:php
+    
+    function someFunc() {
+        // Do something
+    }
+```
+
 - [Mixin Blocks](http://jade.talesoft.io/examples/mixin-blocks)
+
+```jade
+
+mixin article(title= 'Untitled')
+    header.article-header= $title
+    article
+        if block
+            block
+        else
+            p No content for this article :(
+            
++article('Article 1')
+    p The content of my first article
+    
++article('Article 2')
+    p The content of my second article
+```
+
 - [Variadics](http://jade.talesoft.io/examples/variadics)
+
+```jade
+
+mixin post-list(...posts)
+    each $post in $posts
+        header= $post->title
+        article= $post->content
+        
+        
++post-list($post1, $post2, $post3, $post4)
+```
 
 
 ### Supported Tale Jade Features
+
 - [Named Mixin Parameters](http://jade.talesoft.io/examples/named-parameters)
+
+```jade
+
+mixin table(searchQuery, page= 0, amount= 100, order='id:asc')
+	table
+		//... something
+
+
++table('search query', order='id:desc')
+```
+
 - [Attribute Stacking](http://jade.talesoft.io/examples/attribute-stacking)
+
+```jade
+
+a(href='http://host', href='/path', href='/file')
+// will compile to <a href="http://host/path/file"></a>
+
+a(class='btn', class='btn-default', class='btn-lg')
+// will compile to <a class="btn btn-default btn-lg"></a>
+
+div(style='width: 100%', style='height: 50%', style='background: red')
+// will compile to <div style="width: 100%; height: 50%; background: red"></div>
+```
+
 - [Filter Maps](http://jade.talesoft.io/examples/filter-map)
+See filters above. Official Node.js doesn't do filter-mapping based on file-extensions.
+
 - [Cross Assignments](http://jade.talesoft.io/examples/cross-assignments)
-- [More Loops (do)](http://jade.talesoft.io/examples/more-loops)
+See assignments above. They are quite more dynamic than the official implementation.
+
+- [Direct Variable Access](http://jade.talesoft.io/examples/direct-variable-access)
+
+```jade
+
+$i= 100
+
+$array(key1='value1', key2='value2')
+
+$array(key3='value3')
+
+//$array will be a merged array from all the attributes above
+
+$i
+//Will compile to print $i
+
+```
+
+- [More Loops (do-while, for)](http://jade.talesoft.io/examples/more-loops)
+
+```jade
+
+while $i > 100
+	p Do something with #{$i}
+
+for $i = 0; $i < 100; $i++
+	p Do something with #{$i}
+```
 
 
 ### Other, unrelated, cool features
