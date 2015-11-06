@@ -85,12 +85,6 @@ else
     public function testIssue19()
     {
 
-        //Also testing this in pretty-mode
-        $prettyCompiler = new Compiler([
-            'pretty' => true,
-            'handleErrors' => false
-        ]);
-
         $jade = <<<JADE
 div
   -
@@ -110,30 +104,9 @@ JADE;
             '<div><?php $menuItems[] = [\'label\' => \'Issues\', \'url\' => [\'/issue/index\']]?><?php if (Yii::$app->user->isGuest) {?><?php $menuItems[] = [\'label\' => \'Login\', \'url\' => [\'/site/login\']]?><?php $menuItems[] = [\'label\' => \'Users\', \'url\' => [\'/user/index\']]?><?php } else {?><?php $menuItems[] = [\'label\' => \'Gii\', \'url\' => [\'/gii\']]?><?php }?></div>',
             $this->_renderer->compile($jade)
         );
-        $this->assertEquals('
-<div>
-  <?php $menuItems[] = [\'label\' => \'Issues\',
-    \'url\' => [\'/issue/index\']]
-  ?>
-  <?php if (Yii::$app->user->isGuest) {?>
-    <?php $menuItems[] = [\'label\' => \'Login\',
-      \'url\' => [\'/site/login\']]
-    ?>
-    <?php $menuItems[] = [\'label\' => \'Users\', \'url\' => [\'/user/index\']]?>
-
-  <?php }
-   else {?>
-    <?php $menuItems[] = [\'label\' => \'Gii\', \'url\' => [\'/gii\']]?>
-
-  <?php }?>
-</div>', $prettyCompiler->compile($jade));
-
-
-
 
 
         //Also testing again with 4-space indentation
-
         $jade = <<<JADE
 div
     -
@@ -152,32 +125,10 @@ JADE;
             '<div><?php $menuItems[] = [\'label\' => \'Issues\', \'url\' => [\'/issue/index\']]?><?php if (Yii::$app->user->isGuest) {?><?php $menuItems[] = [\'label\' => \'Login\', \'url\' => [\'/site/login\']]?><?php $menuItems[] = [\'label\' => \'Users\', \'url\' => [\'/user/index\']]?><?php } else {?><?php $menuItems[] = [\'label\' => \'Gii\', \'url\' => [\'/gii\']]?><?php }?></div>',
             $this->_renderer->compile($jade)
         );
-        $this->assertEquals('
-<div>
-  <?php $menuItems[] = [\'label\' => \'Issues\',
-    \'url\' => [\'/issue/index\']]
-  ?>
-  <?php if (Yii::$app->user->isGuest) {?>
-    <?php $menuItems[] = [\'label\' => \'Login\',
-      \'url\' => [\'/site/login\']]
-    ?>
-    <?php $menuItems[] = [\'label\' => \'Users\', \'url\' => [\'/user/index\']]?>
-
-  <?php }
-   else {?>
-    <?php $menuItems[] = [\'label\' => \'Gii\', \'url\' => [\'/gii\']]?>
-
-  <?php }?>
-</div>', $prettyCompiler->compile($jade));
-
-
-
-
 
 
 
         //Also testing again with tab indentation
-
         $jade = "
 div
 \t-
@@ -196,23 +147,6 @@ div
             '<div><?php $menuItems[] = [\'label\' => \'Issues\', \'url\' => [\'/issue/index\']]?><?php if (Yii::$app->user->isGuest) {?><?php $menuItems[] = [\'label\' => \'Login\', \'url\' => [\'/site/login\']]?><?php $menuItems[] = [\'label\' => \'Users\', \'url\' => [\'/user/index\']]?><?php } else {?><?php $menuItems[] = [\'label\' => \'Gii\', \'url\' => [\'/gii\']]?><?php }?></div>',
             $this->_renderer->compile($jade)
         );
-        $this->assertEquals('
-<div>
-  <?php $menuItems[] = [\'label\' => \'Issues\',
-    \'url\' => [\'/issue/index\']]
-  ?>
-  <?php if (Yii::$app->user->isGuest) {?>
-    <?php $menuItems[] = [\'label\' => \'Login\',
-      \'url\' => [\'/site/login\']]
-    ?>
-    <?php $menuItems[] = [\'label\' => \'Users\', \'url\' => [\'/user/index\']]?>
-
-  <?php }
-   else {?>
-    <?php $menuItems[] = [\'label\' => \'Gii\', \'url\' => [\'/gii\']]?>
-
-  <?php }?>
-</div>', $prettyCompiler->compile($jade));
     }
 
 
@@ -252,6 +186,5 @@ JADE;
             '<?php if ($something):?><p>Do something</p><?php endif;?><?php if ($something && $somethingElse) {?><p>Do some random stuff</p><?php }?><?php if ($something && $somethingElse) {echo "No jade handling here"; } $array = ["a","b""c", "d","e", "f", "g", "h"];?><p>and it goes on normally...</p>',
             $this->_renderer->compile($jade)
         );
-
     }
 }

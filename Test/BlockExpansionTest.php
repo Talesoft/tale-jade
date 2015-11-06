@@ -46,7 +46,7 @@ class BlockExpansionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('<?php if (isset($someVar) ? $someVar : \'abc\') {?><p>Hello <?=htmlentities(isset($someVar) ? $someVar : \'\', \ENT_QUOTES, \'UTF-8\')?>!</p><?php }?>', $this->_compiler->compile('if (isset($someVar) ? $someVar : \'abc\'): p Hello #{$someVar}!'));
     }
 
-    public function tesComplexExpansion()
+    public function testComplexExpansion()
     {
 
         $jade = <<<JADE
