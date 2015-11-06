@@ -63,4 +63,19 @@ class AntiTest extends \PHPUnit_Framework_TestCase
 
         $this->_compiler->compile("do\n\tp Something\nnot-a-while-element");
     }
+
+    public function testStandaloneWhile()
+    {
+        $this->setExpectedException(Compiler\Exception::class);
+
+        $this->_compiler->compile("while \$something");
+    }
+
+    public function testDoWhileWithWhileChildren()
+    {
+
+        $this->setExpectedException(Compiler\Exception::class);
+
+        $this->_compiler->compile("do\n\tp Something\nwhile \$something\n\tp Anything");
+    }
 }

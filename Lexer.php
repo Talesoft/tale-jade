@@ -18,7 +18,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.1.1
+ * @version    1.2
  * @link       http://jade.talesoft.io/docs/files/Lexer.html
  * @since      File available since Release 1.0
  */
@@ -60,7 +60,7 @@ use Tale\Jade\Lexer\Exception;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.1.1
+ * @version    1.2
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Lexer.html
  * @since      File available since Release 1.0
  */
@@ -190,11 +190,12 @@ class Lexer
                 'newLine', 'indent',
                 'import',
                 'block',
-                'conditional', 'each', 'case', 'when', 'do', 'while',
+                'conditional', 'each', 'case', 'when', 'do', 'while', 'forLoop',
                 'mixin', 'mixinCall',
                 'doctype',
                 'tag', 'classes', 'id', 'attributes',
                 'assignment',
+                'variable',
                 'comment', 'filter',
                 'expression',
                 'code',
@@ -1221,10 +1222,14 @@ class Lexer
             //each is a special little unicorn
             if ($name === 'each') {
 
-                if (!$this->match('\$?(?<itemName>[a-zA-Z_][a-zA-Z0-9_]*)(?:[\t ]*,[\t ]*\$?(?<keyName>[a-zA-Z_][a-zA-Z0-9_]*))?[\t ]+in[\t ]+'))
+                if (!$this->match(
+                    '\$?(?<itemName>[a-zA-Z_][a-zA-Z0-9_]*)(?:[\t ]*,[\t ]*\$?(?<keyName>[a-zA-Z_][a-zA-Z0-9_]*))?[\t ]+in[\t ]+'
+                )) {
                     $this->throwException(
-                        "The syntax for each is `each [$]itemName[, [$]keyName] in [subject]`"
+                        "The syntax for each is `each [$]itemName[, [$]keyName]] in [subject]`, not ".$this->peek(20),
+                        $token
                     );
+                }
 
                 $this->consumeMatch();
                 $token['itemName'] = $this->getMatch('itemName');
@@ -1257,6 +1262,20 @@ class Lexer
     }
 
     /**
+     * Scans for a <variables>-token.
+     *
+     * Variable-tokens always have:
+     * name, which is the name of the variables to work on
+     *
+     * @return \Generator
+     */
+    protected function scanVariable()
+    {
+
+        return $this->scanToken('variable', '\$(?<name>[a-zA-Z_][a-zA-Z0-9_]*)[\t ]*');
+    }
+
+    /**
      * Scans for an <each>-token.
      *
      * Each-tokens always have:
@@ -1286,6 +1305,20 @@ class Lexer
     {
 
         return $this->scanControlStatement('while', ['while']);
+    }
+
+    /**
+     * Scans for a <for>-token.
+     *
+     * For-tokens always have:
+     * subject, which is the expression between the parenthesis
+     *
+     * @return \Generator
+     */
+    protected function scanForLoop()
+    {
+
+        return $this->scanControlStatement('for', ['for']);
     }
 
     /**

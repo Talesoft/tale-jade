@@ -21,7 +21,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.1.1
+ * @version    1.2
  * @link       http://jade.talesoft.io/docs/files/Compiler.html
  * @since      File available since Release 1.0
  */
@@ -74,7 +74,7 @@ use Tale\Jade\Parser\Node;
  *    //Make sure the variables are accessible by the included template
  *    extract($variables);
  *
- *    //Compiler needs an $__args variable to pass arguments on to mixins
+ *    //Compiler needs an $__args variables to pass arguments on to mixins
  *    $__args = $variables;
  *
  *    //Include the rendered PHTML directly
@@ -91,7 +91,7 @@ use Tale\Jade\Parser\Node;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.1.1
+ * @version    1.2
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Compiler.html
  * @since      File available since Release 1.0
  */
@@ -396,7 +396,7 @@ class Compiler
      *
      * Look at Renderer to get this done for you
      *
-     * Before evaluating you should set a $__args variable
+     * Before evaluating you should set a $__args variables
      * that will be passed through mixins.
      * It like a global scope.
      *
@@ -489,7 +489,7 @@ class Compiler
     }
 
     /**
-     * Checks if a variable is scalar (or "not an expression").
+     * Checks if a variables is scalar (or "not an expression").
      *
      * These values don't get much special handling, they are mostly
      * simple attributes values like `type="button"` or `method='post'`
@@ -528,9 +528,9 @@ class Compiler
     }
 
     /**
-     * Checks if a value is a variable.
+     * Checks if a value is a variables.
      *
-     * A variable needs to start with $.
+     * A variables needs to start with $.
      * After that only a-z, A-Z and _ can follow
      * After that you can use any character of
      * a-z, A-Z, 0-9, _, [, ], -, >, ' and "
@@ -558,7 +558,7 @@ class Compiler
      *
      * Interpolation is initialized with # (escaped) or ! (not escaped)
      *
-     * After that use either {} brackets for variable expressions
+     * After that use either {} brackets for variables expressions
      * or [] for Jade-expressions
      *
      * e.g.
@@ -1098,7 +1098,7 @@ class Compiler
      * Compiles found mixins under each other into a single PHTML block.
      *
      * Mixins will be anonymous functions inside a $__mixins array
-     * The mixins also pass the global $__args variable on (so that it _is_ global)
+     * The mixins also pass the global $__args variables on (so that it _is_ global)
      *
      * @return string The compile PHTML
      */
@@ -1144,7 +1144,7 @@ class Compiler
 
             $phtml .= $this->createCode(
                     '$__mixins[\''.$name.'\'] = function(array $__arguments) use($__args, $__mixins) {
-                    static $__defaults = '.var_export($args, true).';
+                    static $__defaults = '.$this->exportArray($args).';
                     $__arguments = array_replace($__defaults, $__arguments);
                     $__args = array_replace($__args, $__arguments);
                     extract($__args); '.$variadic.'
@@ -1443,7 +1443,7 @@ class Compiler
     /**
      * Compiles a each-instruction into a foreach-loop PHTML block.
      *
-     * the $ in the variable names are optional
+     * the $ in the variables names are optional
      *
      * @param Node $node the each-node to compile
      *
@@ -1460,8 +1460,9 @@ class Compiler
             $subject = "isset({$subject}) ? {$subject} : []";
 
         $as = "\${$node->itemName}";
+
         if ($node->keyName)
-            $as .= " => \${$node->keyName}";
+            $as = "\${$node->keyName} => ".$as;
 
         $var = '$__iterator'.($id++);
         $phtml = $this->createCode("$var = {$subject};").$this->newLine();
@@ -1479,8 +1480,6 @@ class Compiler
      * Notice that if it has no children, we assume it's a do/while loop
      * and don't print brackets
      *
-     * @todo Check for do-instruction via $node->prev()
-     *
      * @param Node $node the while-node to compile
      *
      * @return string The compiled PHTML
@@ -1494,12 +1493,45 @@ class Compiler
             $subject = "isset({$subject}) ? {$subject} : null";
 
         $hasChildren = count($node->children) > 0;
-        $phtml = $this->createCode("while ({$subject})".($hasChildren ? ' {' : '')).$this->newLine();
+        $isDoWhile = $node->prev() && $node->prev()->type === 'do';
+
+        if (!$hasChildren && !$isDoWhile)
+            $this->throwException(
+                'A while-loop without children you loop through is not valid if'
+                .' there\'s no do-statement before it.',
+                $node
+            );
+        else if ($isDoWhile && $hasChildren)
+            $this->throwException(
+                'In a do-while statement the while-part shouldn\'t have any children',
+                $node
+            );
+
+        $phtml = $this->createCode("while ({$subject})".($hasChildren ? ' {' : ''), $isDoWhile ? ' ' : '<?php ').$this->newLine();
+
         if ($hasChildren) {
 
             $phtml .= $this->compileChildren($node->children).$this->newLine();
             $phtml .= $this->indent().$this->createCode('}').$this->newLine();
         }
+
+        return $phtml;
+    }
+
+    /**
+     * Compiles a for-loop into PHTML.
+     *
+     * @param Node $node the while-node to compile
+     *
+     * @return string The compiled PHTML
+     */
+    protected function compileFor(Node $node)
+    {
+
+        $subject = $node->subject;
+        $phtml = $this->createCode("for ({$subject}) {").$this->newLine();
+        $phtml .= $this->compileChildren($node->children).$this->newLine();
+        $phtml .= $this->indent().$this->createCode('}').$this->newLine();
 
         return $phtml;
     }
@@ -1530,15 +1562,91 @@ class Compiler
                 "A do-statement needs a while-statement following immediately"
             );
 
+        //Notice that the } wont have closing ? >, php needs this.
+        //Check compileWhile to see the combination of both
         $phtml = $this->createCode("do {").$this->newLine();
         $phtml .= $this->compileChildren($node->children).$this->newLine();
-        $phtml .= $this->indent().$this->createCode('}').$this->newLine();
+        $phtml .= $this->indent().$this->createCode('}', '<?php ', '').$this->newLine();
 
         return $phtml;
     }
 
     /**
-     * Compiles a filter-node intp PHTML.
+     * Compiles a variable-node into PHTML.
+     *
+     * @param Node $node the variable node to compile
+     *
+     * @return string The compiled PHTML
+     * @throws Exception
+     */
+    protected function compileVariable(Node $node)
+    {
+
+        //Attribute-style assignment
+        //$variable(a=b, c=d)
+        if (count($node->attributes)) {
+
+            if (count($node->children))
+                $this->throwException(
+                    'A variable node with attributes cant have any children',
+                    $node
+                );
+
+            //Attribute-based assignment
+            $array = [];
+            foreach ($node->attributes as $attr) {
+
+                $name = $attr->name;
+                $value = trim($attr->value, '"\'');
+
+                if (!$name)
+                    $array[] = $value;
+                else {
+
+                    if (isset($array[$name])) {
+
+                        if (is_array($array[$name]))
+                            $array[$name][] = $value;
+                        else
+                            $array[$name] = [$array[$name], $value];
+                    } else
+                        $array[$name] = $value;
+                }
+            }
+
+            //In $array we have the final array to assign on the variable, sadly
+            //we can't just use var_export, since we might have variables inside
+            //the array that shouldn't be converted to strings.
+            //We convert it ourself
+
+            return $this->createCode(
+                "\$__value = ".$this->exportArray($array)."; "
+                ."\${$node->name} = isset(\${$node->name}) ? array_replace_recursive(\${$node->name}, \$__value) : \$__value; "
+                ."unset(\$__value);"
+            );
+        }
+
+        if (!count($node->children)) {
+
+            //No children, this is simple variable output (Escaped!)
+            return $this->createShortCode(
+                "htmlentities(\${$node->name}, \\ENT_QUOTES, '".$this->_options['escapeCharset']."')"
+            );
+        }
+
+        if ($node->children[0]->type !== 'expression') {
+
+            $this->throwException(
+                'Variable nodes can only have expression children',
+                $node
+            );
+        }
+
+        return $this->createCode("\${$node->name} = ".$node->children[0]->value);
+    }
+
+    /**
+     * Compiles a filter-node into PHTML.
      *
      * The filters are drawn from the filters-option
      *
@@ -1891,6 +1999,38 @@ class Compiler
         $content = $this->compileChildren($node->children, true, true);
 
         return $node->rendered ? $this->createMarkupComment($content) : $this->createPhpComment($content);
+    }
+
+    /**
+     * Exports an array to a string.
+     *
+     * This works similar to var_export in PHP, with the difference
+     * that it won't try to convert variable-style strings to
+     * quote-enclosed strings
+     *
+     * @param array $array the array to export
+     *
+     * @return string the exported array
+     */
+    protected function exportArray(array $array)
+    {
+
+        $pairs = [];
+        foreach ($array as $key => $val) {
+
+            $pair = var_export($key, true).' => ';
+
+            if (is_array($val))
+                $pair .= $this->exportArray($val);
+            else if ($this->isVariable($val))
+                $pair .= $val;
+            else
+                $pair .= var_export($val, true);
+
+            $pairs[] = $pair;
+        }
+
+        return '['.implode(', ', $pairs).']';
     }
 
     /**
