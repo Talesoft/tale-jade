@@ -2001,7 +2001,7 @@ class Compiler
                 $pair .= $this->exportArray($val, $quoteStyle);
             else if ($this->isVariable($val))
                 $pair .= "isset($val) ? $val : null";
-            else if ($this->isScalar($val))
+            else if ($this->isScalar($val) ||in_array($val, [true, false, null], true))
                 $pair .= $this->exportScalar($val, $quoteStyle);
             else
                 $pair .= (string)$val;
