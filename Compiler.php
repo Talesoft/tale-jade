@@ -21,7 +21,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.2
+ * @version    1.2.1
  * @link       http://jade.talesoft.io/docs/files/Compiler.html
  * @since      File available since Release 1.0
  */
@@ -91,7 +91,7 @@ use Tale\Jade\Parser\Node;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.2
+ * @version    1.2.1
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Compiler.html
  * @since      File available since Release 1.0
  */
@@ -1132,24 +1132,23 @@ class Compiler
                     $attrName = substr($attrName, 3);
                     $variadicName = $attrName;
                 }
-                $args[$attrName] = trim($attr->value, '\'"');
+                $args[$attrName] = $attr->value;
                 $i++;
             }
 
             $variadic = '';
             if ($variadicIndex !== null) {
 
-                $variadic = "\n\$$variadicName = array_slice(\$__arguments, $variadicIndex);";
+                $args[$variadicName] = 'array_slice(\$__arguments, $variadicIndex);';
             }
 
             $phtml .= $this->createCode(
                     '$__mixins[\''.$name.'\'] = function(array $__arguments) use($__args, $__mixins) {
-                    static $__defaults = '.$this->exportArray($args).';
-                    $__arguments = array_replace($__defaults, $__arguments);
-                    $__args = array_replace($__args, $__arguments);
-                    extract($__args); '.$variadic.'
-
-                '
+                        static $__defaults = '.$this->exportArray($args).';
+                        $__arguments = array_replace($__defaults, $__arguments);
+                        $__args = array_replace($__args, $__arguments);
+                        extract($__args);
+                    '
                 ).$this->newLine();
 
             $phtml .= $mixin['phtml'].$this->newLine();
@@ -1189,11 +1188,11 @@ class Compiler
         if (count($node->children) > 0) {
 
             $phtml = $this->createCode(
-                    '$__block = function(array $__arguments = []) use($__args, $__mixins) {
-                extract($__args);
-                extract($__arguments);
-            '
-                ).$this->newLine();
+                '$__block = function(array $__arguments = []) use($__args, $__mixins) {
+                    extract($__args);
+                    extract($__arguments);
+                '
+            ).$this->newLine();
             $phtml .= $this->compileChildren($node->children, false).$this->newLine();
             $phtml .= $this->indent().$this->createCode('};').$this->newLine();
         }
@@ -1224,14 +1223,6 @@ class Compiler
             $value = $attr->value;
 
             $i++;
-            if ($this->isScalar($value)) {
-
-                $value = '\''.$this->compileScalar($value).'\'';
-            } else if ($this->isVariable($value)) {
-
-                $value = "isset($value) ? $value : null";
-            }
-
             if ($attr->name) {
 
                 if (isset($args[$attr->name])) {
@@ -1256,24 +1247,8 @@ class Compiler
             $args[] = $value;
         }
 
-        $argCodes = [];
-        foreach ($args as $key => $value) {
-
-            $code = '\''.$key.'\' => ';
-
-            if (is_array($value)) {
-
-                $code .= '['.implode(', ', $value).']';
-            } else {
-
-                $code .= $value;
-            }
-
-            $argCodes[] = $code;
-        }
-
         $phtml .= (count($node->children) > 0 ? $this->indent() : '').$this->createCode(
-                '$__mixinCallArgs = ['.implode(', ', $argCodes).'];
+                '$__mixinCallArgs = '.$this->exportArray($args).';
             $__mixinCallArgs[\'__block\'] = isset($__block) ? $__block : null;
             call_user_func($__mixins[\''.$name.'\'], $__mixinCallArgs);
             unset($__mixinCallArgs);
@@ -1597,7 +1572,7 @@ class Compiler
             foreach ($node->attributes as $attr) {
 
                 $name = $attr->name;
-                $value = trim($attr->value, '"\'');
+                $value = $attr->value;
 
                 if (!$name)
                     $array[] = $value;
@@ -2002,35 +1977,72 @@ class Compiler
     }
 
     /**
-     * Exports an array to a string.
+     * Exports an array to a PHP-string recursively.
      *
      * This works similar to var_export in PHP, with the difference
-     * that it won't try to convert variable-style strings to
-     * quote-enclosed strings
+     * that it won't try to convert PHP-expression-style strings,
+     * e.g. variables, scalar values like null, false, true and
+     * expressions like arrays or function calls
      *
      * @param array $array the array to export
+     * @param string $quoteStyle the quote-style used, ' by default
      *
      * @return string the exported array
      */
-    protected function exportArray(array $array)
+    protected function exportArray(array $array, $quoteStyle = '\'')
     {
 
         $pairs = [];
         foreach ($array as $key => $val) {
 
-            $pair = var_export($key, true).' => ';
+            $pair = $this->exportScalar($key, $quoteStyle).' => ';
 
             if (is_array($val))
-                $pair .= $this->exportArray($val);
+                $pair .= $this->exportArray($val, $quoteStyle);
             else if ($this->isVariable($val))
-                $pair .= $val;
+                $pair .= "isset($val) ? $val : null";
+            else if ($this->isScalar($val) ||in_array($val, [true, false, null], true))
+                $pair .= $this->exportScalar($val, $quoteStyle);
             else
-                $pair .= var_export($val, true);
+                $pair .= (string)$val;
 
             $pairs[] = $pair;
         }
 
         return '['.implode(', ', $pairs).']';
+    }
+
+    /**
+     * Exports a scalar value to the PHP representation.
+     *
+     * This also takes into account the PHP constants
+     * null, false and true, makes sure that numeric-values aren't
+     * string enclosed and utilizes interpolation for string
+     * values.
+     *
+     * @param mixed $scalar the scalar value to export
+     * @param string $quoteStyle the quote-style used, ' by default
+     *
+     * @return string the exported scalar value
+     */
+    protected function exportScalar($scalar, $quoteStyle = '\'')
+    {
+
+        if ($scalar === 'null' || $scalar === null)
+            return 'null';
+
+        if ($scalar === 'false' || $scalar === false)
+            return 'false';
+
+        if ($scalar === 'true' || $scalar === true)
+            return 'true';
+
+        $scalar = trim($scalar, '\'"');
+
+        if (is_numeric($scalar))
+            return $scalar;
+
+        return $quoteStyle.$this->compileScalar($scalar).$quoteStyle;
     }
 
     /**
