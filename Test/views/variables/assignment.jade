@@ -11,10 +11,12 @@ $array= ['a', 'b', 'c']
 
 $array2('d', 'e', 'f')
 
-$existing(class='b', class='c')
+$existing(style=['height' => '50%'])
 
 
-$options = ['nowrap' => 'THE REAL VALUE']
+$options = ['nowrap' => 'THE OVERWRITTEN VALUE']
+
+$options(nowrap='nowrap')
 
 $column(
     'id',
@@ -26,3 +28,5 @@ $column(
 = count($existing)
 = count($existing['class'])
 = count($existing['style'])
+
+div&styles($existing['style'])

@@ -1,0 +1,42 @@
+h3 Columnus
+$columnus(
+["class" => "yii\grid\SerialColumn"],
+'id',
+'username',
+'auth_key',
+'password_hash',
+//'password_reset_token',
+["class" => "yii\grid\ActionColumn"])
+
+br
+br
+
+h3 Coluumns
+$coluumns = [['class' => 'yii\grid\SerialColumn'],'id','username','auth_key','password_hash','password_reset_token',['class' => 'yii\grid\ActionColumn'],]
+
+
+br
+br
+
+
+
+
+-
+    $columns = [
+    ['class' => 'yii\grid\SerialColumn'],
+    'id',
+    'username',
+    'auth_key',
+    'password_hash',
+    'password_reset_token',
+    /*'email:email',
+    'status',
+    'created_at',
+    'updated_at',*/
+    ['class' => 'yii\grid\ActionColumn'],
+    ]
+
+h3 Columns
+
+!= preg_replace('/\s/', '', var_export($columnus, true))
+!= preg_replace('/\s/', '', var_export($columns, true))
