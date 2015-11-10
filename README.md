@@ -671,5 +671,7 @@ If you're interested in other projects, you might contact us via E-Mail as well
 **E-Mail: [info@talesoft.io](mailto:info@talesoft.io)**
 
 
+If you like what we created, [feel free to spend us a coffee!](https://www.paypal.me/TorbenKoehn)!
+
 **Thank you for using Tale Jade. Let us spread the Jade-language together!**
 
