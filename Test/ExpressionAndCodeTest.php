@@ -59,4 +59,13 @@ class ExpressionAndCodeTest extends \PHPUnit_Framework_TestCase
 
     $array = ["a", "b", "c"];'));
     }
+
+    public function testIssue21()
+    {
+
+        $this->assertEquals(
+            '<?=$view->render(\'_search\', [\'model\' => $searchModel])?>',
+            $this->_compiler->compile('!=$view->render(\'_search\', [\'model\' => $searchModel])')
+        );
+    }
 }
