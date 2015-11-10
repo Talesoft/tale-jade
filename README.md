@@ -189,30 +189,6 @@ h1= $title
 +content-block($content)
 ```
 
-### Learning Jade
-
-We're still working on our tutorials, so for now you have to stick with the [original Jade documentation](http://jade-lang.com/reference/).
-
-The only difference between it and Tale Jade is, that Tale Jade uses PHP Expressions everywhere
-
-In loops:
-`each $itemName, $keyName in $items`
-
-In attributes:
-`a(href=$url, href='/some/sub/path')`
-
-In conditionals:
-`if $someCondition`
-
-In interpolation:
-`| This is some text and this was #{$interpolated}!`
-
-PHP Expressions are possible in most cases 
-e.g. `(empty($someVar) ? 'Default Value' : "$someVar!")`
-and you can use functions and classes normally
-e.g. `h1= strtoupper('Tale Jade is awesome!')`
-
-
 ---
 
 
@@ -225,35 +201,7 @@ This always has been and will always be our main target.
 PHP has it's own features that are surely different from JavaScript's.
 By utilizing those features we aim to bring in more, compatible features into the language to make the fastest template development ever possible!
 
-
 ---
-
-
-***Notice: Sorry that most documents are down right now, we're still working on them.***
-***Our engine is really new and we're still documenting all functions of our insane development process. The features actually are in and work.***
-
-**We uploaded some example resources for you to get a grasp of the possibilities**
-
-[The Tale Jade API Docs](http://jade.talesoft.io/docs)
-The documentation of the Tale Jade source code.
-Generated with phpDocumentor, but is's fairly enlightening.
-
-[Tale Jade Bootstrap](https://github.com/Talesoft/tale-jade-bootstrap) 
-A quick-start project to get you up and running. Fork it, download it, play with it. 
-Don't forget to run `composer install` before launching ([Download Composer](https://getcomposer.org/download/))
-
-[Development Test Files](https://github.com/Talesoft/tale-jade-examples)
-The example files we tested the engine with.
-We cover all features somewhere in there, for sure!
-
-[Tale Jade Unit Tests](https://github.com/Talesoft/tale-jade/tree/master/Test)
-The Unit Tests we're using to ensure stability.
-There will be new tests added constantly and most features are covered here.
-It's PHP code, though.
-
-
----
-
 
 
 ### Supported official Node.js Jade Features
@@ -584,8 +532,12 @@ $i
 
 ```jade
 
-while $i > 100
-	p Do something with #{$i}
+$i= 0
+do
+    p Do something with #{$i}
+    $i= $i + 1
+while $i < 100
+	
 
 for $i = 0; $i < 100; $i++
 	p Do something with #{$i}
@@ -606,7 +558,7 @@ for $i = 0; $i < 100; $i++
 - Tested well and maintained actively
 
 
-## There's more to come...
+### There's more to come...
 
 Tale Jade is actively used and developed in many projects and is improved constantly.
 
@@ -624,6 +576,83 @@ Planned features:
 - [ ] CoffeeScript integration
 - [ ] Markdown integration
 - [ ] Extensions and package manager
+
+---
+
+
+## Documentation Resources
+
+
+***Notice: Sorry that most documents are down right now, we're still working on them. We added some examples so you know how all features work.***
+***Want to help us? [E-Mail us!](mailto:info@talesoft.io)!***
+
+The only difference between Node.js Jade and Tale Jade is, that Tale Jade uses PHP Expressions everywhere
+
+In loops:
+`each $itemName, $keyName in $items`
+
+In attributes:
+`a(href=$url, href='/some/sub/path')`
+
+In conditionals:
+`if $someCondition`
+
+In interpolation:
+`| This is some text and this was #{$interpolated}!`
+
+PHP Expressions are possible in most cases 
+e.g. `(empty($someVar) ? 'Default Value' : "$someVar!")`
+and you can use functions and classes normally
+e.g. `h1= strtoupper('Tale Jade is awesome!')`
+
+
+
+[Official Node.js Jade Documentation](http://jade-lang.com)
+The real thing. This is where everything that we do here originates from.
+The syntax is the same, only the code-expressions are different.
+
+[The Tale Jade API Docs](http://jade.talesoft.io/docs)
+The documentation of the Tale Jade source code.
+Generated with phpDocumentor, but is's fairly enlightening.
+
+[Tale Jade Bootstrap](https://github.com/Talesoft/tale-jade-bootstrap) 
+A quick-start project to get you up and running. Fork it, download it, play with it. 
+Don't forget to run `composer install` before launching ([Download Composer](https://getcomposer.org/download/))
+
+[Development Test Files](https://github.com/Talesoft/tale-jade-examples)
+The example files we tested the engine with.
+We cover all features somewhere in there, for sure!
+
+[Tale Jade Unit Tests](https://github.com/Talesoft/tale-jade/tree/master/Test)
+The Unit Tests we're using to ensure stability.
+There will be new tests added constantly and most features are covered here.
+It's PHP code, though.
+
+
+---
+
+
+## Tale Jade in other Projects
+
+You're using a framework with a template engine already, but you really want to try out Jade?
+Search no further.
+
+Thanks to the Tale Jade Community we got some modules for existing frameworks that allow you to use Tale Jade easily!
+
+### Laravel Framework
+- [Official Tale Jade Bridge](http://github.com/Talesoft/tale-jade-laravel)
+
+### Yii2 Framework
+- [jacmoe's Extension](http://www.yiiframework.com/extension/yii2-tale-jade/)
+
+### SimpleMVCFramework
+- [cu's SMVC Fork](https://github.com/Talesoft/tale-jade-smvc)
+
+**Your framework is missing? [Send us an e-mail](mailto:info@talesoft.io) and we'll get a bridge up and running as soon as possible!**
+
+A great thanks to the contributors of these modules!
+
+---
 
 
 ## Get in touch
