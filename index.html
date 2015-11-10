@@ -2,20 +2,8 @@
 <html lang="en-us">
   <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    
     <title>Tale Jade for PHP by Talesoft</title>
-    
-    <meta name="description" content="A complete and fully-functional implementation of the Jade template language for PHP">
-    <meta name="keywords" content="tale jade,jade,template,php,jade template,jade for php,phtml,jade compiler,jade php">
-    <meta property="og:title" content="Tale Jade for PHP by Talesoft">
-    <meta property="og:site_name" content="The official documentation website">
-    <meta property="og:description" content="Tale Jade is the first and most complete implementation of the Jade Template Language in PHP. Every feature of the official Node.js Jade Language is supported! Tested well and fully documented, try it out now!">
-    <meta property="og:url" content="http://jade.talesoft.io">
-    <meta property="og:image" content="http://jade.talesoft.io/images/jade-logo.png">
-    
-    <meta name="google-site-verification" content="s1mOqce1V7TtzezB1CdIyf6Xzz2PQFIN5kQRgz5a7yw">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
@@ -193,30 +181,6 @@ Rendered and included Jade-files will be searched in those paths and not in the 
 
 <span class="pl-k">+</span><span class="pl-en">content-block</span>($content)</pre></div>
 
-<h3>
-<a id="learning-jade" class="anchor" href="#learning-jade" aria-hidden="true"><span class="octicon octicon-link"></span></a>Learning Jade</h3>
-
-<p>We're still working on our tutorials, so for now you have to stick with the <a href="http://jade-lang.com/reference/">original Jade documentation</a>.</p>
-
-<p>The only difference between it and Tale Jade is, that Tale Jade uses PHP Expressions everywhere</p>
-
-<p>In loops:
-<code>each $itemName, $keyName in $items</code></p>
-
-<p>In attributes:
-<code>a(href=$url, href='/some/sub/path')</code></p>
-
-<p>In conditionals:
-<code>if $someCondition</code></p>
-
-<p>In interpolation:
-<code>| This is some text and this was #{$interpolated}!</code></p>
-
-<p>PHP Expressions are possible in most cases 
-e.g. <code>(empty($someVar) ? 'Default Value' : "$someVar!")</code>
-and you can use functions and classes normally
-e.g. <code>h1= strtoupper('Tale Jade is awesome!')</code></p>
-
 <hr>
 
 <h2>
@@ -231,66 +195,343 @@ By utilizing those features we aim to bring in more, compatible features into th
 
 <hr>
 
-<p><strong><em>Notice: Sorry that most documents are down right now, we're still working on them.</em></strong>
-<strong><em>Our engine is really new and we're still documenting all functions of our insane development process. The features actually are in and work.</em></strong></p>
-
-<p><strong>We uploaded some example resources for you to get a grasp of the possibilities</strong></p>
-
-<p><a href="http://jade.talesoft.io/docs">The Tale Jade API Docs</a>
-The documentation of the Tale Jade source code.
-Generated with phpDocumentor, but is's fairly enlightening.</p>
-
-<p><a href="https://github.com/Talesoft/tale-jade-bootstrap">Tale Jade Bootstrap</a> 
-A quick-start project to get you up and running. Fork it, download it, play with it. 
-Don't forget to run <code>composer install</code> before launching (<a href="https://getcomposer.org/download/">Download Composer</a>)</p>
-
-<p><a href="https://github.com/Talesoft/tale-jade-examples">Development Test Files</a>
-The example files we tested the engine with.
-We cover all features somewhere in there, for sure!</p>
-
-<p><a href="https://github.com/Talesoft/tale-jade/tree/master/Test">Tale Jade Unit Tests</a>
-The Unit Tests we're using to ensure stability.
-There will be new tests added constantly and most features are covered here.
-It's PHP code, though.</p>
-
-<hr>
-
 <h3>
 <a id="supported-official-nodejs-jade-features" class="anchor" href="#supported-official-nodejs-jade-features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Supported official Node.js Jade Features</h3>
 
 <ul>
 <li><a href="http://jade.talesoft.io/examples/tags">Tags</a></li>
+</ul>
+
+<div class="highlight highlight-source-jade"><pre><span class="pl-ent">nav</span>
+    <span class="pl-ent">ul</span>
+        <span class="pl-ent">li</span>: <span class="pl-ent">a</span><span class="pl-c1">(</span><span class="pl-e">href</span>=<span class="pl-s">'#'</span><span class="pl-c1">)</span>
+        <span class="pl-ent">li</span>: <span class="pl-ent">a</span><span class="pl-c1">(</span><span class="pl-e">href</span>=<span class="pl-s">'#'</span><span class="pl-c1">)</span>
+        <span class="pl-ent">li</span>: <span class="pl-ent">a</span><span class="pl-c1">(</span><span class="pl-e">href</span>=<span class="pl-s">'#'</span><span class="pl-c1">)</span></pre></div>
+
+<ul>
 <li><a href="http://jade.talesoft.io/examples/classes">Classes</a></li>
+</ul>
+
+<div class="highlight highlight-source-jade"><pre><span class="pl-ent">div</span><span class="pl-c1">.row</span>
+    <span class="pl-c1">.col-md-6.col-sm-6</span>
+        <span class="pl-ent">p</span> First half
+    <span class="pl-c1">.col-md-6.col-sm-6</span>
+        <span class="pl-ent">p</span> Second half</pre></div>
+
+<ul>
 <li><a href="http://jade.talesoft.io/examples/ids">IDs</a></li>
+</ul>
+
+<div class="highlight highlight-source-jade"><pre><span class="pl-ent">form</span><span class="pl-c1">#mainForm</span>
+
+    <span class="pl-c1">.form-group</span>
+        <span class="pl-ent">input</span><span class="pl-c1">.input-lg</span><span class="pl-c1">#userNameInput</span><span class="pl-c1">(</span><span class="pl-e">name</span>=<span class="pl-s">'userName'</span><span class="pl-c1">)</span>
+
+    <span class="pl-c1">.form-group</span>
+        <span class="pl-ent">input</span><span class="pl-c1">.input-lg</span><span class="pl-c1">#passwordInput</span><span class="pl-c1">(</span><span class="pl-e">name</span>=<span class="pl-s">'password'</span><span class="pl-c1">)</span>
+
+    <span class="pl-ent">button</span><span class="pl-c1">#submitButton</span><span class="pl-c1">(</span><span class="pl-e">type</span>=<span class="pl-s">'submit'</span><span class="pl-c1">)</span></pre></div>
+
+<ul>
 <li><a href="http://jade.talesoft.io/examples/doctypes">Doctypes</a></li>
+</ul>
+
+<div class="highlight highlight-source-jade"><pre><span class="pl-c">doctype html</span>
+<span class="pl-c">doctype 5</span>
+<span class="pl-c">//- will compile to &lt;!DOCTYPE html&gt;</span>
+<span class="pl-c"></span>
+<span class="pl-c"></span><span class="pl-c">doctype xml</span>
+<span class="pl-c">//- will compile to &lt;?xml version="1.0" encoding="utf-8"?&gt;</span></pre></div>
+
+<ul>
 <li><a href="http://jade.talesoft.io/examples/attributes">Attributes</a></li>
+</ul>
+
+<div class="highlight highlight-source-jade"><pre>
+<span class="pl-ent">a</span><span class="pl-c1">(</span><span class="pl-e">href</span>=<span class="pl-s">'/my/path.html'</span>, <span class="pl-e">target</span>=<span class="pl-s">'_blank'</span><span class="pl-c1">)</span>
+
+<span class="pl-c1">.col</span><span class="pl-c1">(</span><span class="pl-e">class</span>=col<span class="pl-k">-</span>md<span class="pl-k">-</span><span class="pl-c1">6</span>, <span class="pl-e">class</span>=<span class="pl-s">'col-sm-6'</span><span class="pl-c1">)</span>
+<span class="pl-c">//- will compile to &lt;div class="col col-md-6 col-sm-6"&gt;&lt;/div&gt;</span></pre></div>
+
+<ul>
 <li><a href="http://jade.talesoft.io/examples/mixins">Mixins</a></li>
+</ul>
+
+<div class="highlight highlight-source-jade"><pre>
+<span class="pl-k">mixin </span><span class="pl-en">custom-button</span>(label, theme<span class="pl-k">=</span> <span class="pl-s">'default'</span>)
+    <span class="pl-ent">a</span><span class="pl-c1">.btn</span><span class="pl-c1">(</span><span class="pl-e">class</span>=<span class="pl-s">'btn-<span class="pl-s">#{$theme}</span>'</span><span class="pl-c1">)</span><span class="pl-c1">=</span> $label
+
+<span class="pl-k">+</span><span class="pl-en">custom-button</span>(<span class="pl-s">'Button A'</span>)
+<span class="pl-k">+</span><span class="pl-en">custom-button</span>(<span class="pl-s">'Button B'</span>)</pre></div>
+
+<ul>
 <li><a href="http://jade.talesoft.io/examples/blocks">Blocks (with prepend, append and replace support)</a></li>
+</ul>
+
+<div class="highlight highlight-source-jade"><pre>
+<span class="pl-k">block</span> <span class="pl-v">scripts</span>
+<span class="pl-s1">    <span class="pl-ent">script</span><span class="pl-c1">(</span><span class="pl-e">src</span>=<span class="pl-s">'/js/jquery.js'</span><span class="pl-c1">)</span></span>
+<span class="pl-s1"></span>
+<span class="pl-s1"></span><span class="pl-k">append</span> <span class="pl-v">scripts</span>
+<span class="pl-s1">    <span class="pl-ent">script</span><span class="pl-c1">(</span><span class="pl-e">src</span>=<span class="pl-s">'/js/plugin.jquery.js'</span><span class="pl-c1">)</span></span>
+<span class="pl-s1">    <span class="pl-ent">script</span><span class="pl-c1">(</span><span class="pl-e">src</span>=<span class="pl-s">'/js/plugin-2.jquery.js'</span><span class="pl-c1">)</span></span>
+<span class="pl-s1"></span>
+<span class="pl-s1"></span><span class="pl-ent">replace</span> scripts
+<span class="pl-c">    //- rather take another framework?!</span>
+<span class="pl-c"></span><span class="pl-s1">    <span class="pl-ent">script</span><span class="pl-c1">(</span><span class="pl-e">src</span>=<span class="pl-s">'/js/mootools.js'</span><span class="pl-c1">)</span></span></pre></div>
+
+<ul>
 <li><a href="http://jade.talesoft.io/examples/expressions">Expressions &amp; Escaping</a></li>
+</ul>
+
+<div class="highlight highlight-source-jade"><pre>
+<span class="pl-ent">p</span><span class="pl-c1">=</span> $greeting
+
+<span class="pl-ent">p</span><span class="pl-c1">!=</span> $someVariableContainingHTML
+
+<span class="pl-ent">input</span><span class="pl-c1">(</span><span class="pl-e">value</span>=$defaultValue<span class="pl-c1">)</span></pre></div>
+
+<ul>
 <li><a href="http://jade.talesoft.io/examples/block-expansion">Block Expansion</a></li>
-<li><a href="http://jade.talesoft.io/examples/assignments">Assignments (&amp;attributes)</a></li>
+</ul>
+
+<div class="highlight highlight-source-jade"><pre><span class="pl-ent">li</span>: <span class="pl-ent">a</span><span class="pl-c1">(</span><span class="pl-e">href</span>=<span class="pl-s">'#'</span><span class="pl-c1">)</span>: <span class="pl-ent">i</span><span class="pl-c1">.fa.fa-gear</span>
+
+<span class="pl-k">if</span> $something<span class="pl-k">:</span> p Do Something</pre></div>
+
+<ul>
+<li><a href="http://jade.talesoft.io/examples/assignments">Cross Assignments (&amp;attributes)</a></li>
+</ul>
+
+<div class="highlight highlight-source-jade"><pre><span class="pl-c">//- Other than the official Node.js, this works with any attribute</span>
+<span class="pl-c">//- The official &amp;attributes is not implemented fully right now</span>
+<span class="pl-c"></span>
+<span class="pl-c"></span><span class="pl-ent">a</span><span class="pl-ii">&amp;</span>classes('btn', 'btn-default')
+
+<span class="pl-ent">a</span><span class="pl-ii">&amp;</span>classes($classesFromScript)
+
+<span class="pl-ent">a</span><span class="pl-ii">&amp;</span>href('http://host', '/sub-url', '/file.html')
+
+$stylesArray= ['width' =<span class="pl-ii">&gt;</span> '100%', 'background' =<span class="pl-ii">&gt;</span> 'red']
+<span class="pl-ent">div</span><span class="pl-ii">&amp;</span>styles($stylesArray)</pre></div>
+
+<ul>
 <li><a href="http://jade.talesoft.io/examples/comments">Comments</a></li>
+</ul>
+
+<div class="highlight highlight-source-jade"><pre>
+<span class="pl-c">//- This will be compiled to a PHP comment and will not be visible in client output</span>
+<span class="pl-c"></span>
+<span class="pl-c"></span><span class="pl-s">// This will be compiled to a HTML comment and will be visible in client output</span>
+<span class="pl-s"></span>
+<span class="pl-s">//</span>
+<span class="pl-s">    you can easily</span>
+<span class="pl-s">    go one level deeper</span>
+<span class="pl-s">    and span a comment</span>
+<span class="pl-s">    across multiple</span>
+<span class="pl-s">    lines</span></pre></div>
+
+<ul>
 <li><a href="http://jade.talesoft.io/examples/code">Inline Code</a></li>
+</ul>
+
+<div class="highlight highlight-source-jade"><pre>
+&lt;?php $i = 15; ?<span class="pl-ii">&gt;</span>
+<span class="pl-ent">p</span> Do something
+- $i <span class="pl-k">=</span> <span class="pl-c1">100</span>
+<span class="pl-ent">p</span> Do something else
+-
+    $i <span class="pl-k">=</span> [
+        <span class="pl-s"><span class="pl-pds">'</span>a<span class="pl-pds">'</span></span>,
+        <span class="pl-s"><span class="pl-pds">'</span>b<span class="pl-pds">'</span></span>,
+        <span class="pl-s"><span class="pl-pds">'</span>c<span class="pl-pds">'</span></span>
+    ]</pre></div>
+
+<ul>
 <li><a href="http://jade.talesoft.io/examples/inheritance">Inheritance</a></li>
+</ul>
+
+<div class="highlight highlight-source-jade"><pre>
+<span class="pl-k">extends</span> <span class="pl-v">layouts/master</span>
+
+<span class="pl-k">block</span> <span class="pl-v">content</span>
+    <span class="pl-ent">p</span> This here will replace the "content"-block in the master-layout!</pre></div>
+
+<ul>
 <li><a href="http://jade.talesoft.io/examples/includes">Includes (with filters)</a></li>
+</ul>
+
+<div class="highlight highlight-source-jade"><pre>
+<span class="pl-k">include</span> <span class="pl-v">some-jade-file</span>
+
+<span class="pl-k">include</span> <span class="pl-v">some-php-file.php</span>
+<span class="pl-s">// will be compiled to &lt;?php ?&gt; correctly</span>
+<span class="pl-s"></span>
+<span class="pl-s"></span><span class="pl-k">include</span> <span class="pl-v">some-css-file.css</span>
+<span class="pl-s">// will be compiled to &lt;style&gt;..included content...&lt;/style&gt;</span>
+<span class="pl-s"></span>
+<span class="pl-s"></span><span class="pl-k">include</span> <span class="pl-v">some-js-file.js</span>
+<span class="pl-s">// will be compiled to &lt;script&gt;...included content...&lt;/script&gt;</span></pre></div>
+
+<ul>
 <li><a href="http://jade.talesoft.io/examples/conditionals">Conditionals (if, else, elseif, case, when, unless)</a></li>
+</ul>
+
+<div class="highlight highlight-source-jade"><pre>
+<span class="pl-k">if</span> $something
+    <span class="pl-ent">p</span> Do something
+<span class="pl-k">else</span>
+    <span class="pl-ent">p</span> Do something else
+
+<span class="pl-k">unless</span> $error
+    <span class="pl-ent">p</span><span class="pl-c1">.success</span> Success!
+
+<span class="pl-k">case</span> $someState
+    <span class="pl-k">when</span> <span class="pl-s"><span class="pl-pds">'</span>state-1<span class="pl-pds">'</span></span>: <span class="pl-ent">p</span> Do anything
+    <span class="pl-k">when</span> <span class="pl-s"><span class="pl-pds">'</span>state-2<span class="pl-pds">'</span></span>
+        <span class="pl-ent">p</span> Do some larger thing
+    <span class="pl-k">default</span>
+        <span class="pl-ent">p</span> Do the default thing</pre></div>
+
+<ul>
 <li><a href="http://jade.talesoft.io/examples/loops">Loops (each, while)</a></li>
+</ul>
+
+<div class="highlight highlight-source-jade"><pre>
+<span class="pl-k">each</span> $item, $key <span class="pl-k">in</span> $items
+    <span class="pl-ent">p</span> Item at <span class="pl-s">#{$key}</span> is <span class="pl-s">#{$item}</span>!
+
+<span class="pl-k">while</span> $i <span class="pl-k">&lt;</span> <span class="pl-c1">100</span>
+    <span class="pl-ent">p</span> Do something until $i is 100
+    - $i<span class="pl-k">++</span></pre></div>
+
+<ul>
 <li><a href="http://jade.talesoft.io/examples/interpolation">Interpolation (with Element Interpolation)</a></li>
+</ul>
+
+<div class="highlight highlight-source-jade"><pre>
+<span class="pl-ent">p</span> Hello, <span class="pl-s">#{$user<span class="pl-k">-&gt;</span>name}</span>, how are you today?
+
+<span class="pl-ent">p</span>.
+    I'm in a really long text, but I need a link!
+    I can simply use <span class="pl-en">#[</span><span class="pl-ent">a</span><span class="pl-c1">(</span><span class="pl-e">href</span>=<span class="pl-s">'jade-interpolation.html'</span><span class="pl-c1">)</span> Jade Interpolation!<span class="pl-en">]</span></pre></div>
+
+<ul>
 <li><a href="http://jade.talesoft.io/examples/filters">Filters</a></li>
+</ul>
+
+<div class="highlight highlight-source-jade"><pre>
+:<span class="pl-c1">css</span>
+    body, html {
+        height: 100%;
+    }
+
+:<span class="pl-c1">js</span>
+    do.something();
+
+
+:<span class="pl-c1">php</span>
+
+    function someFunc() {
+        // Do something
+    }</pre></div>
+
+<ul>
 <li><a href="http://jade.talesoft.io/examples/mixin-blocks">Mixin Blocks</a></li>
+</ul>
+
+<div class="highlight highlight-source-jade"><pre>
+<span class="pl-k">mixin </span><span class="pl-en">article</span>(title<span class="pl-k">=</span> <span class="pl-s">'Untitled'</span>)
+    <span class="pl-ent">header</span><span class="pl-c1">.article-header</span><span class="pl-c1">=</span> $title
+    <span class="pl-ent">article</span>
+        <span class="pl-k">if</span> block
+            <span class="pl-k">block</span>
+        <span class="pl-k">else</span>
+            <span class="pl-ent">p</span> No content for this article :(
+
+<span class="pl-k">+</span><span class="pl-en">article</span>(<span class="pl-s">'Article 1'</span>)
+    <span class="pl-ent">p</span> The content of my first article
+
+<span class="pl-k">+</span><span class="pl-en">article</span>(<span class="pl-s">'Article 2'</span>)
+    <span class="pl-ent">p</span> The content of my second article</pre></div>
+
+<ul>
 <li><a href="http://jade.talesoft.io/examples/variadics">Variadics</a></li>
 </ul>
+
+<div class="highlight highlight-source-jade"><pre>
+<span class="pl-k">mixin </span><span class="pl-en">post-list</span>(...posts)
+    <span class="pl-k">each</span> $post <span class="pl-k">in</span> $posts
+        <span class="pl-ent">header</span><span class="pl-c1">=</span> $post<span class="pl-k">-&gt;</span>title
+        <span class="pl-ent">article</span><span class="pl-c1">=</span> $post<span class="pl-k">-&gt;</span>content
+
+
+<span class="pl-k">+</span><span class="pl-en">post-list</span>($post1, $post2, $post3, $post4)</pre></div>
 
 <h3>
 <a id="supported-tale-jade-features" class="anchor" href="#supported-tale-jade-features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Supported Tale Jade Features</h3>
 
 <ul>
 <li><a href="http://jade.talesoft.io/examples/named-parameters">Named Mixin Parameters</a></li>
-<li><a href="http://jade.talesoft.io/examples/attribute-stacking">Attribute Stacking</a></li>
-<li><a href="http://jade.talesoft.io/examples/filter-map">Filter Maps</a></li>
-<li><a href="http://jade.talesoft.io/examples/cross-assignments">Cross Assignments</a></li>
-<li><a href="http://jade.talesoft.io/examples/more-loops">More Loops (do)</a></li>
 </ul>
+
+<div class="highlight highlight-source-jade"><pre>
+<span class="pl-k">mixin </span><span class="pl-en">table</span>(searchQuery, page<span class="pl-k">=</span> <span class="pl-c1">0</span>, amount<span class="pl-k">=</span> <span class="pl-c1">100</span>, order<span class="pl-k">=</span><span class="pl-s">'id:asc'</span>)
+    <span class="pl-ent">table</span>
+<span class="pl-s">        //... something</span>
+<span class="pl-s"></span>
+<span class="pl-s"></span>
+<span class="pl-s"></span><span class="pl-k">+</span><span class="pl-en">table</span>(<span class="pl-s">'search query'</span>, order<span class="pl-k">=</span><span class="pl-s">'id:desc'</span>)</pre></div>
+
+<ul>
+<li><a href="http://jade.talesoft.io/examples/attribute-stacking">Attribute Stacking</a></li>
+</ul>
+
+<div class="highlight highlight-source-jade"><pre>
+<span class="pl-ent">a</span><span class="pl-c1">(</span><span class="pl-e">href</span>=<span class="pl-s">'http://host'</span>, <span class="pl-e">href</span>=<span class="pl-s">'/path'</span>, <span class="pl-e">href</span>=<span class="pl-s">'/file'</span><span class="pl-c1">)</span>
+<span class="pl-s">// will compile to &lt;a href="http://host/path/file"&gt;&lt;/a&gt;</span>
+<span class="pl-s"></span>
+<span class="pl-s"></span><span class="pl-ent">a</span><span class="pl-c1">(</span><span class="pl-e">class</span>=<span class="pl-s">'btn'</span>, <span class="pl-e">class</span>=<span class="pl-s">'btn-default'</span>, <span class="pl-e">class</span>=<span class="pl-s">'btn-lg'</span><span class="pl-c1">)</span>
+<span class="pl-s">// will compile to &lt;a class="btn btn-default btn-lg"&gt;&lt;/a&gt;</span>
+<span class="pl-s"></span>
+<span class="pl-s"></span><span class="pl-ent">div</span><span class="pl-c1">(</span><span class="pl-e">style</span>=<span class="pl-s">'width: 100%'</span>, <span class="pl-e">style</span>=<span class="pl-s">'height: 50%'</span>, <span class="pl-e">style</span>=<span class="pl-s">'background: red'</span><span class="pl-c1">)</span>
+<span class="pl-s">// will compile to &lt;div style="width: 100%; height: 50%; background: red"&gt;&lt;/div&gt;</span></pre></div>
+
+<ul>
+<li><p><a href="http://jade.talesoft.io/examples/filter-map">Filter Maps</a>
+See filters above. Official Node.js doesn't do filter-mapping based on file-extensions.</p></li>
+<li><p><a href="http://jade.talesoft.io/examples/cross-assignments">Cross Assignments</a>
+See assignments above. They are quite more dynamic than the official implementation.</p></li>
+<li><p><a href="http://jade.talesoft.io/examples/direct-variable-access">Direct Variable Access</a></p></li>
+</ul>
+
+<div class="highlight highlight-source-jade"><pre>
+$i= 100
+
+$array(key1='value1', key2='value2')
+
+$array(key3='value3')
+
+<span class="pl-s">//$array will be a merged array from all the attributes above</span>
+<span class="pl-s"></span>
+<span class="pl-s"></span>$i
+<span class="pl-s">//Will compile to print $i</span>
+<span class="pl-s"></span></pre></div>
+
+<ul>
+<li><a href="http://jade.talesoft.io/examples/more-loops">More Loops (do-while, for)</a></li>
+</ul>
+
+<div class="highlight highlight-source-jade"><pre>
+$i= 0
+<span class="pl-ent">do</span>
+    <span class="pl-ent">p</span> Do something with <span class="pl-s">#{$i}</span>
+    $i= $i + 1
+<span class="pl-k">while</span> $i <span class="pl-k">&lt;</span> <span class="pl-c1">100</span>
+
+
+<span class="pl-k">for</span> $i <span class="pl-k">=</span> <span class="pl-c1">0</span>; $i <span class="pl-k">&lt;</span> <span class="pl-c1">100</span>; $i<span class="pl-k">++</span>
+    <span class="pl-ent">p</span> Do something with <span class="pl-s">#{$i}</span></pre></div>
 
 <h3>
 <a id="other-unrelated-cool-features" class="anchor" href="#other-unrelated-cool-features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Other, unrelated, cool features</h3>
@@ -308,8 +549,8 @@ It's PHP code, though.</p>
 <li>Tested well and maintained actively</li>
 </ul>
 
-<h2>
-<a id="theres-more-to-come" class="anchor" href="#theres-more-to-come" aria-hidden="true"><span class="octicon octicon-link"></span></a>There's more to come...</h2>
+<h3>
+<a id="theres-more-to-come" class="anchor" href="#theres-more-to-come" aria-hidden="true"><span class="octicon octicon-link"></span></a>There's more to come...</h3>
 
 <p>Tale Jade is actively used and developed in many projects and is improved constantly.</p>
 
@@ -330,6 +571,91 @@ We just don't love the way people implement existing stuff in PHP :)</p>
 <li>[ ] Markdown integration</li>
 <li>[ ] Extensions and package manager</li>
 </ul>
+
+<hr>
+
+<h2>
+<a id="documentation-resources" class="anchor" href="#documentation-resources" aria-hidden="true"><span class="octicon octicon-link"></span></a>Documentation Resources</h2>
+
+<p><strong><em>Notice: Sorry that most documents are down right now, we're still working on them. We added some examples so you know how all features work.</em></strong>
+<strong><em>Want to help us? <a href="mailto:info@talesoft.io">E-Mail us!</a>!</em></strong></p>
+
+<p>The only difference between Node.js Jade and Tale Jade is, that Tale Jade uses PHP Expressions everywhere</p>
+
+<p>In loops:
+<code>each $itemName, $keyName in $items</code></p>
+
+<p>In attributes:
+<code>a(href=$url, href='/some/sub/path')</code></p>
+
+<p>In conditionals:
+<code>if $someCondition</code></p>
+
+<p>In interpolation:
+<code>| This is some text and this was #{$interpolated}!</code></p>
+
+<p>PHP Expressions are possible in most cases 
+e.g. <code>(empty($someVar) ? 'Default Value' : "$someVar!")</code>
+and you can use functions and classes normally
+e.g. <code>h1= strtoupper('Tale Jade is awesome!')</code></p>
+
+<p><a href="http://jade-lang.com">Official Node.js Jade Documentation</a>
+The real thing. This is where everything that we do here originates from.
+The syntax is the same, only the code-expressions are different.</p>
+
+<p><a href="http://jade.talesoft.io/docs">The Tale Jade API Docs</a>
+The documentation of the Tale Jade source code.
+Generated with phpDocumentor, but is's fairly enlightening.</p>
+
+<p><a href="https://github.com/Talesoft/tale-jade-bootstrap">Tale Jade Bootstrap</a> 
+A quick-start project to get you up and running. Fork it, download it, play with it. 
+Don't forget to run <code>composer install</code> before launching (<a href="https://getcomposer.org/download/">Download Composer</a>)</p>
+
+<p><a href="https://github.com/Talesoft/tale-jade-examples">Development Test Files</a>
+The example files we tested the engine with.
+We cover all features somewhere in there, for sure!</p>
+
+<p><a href="https://github.com/Talesoft/tale-jade/tree/master/Test">Tale Jade Unit Tests</a>
+The Unit Tests we're using to ensure stability.
+There will be new tests added constantly and most features are covered here.
+It's PHP code, though.</p>
+
+<hr>
+
+<h2>
+<a id="tale-jade-in-other-projects" class="anchor" href="#tale-jade-in-other-projects" aria-hidden="true"><span class="octicon octicon-link"></span></a>Tale Jade in other Projects</h2>
+
+<p>You're using a framework with a template engine already, but you really want to try out Jade?
+Search no further.</p>
+
+<p>Thanks to the Tale Jade Community we got some modules for existing frameworks that allow you to use Tale Jade easily!</p>
+
+<h3>
+<a id="laravel-framework" class="anchor" href="#laravel-framework" aria-hidden="true"><span class="octicon octicon-link"></span></a>Laravel Framework</h3>
+
+<ul>
+<li><a href="http://github.com/Talesoft/tale-jade-laravel">Official Tale Jade Bridge</a></li>
+</ul>
+
+<h3>
+<a id="yii2-framework" class="anchor" href="#yii2-framework" aria-hidden="true"><span class="octicon octicon-link"></span></a>Yii2 Framework</h3>
+
+<ul>
+<li><a href="http://www.yiiframework.com/extension/yii2-tale-jade/">jacmoe's Extension</a></li>
+</ul>
+
+<h3>
+<a id="simplemvcframework" class="anchor" href="#simplemvcframework" aria-hidden="true"><span class="octicon octicon-link"></span></a>SimpleMVCFramework</h3>
+
+<ul>
+<li><a href="https://github.com/Talesoft/tale-jade-smvc">cu's SMVC Fork</a></li>
+</ul>
+
+<p><strong>Your framework is missing? <a href="mailto:info@talesoft.io">Send us an e-mail</a> and we'll get a bridge up and running as soon as possible!</strong></p>
+
+<p>A great thanks to the contributors of these modules!</p>
+
+<hr>
 
 <h2>
 <a id="get-in-touch" class="anchor" href="#get-in-touch" aria-hidden="true"><span class="octicon octicon-link"></span></a>Get in touch</h2>
