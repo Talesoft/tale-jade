@@ -272,17 +272,32 @@ class Compiler
             'filters'                 => [
                 'plain' => 'Tale\\Jade\\Filter::filterPlain',
                 'css'   => 'Tale\\Jade\\Filter::filterStyle',
+                'style' => 'Tale\\Jade\\Filter::filterStyle',
                 'js'    => 'Tale\\Jade\\Filter::filterScript',
+                'script' => 'Tale\\Jade\\Filter::filterScript',
                 'php'   => 'Tale\\Jade\\Filter::filterCode',
-                //'markdown' => 'Tale\\Jade\\Filter::filterMarkdown'
+                'code' => 'Tale\\Jade\\Filter::filterCode',
+                'markdown' => 'Tale\\Jade\\Filter::filterMarkdown',
+                'md' => 'Tale\\Jade\\Filter::filterMarkdown',
+                'coffee-script' => 'Tale\\Jade\\Filter::filterCoffeeScript',
+                'coffee' => 'Tale\\Jade\\Filter::filterCoffeeScript',
+                'less' => 'Tale\\Jade\\Filter::filterLess',
+                'stylus' => 'Tale\\Jade\\Filter::filterStylus',
+                'styl' => 'Tale\\Jade\\Filter::filterStylus',
+                'sass' => 'Tale\\Jade\\Filter::filterSass'
                 //What else?
             ],
             'filterMap'               => [
+                'jade' => 'plain',
                 'css'  => 'css',
                 'js'   => 'js',
                 'php'  => 'php',
                 'md'   => 'markdown',
-                'jade' => 'plain'
+                'coffee' => 'coffee-script',
+                'less' => 'less',
+                'styl' => 'stylus',
+                'sass' => 'sass',
+                'scss' => 'sass'
             ],
             'escapeSequences'         => [
                 '\n' => "\n",

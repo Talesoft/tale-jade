@@ -34,5 +34,12 @@
         "files": [
             "functions.php"
         ]
+    },
+    "suggest": {
+        "erusev/parsedown": "Enables Markdown filtering",
+        "coffeescript/coffeescript": "Enables CoffeeScript filtering",
+        "leafo/lessphp": "Enables LESS filtering",
+        "neemzy/stylus": "Enables Stylus filtering",
+        "leafo/scssphp": "Enables SASS filtering"
     }
 }

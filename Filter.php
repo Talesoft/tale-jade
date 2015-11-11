@@ -41,6 +41,11 @@ use Tale\Jade\Parser\Node;
  * :js      => Converts to <script></script>
  * :css     => Converts to <style></style>
  * :php     => converts to <?php ? >
+ * :markdown => converts to markdown-HTML
+ * :coffee  => converts to CoffeeScript-JavaScript
+ * :less    => converts to LESS CSS
+ * :stylus  => converts to Stylus CSS
+ * :sass    => converts to SASS CSS
  *
  * @category   Presentation
  * @package    Tale\Jade
@@ -176,5 +181,134 @@ class Filter
     {
 
         return self::wrapCode($node, $indent, $newLine);
+    }
+
+    /**
+     * Compiles the markdown content to HTML.
+     *
+     * @param Node   $node    the node to be compiled
+     * @param string $indent  the indentation to use on each child
+     * @param string $newLine the new-line to append after each line
+     *
+     * @return string the wrapped HTML-string
+     * @throws Compiler\Exception when the Parsedown package is not installed
+     */
+    public static function filterMarkdown(Node $node, $indent, $newLine)
+    {
+
+        if (!class_exists('Parsedown'))
+            throw new Compiler\Exception(
+                "Failed to compile Markdown: "
+                ."Please install the erusev/parsedown composer package"
+            );
+
+        $parsedown = new \Parsedown();
+
+        return $parsedown->text($node->text());
+    }
+
+
+    /**
+     * Compiles the CoffeeScript content to JavaScript
+     *
+     * @param Node   $node    the node to be compiled
+     * @param string $indent  the indentation to use on each child
+     * @param string $newLine the new-line to append after each line
+     *
+     * @return string the wrapped JavaScript-HTML-string
+     * @throws Compiler\Exception when the CoffeeScript package is not installed
+     */
+    public static function filterCoffeeScript(Node $node, $indent, $newLine)
+    {
+
+        if (!class_exists('CoffeeScript\\Compiler'))
+            throw new Compiler\Exception(
+                "Failed to compile CoffeeScript: "
+                ."Please install the coffeescript/coffeescript composer package"
+            );
+
+        var_dump($node->text());
+
+        $js = \CoffeeScript\Compiler::compile($node->text(), [
+            'header' => '',
+            'filename' => 'Imported-at-('.$node->line.':'.$node->offset.').coffee'
+        ]);
+
+        return '<script>'.$newLine.$indent.$js.$newLine.$indent.'</script>';
+    }
+
+    /**
+     * Compiles the LESS content to CSS
+     *
+     * @param Node   $node    the node to be compiled
+     * @param string $indent  the indentation to use on each child
+     * @param string $newLine the new-line to append after each line
+     *
+     * @return string the wrapped Less-CSS-string
+     * @throws Compiler\Exception when the LESS package is not installed
+     */
+    public static function filterLess(Node $node, $indent, $newLine)
+    {
+
+        if (!class_exists('lessc'))
+            throw new Compiler\Exception(
+                "Failed to compile LESS: "
+                ."Please install the leafo/lessphp composer package"
+            );
+
+        $less = new \lessc;
+        $css = $less->compile($node->text());
+
+        return '<style>'.$newLine.$indent.$css.$newLine.$indent.'</style>';
+    }
+
+    /**
+     * Compiles the Stylus content to CSS
+     *
+     * @param Node   $node    the node to be compiled
+     * @param string $indent  the indentation to use on each child
+     * @param string $newLine the new-line to append after each line
+     *
+     * @return string the wrapped Stylus-CSS-string
+     * @throws Compiler\Exception when the Stylus package is not installed
+     */
+    public static function filterStylus(Node $node, $indent, $newLine)
+    {
+
+        if (!class_exists('Stylus\\Stylus'))
+            throw new Compiler\Exception(
+                "Failed to compile Stylus: "
+                ."Please install the neemzy/stylus composer package"
+            );
+
+        $stylus = new \Stylus\Stylus;
+        $css = $stylus->fromString($node->text())->toString();
+
+        return '<style>'.$newLine.$indent.$css.$newLine.$indent.'</style>';
+    }
+
+    /**
+     * Compiles the SASS content to CSS
+     *
+     * @param Node   $node    the node to be compiled
+     * @param string $indent  the indentation to use on each child
+     * @param string $newLine the new-line to append after each line
+     *
+     * @return string the wrapped SASS-CSS-string
+     * @throws Compiler\Exception when the Stylus package is not installed
+     */
+    public static function filterSass(Node $node, $indent, $newLine)
+    {
+
+        if (!class_exists('Leafo\\ScssPhp\\Compiler'))
+            throw new Compiler\Exception(
+                "Failed to compile SASS: "
+                ."Please install the leafo/scssphp composer package"
+            );
+
+        $sass = new \Leafo\ScssPhp\Compiler;
+        $css = $sass->compile($node->text());
+
+        return '<style>'.$newLine.$indent.$css.$newLine.$indent.'</style>';
     }
 }
