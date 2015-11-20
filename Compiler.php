@@ -253,7 +253,10 @@ class Compiler
             'indentWidth'             => 2,
             'mode'                    => self::MODE_HTML,
             'selfClosingTags'         => [
-                'input', 'br', 'img', 'link'
+                'input', 'br', 'img', 'link',
+                'area', 'base', 'col', 'command',
+                'embed', 'hr', 'keygen', 'meta',
+                'param', 'source', 'track', 'wbr'
             ],
             'selfRepeatingAttributes' => [
                 'selected', 'checked', 'disabled'
@@ -279,7 +282,7 @@ class Compiler
                 'code' => 'Tale\\Jade\\Filter::filterCode',
                 'markdown' => 'Tale\\Jade\\Filter::filterMarkdown',
                 'md' => 'Tale\\Jade\\Filter::filterMarkdown',
-                'coffee-script' => 'Tale\\Jade\\Filter::filterCoffeeScript',
+                'coffeescript' => 'Tale\\Jade\\Filter::filterCoffeeScript',
                 'coffee' => 'Tale\\Jade\\Filter::filterCoffeeScript',
                 'less' => 'Tale\\Jade\\Filter::filterLess',
                 'stylus' => 'Tale\\Jade\\Filter::filterStylus',
