@@ -1696,7 +1696,11 @@ class Compiler
                 $phtml .= ' ';
             }
 
-            $phtml .= $this->newLine().$this->indent().$this->compileNode($node);
+            if ($node->type != 'doctype') {
+                $phtml .= $this->newLine();
+            }
+
+            $phtml .= $this->indent().$this->compileNode($node);
         }
         $this->_level -= $indent ? 1 : 0;
 
