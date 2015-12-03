@@ -32,9 +32,11 @@
             "Tale\\Jade\\": ""
         },
         "files": [
-            "functions.php"
+            "functions.php",
+            "Compiler/functions.php"
         ]
     },
+    "bin": ["tale-jade"],
     "suggest": {
         "erusev/parsedown": "Enables Markdown filtering",
         "coffeescript/coffeescript": "Enables CoffeeScript filtering",

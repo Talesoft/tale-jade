@@ -219,10 +219,10 @@ class Compiler
      *                              include-filters [extension => filter]
      * escapeSequences:             The escape-sequences that are possible in
      *                              scalar strings
-     * handleErrors:                Should the error-handler-helper be appended
-     *                              to the PTHML or not
      * compileUncalledMixins:       Always compile all mixins or leave out
      *                              those that aren't called?
+     * standAlone:                  Allows the rendered files to be called
+     *                              without any requirements
      * allowImports:                Set to false to disable imports for this
      *                              compiler instance. Importing will throw an
      *                              exception. Great for demo-pages
@@ -307,8 +307,8 @@ class Compiler
                 '\r' => "\r",
                 '\t' => "\t"
             ],
-            'handleErrors'            => true,
             'compileUncalledMixins'   => false,
+            'standAlone'              => false,
             'allowImports'            => true,
             'defaultTag'              => 'div',
             'quoteStyle'              => '"',
@@ -455,14 +455,20 @@ class Compiler
         //Reset the level again for our next operations
         $this->_level = 0;
         //Now we append/prepend specific stuff (like mixin functions and helpers)
-        $errorHandler = $this->compileErrorHandlerHelper();
         $mixins = $this->compileMixins();
 
-        //Put everything together
-        $phtml = implode('', [$errorHandler, $mixins, $phtml]);
+        $helpers = '';
+        if ($this->_options['standAlone']) {
 
-        if ($this->_options['handleErrors'])
-            $phtml .= $this->createCode('restore_error_handler(); unset($__errorHandler);');
+            $helpers = file_get_contents(__DIR__.'/Compiler/functions.php')."\n?>\n";
+            $helpers .= $this->createCode('namespace {');
+        }
+
+        //Put everything together
+        $phtml = implode('', [$helpers, $mixins, $phtml]);
+
+        if ($this->_options['standAlone'])
+            $phtml .= $this->createCode('}');
 
         //Reset the files after compilation so that compileFile may resolve correctly
         //Happens when you call compileFile twice on different files
@@ -825,15 +831,21 @@ class Compiler
         if (substr($path, -strlen($ext)) !== $ext)
             $path .= $ext;
 
+        //Check static path
+        if (file_exists($path))
+            return $path;
+
         if (count($paths) < 1) {
 
             //We got no paths to search in. We use the include-path in that case
             $paths = explode(\PATH_SEPARATOR, get_include_path());
         }
 
+        //Add the path were currently compiling in (e.g. include, extends)
         if (count($this->_files) > 0)
             $paths[] = dirname(end($this->_files));
 
+        //Iterate paths and check file existence via realpath
         foreach ($paths as $directory) {
 
             $fullPath = realpath(rtrim($directory, '/\\').'/'.ltrim($path, '/\\'));
@@ -1009,6 +1021,7 @@ class Compiler
 
             switch ($mode) {
                 default:
+                /** @noinspection PhpMissingBreakStatementInspection */
                 case 'replace':
 
                     $node->children = [];
@@ -1043,6 +1056,8 @@ class Compiler
 
             $block->mode = 'ignore';
         }
+
+        return $this;
     }
 
     /**
@@ -1107,7 +1122,10 @@ class Compiler
         //Detach
         $node->parent->remove($node);
 
-        $this->_mixins[$node->name] = ['node' => $node, 'phtml' => $this->compileChildren($node->children, false)];
+        $this->_mixins[$node->name] = [
+            'node' => $node,
+            'phtml' => $this->compileChildren($node->children, false)
+        ];
 
         return $this;
     }
@@ -1154,7 +1172,6 @@ class Compiler
                 $i++;
             }
 
-            $variadic = '';
             if ($variadicIndex !== null) {
 
                 $args[$variadicName] = 'array_slice(\$__arguments, $variadicIndex);';
@@ -1532,8 +1549,6 @@ class Compiler
     /**
      * Compiles a do-instruction into PHTML.
      *
-     * @todo Check for while-node with $node->next()
-     *
      * @param Node $node the do-node to compile
      *
      * @return string The compiled PHTML
@@ -1817,22 +1832,22 @@ class Compiler
                 }
 
                 $quot = $this->_options['quoteStyle'];
-                $builder = '\Tale\Jade\Compiler::buildValue';
+                $builder = '\\Tale\\Jade\\Compiler\\build_value';
 
                 //Handle specific attribute styles for HTML
                 if ($this->_options['mode'] === self::MODE_HTML) {
 
                     switch ($name) {
                         case 'class':
-                            $builder = '\Tale\Jade\Compiler::buildClassValue';
+                            $builder = '\\Tale\\Jade\\Compiler\\build_class_value';
                             break;
                         case 'style':
-                            $builder = '\Tale\Jade\Compiler::buildStyleValue';
+                            $builder = '\\Tale\\Jade\\Compiler\\build_style_value';
                             break;
                     }
 
                     if (strncmp($name, 'data-', 5) === 0)
-                        $builder = '\Tale\Jade\Compiler::buildDataValue';
+                        $builder = '\\Tale\\Jade\\Compiler\\build_data_value';
                 }
 
                 //If all values are scalar, we don't do any kind of resolution for
@@ -1870,7 +1885,7 @@ class Compiler
 
                         $pair = $this->createCode(
                             '$__value = '.$values[0].'; '
-                            .'if (!\\Tale\\Jade\\Compiler::isNullOrFalse($__value)) '
+                            .'if (!\\Tale\\Jade\\Compiler\\is_null_or_false($__value)) '
                             ."echo ' $name='.$builder(\$__value, '$quot', $escaped); "
                             .'unset($__value);'
                         );
@@ -1878,7 +1893,7 @@ class Compiler
 
                         $pair = $this->createCode(
                             '$__values = ['.implode(', ', $values).']; '
-                            .'if (!\\Tale\\Jade\\Compiler::isArrayNullOrFalse($__values)) '
+                            .'if (!\\Tale\\Jade\\Compiler\\is_array_null_or_false($__values)) '
                             ."echo ' $name='.$builder(\$__values, '$quot', $escaped); "
                             .'unset($__values);'
                         );
@@ -2064,32 +2079,6 @@ class Compiler
     }
 
     /**
-     * Compiles a simple error helper in a string to be prepended to the final PHTML.
-     *
-     * @return string The compiled PHTML for the error handler
-     */
-    protected function compileErrorHandlerHelper()
-    {
-
-        $phtml = '';
-        if ($this->_options['handleErrors']) {
-
-            $phtml = $this->createCode(
-                    '$__errorHandler = function($code, $message, $file, $line) {
-
-                        if (!(error_reporting() & $code))
-                            return;
-
-                        throw new \ErrorException($message, 0, $code, $file, $line);
-                    };
-                    set_error_handler($__errorHandler);'
-                ).$this->newLine();
-        }
-
-        return $phtml;
-    }
-
-    /**
      * Throws a Compiler-Exception.
      *
      * @param string    $message     A meaningful exception message
@@ -2097,7 +2086,7 @@ class Compiler
      *
      * @throws Exception
      */
-    protected function throwException($message, \Tale\Jade\Parser\Node $relatedNode = null)
+    protected function throwException($message, Node $relatedNode = null)
     {
 
         if ($relatedNode)
@@ -2108,194 +2097,5 @@ class Compiler
         throw new Exception(
             "Failed to compile Jade: $message"
         );
-    }
-
-
-    /**
-     * Builds an attribute or argument value.
-     *
-     * Objects get converted to arrays
-     * Arrays will be imploded by '' (values are concatenated)
-     *
-     * ['a', 'b', ['c', ['d']]]
-     * will become
-     * 'abcd'
-     *
-     * The result will be enclosed by the quotes passed to $quoteStyle
-     *
-     * @param mixed  $value      The value to build
-     * @param string $quoteStyle The quoting style to use
-     * @param bool   $escaped    Escape the value or not
-     *
-     * @return string The built value
-     */
-    public static function buildValue($value, $quoteStyle, $escaped)
-    {
-
-        if (is_object($value))
-            $value = (array)$value;
-
-        return $quoteStyle.($escaped ? htmlentities(is_array($value) ? self::flatten($value, '') : $value, \ENT_QUOTES) : ((string)$value)).$quoteStyle;
-    }
-
-    /**
-     * Builds a data-attribute value.
-     *
-     * If it's an object or an array, it gets converted to JSON automatically
-     * If not, the value stays scalar
-     *
-     * JSON will automatically be enclosed by ', other results will use
-     * $quoteStyle respectively
-     *
-     * 'a'
-     * will become
-     * 'a'
-     *
-     * ['a', 'b']
-     * will become
-     * '["a", "b"]' (JSON)
-     *
-     * @param mixed  $value      The value to build
-     * @param string $quoteStyle The quoting style to use
-     * @param bool   $escaped    Escape the value or not
-     *
-     * @return string The built value
-     */
-    public static function buildDataValue($value, $quoteStyle, $escaped)
-    {
-
-        if (self::isObjectOrArray($value))
-            return '\''.json_encode($value).'\'';
-
-        return $quoteStyle.($escaped ? htmlentities($value, \ENT_QUOTES) : ((string)$value)).$quoteStyle;
-    }
-
-    /**
-     * Builds a style-attribute string from a value.
-     *
-     * ['color' => 'red', 'width: 100%', ['height' => '20px']]
-     * will become
-     * 'color: red; width: 100%; height: 20px;'
-     *
-     * @param mixed  $value      The value to build
-     * @param string $quoteStyle The quoting style to use
-     *
-     * @return string The built value
-     */
-    public static function buildStyleValue($value, $quoteStyle)
-    {
-
-        if (is_object($value))
-            $value = (array)$value;
-
-        if (is_array($value))
-            $value = self::flatten($value, '; ', ': ');
-
-        return $quoteStyle.((string)$value).$quoteStyle;
-    }
-
-    /**
-     * Builds a class-attribute string from a value.
-     *
-     *['a', 'b', ['c', ['d', 'e']]]
-     * will become
-     * 'a b c d e'
-     *
-     * @param mixed  $value      The value to build
-     * @param string $quoteStyle The quoting style to use
-     *
-     * @return string The built value
-     */
-    public static function buildClassValue($value, $quoteStyle)
-    {
-
-        if (is_object($value))
-            $value = (array)$value;
-
-        if (is_array($value))
-            $value = self::flatten($value);
-
-        return $quoteStyle.((string)$value).$quoteStyle;
-    }
-
-    /**
-     * Checks if a value is _exactly_ either null or false.
-     *
-     * @param mixed $value The value to check
-     *
-     * @return bool
-     */
-    public static function isNullOrFalse($value)
-    {
-
-        return $value === null || $value === false;
-    }
-
-    /**
-     * Checks if a whole array is _exactly_ null or false.
-     *
-     * Not the array itself, but all values in the array
-     *
-     * @param array $value The array to check
-     *
-     * @return bool
-     */
-    public static function isArrayNullOrFalse(array $value)
-    {
-
-        return count(array_filter($value, [self::class, 'isNullOrFalse'])) === count($value);
-    }
-
-    /**
-     * Checks if a value is either an object or an array.
-     *
-     * Kind of like !isScalar && !isExpression
-     *
-     * @param mixed $value The value to check
-     *
-     * @return bool
-     */
-    public static function isObjectOrArray($value)
-    {
-
-        return is_object($value) || is_array($value);
-    }
-
-    /**
-     * Flattens an array and combines found values with $separator.
-     *
-     * If there are string-keys and an $argSeparator is set, it will
-     * also implode those to to a single value
-     *
-     * With the default options
-     * ['a', 'b' => 'c', ['d', 'e' => 'f', ['g' => 'h']]]
-     * will become
-     * 'a b=c d e=f g=h'
-     *
-     * @param array  $array        The array to flatten
-     * @param string $separator    The separator to implode pairs with
-     * @param string $argSeparator The separator to implode keys and values with
-     *
-     * @return string The compiled string
-     */
-    public static function flatten(array $array, $separator = ' ', $argSeparator = '=')
-    {
-
-        $items = [];
-        foreach ($array as $key => $value) {
-
-            if (is_object($value))
-                $value = (array)$value;
-
-            if (is_array($value))
-                $value = self::flatten($value, $separator, $argSeparator);
-
-            if (is_string($key))
-                $items[] = "$key$argSeparator$value";
-            else
-                $items[] = $value;
-        }
-
-        return implode($separator, $items);
     }
 }

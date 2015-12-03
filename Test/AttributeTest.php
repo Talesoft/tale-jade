@@ -62,7 +62,7 @@ class AttributeTest extends \PHPUnit_Framework_TestCase
     {
 
         $this->assertEquals(
-            '<a<?php $__value = isset($url) ? $url : false; if (!\Tale\Jade\Compiler::isNullOrFalse($__value)) echo \' href=\'.\Tale\Jade\Compiler::buildValue($__value, \'"\', true); unset($__value);?>></a>',
+            '<a<?php $__value = isset($url) ? $url : false; if (!\Tale\Jade\Compiler\is_null_or_false($__value)) echo \' href=\'.\Tale\Jade\Compiler\build_value($__value, \'"\', true); unset($__value);?>></a>',
             $this->_renderer->compile('a(href=$url)')
         );
     }
