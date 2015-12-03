@@ -1,0 +1,93 @@
+<?php
+
+use Tale\Jade\Compiler;
+
+include 'vendor/autoload.php';
+
+list($self, $action, $path, $target) = array_pad($argv, 4, null);
+
+
+if ($action && $action !== 'compile') {
+
+    echo "I can't do anything more than compilation currently :(\n";
+    $action = null;
+}
+
+if (!$action || !$path) {
+
+    echo "Usage: $self compile <source> [<destination>]\n";
+    echo "Options:\n";
+    echo "--pretty\tFormat the output HTML\n";
+    exit;
+}
+
+
+
+$options = [];
+foreach ($argv as $v) {
+
+    if ($v === '--pretty' || $v === '-p')
+        $options['pretty'] = true;
+}
+
+
+$map = [];
+
+$path = realpath($path);
+
+if (!$path) {
+
+    echo "The given source path is neither a file nor a directory.\n";
+    exit;
+}
+
+//Simple file -> file compile
+if (is_file($path)) {
+
+    $path = realpath($path);
+
+    if (!$target)
+        $target = dirname($path).'/'.basename($path, '.jade').'.phtml';
+
+    $map[$path] = $target;
+} else if (is_dir($path)) {
+
+    $path = rtrim($path, '/\\');
+    $files = glob("$path/*.jade");
+
+    if (!$target) {
+
+        $target = $path;
+    } else {
+
+        if (!is_dir($target))
+            mkdir($target, 0755, true);
+
+        $target = realpath($target);
+
+        if (!$target) {
+
+            echo "Failed to create output directory $path. Missing access rights maybe?\n";
+            exit;
+        }
+    }
+
+    foreach ($files as $file) {
+
+        $map[$file] = $target.'/'.basename($file, '.jade').'.phtml';
+    }
+}
+
+
+$compiler = new Compiler(array_replace([
+    'standAlone' => true
+], $options));
+
+echo "Starting compilation...\n";
+
+foreach ($map as $source => $target) {
+
+    echo "Compiling [$source] to [$target]\n";
+    $phtml = $compiler->compileFile($source);
+    file_put_contents($target, $phtml);
+}

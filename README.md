@@ -65,32 +65,6 @@ or as a sub-module if you're using git for your project as well
 $ git submodule add git@github.com:Talesoft/tale-jade.git library/Tale/Jade
 ```
 
-You can also just include all necessary files by yourself if you like
-
-```php
-include('path/to/tale-jade/Lexer/Exception.php');
-include('path/to/tale-jade/Lexer.php');
-include('path/to/tale-jade/Parser/Exception.php');
-include('path/to/tale-jade/Parser/Node.php');
-include('path/to/tale-jade/Parser.php');
-include('path/to/tale-jade/Compiler/Exception.php');
-include('path/to/tale-jade/Compiler.php');
-include('path/to/tale-jade/Renderer.php');
-include('path/to/tale-jade/Filter.php');
-include('path/to/tale-jade/Renderer/AdapterBase.php');
-
-//and the adapter you want to use ('file' by default)
-include('path/to/tale-jade/Renderer/Adapter/File.php');
-
-//or
-include('path/to/tale-jade/Renderer/Adapter/Stream/Wrapper.php');
-include('path/to/tale-jade/Renderer/Adapter/Stream.php');
-
-
-//optional helper functions
-include('path/to/tale-jade/functions.php');
-```
-
 
 ### Rendering a Jade Template
 
@@ -206,7 +180,7 @@ By utilizing those features we aim to bring in more, compatible features into th
 
 ### Supported official Node.js Jade Features
 
-- [Tags](http://jade.talesoft.io/examples/tags)
+#### Tags
 
 ```jade
 nav
@@ -216,7 +190,7 @@ nav
         li: a(href='#')
 ```
 
-- [Classes](http://jade.talesoft.io/examples/classes)
+#### Classes
 
 ```jade
 div.row
@@ -226,7 +200,7 @@ div.row
         p Second half
 ```
 
-- [IDs](http://jade.talesoft.io/examples/ids)
+#### IDs
 
 ```jade
 form#mainForm
@@ -240,7 +214,7 @@ form#mainForm
     button#submitButton(type='submit')
 ```
 
-- [Doctypes](http://jade.talesoft.io/examples/doctypes)
+#### Doctypes
 
 ```jade
 doctype html
@@ -251,7 +225,7 @@ doctype xml
 //- will compile to <?xml version="1.0" encoding="utf-8"?>
 ```
 
-- [Attributes](http://jade.talesoft.io/examples/attributes)
+#### Attributes
 
 ```jade
 
@@ -261,7 +235,7 @@ a(href='/my/path.html', target='_blank')
 //- will compile to <div class="col col-md-6 col-sm-6"></div>
 ```
 
-- [Mixins](http://jade.talesoft.io/examples/mixins)
+#### Mixins
 
 ```jade
 
@@ -272,7 +246,7 @@ mixin custom-button(label, theme= 'default')
 +custom-button('Button B')
 ```
 
-- [Blocks (with prepend, append and replace support)](http://jade.talesoft.io/examples/blocks)
+#### Blocks (with prepend, append and replace support)
 
 ```jade
 
@@ -288,7 +262,7 @@ replace scripts
     script(src='/js/mootools.js')
 ```
 
-- [Expressions & Escaping](http://jade.talesoft.io/examples/expressions)
+#### Expressions & Escaping
 
 ```jade
 
@@ -299,7 +273,7 @@ p!= $someVariableContainingHTML
 input(value=$defaultValue)
 ```
 
-- [Block Expansion](http://jade.talesoft.io/examples/block-expansion)
+#### Block Expansion
 
 ```jade
 li: a(href='#'): i.fa.fa-gear
@@ -307,7 +281,7 @@ li: a(href='#'): i.fa.fa-gear
 if $something: p Do Something
 ```
 
-- [Cross Assignments (&attributes)](http://jade.talesoft.io/examples/assignments)
+#### Cross Assignments (&attributes)
 
 ```jade
 //- Other than the official Node.js, this works with any attribute
@@ -323,7 +297,7 @@ $stylesArray= ['width' => '100%', 'background' => 'red']
 div&styles($stylesArray)
 ```
 
-- [Comments](http://jade.talesoft.io/examples/comments)
+#### Comments
 
 ```jade
 
@@ -339,7 +313,7 @@ div&styles($stylesArray)
     lines
 ```
 
-- [Inline Code](http://jade.talesoft.io/examples/code)
+#### Inline Code
 
 ```jade
 
@@ -355,7 +329,7 @@ p Do something else
     ]
 ```
 
-- [Inheritance](http://jade.talesoft.io/examples/inheritance)
+#### Inheritance
 
 ```jade
 
@@ -365,7 +339,7 @@ block content
     p This here will replace the "content"-block in the master-layout!
 ```
 
-- [Includes (with filters)](http://jade.talesoft.io/examples/includes)
+#### Includes (with filters)
 
 ```jade
 
@@ -381,7 +355,7 @@ include some-js-file.js
 // will be compiled to <script>...included content...</script>
 ```
 
-- [Conditionals (if, else, elseif, case, when, unless)](http://jade.talesoft.io/examples/conditionals)
+#### Conditionals (if, else, elseif, case, when, unless)
 
 ```jade
 
@@ -401,7 +375,7 @@ case $someState
         p Do the default thing
 ```
 
-- [Loops (each, while)](http://jade.talesoft.io/examples/loops)
+#### Loops (each, while)
 
 ```jade
 
@@ -413,7 +387,7 @@ while $i < 100
     - $i++
 ```
 
-- [Interpolation (with Element Interpolation)](http://jade.talesoft.io/examples/interpolation)
+#### Interpolation (with Element Interpolation)
 
 ```jade
 
@@ -424,7 +398,7 @@ p.
     I can simply use #[a(href='jade-interpolation.html') Jade Interpolation!]
 ```
 
-- [Filters](http://jade.talesoft.io/examples/filters)
+#### Filters
 
 ```jade
 
@@ -444,7 +418,7 @@ p.
     }
 ```
 
-- [Mixin Blocks](http://jade.talesoft.io/examples/mixin-blocks)
+#### Mixin Blocks
 
 ```jade
 
@@ -463,7 +437,7 @@ mixin article(title= 'Untitled')
     p The content of my second article
 ```
 
-- [Variadics](http://jade.talesoft.io/examples/variadics)
+#### Variadics
 
 ```jade
 
@@ -479,7 +453,7 @@ mixin post-list(...posts)
 
 ### Supported Tale Jade Features
 
-- [Named Mixin Parameters](http://jade.talesoft.io/examples/named-parameters)
+#### Named Mixin Parameters
 
 ```jade
 
@@ -491,7 +465,7 @@ mixin table(searchQuery, page= 0, amount= 100, order='id:asc')
 +table('search query', order='id:desc')
 ```
 
-- [Attribute Stacking](http://jade.talesoft.io/examples/attribute-stacking)
+#### Attribute Stacking
 
 ```jade
 
@@ -505,13 +479,13 @@ div(style='width: 100%', style='height: 50%', style='background: red')
 // will compile to <div style="width: 100%; height: 50%; background: red"></div>
 ```
 
-- [Filter Maps](http://jade.talesoft.io/examples/filter-map)
+#### Filter Maps
 See filters above. Official Node.js doesn't do filter-mapping based on file-extensions.
 
-- [Cross Assignments](http://jade.talesoft.io/examples/cross-assignments)
+#### Cross Assignments
 See assignments above. They are quite more dynamic than the official implementation.
 
-- [Direct Variable Access](http://jade.talesoft.io/examples/direct-variable-access)
+#### Direct Variable Access
 
 ```jade
 
@@ -528,7 +502,7 @@ $i
 
 ```
 
-- [More Loops (do-while, for)](http://jade.talesoft.io/examples/more-loops)
+#### More Loops (do-while, for)
 
 ```jade
 
@@ -568,13 +542,14 @@ We love Jade, we love PHP, we love Node.js and we love the official and original
 We just don't love the way people implement existing stuff in PHP :)
 
 Planned features:
-- [ ] Command line tools
+- [x] Command line tools
 - [ ] Import Attributes (`include some-file(some-var='some-value')`)
 - [ ] Helper Libraries (Own custom helper libraries)
 - [ ] Aliases (Like mixins, just smaller)
-- [ ] Stylus integration
-- [ ] CoffeeScript integration
-- [ ] Markdown integration
+- [ ] Website Kit for easy website creation with Tale Jade
+- [x] Stylus integration
+- [x] CoffeeScript integration
+- [x] Markdown integration
 - [ ] Extensions and package manager
 
 ---
@@ -583,7 +558,7 @@ Planned features:
 ## Documentation Resources
 
 
-***Notice: Sorry that most documents are down right now, we're still working on them. We added some examples so you know how all features work.***
+***Notice: Some things are quite undocumented right now. We added some examples so you know how all features work.***
 ***Want to help us? [E-Mail us!](mailto:info@talesoft.io)!***
 
 The only difference between Node.js Jade and Tale Jade is, that Tale Jade uses PHP Expressions everywhere
@@ -646,7 +621,7 @@ Thanks to the Tale Jade Community we got some modules for existing frameworks th
 - [jacmoe's Extension](http://www.yiiframework.com/extension/yii2-tale-jade/)
 
 ### SimpleMVCFramework
-- [cu's SMVC Fork](https://github.com/Talesoft/tale-jade-smvc)
+- [Cagatay's SMVC Fork](https://github.com/Talesoft/tale-jade-smvc)
 
 **Your framework is missing? [Send us an e-mail](mailto:info@talesoft.io) and we'll get a bridge up and running as soon as possible!**
 

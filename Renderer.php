@@ -18,7 +18,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.2.2
+ * @version    1.3.0
  * @link       http://jade.talesoft.io/docs/files/Renderer.html
  * @since      File available since Release 1.0
  */
@@ -51,7 +51,7 @@ use Tale\Jade\Renderer\AdapterBase;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.2.2
+ * @version    1.3.0
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Renderer.html
  * @since      File available since Release 1.0
  */
@@ -134,14 +134,20 @@ class Renderer
 
             //Abstracted settings
             'pretty'            => false,
-            'paths'             => []
+            'paths'             => [],
+            'standAlone'        => false
         ], $options ? $options : []);
 
+        //Quick Options.
+        //These get passed to the actual option arrays of the related objects
         if (!isset($this->_options['compilerOptions']['paths']))
             $this->_options['compilerOptions']['paths'] = $this->_options['paths'];
 
         if (!isset($this->_options['compilerOptions']['pretty']))
             $this->_options['compilerOptions']['pretty'] = $this->_options['pretty'];
+
+        if (!isset($this->_options['compilerOptions']['standAlone']))
+            $this->_options['compilerOptions']['standAlone'] = $this->_options['standAlone'];
 
         $this->_lexer = $lexer ? $lexer : new Lexer($this->_options['lexerOptions']);
         $this->_parser = $parser ? $parser : new Parser($this->_options['parserOptions'], $lexer);
