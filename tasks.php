@@ -5,10 +5,12 @@ $ignore = [
     './Test',
     './docs',
     './vendor',
-    './tasks.php'
+    './tasks.php',
+    './.idea',
+    './.git'
 ];
 
-$newVersion = '1.2.2';
+$newVersion = '1.3.0';
 
 
 if (!$newVersion) {
