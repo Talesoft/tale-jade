@@ -4,6 +4,7 @@ namespace Tale\Jade\Test;
 
 use Tale\Jade\Compiler;
 use Tale\Jade\Renderer;
+use Tale\Jade\Parser;
 
 class AttributeTest extends \PHPUnit_Framework_TestCase
 {
@@ -132,5 +133,34 @@ class AttributeTest extends \PHPUnit_Framework_TestCase
             [['one', 'two', 'three'], '<a href="onetwothree"></a>'],
             [(object)['one', 'two', 'three'], '<a href="onetwothree"></a>']
         ];
+    }
+
+    public function testUnnamedAttributed()
+    {
+
+        $this->setExpectedException(Parser\Exception::class);
+        $this->assertEquals('', $this->_renderer->compile('a(="some value")'));
+    }
+
+    public function testExpectedButNotGivenValue()
+    {
+
+        $this->assertEquals('<a href=""></a>', $this->_renderer->compile('a(href=)'));
+    }
+
+    public function testSpaceSeparated()
+    {
+
+        $this->assertEquals('<meta name="viewport" content="some viewport content"><a href="google.de" target="_blank" title="Some link title"></a>', $this->_renderer->render(
+            'space-separated'
+        ));
+    }
+
+    public function testIssue33()
+    {
+
+        $this->assertEquals('<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0"><meta http-equiv="X-UA-Compatible" content="chrome=1"><link rel="shortcut icon" href="/favicon.ico"><link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600"><link rel="stylesheet" href="/style.css">', $this->_renderer->render(
+            'issue-33'
+        ));
     }
 }

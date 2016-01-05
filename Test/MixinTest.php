@@ -7,7 +7,7 @@ use Tale\Jade\Renderer;
 class MixinTest extends \PHPUnit_Framework_TestCase
 {
 
-    /** @var \Tale\Jade\Compiler */
+    /** @var \Tale\Jade\Renderer */
     private $_renderer;
 
     public function setUp()
@@ -50,6 +50,16 @@ class MixinTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('<h2>Article 1</h2><p><strong>Block Content 1</strong> Awesome, isn\'t it?</p><h2>Article 2</h2><p><strong>Block Content 2</strong> And another block content</p>', $this->_renderer->render(
             'block'
+        ));
+    }
+
+
+
+    public function testIdAndClassForwarding()
+    {
+
+        $this->assertEquals('<button class="btn btn-default" id="someId"></button>', $this->_renderer->render(
+            'id-and-class-forwarding'
         ));
     }
 }

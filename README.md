@@ -83,7 +83,8 @@ echo $renderer->render('your-jade-file');
 ```
 
 This way, the renderer will search for `your-jade-file.jade` in your `get_include_path()`-paths.
-Notice that the path passed to `render` needs to be relative, *always*.
+Notice that the path passed to `render` should be relative. You can give it absolute paths, but it will make caching harder.
+Use absolute paths for testing only.
 We show you how to add alternative search paths further in the **Basic configuration** section below.
 
 When the Jade-file gets rendered, a `./cache/views`-directory is created automatically and the compiled PHTML will be stored in that directory.
