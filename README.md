@@ -176,359 +176,52 @@ This always has been and will always be our main target.
 PHP has it's own features that are surely different from JavaScript's.
 By utilizing those features we aim to bring in more, compatible features into the language to make the fastest template development ever possible!
 
----
-
+**You can try features and see a bunch of examples on our [sandbox site](http://sandbox.jade.talesoft.io)**
 
 ### Supported official Node.js Jade Features
 
-#### Tags
-
-```jade
-nav
-    ul
-        li: a(href='#')
-        li: a(href='#')
-        li: a(href='#')
-```
-
-#### Classes
-
-```jade
-div.row
-    .col-md-6.col-sm-6
-        p First half
-    .col-md-6.col-sm-6
-        p Second half
-```
-
-#### IDs
-
-```jade
-form#mainForm
-    
-    .form-group
-        input.input-lg#userNameInput(name='userName')
-    
-    .form-group
-        input.input-lg#passwordInput(name='password')
-        
-    button#submitButton(type='submit')
-```
-
-#### Doctypes
-
-```jade
-doctype html
-doctype 5
-//- will compile to <!DOCTYPE html>
-
-doctype xml
-//- will compile to <?xml version="1.0" encoding="utf-8"?>
-```
-
-#### Attributes
-
-```jade
-
-a(href='/my/path.html', target='_blank')
-
-.col(class=col-md-6, class='col-sm-6')
-//- will compile to <div class="col col-md-6 col-sm-6"></div>
-```
-
-#### Mixins
-
-```jade
-
-mixin custom-button(label, theme= 'default')
-    a.btn(class='btn-#{$theme}')= $label
-    
-+custom-button('Button A')
-+custom-button('Button B')
-```
-
-#### Blocks (with prepend, append and replace support)
-
-```jade
-
-block scripts
-    script(src='/js/jquery.js')
-    
-append scripts
-    script(src='/js/plugin.jquery.js')
-    script(src='/js/plugin-2.jquery.js')
-    
-replace scripts
-    //- rather take another framework?!
-    script(src='/js/mootools.js')
-```
-
-#### Expressions & Escaping
-
-```jade
-
-p= $greeting
-
-p!= $someVariableContainingHTML
-
-input(value=$defaultValue)
-```
-
-#### Block Expansion
-
-```jade
-li: a(href='#'): i.fa.fa-gear
-
-if $something: p Do Something
-```
-
-#### Cross Assignments (&attributes)
-
-```jade
-//- Other than the official Node.js, this works with any attribute
-//- The official &attributes is not implemented fully right now
-
-a&classes('btn', 'btn-default')
-
-a&classes($classesFromScript)
-
-a&href('http://host', '/sub-url', '/file.html')
-
-$stylesArray= ['width' => '100%', 'background' => 'red']
-div&styles($stylesArray)
-```
-
-#### Comments
-
-```jade
-
-//- This will be compiled to a PHP comment and will not be visible in client output
-
-// This will be compiled to a HTML comment and will be visible in client output
-
-//
-    you can easily
-    go one level deeper
-    and span a comment
-    across multiple
-    lines
-```
-
-#### Inline Code
-
-```jade
-
-<?php $i = 15; ?>
-p Do something
-- $i = 100
-p Do something else
--
-    $i = [
-        'a',
-        'b',
-        'c'
-    ]
-```
-
-#### Inheritance
-
-```jade
-
-extends layouts/master
-
-block content
-    p This here will replace the "content"-block in the master-layout!
-```
-
-#### Includes (with filters)
-
-```jade
-
-include some-jade-file
-
-include some-php-file.php
-// will be compiled to <?php ?> correctly
-
-include some-css-file.css
-// will be compiled to <style>..included content...</style>
-
-include some-js-file.js
-// will be compiled to <script>...included content...</script>
-```
-
-#### Conditionals (if, else, elseif, case, when, unless)
-
-```jade
-
-if $something
-    p Do something
-else
-    p Do something else
-    
-unless $error
-    p.success Success!
-    
-case $someState
-    when 'state-1': p Do anything
-    when 'state-2'
-        p Do some larger thing
-    default
-        p Do the default thing
-```
-
-#### Loops (each, while)
-
-```jade
-
-each $item, $key in $items
-    p Item at #{$key} is #{$item}!
-    
-while $i < 100
-    p Do something until $i is 100
-    - $i++
-```
-
-#### Interpolation (with Element Interpolation)
-
-```jade
-
-p Hello, #{$user->name}, how are you today?
-
-p.
-    I'm in a really long text, but I need a link!
-    I can simply use #[a(href='jade-interpolation.html') Jade Interpolation!]
-```
-
-#### Filters
-
-```jade
-
-:css
-    body, html {
-        height: 100%;
-    }
-    
-:js
-    do.something();
-    
-    
-:php
-    
-    function someFunc() {
-        // Do something
-    }
-```
-
-#### Mixin Blocks
-
-```jade
-
-mixin article(title= 'Untitled')
-    header.article-header= $title
-    article
-        if block
-            block
-        else
-            p No content for this article :(
-            
-+article('Article 1')
-    p The content of my first article
-    
-+article('Article 2')
-    p The content of my second article
-```
-
-#### Variadics
-
-```jade
-
-mixin post-list(...posts)
-    each $post in $posts
-        header= $post->title
-        article= $post->content
-        
-        
-+post-list($post1, $post2, $post3, $post4)
-```
-
+- [Tags](http://sandbox.jade.talesoft.io)
+- [Classes](http://sandbox.jade.talesoft.io?example=classes)
+- [IDs](http://sandbox.jade.talesoft.io?example=ids)
+- [Doctypes](http://sandbox.jade.talesoft.io?example=html-5)
+- [Attributes](http://sandbox.jade.talesoft.io?example=attributes)
+- [Mixins](http://sandbox.jade.talesoft.io?example=mixins)
+- [Blocks](http://sandbox.jade.talesoft.io?example=blocks)
+- [Expressions](http://sandbox.jade.talesoft.io?example=expressions)
+- [Escaping](http://sandbox.jade.talesoft.io?example=escaping)
+- [Block Expansion](http://sandbox.jade.talesoft.io?example=block-expansion)
+- [Assignments](http://sandbox.jade.talesoft.io?example=assignments)
+- [Comments](http://sandbox.jade.talesoft.io?example=comments)
+- [Code](http://sandbox.jade.talesoft.io?example=code)
+- [Inheritance](http://sandbox.jade.talesoft.io?example=inheritance)
+- [Includes](http://sandbox.jade.talesoft.io?example=includes)
+- [Conditionals](http://sandbox.jade.talesoft.io?example=conditionals)
+- [Loops](http://sandbox.jade.talesoft.io?example=loops)
+- [Interpolation](http://sandbox.jade.talesoft.io?example=interpolation)
+- [Filters](http://sandbox.jade.talesoft.io?example=filters)
+- [Mixin Blocks](http://sandbox.jade.talesoft.io?example=mixin-blocks)
+- [Variadics](http://sandbox.jade.talesoft.io?example=variadics)
 
 ### Supported Tale Jade Features
 
-#### Named Mixin Parameters
+- [Named Mixin Parameters](http://sandbox.jade.talesoft.io?example=named-mixin-parameters)
+- [Attribute Stacking](http://sandbox.jade.talesoft.io?example=attribute-stacking)
+- [Variable Access](http://sandbox.jade.talesoft.io?example=variable-access)
+- [Do/while and for-Loops](http://sandbox.jade.talesoft.io?example=loops)
 
-```jade
-
-mixin table(searchQuery, page= 0, amount= 100, order='id:asc')
-	table
-		//... something
-
-
-+table('search query', order='id:desc')
-```
-
-#### Attribute Stacking
-
-```jade
-
-a(href='http://host', href='/path', href='/file')
-// will compile to <a href="http://host/path/file"></a>
-
-a(class='btn', class='btn-default', class='btn-lg')
-// will compile to <a class="btn btn-default btn-lg"></a>
-
-div(style='width: 100%', style='height: 50%', style='background: red')
-// will compile to <div style="width: 100%; height: 50%; background: red"></div>
-```
-
-#### Filter Maps
-See filters above. Official Node.js doesn't do filter-mapping based on file-extensions.
-
-#### Cross Assignments
-See assignments above. They are quite more dynamic than the official implementation.
-
-#### Direct Variable Access
-
-```jade
-
-$i= 100
-
-$array(key1='value1', key2='value2')
-
-$array(key3='value3')
-
-//$array will be a merged array from all the attributes above
-
-$i
-//Will compile to print $i
-
-```
-
-#### More Loops (do-while, for)
-
-```jade
-
-$i= 0
-do
-    p Do something with #{$i}
-    $i= $i + 1
-while $i < 100
-	
-
-for $i = 0; $i < 100; $i++
-	p Do something with #{$i}
-```
 
 
 ### Other, unrelated, cool features
 
 - UTF-8 support via PHP's mb_* extension
+- Indentation detection and support for any indentation kind you like
 - Hackable and customizable renderer, compiler, parser and lexer
 - Huge amount of (optional) configuration possibilities
 - Graceful compiler forgiving many mistakes (e.g. spaces around the code)
 - Lightning fast and clean compilation
 - Detailed error handling
 - Renderer with different adapters (ease-of-use vs. performance)
-- Intelligent expression parsing
+- Intelligent expression parsing based on bracket counting
 - Huge documentation available
 - Tested well and maintained actively
 
@@ -540,9 +233,8 @@ Tale Jade is actively used and developed in many projects and is improved consta
 We don't stick to the Jade-convention, but we'll always provide compatibility to Node.js Jade to help reducing confusion.
 
 We love Jade, we love PHP, we love Node.js and we love the official and original Jade-contributors.
-We just don't love the way people implement existing stuff in PHP :)
 
-Planned features:
+**Planned features:**
 - [x] Command line tools
 - [ ] Import Attributes (`include some-file(some-var='some-value')`)
 - [ ] Helper Libraries (Own custom helper libraries)
@@ -558,30 +250,8 @@ Planned features:
 
 ## Documentation Resources
 
-
-***Notice: Some things are quite undocumented right now. We added some examples so you know how all features work.***
-***Want to help us? [E-Mail us!](mailto:info@talesoft.io)!***
-
-The only difference between Node.js Jade and Tale Jade is, that Tale Jade uses PHP Expressions everywhere
-
-In loops:
-`each $itemName, $keyName in $items`
-
-In attributes:
-`a(href=$url, href='/some/sub/path')`
-
-In conditionals:
-`if $someCondition`
-
-In interpolation:
-`| This is some text and this was #{$interpolated}!`
-
-PHP Expressions are possible in most cases 
-e.g. `(empty($someVar) ? 'Default Value' : "$someVar!")`
-and you can use functions and classes normally
-e.g. `h1= strtoupper('Tale Jade is awesome!')`
-
-
+[Tale Jade Live Compiler](http://sandbox.jade.talesoft.io)
+A compiler for you to play with in your browser as well as a whole bunch of examples to give you a grasp of what Tale Jade is capable of.
 
 [Official Node.js Jade Documentation](http://jade-lang.com)
 The real thing. This is where everything that we do here originates from.
@@ -608,7 +278,7 @@ It's PHP code, though.
 ---
 
 
-## Tale Jade in other Projects
+## Tale Jade in for your favorite framework
 
 You're using a framework with a template engine already, but you really want to try out Jade?
 Search no further.
@@ -648,7 +318,7 @@ We're completely **Open Source**! You can do anything you like with our code as 
 
 You can also contact us via E-Mail.
 
-If you're interested in other projects, you might contact us via E-Mail as well
+If you're interested in other projects, you might contact us via E-Mail as well.
 
 **E-Mail: [info@talesoft.io](mailto:info@talesoft.io)**
 
