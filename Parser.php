@@ -18,7 +18,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.1
+ * @version    1.3.2
  * @link       http://jade.talesoft.io/docs/files/Parser.html
  * @since      File available since Release 1.0
  */
@@ -57,7 +57,7 @@ use Tale\Jade\Parser\Exception;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.1
+ * @version    1.3.2
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Parser.html
  * @since      File available since Release 1.0
  */
