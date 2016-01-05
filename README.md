@@ -624,6 +624,12 @@ Thanks to the Tale Jade Community we got some modules for existing frameworks th
 ### SimpleMVCFramework
 - [Cagatay's SMVC Fork](https://github.com/Talesoft/tale-jade-smvc)
 
+### CakePHP 3
+- [clthck's Plugin](https://github.com/clthck/cakephp-jade)
+
+### FlightPHP
+- [berkus' Integration](https://gist.github.com/berkus/f54347a4a1fd74e9e162)
+
 **Your framework is missing? [Send us an e-mail](mailto:info@talesoft.io) and we'll get a bridge up and running as soon as possible!**
 
 A great thanks to the contributors of these modules!
