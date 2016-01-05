@@ -296,7 +296,7 @@ class Compiler
                 'js'   => 'js',
                 'php'  => 'php',
                 'md'   => 'markdown',
-                'coffee' => 'coffee-script',
+                'coffee' => 'coffeescript',
                 'less' => 'less',
                 'styl' => 'stylus',
                 'sass' => 'sass',
@@ -617,6 +617,10 @@ class Compiler
         $string = preg_replace_callback('/([#!])\[([^\}]+)\]/', function ($matches) use ($attribute) {
 
             $input = $matches[2];
+
+            if ($input === 'endif')
+                return $matches[0];
+
             $node = $this->_parser->parse($input);
 
             return $this->compileNode($node);

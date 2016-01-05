@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 
 use Tale\Jade\Compiler;
@@ -91,3 +92,5 @@ foreach ($map as $source => $target) {
     $phtml = $compiler->compileFile($source);
     file_put_contents($target, $phtml);
 }
+
+echo "Finished!\n";

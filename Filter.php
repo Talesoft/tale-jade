@@ -227,8 +227,6 @@ class Filter
                 ."Please install the coffeescript/coffeescript composer package"
             );
 
-        var_dump($node->text());
-
         $js = \CoffeeScript\Compiler::compile($node->text(), [
             'header' => '',
             'filename' => 'Imported-at-('.$node->line.':'.$node->offset.').coffee'
