@@ -18,7 +18,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.0
+ * @version    1.3.1
  * @link       http://jade.talesoft.io/docs/files/Lexer.html
  * @since      File available since Release 1.0
  */
@@ -60,7 +60,7 @@ use Tale\Jade\Lexer\Exception;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.0
+ * @version    1.3.1
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Lexer.html
  * @since      File available since Release 1.0
  */
@@ -1684,14 +1684,18 @@ class Lexer
                         $this->read('ctype_space');
                     }
 
-                    $token['value'] = $this->readBracketContents([',']);
+                    $token['value'] = $this->readBracketContents([',', ' ', "\r", "\n", "\t"]);
                 }
 
-                if ($this->peek() === ',') {
+                if ($this->peek() === ',' || ctype_space($this->peek())) {
 
                     $this->consume();
                     $this->read('ctype_space');
-                    $continue = true;
+
+                    if ($this->peek() !== ')')
+                        $continue = true;
+                    else
+                        $continue = false;
                 } else {
 
                     $continue = false;
