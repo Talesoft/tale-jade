@@ -1178,7 +1178,7 @@ class Compiler
 
             if ($variadicIndex !== null) {
 
-                $args[$variadicName] = 'array_slice(\$__arguments, $variadicIndex);';
+                $args[$variadicName] = "array_slice(\$__arguments, $variadicIndex);";
             }
 
             $phtml .= $this->createCode(
@@ -1200,8 +1200,6 @@ class Compiler
     /**
      * Compiles a mixin call referencing the mixins in $_mixins.
      *
-     * @todo I guess the variadic handling in calls is broken right now. Calls should splat with '...'
-     *
      * @param Node $node the mixin call node to compile
      *
      * @return string The compiled PHTML
@@ -1211,6 +1209,7 @@ class Compiler
     {
 
         $name = $node->name;
+        $hasBlock = false;
 
         if (!isset($this->_mixins[$name]))
             $this->throwException(
@@ -1226,6 +1225,7 @@ class Compiler
 
         if (count($node->children) > 0) {
 
+            $hasBlock = true;
             $phtml = $this->createCode(
                 '$__block = function(array $__arguments = []) use($__args, $__mixins) {
                     extract($__args);
@@ -1261,7 +1261,6 @@ class Compiler
 
             $value = $attr->value;
 
-            $i++;
             if ($attr->name) {
 
                 if (isset($args[$attr->name])) {
@@ -1277,18 +1276,22 @@ class Compiler
                 continue;
             }
 
-            if (isset($mixin['node']->attributes[$index])) {
+            $mixinAttributes = $mixin['node']->attributes;
 
-                $args[$mixin['node']->attributes[$index]->name] = $value;
-                continue;
+            if (isset($mixinAttributes[$i]) && strncmp('...', $mixinAttributes[$i]->name, 3) !== 0) {
+
+                $args[$mixinAttributes[$i]->name] = $value;
+            } else {
+
+                $args[] = $value;
             }
-
-            $args[] = $value;
+            $i++;
         }
 
         $phtml .= (count($node->children) > 0 ? $this->indent() : '').$this->createCode(
-                '$__mixinCallArgs = '.$this->exportArray($args).';
+                '$__mixinCallArgs = '.$this->exportArray($args).';'.($hasBlock ? '
             $__mixinCallArgs[\'__block\'] = isset($__block) ? $__block : null;
+            ' : '').'
             call_user_func($__mixins[\''.$name.'\'], $__mixinCallArgs);
             unset($__mixinCallArgs);
             unset($__block);'

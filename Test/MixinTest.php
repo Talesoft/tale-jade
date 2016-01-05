@@ -58,7 +58,7 @@ class MixinTest extends \PHPUnit_Framework_TestCase
     public function testIdAndClassForwarding()
     {
 
-        $this->assertEquals('<button class="btn btn-default" id="someId"></button>', $this->_renderer->render(
+        $this->assertEquals('<button class="btn btn-default" id="someId">My Button Label</button>', $this->_renderer->render(
             'id-and-class-forwarding'
         ));
     }
