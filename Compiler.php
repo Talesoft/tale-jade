@@ -606,7 +606,11 @@ class Compiler
         $string = preg_replace_callback('/([#!])\{([^\}]+)\}/', function ($matches) use ($attribute) {
 
             $subject = $matches[2];
-            $code = "isset($subject) ? $subject : ''";
+            if ($this->isVariable($subject)) {
+                $code = "isset($subject) ? $subject : ''";
+            } else {
+                $code = "$subject";
+            }
 
             if ($matches[1] !== '!')
                 $code = "htmlentities($code, \\ENT_QUOTES, '".$this->_options['escapeCharset']."')";
