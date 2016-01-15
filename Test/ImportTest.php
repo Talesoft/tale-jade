@@ -15,16 +15,11 @@ class ImportTest extends \PHPUnit_Framework_TestCase
     {
 
         $this->_renderer = new Renderer([
-            'adapter' => 'file',
             'adapterOptions' => [
-                'path' => __DIR__.'/cache',
-                'lifeTime' => 0
+                'path' => __DIR__.'/cache/imports'
             ],
-            'compilerOptions' => [
-                'pretty' => false,
-                'handleErrors' => false,
-                'paths' => [__DIR__.'/views/imports']
-            ]
+            'pretty' => false,
+            'paths' => [__DIR__.'/views/imports']
         ]);
     }
 

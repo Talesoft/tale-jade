@@ -16,17 +16,20 @@ class IssueTest extends \PHPUnit_Framework_TestCase
     {
 
         $this->_renderer = new Renderer([
-            'adapter' => 'file',
             'adapterOptions' => [
-                'path' => __DIR__.'/cache',
-                'lifeTime' => 0
+                'path' => __DIR__.'/cache/issues'
             ],
-            'compilerOptions' => [
-                'pretty' => false,
-                'handleErrors' => false,
-                'paths' => [__DIR__.'/views/issues']
-            ]
+            'pretty' => false,
+            'paths' => [__DIR__.'/views/issues']
         ]);
+    }
+
+    public function testIssue33()
+    {
+
+        $this->assertEquals('<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0"><meta http-equiv="X-UA-Compatible" content="chrome=1"><link rel="shortcut icon" href="/favicon.ico"><link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600"><link rel="stylesheet" href="/style.css">', $this->_renderer->render(
+            'issue-33'
+        ));
     }
 
     public function testIssue42()

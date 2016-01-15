@@ -4,6 +4,12 @@ mixin some-mixin(someArg)
 
 $someFlag= false
 
+-
+    function __($str) {
+
+        return strtoupper($str);
+    }
+
 +some-mixin(1)
 +some-mixin(1.1)
 +some-mixin('abc')
@@ -17,3 +23,4 @@ $someFlag= false
 +some-mixin(someString)
 +some-mixin(someArg=someString)
 +some-mixin((function($a) { return [$a, 'b', 'c']; }))
++some-mixin(__('some string'))

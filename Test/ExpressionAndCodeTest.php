@@ -13,10 +13,7 @@ class ExpressionAndCodeTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
 
-        $this->_compiler = new Compiler([
-            'pretty' => false,
-            'handleErrors' => false
-        ]);
+        $this->_compiler = new Compiler();
     }
 
     public function testSimpleExpression()

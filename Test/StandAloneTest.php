@@ -15,17 +15,12 @@ class StandAloneTest extends \PHPUnit_Framework_TestCase
     {
 
         $this->_renderer = new Renderer([
-            'adapter' => 'file',
             'adapterOptions' => [
-                'path' => __DIR__.'/cache',
-                'lifeTime' => 0
+                'path' => __DIR__.'/cache/stand-alone',
             ],
-            'compilerOptions' => [
-                'pretty' => false,
-                'handleErrors' => false,
-                'paths' => [__DIR__.'/views/stand-alone'],
-                'standAlone' => true
-            ]
+            'pretty' => false,
+            'paths' => [__DIR__.'/views/stand-alone'],
+            'standAlone' => true
         ]);
     }
 
