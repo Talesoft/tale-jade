@@ -502,7 +502,7 @@ class Compiler
         $this->_files = [];
 
         //Return the compiled PHTML
-        return $phtml;
+        return trim($phtml);
     }
 
     /**
@@ -1813,12 +1813,7 @@ class Compiler
                 $phtml .= ' ';
             }
 
-            if ($idx !== 0) {
-
-                $phtml .= $this->newLine();
-            }
-
-            $phtml .= $this->indent().$this->compileNode($node);
+            $phtml .= $this->newLine().$this->indent().$this->compileNode($node);
         }
         $this->_level -= $indent ? 1 : 0;
 

@@ -14,16 +14,11 @@ class BlockTest extends \PHPUnit_Framework_TestCase
     {
 
         $this->_renderer = new Renderer([
-            'adapter' => 'file',
             'adapterOptions' => [
-                'path' => __DIR__.'/cache',
-                'lifeTime' => 0
+                'path' => __DIR__.'/cache/blocks'
             ],
-            'compilerOptions' => [
-                'pretty' => false,
-                'handleErrors' => false,
-                'paths' => [__DIR__.'/views/blocks']
-            ]
+            'pretty' => false,
+            'paths' => [__DIR__.'/views/blocks']
         ]);
     }
 

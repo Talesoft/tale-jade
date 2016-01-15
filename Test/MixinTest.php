@@ -14,16 +14,11 @@ class MixinTest extends \PHPUnit_Framework_TestCase
     {
 
         $this->_renderer = new Renderer([
-            'adapter' => 'file',
             'adapterOptions' => [
-                'path' => __DIR__.'/cache',
-                'lifeTime' => 0
+                'path' => __DIR__.'/cache/mixins'
             ],
-            'compilerOptions' => [
-                'pretty' => false,
-                'handleErrors' => false,
-                'paths' => [__DIR__.'/views/mixins']
-            ]
+            'pretty' => false,
+            'paths' => [__DIR__.'/views/mixins']
         ]);
     }
 
@@ -56,7 +51,7 @@ class MixinTest extends \PHPUnit_Framework_TestCase
     public function testArguments()
     {
 
-        $this->assertEquals('<a class="1">Some Spacer Content!</a><a class="1.1">Some Spacer Content!</a><a class="abc">Some Spacer Content!</a><a class="abc">Some Spacer Content!</a><a class="a b c">Some Spacer Content!</a><a class="1 a 1.1">Some Spacer Content!</a><a class="ABC">Some Spacer Content!</a><a class="c">Some Spacer Content!</a><a class="1">Some Spacer Content!</a><a>Some Spacer Content!</a><a class="someString">Some Spacer Content!</a><a class="someString">Some Spacer Content!</a><a class="a b c">Some Spacer Content!</a>', $this->_renderer->render(
+        $this->assertEquals('<a class="1">Some Spacer Content!</a><a class="1.1">Some Spacer Content!</a><a class="abc">Some Spacer Content!</a><a class="abc">Some Spacer Content!</a><a class="a b c">Some Spacer Content!</a><a class="1 a 1.1">Some Spacer Content!</a><a class="ABC">Some Spacer Content!</a><a class="c">Some Spacer Content!</a><a class="1">Some Spacer Content!</a><a>Some Spacer Content!</a><a class="someString">Some Spacer Content!</a><a class="someString">Some Spacer Content!</a><a class="a b c">Some Spacer Content!</a><a class="SOME STRING">Some Spacer Content!</a>', $this->_renderer->render(
             'arguments'
         ));
     }

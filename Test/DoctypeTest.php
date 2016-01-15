@@ -16,16 +16,11 @@ class DoctypeTest extends \PHPUnit_Framework_TestCase
     {
 
         $this->_renderer = new Renderer([
-            'adapter' => 'file',
             'adapterOptions' => [
-                'path' => __DIR__.'/cache',
-                'lifeTime' => 0
+                'path' => __DIR__.'/cache/doctypes'
             ],
-            'compilerOptions' => [
-                'pretty' => false,
-                'handleErrors' => false,
-                'paths' => [__DIR__.'/views/doctypes']
-            ]
+            'pretty' => false,
+            'paths' => [__DIR__.'/views/doctypes']
         ]);
     }
 
