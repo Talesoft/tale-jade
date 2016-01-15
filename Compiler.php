@@ -246,6 +246,8 @@ class Compiler
      * quoteStyle:                  The quote-style in the markup (default: ")
      * replaceMixins:               Replaces mixins from top to bottom if they
      *                              have the same name. Allows duplicated mixin names.
+     * echoXmlDoctype:              Uses PHP's "echo" to for XML processing instructions
+     *                              This fixes problems with PHP's short open tags
      * paths:                       The paths to resolve paths in.
      *                              If none set, it will default to get_include_path()
      * extensions:                  The extensions for Jade files
@@ -329,8 +331,9 @@ class Compiler
             'quoteStyle'              => '"',
             'escapeCharset'           => 'UTF-8',
             'replaceMixins'           => false,
+            'echoXmlDoctype'          => defined('HHVM_VERSION'),
             'paths'                   => [],
-            'extensions'               => ['.jd', '.jade'],
+            'extensions'              => ['.jd', '.jade'],
             'parserOptions'           => [],
             'lexerOptions'            => []
         ], $options ? $options : []);
@@ -874,9 +877,14 @@ class Compiler
         $name = $node->name;
         $value = isset($this->_options['doctypes'][$name]) ? $this->_options['doctypes'][$name] : '<!DOCTYPE '.$name.'>';
 
-        if ($name === 'xml')
+        if ($name === 'xml') {
+
             $this->_options['mode'] = self::MODE_XML;
-        else if (in_array($name, $this->_options['xhtmlModes']))
+
+            if ($this->_options['echoXmlDoctype'])
+                $value = "<?='$value'?>";
+
+        } else if (in_array($name, $this->_options['xhtmlModes']))
             $this->_options['mode'] = self::MODE_XHTML;
         else
             $this->_options['mode'] = self::MODE_HTML;
