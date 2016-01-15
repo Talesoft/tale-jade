@@ -1,0 +1,19 @@
+
+mixin some-mixin(someArg)
+    a(class=(is_callable($someArg) ? $someArg('a') : $someArg)) Some Spacer Content!
+
+$someFlag= false
+
++some-mixin(1)
++some-mixin(1.1)
++some-mixin('abc')
++some-mixin(abc)
++some-mixin(['a', 'b', 'c'])
++some-mixin([1, 'a', 1.1])
++some-mixin(strtoupper('abc'))
++some-mixin(substr(strtolower('ABC'), 2))
++some-mixin(!$someFlag)
++some-mixin(!true)
++some-mixin(someString)
++some-mixin(someArg=someString)
++some-mixin((function($a) { return [$a, 'b', 'c']; }))

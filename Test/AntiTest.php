@@ -30,21 +30,21 @@ class AntiTest extends \PHPUnit_Framework_TestCase
 
     public function testUnclosedAttributeBlockOnElement()
     {
-        $this->setExpectedException(Lexer\Exception::class);
+        $this->setExpectedException(Compiler\Exception::class);
 
         $this->_compiler->compile('some-element(abc, def');
     }
 
     public function testUnclosedAttributeBlockOnMixin()
     {
-        $this->setExpectedException(Lexer\Exception::class);
+        $this->setExpectedException(Compiler\Exception::class);
 
         $this->_compiler->compile('mixin some-mixin(abc, def');
     }
 
     public function testUnclosedAttributeBlockOnMixinCall()
     {
-        $this->setExpectedException(Lexer\Exception::class);
+        $this->setExpectedException(Compiler\Exception::class);
 
         $this->_compiler->compile('+some-mixin(abc, def');
     }
@@ -52,7 +52,7 @@ class AntiTest extends \PHPUnit_Framework_TestCase
     public function testNestedMixin()
     {
 
-        $this->setExpectedException(Parser\Exception::class);
+        $this->setExpectedException(Compiler\Exception::class);
 
         $this->_compiler->compile("mixin some-mixin()\n\tmixin some-sub-mixin()");
     }

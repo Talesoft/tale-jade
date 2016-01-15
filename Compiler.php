@@ -441,7 +441,14 @@ class Compiler
         $this->_level = 0;
 
         //Parse the input into an AST
-        $node = $this->_parser->parse($input);
+        $node = null;
+        try {
+
+            $node = $this->_parser->parse($input);
+        } catch(\Exception $e) {
+
+            $this->throwException($e->getMessage());
+        }
 
         //There are some things we need to take care of before compilation
         $this->handleImports($node);
@@ -2106,6 +2113,9 @@ class Compiler
             $message .= "\n(".$relatedNode->type
                 .' at '.$relatedNode->line
                 .':'.$relatedNode->offset.')';
+
+        if (!empty($this->_files))
+            $message .= "\n[".end($this->_files).']';
 
         throw new Exception(
             "Failed to compile Jade: $message"
