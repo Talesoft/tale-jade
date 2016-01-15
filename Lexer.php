@@ -18,7 +18,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.3
+ * @version    1.3.4
  * @link       http://jade.talesoft.io/docs/files/Lexer.html
  * @since      File available since Release 1.0
  */
@@ -60,7 +60,7 @@ use Tale\Jade\Lexer\Exception;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.3
+ * @version    1.3.4
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Lexer.html
  * @since      File available since Release 1.0
  */
@@ -589,8 +589,8 @@ class Lexer
         $level = 0;
         $inString = false;
         $stringType = null;
-        $break = false;
-        while (!$this->isAtEnd() && !$break) {
+        $finished = false;
+        while (!$this->isAtEnd() && !$finished) {
 
             if ($this->isAtEnd())
                 break;
@@ -626,7 +626,7 @@ class Lexer
 
                     if ($level === 0) {
 
-                        $break = true;
+                        $finished = true;
                         break;
                     }
 
@@ -635,9 +635,9 @@ class Lexer
             }
 
             if (in_array($char, $breakChars, true) && !$inString && $level === 0)
-                $break = true;
+                $finished = true;
 
-            if (!$break) {
+            if (!$finished) {
 
                 $value .= $char;
                 $this->consume();
@@ -777,6 +777,7 @@ class Lexer
         return [
             'type'   => $type,
             'line'   => $this->_line,
+            'level'  => $this->_level,
             'offset' => $this->_offset
         ];
     }
@@ -862,11 +863,23 @@ class Lexer
             $mixed = $spaces && $tabs;
 
             //Don't allow mixed indentation, this will just confuse the lexer
-            if ($mixed)
-                $this->throwException(
-                    "Mixed indentation style encountered. "
-                    ."Dont mix tabs and spaces. Stick to one of both."
-                );
+            if ($mixed || ($this->_indentStyle === self::INDENT_SPACE && $tabs)) {
+
+                //Well, let's try a conversion if were using spaces and have an indentWidth already
+                if ($this->_indentStyle === self::INDENT_SPACE && $this->_indentWidth !== null) {
+
+                    //We replace all tabs (\t) by indentWidth * spaces
+                    $spaces = str_replace("\t", str_repeat(self::INDENT_SPACE, $this->_indentWidth), $spaces);
+                    $tabs = false;
+                    $mixed = false;
+                } else {
+
+                    $this->throwException(
+                        "Mixed indentation style encountered. "
+                        ."Dont mix tabs and spaces. Stick to one of both."
+                    );
+                }
+            }
 
             //Validate the indentation style
             $indentStyle = $tabs ? self::INDENT_TAB : self::INDENT_SPACE;
@@ -958,30 +971,36 @@ class Lexer
         foreach ($this->scanText() as $token)
             yield $token;
 
-        foreach ($this->scanFor(['newLine', 'indent']) as $token) {
-
+        foreach ($this->scanNewLine() as $token)
             yield $token;
 
-            if ($token['type'] === 'indent') {
+        if ($this->isAtEnd())
+            return;
 
-                $level = 1;
-                foreach ($this->scanFor(['indent', 'newLine', 'text']) as $subToken) {
+        $level = 0;
+        do {
 
-                    yield $subToken;
+            foreach ($this->scanFor(['newLine', 'indent']) as $token) {
 
-                    if ($subToken['type'] === 'indent')
-                        $level++;
+                if ($token['type'] === 'indent')
+                    $level++;
 
-                    if ($subToken['type'] === 'outdent') {
+                if ($token['type'] === 'outdent')
+                    $level--;
 
-                        $level--;
-
-                        if ($level <= 0)
-                            break 2;
-                    }
-                }
+                yield $token;
             }
-        }
+
+            if ($level > 0) {
+
+                foreach ($this->scanText() as $token)
+                    yield $token;
+
+                foreach ($this->scanNewLine() as $token)
+                    yield $token;
+            }
+
+        } while (!$this->isAtEnd() && $level > 0);
     }
 
     /**
@@ -1226,8 +1245,7 @@ class Lexer
                     '\$?(?<itemName>[a-zA-Z_][a-zA-Z0-9_]*)(?:[\t ]*,[\t ]*\$?(?<keyName>[a-zA-Z_][a-zA-Z0-9_]*))?[\t ]+in[\t ]+'
                 )) {
                     $this->throwException(
-                        "The syntax for each is `each [$]itemName[, [$]keyName]] in [subject]`, not ".$this->peek(20),
-                        $token
+                        "The syntax for each is `each [$]itemName[, [$]keyName]] in [subject]`, not ".$this->peek(20)
                     );
                 }
 
@@ -1390,6 +1408,7 @@ class Lexer
 
             $token['value'] = trim($token['value']);
             $token['block'] = empty($token['value']);
+
             yield $token;
 
             if ($token['block']) {
@@ -1611,7 +1630,7 @@ class Lexer
      *
      * <attributeStart> ('(') -> Indicates that attributes start here
      * <attribute>... (name*=*value*) -> Name and Value are both optional, but one of both needs to be provided
-     *                                   Multiple attributes are separated by a Comma (,)
+     *                                   Multiple attributes are separated by a Comma (,) or white-space ( , \n, \t)
      * <attributeEnd> (')') -> Required. Indicates the end of the attribute block
      *
      * This function will always yield an <attributeStart>-token first, if there's an attribute block
@@ -1640,6 +1659,8 @@ class Lexer
         if ($this->peek() !== '(')
             return;
 
+        $argSeparators = [',', ' ', "\n", "\t"];
+
         $this->consume();
         yield $this->createToken('attributeStart');
         $this->read('ctype_space');
@@ -1649,6 +1670,8 @@ class Lexer
             $continue = true;
             while (!$this->isAtEnd() && $continue) {
 
+                //We create the attribute token first (we don't need to yield it
+                //but we fill it sequentially)
                 $token = $this->createToken('attribute');
                 $token['name'] = null;
                 $token['value'] = null;
@@ -1657,8 +1680,20 @@ class Lexer
                 if ($this->match('((\.\.\.)?[a-zA-Z_][a-zA-Z0-9\-_:]*)', 'i')) {
 
                     $this->consumeMatch();
-                    $token['name'] = $this->getMatch(1);
-                    $this->read('ctype_space');
+
+                    //If we call a php function, e.g.
+                    //+button(strtoupper($someVar))
+                    //the match above will match the "strtoupper" and see it
+                    //as a attribute name. We'll take it as a partial value
+                    //if none of our arg separators, = or ! ) follows after it
+                    //TODO: strtoupper ($value) will probably still fail.
+                    if (!in_array($this->peek(), array_merge($argSeparators, ['=', '!', ')']), true))
+                        $token['value'] = $this->getMatch(1);
+                    else {
+
+                        $token['name'] = $this->getMatch(1);
+                        $this->read('ctype_space');
+                    }
                 }
 
                 if ($this->match("\\/\\/[^\n]*[\n]")) {
@@ -1670,38 +1705,46 @@ class Lexer
                     $this->read('ctype_space');
                 }
 
-                if ($this->peek() === '!') {
+                $char = $this->peek();
+
+                //Check escaping flag (!) if a name is given.
+                //Avoids escaping when you call e.g.
+                //+btn(!$someCondition)
+                if ($token['name'] && $char === '!') {
 
                     $token['escaped'] = false;
                     $this->consume();
                 }
 
-                if (!$token['name'] || $this->peek() === '=') {
+                if (!$token['name'] || $char === '=') {
 
-                    if ($token['name']) {
+                    if ($char === '=') {
 
                         $this->consume();
                         $this->read('ctype_space');
                     }
 
-                    $token['value'] = $this->readBracketContents([',', ' ', "\r", "\n", "\t"]);
+                    $value = $this->readBracketContents($argSeparators);
+                    $value = $value !== '' ? $value : null;
+
+                    //Notice that our partial value from above kicks in here.
+                    $token['value'] = $token['value'] !== null
+                                    ? $token['value'].$value
+                                    : $value;
                 }
 
-                if ($this->peek() === ',' || ctype_space($this->peek())) {
+                yield $token;
+
+                if (in_array($this->peek(), $argSeparators, true)) {
 
                     $this->consume();
                     $this->read('ctype_space');
 
-                    if ($this->peek() !== ')')
-                        $continue = true;
-                    else
-                        $continue = false;
+                    $continue = $this->peek() !== ')';
                 } else {
 
                     $continue = false;
                 }
-
-                yield $token;
             }
         }
 
@@ -1734,7 +1777,7 @@ class Lexer
     protected function throwException($message)
     {
 
-        $message = "Failed to parse jade: $message (Line: {$this->_line}, Offset: {$this->_offset})";
+        $message = "Failed to lex jade: $message (Line: {$this->_line}, Offset: {$this->_offset})";
         throw new Exception($message);
     }
 

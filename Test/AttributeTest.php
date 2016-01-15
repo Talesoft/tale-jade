@@ -138,7 +138,7 @@ class AttributeTest extends \PHPUnit_Framework_TestCase
     public function testUnnamedAttributed()
     {
 
-        $this->setExpectedException(Parser\Exception::class);
+        $this->setExpectedException(Compiler\Exception::class);
         $this->assertEquals('', $this->_renderer->compile('a(="some value")'));
     }
 

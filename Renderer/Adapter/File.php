@@ -20,7 +20,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.3
+ * @version    1.3.4
  * @link       http://jade.talesoft.io/docs/files/Renderer.Adapter.File.html
  * @since      File available since Release 1.0
  */
@@ -58,7 +58,7 @@ use Tale\Jade\Renderer\AdapterBase;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.3
+ * @version    1.3.4
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Renderer.Adapter.File.html
  * @since      File available since Release 1.0
  */
@@ -131,10 +131,16 @@ class File extends AdapterBase
     {
 
         $compilerOptions = $this->getRenderer()->getCompiler()->getOptions();
-        $ext = $compilerOptions['extension'];
+        $exts = $compilerOptions['extensions'];
 
-        if (substr($path, -strlen($ext)) === $ext)
-            $path = substr($path, 0, -strlen($ext));
+        foreach ($exts as $ext) {
+
+            if (substr($path, -strlen($ext)) === $ext) {
+
+                $path = substr($path, 0, -strlen($ext));
+                break;
+            }
+        }
 
         $outputPath = rtrim($this->getOption('path'), '/\\').'/'.ltrim($path.$this->getOption('extension'), '/\\');
 

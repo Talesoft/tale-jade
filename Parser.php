@@ -18,7 +18,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.3
+ * @version    1.3.4
  * @link       http://jade.talesoft.io/docs/files/Parser.html
  * @since      File available since Release 1.0
  */
@@ -57,7 +57,7 @@ use Tale\Jade\Parser\Exception;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.3
+ * @version    1.3.4
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Parser.html
  * @since      File available since Release 1.0
  */
@@ -927,9 +927,9 @@ class Parser
         if (!$this->_last)
             return;
 
-        if (in_array($this->_last->type, ['import']))
+        if (in_array($this->_last->type, ['import', 'expression', 'doctype']))
             $this->throwException(
-                'The instruction can\'t have children',
+                'The '.$this->_last->type.' instruction can\'t have children',
                 $token
             );
 
@@ -1140,6 +1140,8 @@ class Parser
 
         $node = $this->createNode('text', $token);
         $node->value = $token['value'];
+        $node->level = $token['level'];
+
         if ($this->_current) {
 
             $this->_current->append($node);

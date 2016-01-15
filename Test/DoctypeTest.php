@@ -1,0 +1,55 @@
+<?php
+
+namespace Tale\Jade\Test;
+
+use Tale\Jade\Compiler;
+use Tale\Jade\Renderer;
+use Tale\Jade\Parser;
+
+class DoctypeTest extends \PHPUnit_Framework_TestCase
+{
+
+    /** @var \Tale\Jade\Renderer */
+    private $_renderer;
+
+    public function setUp()
+    {
+
+        $this->_renderer = new Renderer([
+            'adapter' => 'file',
+            'adapterOptions' => [
+                'path' => __DIR__.'/cache',
+                'lifeTime' => 0
+            ],
+            'compilerOptions' => [
+                'pretty' => false,
+                'handleErrors' => false,
+                'paths' => [__DIR__.'/views/doctypes']
+            ]
+        ]);
+    }
+
+    public function testXmlDoctype()
+    {
+
+        $this->assertEquals('<?xml version="1.0" encoding="utf-8"?><!-- these should be (self)-closed --><hr /><img /><link /><area /><!-- These shouldn\'t repeat --><a disabled="" selected="" checked="">Some link</a><!-- this should self-close --><some-element /><!-- this shouldn\'t self-close --><some-element>Some Content</some-element>', $this->_renderer->render(
+            'xml'
+        ));
+    }
+
+    public function testHtmlDoctype()
+    {
+
+        $this->assertEquals('<!DOCTYPE html><!-- these should be left open --><hr><img><link><area><!-- These should repeat --><a disabled="disabled" selected="selected" checked="checked">Some link</a><!-- this should self-close --><some-element></some-element><!-- this shouldn\'t self-close --><some-element>Some Content</some-element>', $this->_renderer->render(
+            'html'
+        ));
+    }
+
+    public function testXhtmlDoctype()
+    {
+
+        $this->assertEquals('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"><!-- these should (self)-close --><hr /><img /><link /><area /><!-- These should repeat --><a disabled="disabled" selected="selected" checked="checked">Some link</a><!-- this should self-close --><some-element></some-element><!-- this shouldn\'t self-close --><some-element>Some Content</some-element>', $this->_renderer->render(
+            'xhtml'
+        ));
+    }
+}
