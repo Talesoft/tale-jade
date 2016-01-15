@@ -927,9 +927,9 @@ class Parser
         if (!$this->_last)
             return;
 
-        if (in_array($this->_last->type, ['import']))
+        if (in_array($this->_last->type, ['import', 'expression', 'doctype']))
             $this->throwException(
-                'The instruction can\'t have children',
+                'The '.$this->_last->type.' instruction can\'t have children',
                 $token
             );
 
@@ -1140,6 +1140,8 @@ class Parser
 
         $node = $this->createNode('text', $token);
         $node->value = $token['value'];
+        $node->level = $token['level'];
+
         if ($this->_current) {
 
             $this->_current->append($node);

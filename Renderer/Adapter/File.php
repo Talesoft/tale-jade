@@ -131,10 +131,16 @@ class File extends AdapterBase
     {
 
         $compilerOptions = $this->getRenderer()->getCompiler()->getOptions();
-        $ext = $compilerOptions['extension'];
+        $exts = $compilerOptions['extensions'];
 
-        if (substr($path, -strlen($ext)) === $ext)
-            $path = substr($path, 0, -strlen($ext));
+        foreach ($exts as $ext) {
+
+            if (substr($path, -strlen($ext)) === $ext) {
+
+                $path = substr($path, 0, -strlen($ext));
+                break;
+            }
+        }
 
         $outputPath = rtrim($this->getOption('path'), '/\\').'/'.ltrim($path.$this->getOption('extension'), '/\\');
 

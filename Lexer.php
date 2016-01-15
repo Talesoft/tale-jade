@@ -777,6 +777,7 @@ class Lexer
         return [
             'type'   => $type,
             'line'   => $this->_line,
+            'level'  => $this->_level,
             'offset' => $this->_offset
         ];
     }
@@ -862,11 +863,23 @@ class Lexer
             $mixed = $spaces && $tabs;
 
             //Don't allow mixed indentation, this will just confuse the lexer
-            if ($mixed)
-                $this->throwException(
-                    "Mixed indentation style encountered. "
-                    ."Dont mix tabs and spaces. Stick to one of both."
-                );
+            if ($mixed || ($this->_indentStyle === self::INDENT_SPACE && $tabs)) {
+
+                //Well, let's try a conversion if were using spaces and have an indentWidth already
+                if ($this->_indentStyle === self::INDENT_SPACE && $this->_indentWidth !== null) {
+
+                    //We replace all tabs (\t) by indentWidth * spaces
+                    $spaces = str_replace("\t", str_repeat(self::INDENT_SPACE, $this->_indentWidth), $spaces);
+                    $tabs = false;
+                    $mixed = false;
+                } else {
+
+                    $this->throwException(
+                        "Mixed indentation style encountered. "
+                        ."Dont mix tabs and spaces. Stick to one of both."
+                    );
+                }
+            }
 
             //Validate the indentation style
             $indentStyle = $tabs ? self::INDENT_TAB : self::INDENT_SPACE;
@@ -958,30 +971,36 @@ class Lexer
         foreach ($this->scanText() as $token)
             yield $token;
 
-        foreach ($this->scanFor(['newLine', 'indent']) as $token) {
-
+        foreach ($this->scanNewLine() as $token)
             yield $token;
 
-            if ($token['type'] === 'indent') {
+        if ($this->isAtEnd())
+            return;
 
-                $level = 1;
-                foreach ($this->scanFor(['indent', 'newLine', 'text']) as $subToken) {
+        $level = 0;
+        do {
 
-                    yield $subToken;
+            foreach ($this->scanFor(['newLine', 'indent']) as $token) {
 
-                    if ($subToken['type'] === 'indent')
-                        $level++;
+                if ($token['type'] === 'indent')
+                    $level++;
 
-                    if ($subToken['type'] === 'outdent') {
+                if ($token['type'] === 'outdent')
+                    $level--;
 
-                        $level--;
-
-                        if ($level <= 0)
-                            break 2;
-                    }
-                }
+                yield $token;
             }
-        }
+
+            if ($level > 0) {
+
+                foreach ($this->scanText() as $token)
+                    yield $token;
+
+                foreach ($this->scanNewLine() as $token)
+                    yield $token;
+            }
+
+        } while (!$this->isAtEnd() && $level > 0);
     }
 
     /**
@@ -1226,8 +1245,7 @@ class Lexer
                     '\$?(?<itemName>[a-zA-Z_][a-zA-Z0-9_]*)(?:[\t ]*,[\t ]*\$?(?<keyName>[a-zA-Z_][a-zA-Z0-9_]*))?[\t ]+in[\t ]+'
                 )) {
                     $this->throwException(
-                        "The syntax for each is `each [$]itemName[, [$]keyName]] in [subject]`, not ".$this->peek(20),
-                        $token
+                        "The syntax for each is `each [$]itemName[, [$]keyName]] in [subject]`, not ".$this->peek(20)
                     );
                 }
 
@@ -1390,6 +1408,7 @@ class Lexer
 
             $token['value'] = trim($token['value']);
             $token['block'] = empty($token['value']);
+
             yield $token;
 
             if ($token['block']) {

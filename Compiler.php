@@ -101,16 +101,29 @@ class Compiler
     /**
      * The Mode for HTML.
      *
-     * Recognizes self-closing tags, self-repeating attributes etc.
+     * Will     keep elements in selfClosingElements open
+     * Will     repeat attributes if they're in selfRepeatingAttributes
+     * Won't    /> close any elements, will </close> elements
      */
     const MODE_HTML = 0;
 
     /**
      * The Mode of XML.
      *
-     * Doesn't do whatever MODE_HTML does
+     * Will     /> close all elements, will </close> elements
+     * Won't    repeat attributes if they're in selfRepeatingAttributes
+     * Won't    keep elements in selfClosingElements open
      */
     const MODE_XML = 1;
+
+    /**
+     * The Mode of XHTML.
+     *
+     * Will     /> close all elements, will </close> elements
+     * Will     repeat attributes if they're in selfRepeatingAttributes
+     * Won't    keep elements in selfClosingElements open
+     */
+    const MODE_XHTML = 2;
 
     /**
      * An array of options.
@@ -206,13 +219,14 @@ class Compiler
      *                              indentation (Space by default)
      * indentWidth:                 The amount of characters to repeat for
      *                              indentation (Default 2 for 2-space-indentation)
-     * mode:                        Compile in HTML or XML mode
      * selfClosingTags:             The tags that don't need any closing in
      *                              HTML-style languages
      * selfRepeatingAttributes:     The attributes that repeat their value to
      *                              set them to true in HTML-style languages
      * doctypes:                    The different doctypes you can use via the
      *                              "doctype"-directive [name => doctype-string]
+     * mode:                        Compile in HTML, XML or XHTML mode
+     * xhtmlModes:                  The mode strings that compile XHTML-style
      * filters:                     The different filters you can use via the
      *                              ":<filterName>"-directive [name => callback]
      * filterMap:                   The extension-to-filter-map for
@@ -234,8 +248,8 @@ class Compiler
      *                              have the same name. Allows duplicated mixin names.
      * paths:                       The paths to resolve paths in.
      *                              If none set, it will default to get_include_path()
-     * extension:                   The extension for Jade files
-     *                              (default: .jade), .jd is pretty cool as an example
+     * extensions:                  The extensions for Jade files
+     *                              (default: .jade and .jd)
      * parserOptions:               The options for the parser if none given
      * lexerOptions:                The options for the lexer if none given.
      *
@@ -251,7 +265,6 @@ class Compiler
             'pretty'                  => false,
             'indentStyle'             => Lexer::INDENT_SPACE,
             'indentWidth'             => 2,
-            'mode'                    => self::MODE_HTML,
             'selfClosingTags'         => [
                 'input', 'br', 'img', 'link',
                 'area', 'base', 'col', 'command',
@@ -272,6 +285,8 @@ class Compiler
                 'basic'        => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">',
                 'mobile'       => '<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.2//EN" "http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd">'
             ],
+            'mode'                    => self::MODE_HTML,
+            'xhtmlModes' => ['default', 'transitional', 'strict', 'frameset', '1.1', 'basic', 'mobile'],
             'filters'                 => [
                 'plain' => 'Tale\\Jade\\Filter::filterPlain',
                 'css'   => 'Tale\\Jade\\Filter::filterStyle',
@@ -288,7 +303,7 @@ class Compiler
                 'stylus' => 'Tale\\Jade\\Filter::filterStylus',
                 'styl' => 'Tale\\Jade\\Filter::filterStylus',
                 'sass' => 'Tale\\Jade\\Filter::filterSass'
-                //What else?
+                //TODO: What else?
             ],
             'filterMap'               => [
                 'jade' => 'plain',
@@ -315,7 +330,7 @@ class Compiler
             'escapeCharset'           => 'UTF-8',
             'replaceMixins'           => false,
             'paths'                   => [],
-            'extension'               => '.jade',
+            'extensions'               => ['.jd', '.jade'],
             'parserOptions'           => [],
             'lexerOptions'            => []
         ], $options ? $options : []);
@@ -517,6 +532,55 @@ class Compiler
             );
 
         return $this->compile(file_get_contents($fullPath), $fullPath);
+    }
+
+    /**
+     * Checks if the current document mode equals the mode passed.
+     *
+     * Take a look at the Compiler::MODE_* constants to see the possible
+     * modes
+     *
+     * @param int $mode the mode to check against
+     *
+     * @return bool
+     */
+    protected function isMode($mode)
+    {
+
+        return $this->_options['mode'] === $mode;
+    }
+
+    /**
+     * Checks if we're in XML document mode.
+     *
+     * @return bool
+     */
+    protected function isXml()
+    {
+
+        return $this->isMode(self::MODE_XML);
+    }
+
+    /**
+     * Checks if we're in HTML document mode.
+     *
+     * @return bool
+     */
+    protected function isHtml()
+    {
+
+        return $this->isMode(self::MODE_HTML);
+    }
+
+    /**
+     * Checks if we're in XHTML document mode.
+     *
+     * @return bool
+     */
+    protected function isXhtml()
+    {
+
+        return $this->isMode(self::MODE_XHTML);
     }
 
     /**
@@ -810,9 +874,12 @@ class Compiler
         $name = $node->name;
         $value = isset($this->_options['doctypes'][$name]) ? $this->_options['doctypes'][$name] : '<!DOCTYPE '.$name.'>';
 
-        //If doctype is XML, we switch to XML mode
         if ($name === 'xml')
             $this->_options['mode'] = self::MODE_XML;
+        else if (in_array($name, $this->_options['xhtmlModes']))
+            $this->_options['mode'] = self::MODE_XHTML;
+        else
+            $this->_options['mode'] = self::MODE_HTML;
 
         return $value;
     }
@@ -830,16 +897,27 @@ class Compiler
      * We then look for a path with the given extension inside
      * all paths we work on currently
      *
-     * @param string $path      the relative path to resolve
-     * @param null   $extension the extension to resolve with
+     * @param string       $path       the relative path to resolve
+     * @param array|string $extensions the extensions to resolve with
      *
      * @return string|false the resolved full path or false, if not found
      */
-    public function resolvePath($path, $extension = null)
+    public function resolvePath($path, $extensions = null)
     {
 
         $paths = $this->_options['paths'];
-        $ext = $extension ? $extension : $this->_options['extension'];
+        $exts = $extensions ? $extensions : $this->_options['extensions'];
+
+        if (is_array($exts)) {
+
+            foreach ($exts as $ext)
+                if ($resolved = $this->resolvePath($path, $ext))
+                    return $resolved;
+
+            return false;
+        }
+
+        $ext = $exts;
 
         if (substr($path, -strlen($ext)) !== $ext)
             $path .= $ext;
@@ -917,7 +995,7 @@ class Compiler
                 $ext = array_search($node->filter, $this->_options['filterMap']);
             }
 
-            if (!empty($ext) && (".$ext" !== $this->_options['extension'] || $node->filter)) {
+            if (!empty($ext) && (!in_array($ext, $this->_options['extensions']) || $node->filter)) {
 
                 if (!$node->filter && isset($this->_options['filterMap'][$ext]))
                     $node->filter = $this->_options['filterMap'][$ext];
@@ -1251,7 +1329,7 @@ class Compiler
             $attrName = $assignment->name;
 
             //This line provides compatibility to the offical jade method
-            if ($this->_options['mode'] === self::MODE_HTML && $attrName === 'classes')
+            if (($this->isHtml() || $this->isXml()) && $attrName === 'classes')
                 $attrName = 'class';
 
             foreach ($assignment->attributes as $attr) {
@@ -1727,7 +1805,8 @@ class Compiler
                 $phtml .= ' ';
             }
 
-            if ($node->type != 'doctype') {
+            if ($idx !== 0) {
+
                 $phtml .= $this->newLine();
             }
 
@@ -1757,6 +1836,10 @@ class Compiler
 
         $phtml .= "<{$node->tag}";
 
+        $htmlMode = $this->isHtml();
+        $anyHtmlMode = $this->isHtml() || $this->isXhtml();
+        $xmlMode = $this->isXml();
+
         $nodeAttributes = $node->attributes;
 
         //In the following lines we kind of map assignments
@@ -1768,13 +1851,13 @@ class Compiler
             $name = $assignment->name;
 
             //This line provides compatibility to the offical jade method
-            if ($this->_options['mode'] === self::MODE_HTML && $name === 'classes')
+            if ($anyHtmlMode && $name === 'classes')
                 $name = 'class';
 
-            if ($this->_options['mode'] === self::MODE_HTML && $name === 'styles')
+            if ($anyHtmlMode && $name === 'styles')
                 $name = 'style';
 
-            if ($this->_options['mode'] === self::MODE_HTML && $name === 'attributes') {
+            if ($anyHtmlMode && $name === 'attributes') {
 
                 foreach ($assignment->attributes as $attr) {
 
@@ -1846,7 +1929,7 @@ class Compiler
                 }
 
                 //In HTML-mode, self-repeating attributes are automatically expanded
-                if ($this->_options['mode'] === self::MODE_HTML && count($values) < 1 && in_array($name, $this->_options['selfRepeatingAttributes'])) {
+                if ($anyHtmlMode && count($values) < 1 && in_array($name, $this->_options['selfRepeatingAttributes'])) {
 
                     $values[] = $name;
                 }
@@ -1855,7 +1938,7 @@ class Compiler
                 $builder = '\\Tale\\Jade\\Compiler\\build_value';
 
                 //Handle specific attribute styles for HTML
-                if ($this->_options['mode'] === self::MODE_HTML) {
+                if ($anyHtmlMode) {
 
                     switch ($name) {
                         case 'class':
@@ -1870,15 +1953,11 @@ class Compiler
                         $builder = '\\Tale\\Jade\\Compiler\\build_data_value';
                 }
 
-                //If all values are scalar, we don't do any kind of resolution for
-                //the attribute name. It's always there.
-
                 $escaped = $escaped ? 'true' : 'false';
 
                 $pair = '';
                 if (count(array_filter($values, [$this, 'isScalar'])) === count($values)) {
 
-                    //Print the normal pair
                     //We got all scalar values, we can evaluate them directly, so no code needed in the PHTML output
                     $pair .= " $name=";
                     $values = array_map(function ($val) {
@@ -1889,7 +1968,7 @@ class Compiler
                 } else {
 
                     //If there's any kind of expression in the attribute, we
-                    //also check, if something of the expression is false or null
+                    //also check if something of the expression is false or null
                     //and if it is, we don't print the attribute
 
                     $values = array_map(function ($val) use ($quot, $builder, $escaped) {
@@ -1927,9 +2006,9 @@ class Compiler
         $hasChildren = count($node->children) > 0;
         $isSelfClosing = in_array($node->tag, $this->_options['selfClosingTags']);
 
-        if (!$hasChildren && !$isSelfClosing) {
+        if (!$hasChildren && (!$htmlMode || !$isSelfClosing)) {
 
-            if ($this->_options['mode'] === self::MODE_HTML) {
+            if ($anyHtmlMode && !$isSelfClosing) {
 
                 //Force closed tag in HTML
                 $phtml .= "></{$node->tag}>";
@@ -2054,7 +2133,7 @@ class Compiler
                 $pair .= $this->exportArray($val, $quoteStyle);
             else if ($this->isVariable($val))
                 $pair .= "isset($val) ? $val : null";
-            else if ($this->isScalar($val) ||in_array($val, [true, false, null], true))
+            else if ($this->isScalar($val) || in_array($val, [true, false, null], true))
                 $pair .= $this->exportScalar($val, $quoteStyle);
             else
                 $pair .= (string)$val;
