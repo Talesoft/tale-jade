@@ -525,7 +525,10 @@ class Compiler
 
         if (!$fullPath)
             throw new \Exception(
-                "File $path wasnt found in ".implode(', ', $this->_options['paths']).", Include path: ".get_include_path()
+                "File $path wasnt found in ".
+                implode(', ', $this->_options['paths']).
+                ", Extensions: ".implode(', ', $this->_options['extensions']).
+                ", Include path: ".get_include_path()
             );
 
         return $this->compile(file_get_contents($fullPath), $fullPath);

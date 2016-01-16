@@ -30,10 +30,4 @@ class VariableTest extends \PHPUnit_Framework_TestCase
             'existing' => ['style' => ['width' => '100%'], 'class' => 'test']
         ]));
     }
-
-    public function testIssue19()
-    {
-
-        $this->assertEquals('<h3>Columnus</h3><br><br><h3>Coluumns</h3><br><br><h3>Columns</h3>array(0=>array(\'class\'=>\'yii\\\\grid\\\\SerialColumn\',),1=>\'id\',2=>\'username\',3=>\'auth_key\',4=>\'password_hash\',5=>array(\'class\'=>\'yii\\\\grid\\\\ActionColumn\',),)array(0=>array(\'class\'=>\'yii\\\\grid\\\\SerialColumn\',),1=>\'id\',2=>\'username\',3=>\'auth_key\',4=>\'password_hash\',5=>\'password_reset_token\',6=>array(\'class\'=>\'yii\\\\grid\\\\ActionColumn\',),)', $this->_renderer->render('issue-19'));
-    }
 }
