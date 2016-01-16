@@ -1,0 +1,15 @@
+extends default.ctp.jade
+
+block nav-wrapper-content
+	ul.right.hide-on-med-and-down
+		li!= $view->Html->link(__('Dashboard'), ['controller' => 'Users', 'action' => 'index'])
+		li!= $view->Html->link(__('Log Out'), ['controller' => 'Users', 'action' => 'logout'])
+
+	ul#nav-mobile.side-nav
+		li!= $view->Html->link(__('Dashboard'), ['controller' => 'Users', 'action' => 'index'])
+		li!= $view->Html->link(__('Log Out'), ['controller' => 'Users', 'action' => 'logout'])
+	a.button-collapse(href="#" data-activates="nav-mobile"): i.material-icons menu
+
+block next-to-header
+	.progress(class='-main')
+		.indeterminate

@@ -864,33 +864,35 @@ class Lexer
             $tabs = $this->strpos($indent, "\t") !== false;
             $mixed = $spaces && $tabs;
 
-            //Don't allow mixed indentation, this will just confuse the lexer
-            if ($mixed || ($this->_indentStyle === self::INDENT_SPACE && $tabs)) {
+            if ($mixed) {
 
-                //Well, let's try a conversion if were using spaces and have an indentWidth already
-                if ($this->_indentStyle === self::INDENT_SPACE && $this->_indentWidth !== null) {
+                switch ($this->_indentStyle) {
+                    case self::INDENT_SPACE:
+                    default:
 
-                    //We replace all tabs (\t) by indentWidth * spaces
-                    $spaces = str_replace("\t", str_repeat(self::INDENT_SPACE, $this->_indentWidth), $spaces);
-                    $tabs = false;
-                    $mixed = false;
-                } else {
+                        //Convert tabs to spaces based on indentWidth
+                        $spaces = str_replace(self::INDENT_TAB, str_repeat(
+                            self::INDENT_SPACE,
+                            $this->_indentWidth ? $this->_indentWidth : 4
+                        ), $spaces);
+                        $tabs = false;
+                        $mixed = false;
+                        break;
+                    case self::INDENT_TAB:
 
-                    $this->throwException(
-                        "Mixed indentation style encountered. "
-                        ."Dont mix tabs and spaces. Stick to one of both."
-                    );
+                        //Convert spaces to tabs
+                        $spaces = str_replace(self::INDENT_SPACE, str_repeat(
+                            self::INDENT_TAB,
+                            $this->_indentWidth ? $this->_indentWidth : 1
+                        ), $spaces);
+                        $spaces = false;
+                        $mixed = false;
+                        break;
                 }
             }
 
             //Validate the indentation style
-            $indentStyle = $tabs ? self::INDENT_TAB : self::INDENT_SPACE;
-            if ($this->_indentStyle && $this->_indentStyle !== $indentStyle)
-                $this->throwException(
-                    "Mixed indentation style encountered. "
-                    ."You used another indentation style in this line than in "
-                    ."previous lines. Dont do that."
-                );
+            $this->_indentStyle = $tabs ? self::INDENT_TAB : self::INDENT_SPACE;
 
             //Validate the indentation width
             if (!$this->_indentWidth)
