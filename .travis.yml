@@ -8,5 +8,6 @@ php:
     - hhvm
 
 before_script:
+    - phpenv config-rm xdebug.ini
     - composer self-update
     - composer install
