@@ -52,5 +52,9 @@ class IssueTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('<h2>Hello</h2>', $this->_renderer->render(
             'issue-48/1'
         ));
+
+        $this->assertEquals(' <button>Submit</button>', $this->_renderer->render(
+            'issue-48/views/view.ctp'
+        ));
     }
 }
