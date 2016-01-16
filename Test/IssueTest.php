@@ -68,19 +68,27 @@ class IssueTest extends \PHPUnit_Framework_TestCase
 
         $jade = <<<JADE
 -
-\t/**
-\t* CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
-\t* Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
-\t*/
+\t\t/**
+\t\t* CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
+\t\t* Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+\t\t*/
 
 doctype html
 JADE;
 
-        $renderer = new Renderer(['lexerOptions' => [
-            'indentWidth' => 2,
-            'indentStyle' => ' '
-        ]]);
+        $renderer = new Renderer([
+            'adapterOptions' => [
+                'path' => __DIR__.'/cache/issues'
+            ],
+            'lexerOptions' => [
+                'indentWidth' => 2,
+                'indentStyle' => ' '
+            ],
+            'pretty' => false,
+            'paths' => [__DIR__.'/views/issues']
+        ]);
 
         $this->assertEquals('<?php /** * CakePHP(tm) : Rapid Development Framework (http://cakephp.org) * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org) */?><!DOCTYPE html>', $renderer->compile($jade));
+        $this->assertEquals('<?php /** * CakePHP(tm) : Rapid Development Framework (http://cakephp.org) * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org) */?><!DOCTYPE html>', $renderer->compileFile('issue-44'));
     }
 }

@@ -56,6 +56,25 @@ JADE;
         $this->assertEquals('<p><a>Test</a></p>', $this->_compiler->compile($jade));
     }
 
+    public function testTabTags()
+    {
+
+        $jade = <<<JADE
+doctype html
+head
+\ttitle
+\tlink
+body
+\th1
+\tdiv
+\t\tp Some text
+\t\ta Some link
+\tscript
+JADE;
+
+        $this->assertEquals('<!DOCTYPE html><head><title></title><link></head><body><h1></h1><div><p>Some text</p><a>Some link</a></div><script></script></body>', $this->_compiler->compile($jade));
+    }
+
     public function testComplexNestedTag()
     {
 
