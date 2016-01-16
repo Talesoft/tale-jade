@@ -56,6 +56,11 @@ class IssueTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(' <button>Submit</button>', $this->_renderer->render(
             'issue-48/views/view.ctp'
         ));
+
+        $this->assertEquals('<div id="clip_1"></div>', $this->_renderer->render(
+            'issue-48/escaping',
+            ['clipId' => 1]
+        ));
     }
 
     public function testIssue44()

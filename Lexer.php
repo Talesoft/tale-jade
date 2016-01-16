@@ -1715,6 +1715,7 @@ class Lexer
 
                     $token['escaped'] = false;
                     $this->consume();
+                    $char = $this->peek();
                 }
 
                 if (!$token['name'] || $char === '=') {
