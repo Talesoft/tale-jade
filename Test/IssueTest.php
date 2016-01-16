@@ -57,4 +57,25 @@ class IssueTest extends \PHPUnit_Framework_TestCase
             'issue-48/views/view.ctp'
         ));
     }
+
+    public function testIssue44()
+    {
+
+        $jade = <<<JADE
+-
+\t/**
+\t* CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
+\t* Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+\t*/
+
+doctype html
+JADE;
+
+        $renderer = new Renderer(['lexerOptions' => [
+            'indentWidth' => 2,
+            'indentStyle' => ' '
+        ]]);
+
+        $this->assertEquals('<?php /** * CakePHP(tm) : Rapid Development Framework (http://cakephp.org) * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org) */?><!DOCTYPE html>', $renderer->compile($jade));
+    }
 }
