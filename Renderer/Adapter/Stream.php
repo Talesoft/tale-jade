@@ -20,7 +20,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.4
+ * @version    1.3.5
  * @link       http://jade.talesoft.io/docs/files/Renderer.Adapter.Stream.html
  * @since      File available since Release 1.0
  */
@@ -70,7 +70,7 @@ use Tale\Jade\Renderer\AdapterBase;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.4
+ * @version    1.3.5
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Renderer.Adapter.Stream.html
  * @since      File available since Release 1.0
  */
@@ -93,9 +93,9 @@ class Stream extends AdapterBase
     public function __construct(Renderer $renderer, array $options = null)
     {
 
-        parent::__construct($renderer, array_replace_recursive([
-            'scheme' => 'jade-phtml'
-        ], $options ? $options : []));
+        parent::__construct($renderer, $options);
+
+        $this->setDefaults(['scheme' => 'jade-phtml']);
 
         if (!Wrapper::isRegistered($this->getOption('scheme')))
             Wrapper::register($this->getOption('scheme'));

@@ -21,7 +21,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.4
+ * @version    1.3.5
  * @link       http://jade.talesoft.io/docs/files/Compiler.html
  * @since      File available since Release 1.0
  */
@@ -32,16 +32,16 @@ use Tale\Jade\Compiler\Exception;
 use Tale\Jade\Parser\Node;
 
 /**
- * Compiles an AST got from the parser to valid PHTML, HTML or XML.
+ * Compiles an AST got from the parser to valid P/X/HTML or P/XML
  *
  * You can control the output-style via the options
  * passed to the constructor.
  *
- * Different output types are possible (Currently, XML and HTML)
+ * Different output types are possible (Currently, XML ,HTML and XHTML)
  *
  * The main entry point is the `compile` method
  *
- * The generated PHTML should be evaluated, the best method
+ * The generated PHTML/PXML should be evaluated, the best method
  * is a simple include of a generated file
  *
  * Usage example:
@@ -91,12 +91,13 @@ use Tale\Jade\Parser\Node;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.4
+ * @version    1.3.5
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Compiler.html
  * @since      File available since Release 1.0
  */
 class Compiler
 {
+    use Util\ConfigurableTrait;
 
     /**
      * The Mode for HTML.
@@ -124,13 +125,6 @@ class Compiler
      * Won't    keep elements in selfClosingElements open
      */
     const MODE_XHTML = 2;
-
-    /**
-     * An array of options.
-     *
-     * @var array
-     */
-    private $_options;
 
     /**
      * The lexer that is given to the parser.
@@ -263,7 +257,7 @@ class Compiler
     public function __construct(array $options = null, Parser $parser = null, Lexer $lexer = null)
     {
 
-        $this->_options = array_replace_recursive([
+        $this->defineOptions([
             'pretty'                  => false,
             'indentStyle'             => Lexer::INDENT_SPACE,
             'indentWidth'             => 2,
@@ -336,7 +330,7 @@ class Compiler
             'extensions'              => ['.jd', '.jade'],
             'parserOptions'           => [],
             'lexerOptions'            => []
-        ], $options ? $options : []);
+        ], $options);
 
         $this->_lexer = $lexer ? $lexer : new Lexer($this->_options['lexerOptions']);
         $this->_parser = $parser ? $parser : new Parser($this->_options['parserOptions'], $this->_lexer);
@@ -531,7 +525,10 @@ class Compiler
 
         if (!$fullPath)
             throw new \Exception(
-                "File $path wasnt found in ".implode(', ', $this->_options['paths']).", Include path: ".get_include_path()
+                "File $path wasnt found in ".
+                implode(', ', $this->_options['paths']).
+                ", Extensions: ".implode(', ', $this->_options['extensions']).
+                ", Include path: ".get_include_path()
             );
 
         return $this->compile(file_get_contents($fullPath), $fullPath);
@@ -1003,7 +1000,7 @@ class Compiler
                 $ext = array_search($node->filter, $this->_options['filterMap']);
             }
 
-            if (!empty($ext) && (!in_array($ext, $this->_options['extensions']) || $node->filter)) {
+            if (!empty($ext) && (!in_array(".$ext", $this->_options['extensions']) || $node->filter)) {
 
                 if (!$node->filter && isset($this->_options['filterMap'][$ext]))
                     $node->filter = $this->_options['filterMap'][$ext];
@@ -1212,11 +1209,6 @@ class Compiler
      */
     protected function handleMixin(Node $node)
     {
-
-        //Find the absolute document root
-        $root = $node;
-        while ($root->parent)
-            $root = $root->parent;
 
         //Detach
         $node->parent->remove($node);

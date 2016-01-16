@@ -18,12 +18,14 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.4
+ * @version    1.3.5
  * @link       http://jade.talesoft.io/docs/files/Renderer.Adapter.Stream.Wrapper.html
  * @since      File available since Release 1.0
  */
 
 namespace Tale\Jade\Renderer\Adapter\Stream;
+
+use Symfony\Component\Yaml\Exception\RuntimeException;
 
 /**
  * Provides a Stream Wrapper that reads a special Data-URI.
@@ -40,7 +42,7 @@ namespace Tale\Jade\Renderer\Adapter\Stream;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.4
+ * @version    1.3.5
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Renderer.Adapter.Stream.Wrapper.html
  * @since      File available since Release 1.0
  */
@@ -195,6 +197,11 @@ class Wrapper
     public static function register($name)
     {
 
+        if (self::isRegistered($name))
+            throw new RuntimeException(
+                "The stream wrapper is already registered as $name"
+            );
+
         stream_wrapper_register($name, self::class);
     }
 
@@ -207,6 +214,11 @@ class Wrapper
      */
     public static function unregister($name)
     {
+
+        if (!self::isRegistered($name))
+            throw new RuntimeException(
+                "The stream wrapper is already registered not $name"
+            );
 
         stream_wrapper_unregister($name);
     }

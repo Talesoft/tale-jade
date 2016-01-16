@@ -18,7 +18,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.4
+ * @version    1.3.5
  * @link       http://jade.talesoft.io/docs/files/Renderer.html
  * @since      File available since Release 1.0
  */
@@ -51,19 +51,13 @@ use Tale\Jade\Renderer\AdapterBase;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.4
+ * @version    1.3.5
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Renderer.html
  * @since      File available since Release 1.0
  */
 class Renderer
 {
-
-    /**
-     * The options-array for the renderer instance.
-     *
-     * @var array
-     */
-    private $_options;
+    use Util\ConfigurableTrait;
 
     /**
      * The compiler that is used in this renderer instance.
@@ -125,44 +119,33 @@ class Renderer
     )
     {
 
-        $this->_options = array_replace_recursive([
+        $this->defineOptions([
             'adapter'           => 'file',
             'adapterOptions'    => [],
             'compilerOptions'   => [],
             'parserOptions'     => [],
             'lexerOptions'      => [],
-
-            //Abstracted settings
-            'pretty'            => false,
-            'paths'             => [],
-            'standAlone'        => false
-        ], $options ? $options : []);
+        ], $options);
 
         //Quick Options.
         //These get passed to the actual option arrays of the related objects
-        if (!isset($this->_options['compilerOptions']['paths']))
-            $this->_options['compilerOptions']['paths'] = $this->_options['paths'];
+        $this->forwardOption('lifeTime', 'adapterOptions');
+        $this->forwardOption('cachePath', 'adapterOptions', 'path');
 
-        if (!isset($this->_options['compilerOptions']['pretty']))
-            $this->_options['compilerOptions']['pretty'] = $this->_options['pretty'];
-
-        if (!isset($this->_options['compilerOptions']['standAlone']))
-            $this->_options['compilerOptions']['standAlone'] = $this->_options['standAlone'];
+        $this->forwardOption('paths', 'compilerOptions');
+        $this->forwardOption('pretty', 'compilerOptions');
+        $this->forwardOption('indentStyle', 'compilerOptions');
+        $this->forwardOption('indentWidth', 'compilerOptions');
+        $this->forwardOption('standAlone', 'compilerOptions');
+        $this->forwardOption('extensions', 'compilerOptions');
+        $this->forwardOption('mode', 'compilerOptions');
+        $this->forwardOption('doctypes', 'compilerOptions');
+        $this->forwardOption('filters', 'compilerOptions');
+        $this->forwardOption('filterMap', 'compilerOptions');
 
         $this->_lexer = $lexer ? $lexer : new Lexer($this->_options['lexerOptions']);
         $this->_parser = $parser ? $parser : new Parser($this->_options['parserOptions'], $lexer);
         $this->_compiler = $compiler ? $compiler : new Compiler($this->_options['compilerOptions'], $parser);
-    }
-
-    /**
-     * Returns the current option-array used in this renderer instance.
-     *
-     * @return array
-     */
-    public function getOptions()
-    {
-
-        return $this->_options;
     }
 
     /**

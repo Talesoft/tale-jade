@@ -10,7 +10,7 @@ $ignore = [
     './.git'
 ];
 
-$newVersion = '1.3.4';
+$newVersion = '1.3.5';
 
 
 if (!$newVersion) {
