@@ -30,6 +30,17 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($value, $renderer->getCompiler()->getOption($option));
     }
 
+    /**
+     * @dataProvider lexerOptionProvider
+     */
+    public function testRendererForwardsOptionsToLexer($option, $value)
+    {
+
+        $renderer = new Renderer(['lexerOptions' => [$option => $value]]);
+
+        $this->assertEquals($value, $renderer->getLexer()->getOption($option));
+    }
+
     public function compilerOptionProvider()
     {
 
@@ -41,6 +52,15 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
             ['standAlone', true],
             ['extensions', ['.a', '.b', '.c']],
             ['mode', Compiler::MODE_XHTML]
+        ];
+    }
+
+    public function lexerOptionProvider()
+    {
+
+        return [
+            ['indentWidth', 8],
+            ['indentStyle', "\t"]
         ];
     }
 }

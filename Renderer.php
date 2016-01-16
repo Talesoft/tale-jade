@@ -18,7 +18,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.5
+ * @version    1.3.6
  * @link       http://jade.talesoft.io/docs/files/Renderer.html
  * @since      File available since Release 1.0
  */
@@ -51,7 +51,7 @@ use Tale\Jade\Renderer\AdapterBase;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.5
+ * @version    1.3.6
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Renderer.html
  * @since      File available since Release 1.0
  */
@@ -144,8 +144,8 @@ class Renderer
         $this->forwardOption('filterMap', 'compilerOptions');
 
         $this->_lexer = $lexer ? $lexer : new Lexer($this->_options['lexerOptions']);
-        $this->_parser = $parser ? $parser : new Parser($this->_options['parserOptions'], $lexer);
-        $this->_compiler = $compiler ? $compiler : new Compiler($this->_options['compilerOptions'], $parser);
+        $this->_parser = $parser ? $parser : new Parser($this->_options['parserOptions'], $this->_lexer);
+        $this->_compiler = $compiler ? $compiler : new Compiler($this->_options['compilerOptions'], $this->_parser);
     }
 
     /**

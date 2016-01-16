@@ -18,13 +18,14 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.5
+ * @version    1.3.6
  * @link       http://jade.talesoft.io/docs/files/Lexer.html
  * @since      File available since Release 1.0
  */
 
 namespace Tale\Jade;
 
+use RuntimeException;
 use Tale\Jade\Lexer\Exception;
 
 /**
@@ -60,7 +61,7 @@ use Tale\Jade\Lexer\Exception;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.5
+ * @version    1.3.6
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Lexer.html
  * @since      File available since Release 1.0
  */
@@ -208,14 +209,14 @@ class Lexer
 
         //Validate options
         if (!in_array($this->_options['indentStyle'], [null, self::INDENT_TAB, self::INDENT_SPACE]))
-            throw new \Exception(
+            throw new RuntimeException(
                 "indentStyle needs to be null or one of the INDENT_* constants of the lexer"
             );
 
         if (!is_null($this->_options['indentWidth']) &&
             (!is_int($this->_options['indentWidth']) || $this->_options['indentWidth'] < 1)
         )
-            throw new \Exception(
+            throw new RuntimeException(
                 "indentWidth needs to be a integer above 0"
             );
     }
@@ -874,6 +875,8 @@ class Lexer
                     $tabs = false;
                     $mixed = false;
                 } else {
+
+                    var_dump($this->_indentStyle, $this->_indentWidth, $spaces, $tabs, $mixed);
 
                     $this->throwException(
                         "Mixed indentation style encountered. "
@@ -1715,6 +1718,7 @@ class Lexer
 
                     $token['escaped'] = false;
                     $this->consume();
+                    $char = $this->peek();
                 }
 
                 if (!$token['name'] || $char === '=') {
