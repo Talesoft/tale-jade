@@ -12,5 +12,7 @@ php:
 
 before_script:
     - if [ "$TRAVIS_PHP_VERSION" != "hhvm" ]; then phpenv config-rm xdebug.ini; fi;
-    - travis_retry composer self-update
-    - travis_retry composer install
+
+install:
+    - composer self-update
+    - composer install --no-dev
