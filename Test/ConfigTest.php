@@ -38,7 +38,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
         $renderer = new Renderer(['lexerOptions' => [$option => $value]]);
 
-        $this->assertEquals($value, $renderer->getLexer()->getOption($option));
+        $this->assertEquals($value, $renderer->getCompiler()->getParser()->getLexer()->getOption($option));
     }
 
     public function compilerOptionProvider()
