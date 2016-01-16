@@ -462,7 +462,7 @@ class Node
         foreach ($this->children as $child)
             $str .= $child->dump($level + 1);
 
-        return $str;
+        return trim($str);
     }
 
     /**

@@ -93,9 +93,9 @@ class Stream extends AdapterBase
     public function __construct(Renderer $renderer, array $options = null)
     {
 
-        parent::__construct($renderer, array_replace_recursive([
-            'scheme' => 'jade-phtml'
-        ], $options ? $options : []));
+        parent::__construct($renderer, $options);
+
+        $this->setDefaults(['scheme' => 'jade-phtml']);
 
         if (!Wrapper::isRegistered($this->getOption('scheme')))
             Wrapper::register($this->getOption('scheme'));

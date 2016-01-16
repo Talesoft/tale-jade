@@ -66,6 +66,7 @@ use Tale\Jade\Lexer\Exception;
  */
 class Lexer
 {
+    use Util\ConfigurableTrait;
 
     /**
      * Tab Indentation (\t)
@@ -182,7 +183,7 @@ class Lexer
     public function __construct(array $options = null)
     {
 
-        $this->_options = array_replace([
+        $this->defineOptions([
             'indentStyle' => null,
             'indentWidth' => null,
             'encoding'    => mb_internal_encoding(),
@@ -203,7 +204,7 @@ class Lexer
                 'textLine',
                 'text'
             ]
-        ], $options ? $options : []);
+        ], $options);
 
         //Validate options
         if (!in_array($this->_options['indentStyle'], [null, self::INDENT_TAB, self::INDENT_SPACE]))

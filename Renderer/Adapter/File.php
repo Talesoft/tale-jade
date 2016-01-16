@@ -27,6 +27,7 @@
 
 namespace Tale\Jade\Renderer\Adapter;
 
+use RuntimeException;
 use Tale\Jade\Renderer;
 use Tale\Jade\Renderer\AdapterBase;
 
@@ -83,11 +84,13 @@ class File extends AdapterBase
     public function __construct(Renderer $renderer, array $options = null)
     {
 
-        parent::__construct($renderer, array_replace_recursive([
+        parent::__construct($renderer, $options);
+
+        $this->setDefaults([
             'path'      => './cache/views',
             'extension' => '.phtml',
             'lifeTime'  => 0
-        ], $options ? $options : []));
+        ]);
 
         $dir = $this->getOption('path');
 
@@ -97,12 +100,12 @@ class File extends AdapterBase
             @mkdir($dir, 0775, true);
 
             if (!is_dir($dir))
-                throw new \Exception("Failed to create output directory $dir");
+                throw new RuntimeException("Failed to create output directory $dir");
         }
 
         //Make sure we can write to it
         if (!is_writable($dir))
-            throw new \Exception("Output directory not writable $dir");
+            throw new RuntimeException("Output directory $dir not writable");
     }
 
     /**
@@ -162,7 +165,7 @@ class File extends AdapterBase
                 @mkdir($dir, 0775, true);
 
                 if (!is_dir($dir))
-                    throw new \Exception(
+                    throw new RuntimeException(
                         "Failed to create directory $dir"
                     );
             }

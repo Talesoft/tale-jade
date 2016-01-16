@@ -63,13 +63,7 @@ use Tale\Jade\Parser\Exception;
  */
 class Parser
 {
-
-    /**
-     * The options array used for this parser instance.
-     *
-     * @var array
-     */
-    private $_options;
+    use Util\ConfigurableTrait;
 
     /**
      * The lexer used in this parser instance.
@@ -178,9 +172,8 @@ class Parser
     public function __construct(array $options = null, Lexer $lexer = null)
     {
 
-        $this->_options = array_replace([
-            'lexerOptions' => []
-        ], $options ? $options : []);
+        $this->defineOptions(['lexerOptions' => $options], $options);
+
         $this->_lexer = $lexer ? $lexer : new Lexer($this->_options['lexerOptions']);
     }
 

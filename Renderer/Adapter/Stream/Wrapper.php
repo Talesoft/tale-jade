@@ -25,6 +25,8 @@
 
 namespace Tale\Jade\Renderer\Adapter\Stream;
 
+use Symfony\Component\Yaml\Exception\RuntimeException;
+
 /**
  * Provides a Stream Wrapper that reads a special Data-URI.
  *
@@ -195,6 +197,11 @@ class Wrapper
     public static function register($name)
     {
 
+        if (self::isRegistered($name))
+            throw new RuntimeException(
+                "The stream wrapper is already registered as $name"
+            );
+
         stream_wrapper_register($name, self::class);
     }
 
@@ -207,6 +214,11 @@ class Wrapper
      */
     public static function unregister($name)
     {
+
+        if (!self::isRegistered($name))
+            throw new RuntimeException(
+                "The stream wrapper is already registered not $name"
+            );
 
         stream_wrapper_unregister($name);
     }
