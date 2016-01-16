@@ -876,8 +876,6 @@ class Lexer
                     $mixed = false;
                 } else {
 
-                    var_dump($this->_indentStyle, $this->_indentWidth, $spaces, $tabs, $mixed);
-
                     $this->throwException(
                         "Mixed indentation style encountered. "
                         ."Dont mix tabs and spaces. Stick to one of both."
@@ -902,9 +900,7 @@ class Lexer
             $this->_level = intval(round($this->strlen($indent) / $this->_indentWidth));
 
             if ($this->_level > $oldLevel + 1)
-                $this->throwException(
-                    "You should indent in by one level only"
-                );
+                $this->_level = $oldLevel + 1;
         } else
             $this->_level = 0;
 
