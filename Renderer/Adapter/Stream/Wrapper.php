@@ -25,7 +25,7 @@
 
 namespace Tale\Jade\Renderer\Adapter\Stream;
 
-use Symfony\Component\Yaml\Exception\RuntimeException;
+use RuntimeException;
 
 /**
  * Provides a Stream Wrapper that reads a special Data-URI.
