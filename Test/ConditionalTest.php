@@ -1,6 +1,6 @@
 <?php
 
-namespace Tale\Jade\Test;
+namespace Tale\Test\Jade;
 
 use Tale\Jade\Compiler;
 use Tale\Jade\Renderer;
