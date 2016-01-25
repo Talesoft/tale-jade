@@ -3,8 +3,7 @@
 # Tale Jade for PHP
 
 
-[![Build Status](https://travis-ci.org/Talesoft/tale-jade.svg?branch=master)](https://travis-ci.org/Talesoft/tale-jade)
-
+[![GitHub release](https://img.shields.io/github/release/talesoft/tale-jade.svg?style=flat-square)](https://github.com/Talesoft/tale-jade) [![Travis](https://img.shields.io/travis/Talesoft/tale-jade.svg?style=flat-square)](https://travis-ci.org/Talesoft/tale-jade) [![Packagist](https://img.shields.io/packagist/dt/talesoft/tale-jade.svg?style=flat-square)](https://packagist.org/packages/talesoft/tale-jade) [![HHVM](https://img.shields.io/hhvm/talesoft/tale-jade.svg?style=flat-square)](https://travis-ci.org/Talesoft/tale-jade)
 
 > **Finally a fully-functional, complete and clean port of the Jade language to PHP**
 >
