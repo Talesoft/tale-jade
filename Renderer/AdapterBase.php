@@ -26,7 +26,7 @@
 namespace Tale\Jade\Renderer;
 
 use Tale\Jade\Renderer;
-use Tale\Jade\Util\ConfigurableTrait;
+use Tale\ConfigurableTrait;
 
 /**
  * Acts as a base class for renderer adapters.

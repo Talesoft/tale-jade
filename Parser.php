@@ -25,6 +25,7 @@
 
 namespace Tale\Jade;
 
+use Tale\ConfigurableTrait;
 use Tale\Jade\Parser\Node;
 use Tale\Jade\Parser\Exception;
 
@@ -63,7 +64,7 @@ use Tale\Jade\Parser\Exception;
  */
 class Parser
 {
-    use Util\ConfigurableTrait;
+    use ConfigurableTrait;
 
     /**
      * The lexer used in this parser instance.

@@ -26,6 +26,7 @@
 namespace Tale\Jade;
 
 use RuntimeException;
+use Tale\ConfigurableTrait;
 use Tale\Jade\Lexer\Exception;
 
 /**
@@ -67,7 +68,7 @@ use Tale\Jade\Lexer\Exception;
  */
 class Lexer
 {
-    use Util\ConfigurableTrait;
+    use ConfigurableTrait;
 
     /**
      * Tab Indentation (\t)

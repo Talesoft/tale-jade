@@ -28,6 +28,7 @@
 
 namespace Tale\Jade;
 
+use Tale\ConfigurableTrait;
 use Tale\Jade\Compiler\Exception;
 use Tale\Jade\Parser\Node;
 
@@ -97,7 +98,7 @@ use Tale\Jade\Parser\Node;
  */
 class Compiler
 {
-    use Util\ConfigurableTrait;
+    use ConfigurableTrait;
 
     /**
      * The Mode for HTML.

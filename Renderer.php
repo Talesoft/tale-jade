@@ -25,6 +25,7 @@
 
 namespace Tale\Jade;
 
+use Tale\ConfigurableTrait;
 use Tale\Jade\Renderer\AdapterBase;
 
 /**
@@ -57,7 +58,7 @@ use Tale\Jade\Renderer\AdapterBase;
  */
 class Renderer
 {
-    use Util\ConfigurableTrait;
+    use ConfigurableTrait;
 
     /**
      * The compiler that is used in this renderer instance.
