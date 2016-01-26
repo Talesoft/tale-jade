@@ -7,10 +7,6 @@
     "homepage": "http://jade.talesoft.io",
     "authors": [
         {
-            "name": "Tale Jade Community",
-            "homepage": "https://github.com/Talesoft/tale-jade/graphs/contributors"
-        },
-        {
             "name": "Talesoft",
             "homepage": "http://talesoft.io",
             "email": "info@talesoft.io"
@@ -20,7 +16,13 @@
             "email": "tk@talesoft.io"
         }
     ],
-    "minimum-stability": "dev",
+    "support": {
+        "email": "info@talesoft.io",
+        "issues": "https://github.com/talesoft/tale-jade/issues",
+        "source": "https://github.com/talesoft/tale-jade",
+        "docs": "http://jade.talesoft.io/docs"
+    },
+    "minimum-stability": "stable",
     "require": {
         "php": ">=5.5.0",
         "talesoft/tale-config": "~0.1"
