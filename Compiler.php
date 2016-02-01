@@ -110,7 +110,7 @@ class Compiler
     const MODE_HTML = 0;
 
     /**
-     * The Mode of XML.
+     * The Mode for XML.
      *
      * Will     /> close all elements, will </close> elements
      * Won't    repeat attributes if they're in selfRepeatingAttributes
@@ -119,7 +119,7 @@ class Compiler
     const MODE_XML = 1;
 
     /**
-     * The Mode of XHTML.
+     * The Mode for XHTML.
      *
      * Will     /> close all elements, will </close> elements
      * Will     repeat attributes if they're in selfRepeatingAttributes
@@ -335,17 +335,6 @@ class Compiler
 
         $this->_lexer = $lexer ? $lexer : new Lexer($this->_options['lexerOptions']);
         $this->_parser = $parser ? $parser : new Parser($this->_options['parserOptions'], $this->_lexer);
-    }
-
-    /**
-     * Returns the current options for the parser.
-     *
-     * @return array
-     */
-    public function getOptions()
-    {
-
-        return $this->_options;
     }
 
     /**
@@ -675,30 +664,86 @@ class Compiler
     protected function interpolate($string, $attribute = false)
     {
 
-        $string = preg_replace_callback('/([#!])\{([^\}]+)\}/', function ($matches) use ($attribute) {
+        $strlen = function_exists('mb_strlen') ? 'mb_strlen': 'strlen';
+        $substr = function_exists('mb_substr') ? 'mb_substr' : 'substr';
 
-            $subject = $matches[2];
-            $code = $this->isVariable($subject)
-                  ? "isset($subject) ? $subject : ''"
-                  : $subject;
+        $brackets = ['[' => ']', '{' => '}'];
+        $replacements = [];
+        foreach ($brackets as $open => $close) {
 
-            if ($matches[1] !== '!')
-                $code = "htmlentities($code, \\ENT_QUOTES, '".$this->_options['escapeCharset']."')";
+            $match = null;
+            var_dump($string, '/([#!])'.preg_quote($open, '/').'/');
+            while (preg_match(
+                '/([#!])'.preg_quote($open, '/').'/',
+                $string,
+                $match,
+                \PREG_OFFSET_CAPTURE
+            )) {
 
-            return !$attribute ? $this->createShortCode($code) : '\'.('.$code.').\'';
-        }, $string);
+                var_dump($match);
+                list($start, $escapeType) = $match[1];
+                $offset = $start + 2;
+                $level = 1;
+                $subject = '';
 
-        $string = preg_replace_callback('/([#!])\[([^\}]+)\]/', function ($matches) use ($attribute) {
+                do {
 
-            $input = $matches[2];
+                    $char = $substr($string, $offset, 1);
 
-            if ($input === 'endif')
-                return $matches[0];
+                    if ($char === $open)
+                        $level++;
 
-            $node = $this->_parser->parse($input);
+                    if ($char === $close) {
 
-            return $this->compileNode($node);
-        }, $string);
+                        $level--;
+
+                        if ($level === 0)
+                            break;
+                    }
+
+                    $subject .= $char;
+                    $offset++;
+                } while ($level > 0 && $offset < $strlen($string));
+
+                $target = $substr($string, $start, $strlen($string) + 1);
+                $replacement = $subject;
+
+                var_dump('Apply', $open, 'to', $target);
+                switch ($open) {
+                    case '{':
+
+                        $code = $this->isVariable($subject)
+                            ? "isset($subject) ? $subject : ''"
+                            : $subject;
+
+                        if ($escapeType !== '!')
+                            $code = "htmlentities($code, \\ENT_QUOTES, '".$this->_options['escapeCharset']."')";
+
+                        $replacement = !$attribute ? $this->createShortCode($code) : '\'.('.$code.').\'';
+                        break;
+                    case '[':
+
+                        //This is a fix for <![endif]--> in IE conditional tags
+                        if (strtolower($subject) === 'endif')
+                            break;
+
+                        $node = $this->_parser->parse($subject);
+                        $code = $this->compileNode($node);
+
+                        if ($escapeType === '!')
+                            $code = "htmlentities('".str_replace(
+                                '\'', '\\\'', $code
+                            )."', \\ENT_QUOTES, '".$this->_options['escapeCharset']."')";
+
+                        $replacement = $code;
+                        break;
+
+                }
+
+                var_dump('Replace with', $replacement);
+                $string = str_replace($target, $replacement, $string);
+            }
+        }
 
         return $string;
     }

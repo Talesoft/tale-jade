@@ -179,17 +179,6 @@ class Parser
     }
 
     /**
-     * Returns the currently used option-array of the Parser.
-     *
-     * @return array
-     */
-    public function getOptions()
-    {
-
-        return $this->_options;
-    }
-
-    /**
      * Returns the currently used Lexer instance.
      *
      * @return Lexer

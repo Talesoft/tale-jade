@@ -5,7 +5,7 @@ $ignore = [
     './Test',
     './docs',
     './vendor',
-    './tasks.php',
+    './tasks',
     './.idea',
     './.git'
 ];
