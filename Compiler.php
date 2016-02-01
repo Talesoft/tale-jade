@@ -21,13 +21,14 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.6
+ * @version    1.3.7
  * @link       http://jade.talesoft.io/docs/files/Compiler.html
  * @since      File available since Release 1.0
  */
 
 namespace Tale\Jade;
 
+use Tale\ConfigurableTrait;
 use Tale\Jade\Compiler\Exception;
 use Tale\Jade\Parser\Node;
 
@@ -91,13 +92,13 @@ use Tale\Jade\Parser\Node;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.6
+ * @version    1.3.7
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Compiler.html
  * @since      File available since Release 1.0
  */
 class Compiler
 {
-    use Util\ConfigurableTrait;
+    use ConfigurableTrait;
 
     /**
      * The Mode for HTML.
@@ -109,7 +110,7 @@ class Compiler
     const MODE_HTML = 0;
 
     /**
-     * The Mode of XML.
+     * The Mode for XML.
      *
      * Will     /> close all elements, will </close> elements
      * Won't    repeat attributes if they're in selfRepeatingAttributes
@@ -118,7 +119,7 @@ class Compiler
     const MODE_XML = 1;
 
     /**
-     * The Mode of XHTML.
+     * The Mode for XHTML.
      *
      * Will     /> close all elements, will </close> elements
      * Will     repeat attributes if they're in selfRepeatingAttributes
@@ -337,17 +338,6 @@ class Compiler
     }
 
     /**
-     * Returns the current options for the parser.
-     *
-     * @return array
-     */
-    public function getOptions()
-    {
-
-        return $this->_options;
-    }
-
-    /**
      * Returns the current lexer used.
      *
      * @return Lexer
@@ -459,7 +449,11 @@ class Compiler
             $node = $this->_parser->parse($input);
         } catch(\Exception $e) {
 
-            $this->throwException($e->getMessage());
+            //This is needed to be able to keep track of the
+            //file path that is erroring
+            if (!($e instanceof Exception))
+                $this->throwException($e->getMessage());
+            else throw $e;
         }
 
         //There are some things we need to take care of before compilation
@@ -674,30 +668,88 @@ class Compiler
     protected function interpolate($string, $attribute = false)
     {
 
-        $string = preg_replace_callback('/([#!])\{([^\}]+)\}/', function ($matches) use ($attribute) {
+        $strlen = function_exists('mb_strlen') ? 'mb_strlen': 'strlen';
+        $substr = function_exists('mb_substr') ? 'mb_substr' : 'substr';
 
-            $subject = $matches[2];
-            $code = $this->isVariable($subject)
-                  ? "isset($subject) ? $subject : ''"
-                  : $subject;
+        $brackets = ['[' => ']', '{' => '}'];
+        foreach ($brackets as $open => $close) {
 
-            if ($matches[1] !== '!')
-                $code = "htmlentities($code, \\ENT_QUOTES, '".$this->_options['escapeCharset']."')";
+            $match = null;
+            while (preg_match(
+                '/([#!])'.preg_quote($open, '/').'/',
+                $string,
+                $match,
+                \PREG_OFFSET_CAPTURE
+            )) {
 
-            return !$attribute ? $this->createShortCode($code) : '\'.('.$code.').\'';
-        }, $string);
+                list($escapeType, $start) = $match[1];
+                $offset = $start + 2;
+                $level = 1;
+                $subject = '';
 
-        $string = preg_replace_callback('/([#!])\[([^\}]+)\]/', function ($matches) use ($attribute) {
+                do {
 
-            $input = $matches[2];
+                    $char = $substr($string, $offset, 1);
 
-            if ($input === 'endif')
-                return $matches[0];
+                    if ($char === $open)
+                        $level++;
 
-            $node = $this->_parser->parse($input);
+                    if ($char === $close) {
 
-            return $this->compileNode($node);
-        }, $string);
+                        $level--;
+
+                        if ($level === 0)
+                            break;
+                    }
+
+                    $subject .= $char;
+                    $offset++;
+                } while ($level > 0 && $offset < $strlen($string));
+
+                if ($offset >= $strlen($string)) {
+
+                    $this->throwException(
+                        "Failed to interpolate value, $open is not closed with $close"
+                    );
+                }
+
+                $target = $substr($string, $start, $strlen($subject) + 3 ); // +3 because initializer ([!#][{\[]) + End ([}\]])
+                $replacement = $subject;
+
+                switch ($open) {
+                    case '{':
+
+                        $code = $this->isVariable($subject)
+                            ? "isset($subject) ? $subject : ''"
+                            : $subject;
+
+                        if ($escapeType !== '!')
+                            $code = "htmlentities($code, \\ENT_QUOTES, '".$this->_options['escapeCharset']."')";
+
+                        $replacement = !$attribute ? $this->createShortCode($code) : '\'.('.$code.').\'';
+                        break;
+                    case '[':
+
+                        //This is a fix for <![endif]--> in IE conditional tags
+                        if (strtolower($subject) === 'endif')
+                            break;
+
+                        $node = $this->_parser->parse($subject);
+                        $code = $this->compileNode($node);
+
+                        if ($escapeType === '!')
+                            $code = $this->createShortCode("htmlentities('".str_replace(
+                                '\'', '\\\'', $code
+                            )."', \\ENT_QUOTES, '".$this->_options['escapeCharset']."')");
+
+                        $replacement = $code;
+                        break;
+
+                }
+
+                $string = str_replace($target, $replacement, $string);
+            }
+        }
 
         return $string;
     }

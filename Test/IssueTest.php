@@ -110,4 +110,10 @@ JADE;
         $this->assertEquals('<ul class="right hide-on-med-and-down"><li><?=$view->Html->link(__(\'Dashboard\'), [\'controller\' => \'Users\', \'action\' => \'index\'])?></li><li><?=$view->Html->link(__(\'Log Out\'), [\'controller\' => \'Users\', \'action\' => \'logout\'])?></li></ul><ul id="nav-mobile" class="side-nav"><li><?=$view->Html->link(__(\'Dashboard\'), [\'controller\' => \'Users\', \'action\' => \'index\'])?></li><li><?=$view->Html->link(__(\'Log Out\'), [\'controller\' => \'Users\', \'action\' => \'logout\'])?></li></ul><a class="button-collapse" href="#" data-activates="nav-mobile"><i class="material-icons">menu</i></a><div class="progress -main"><div class="indeterminate"></div></div>', $this->_renderer->compileFile('issue-44/for_members.ctp.1'));
         $this->assertEquals('<ul class="right hide-on-med-and-down"><li><?=$view->Html->link(__(\'Dashboard\'), [\'controller\' => \'Users\', \'action\' => \'index\'])?></li><li><?=$view->Html->link(__(\'Log Out\'), [\'controller\' => \'Users\', \'action\' => \'logout\'])?></li></ul><ul id="nav-mobile" class="side-nav"><li><?=$view->Html->link(__(\'Dashboard\'), [\'controller\' => \'Users\', \'action\' => \'index\'])?></li><li><?=$view->Html->link(__(\'Log Out\'), [\'controller\' => \'Users\', \'action\' => \'logout\'])?></li></ul><a class="button-collapse" href="#" data-activates="nav-mobile"><i class="material-icons">menu</i></a><div class="progress -main"><div class="indeterminate"></div></div>', $this->_renderer->compileFile('issue-44/for_members.ctp.2'));
     }
+
+    public function testIssue55()
+    {
+
+        $this->assertEquals('<div class="col s6 right-align"><strong>Sign In</strong> / <?=$view->Html->link(\'Sign Up\', [\'action\' => \'add\'])?></div>', $this->_renderer->compile('.col.s6.right-align #[strong Sign In] / !{$view->Html->link(\'Sign Up\', [\'action\' => \'add\'])}'));
+    }
 }
