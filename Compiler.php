@@ -449,7 +449,11 @@ class Compiler
             $node = $this->_parser->parse($input);
         } catch(\Exception $e) {
 
-            $this->throwException($e->getMessage());
+            //This is needed to be able to keep track of the
+            //file path that is erroring
+            if (!($e instanceof Exception))
+                $this->throwException($e->getMessage());
+            else throw $e;
         }
 
         //There are some things we need to take care of before compilation
@@ -668,11 +672,9 @@ class Compiler
         $substr = function_exists('mb_substr') ? 'mb_substr' : 'substr';
 
         $brackets = ['[' => ']', '{' => '}'];
-        $replacements = [];
         foreach ($brackets as $open => $close) {
 
             $match = null;
-            var_dump($string, '/([#!])'.preg_quote($open, '/').'/');
             while (preg_match(
                 '/([#!])'.preg_quote($open, '/').'/',
                 $string,
@@ -680,8 +682,7 @@ class Compiler
                 \PREG_OFFSET_CAPTURE
             )) {
 
-                var_dump($match);
-                list($start, $escapeType) = $match[1];
+                list($escapeType, $start) = $match[1];
                 $offset = $start + 2;
                 $level = 1;
                 $subject = '';
@@ -705,10 +706,16 @@ class Compiler
                     $offset++;
                 } while ($level > 0 && $offset < $strlen($string));
 
-                $target = $substr($string, $start, $strlen($string) + 1);
+                if ($offset >= $strlen($string)) {
+
+                    $this->throwException(
+                        "Failed to interpolate value, $open is not closed with $close"
+                    );
+                }
+
+                $target = $substr($string, $start, $strlen($subject) + 3 ); // +3 because initializer ([!#][{\[]) + End ([}\]])
                 $replacement = $subject;
 
-                var_dump('Apply', $open, 'to', $target);
                 switch ($open) {
                     case '{':
 
@@ -731,16 +738,15 @@ class Compiler
                         $code = $this->compileNode($node);
 
                         if ($escapeType === '!')
-                            $code = "htmlentities('".str_replace(
+                            $code = $this->createShortCode("htmlentities('".str_replace(
                                 '\'', '\\\'', $code
-                            )."', \\ENT_QUOTES, '".$this->_options['escapeCharset']."')";
+                            )."', \\ENT_QUOTES, '".$this->_options['escapeCharset']."')");
 
                         $replacement = $code;
                         break;
 
                 }
 
-                var_dump('Replace with', $replacement);
                 $string = str_replace($target, $replacement, $string);
             }
         }
