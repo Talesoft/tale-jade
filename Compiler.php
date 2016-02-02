@@ -676,14 +676,17 @@ class Compiler
 
             $match = null;
             while (preg_match(
-                '/([#!])'.preg_quote($open, '/').'/',
+                '/([?]?)([#!])'.preg_quote($open, '/').'/',
                 $string,
                 $match,
                 \PREG_OFFSET_CAPTURE
             )) {
 
-                list($escapeType, $start) = $match[1];
-                $offset = $start + 2;
+                list(, $start) = $match[0];
+                list($escapeType) = $match[2];
+                list($checkType) = $match[1];
+                $prefixLen = $strlen($escapeType) + $strlen($checkType) + $strlen($open);
+                $offset = $start + $prefixLen;
                 $level = 1;
                 $subject = '';
 
@@ -713,13 +716,14 @@ class Compiler
                     );
                 }
 
-                $target = $substr($string, $start, $strlen($subject) + 3 ); // +3 because initializer ([!#][{\[]) + End ([}\]])
+                $len = $prefixLen + $strlen($subject) + $strlen($close);
+                $target = $substr($string, $start, $len);
                 $replacement = $subject;
 
                 switch ($open) {
                     case '{':
 
-                        $code = $this->isVariable($subject)
+                        $code = $this->isVariable($subject) && $checkType !== '?'
                             ? "isset($subject) ? $subject : ''"
                             : $subject;
 
@@ -1962,7 +1966,7 @@ class Compiler
 
                     if ($value) {
 
-                        if ($this->isVariable($value)) {
+                        if ($this->isVariable($value) && !$attr->unchecked) {
 
                             $values[] = 'isset('.$value.') ? '.$value.' : false';
                         } else {
@@ -2110,7 +2114,7 @@ class Compiler
 
         $value = rtrim(trim($node->value), ';');
 
-        if ($this->isVariable($value))
+        if ($this->isVariable($value) && !$node->unchecked)
             $value = "isset({$value}) ? {$value} : ''";
 
         return $this->createShortCode(sprintf($code, $value));

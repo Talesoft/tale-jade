@@ -546,6 +546,7 @@ class Parser
         $node->name = $token['name'];
         $node->value = $token['value'];
         $node->escaped = $token['escaped'];
+        $node->unchecked = $token['unchecked'];
 
         if (!$node->name && in_array($this->_current->type, ['element', 'mixin']))
             $this->throwException('Attributes in elements and mixins need a name', $token);
@@ -765,6 +766,7 @@ class Parser
 
         $node = $this->createNode('expression', $token);
         $node->escaped = $token['escaped'];
+        $node->unchecked = $token['unchecked'];
         $node->value = $token['value'];
 
         if ($this->_current)

@@ -1373,10 +1373,11 @@ class Lexer
 
         foreach ($this->scanToken(
             'expression',
-            "([!]?[=])[\t ]*(?<value>[^\n]*)"
+            "([?]?[!]?[=])[\t ]*(?<value>[^\n]*)"
         ) as $token) {
 
-            $token['escaped'] = $this->getMatch(1) === '!=' ? false : true;
+            $token['escaped'] = strstr($this->getMatch(1), '!') ? false : true;
+            $token['unchecked'] = strstr($this->getMatch(1), '?') ? true : false;
             yield $token;
         }
     }
@@ -1679,6 +1680,7 @@ class Lexer
                 $token['name'] = null;
                 $token['value'] = null;
                 $token['escaped'] = true;
+                $token['unchecked'] = false;
 
                 if ($this->match('((\.\.\.)?[a-zA-Z_][a-zA-Z0-9\-_:]*)', 'i')) {
 
@@ -1690,7 +1692,7 @@ class Lexer
                     //as a attribute name. We'll take it as a partial value
                     //if none of our arg separators, = or ! ) follows after it
                     //TODO: strtoupper ($value) will probably still fail.
-                    if (!in_array($this->peek(), array_merge($argSeparators, ['=', '!', ')']), true))
+                    if (!in_array($this->peek(), array_merge($argSeparators, ['=', '!', '?', ')']), true))
                         $token['value'] = $this->getMatch(1);
                     else {
 
@@ -1709,6 +1711,14 @@ class Lexer
                 }
 
                 $char = $this->peek();
+
+                //Check unchecked-flag (?) if a name is given.
+                if ($token['name'] && $char === '?') {
+
+                    $token['unchecked'] = true;
+                    $this->consume();
+                    $char = $this->peek();
+                }
 
                 //Check escaping flag (!) if a name is given.
                 //Avoids escaping when you call e.g.
