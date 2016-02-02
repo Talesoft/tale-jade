@@ -53,6 +53,20 @@ class EscapingTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('<p><a href="#">\' some random text &</a></p>', $this->_renderer->render('unescaped-expression', ['expression' => '<a href="#">\' some random text &</a>']));
     }
 
+    public function testUncheckedExpressionCompilation()
+    {
+
+        $this->assertEquals('<?=htmlentities($someExpression, \ENT_QUOTES, \'UTF-8\')?>', $this->_renderer->compile('?= $someExpression'));
+        $this->assertEquals('<div><p><?=htmlentities($someExpression, \ENT_QUOTES, \'UTF-8\')?></p></div>', $this->_renderer->compile("div\n\tp?= \$someExpression"));
+    }
+
+    public function testUncheckedUnescapedExpressionCompilation()
+    {
+
+        $this->assertEquals('<?=$someExpression?>', $this->_renderer->compile('?!= $someExpression'));
+        $this->assertEquals('<div><p><?=$someExpression?></p></div>', $this->_renderer->compile("div\n\tp?!= \$someExpression"));
+    }
+
     public function testEscapedInterpolationCompilation()
     {
 
@@ -69,6 +83,42 @@ class EscapingTest extends \PHPUnit_Framework_TestCase
     {
 
         $this->assertEquals('<p>In this random text i will insert an <a href="#">\' some random text &</a>, awesome, isn\'t it?</p>', $this->_renderer->render('unescaped-interpolation', ['expression' => '<a href="#">\' some random text &</a>']));
+    }
+
+    public function testUncheckedInterpolationCompilation()
+    {
+
+        $this->assertEquals('<p>Some <?=htmlentities($someVar, \ENT_QUOTES, \'UTF-8\')?> random text</p>', $this->_renderer->compile('p Some ?#{$someVar} random text'));
+    }
+
+    public function testUncheckedUnescapedInterpolationCompilation()
+    {
+
+        $this->assertEquals('<p>Some <?=$someVar?> random text</p>', $this->_renderer->compile('p Some ?!{$someVar} random text'));
+    }
+
+    public function testEscapedAttributeCompilation()
+    {
+
+        $this->assertEquals('<a<?php $__value = isset($url) ? $url : false; if (!\Tale\Jade\Compiler\is_null_or_false($__value)) echo \' href=\'.\Tale\Jade\Compiler\build_value($__value, \'"\', true); unset($__value);?>></a>', $this->_renderer->compile('a(href=$url)'));
+    }
+
+    public function testUnescapedAttributeCompilation()
+    {
+
+        $this->assertEquals('<a<?php $__value = isset($url) ? $url : false; if (!\Tale\Jade\Compiler\is_null_or_false($__value)) echo \' href=\'.\Tale\Jade\Compiler\build_value($__value, \'"\', false); unset($__value);?>></a>', $this->_renderer->compile('a(href!=$url)'));
+    }
+
+    public function testUncheckedAttributeCompilation()
+    {
+
+        $this->assertEquals('<a<?php $__value = $url; if (!\Tale\Jade\Compiler\is_null_or_false($__value)) echo \' href=\'.\Tale\Jade\Compiler\build_value($__value, \'"\', true); unset($__value);?>></a>', $this->_renderer->compile('a(href?=$url)'));
+    }
+
+    public function testUncheckedUnescapedCompilation()
+    {
+
+        $this->assertEquals('<a<?php $__value = $url; if (!\Tale\Jade\Compiler\is_null_or_false($__value)) echo \' href=\'.\Tale\Jade\Compiler\build_value($__value, \'"\', false); unset($__value);?>></a>', $this->_renderer->compile('a(href?!=$url)'));
     }
 
     public function testNewLineEscaping()
