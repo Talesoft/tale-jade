@@ -116,4 +116,10 @@ JADE;
 
         $this->assertEquals('<div class="col s6 right-align"><strong>Sign In</strong> / <?=$view->Html->link(\'Sign Up\', [\'action\' => \'add\'])?></div>', $this->_renderer->compile('.col.s6.right-align #[strong Sign In] / !{$view->Html->link(\'Sign Up\', [\'action\' => \'add\'])}'));
     }
+
+    public function testIssue57()
+    {
+
+        $this->assertEquals('<pre><code><?=htmlentities(\'<?php\', \ENT_QUOTES, \'UTF-8\')?> <?=htmlentities(\'$foo = \'hey\';\', \ENT_QUOTES, \'UTF-8\')?></code></pre>', $this->_renderer->compile("pre: code!.\n\t<?php\n\t\$foo = 'hey';"));
+    }
 }
