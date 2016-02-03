@@ -90,4 +90,10 @@ class InterpolationTest extends \PHPUnit_Framework_TestCase
 
         $this->_renderer->compile('#[p Some content');
     }
+
+    public function testMailToLink()
+    {
+
+        $this->assertEquals('<div class="copyright">Copyright (c) 2016 <a href="mailto:tk@talesoft.io">tk@talesoft.io</a> Berlin</div>', $this->_renderer->compile('.copyright Copyright (c) 2016 #[a(href=\'mailto:tk@talesoft.io\') tk@talesoft.io] Berlin'));
+    }
 }

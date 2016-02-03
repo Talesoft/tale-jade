@@ -21,7 +21,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.7
+ * @version    1.4.0
  * @link       http://jade.talesoft.io/docs/files/Compiler.html
  * @since      File available since Release 1.0
  */
@@ -92,7 +92,7 @@ use Tale\Jade\Parser\Node;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.7
+ * @version    1.4.0
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Compiler.html
  * @since      File available since Release 1.0
  */
@@ -603,17 +603,17 @@ class Compiler
     /**
      * Compiles and sanitizes a scalar value.
      *
-     * @param string     $value     the scalar value
-     * @param bool|false $attribute is this an attribute value or not
+     * @param string     $value  the scalar value
+     * @param bool|false $inCode is this an attribute value or not
      *
      * @return string
      */
-    protected function compileScalar($value, $attribute = false)
+    protected function compileScalar($value, $inCode = false)
     {
 
         $sequences = $this->_options['escapeSequences'];
 
-        return $this->interpolate(trim(str_replace(array_keys($sequences), $sequences, $value), '\'"'), $attribute);
+        return $this->interpolate(trim(str_replace(array_keys($sequences), $sequences, $value), '\'"'), $inCode);
     }
 
     /**
@@ -639,7 +639,7 @@ class Compiler
     protected function isVariable($value)
     {
 
-        return preg_match('/^\$[a-z_][a-z0-9\_\[\]\->\'"]*$/i', $value) ? true : false;
+        return preg_match('/^\$[a-z_\$](\$?\w*|\[[^\]]+\]|\->(\$?\w+|\{[^\}]+\}))*$/i', $value) ? true : false;
     }
 
     /**
@@ -661,11 +661,11 @@ class Compiler
      * inside a string respecting the quoteStyle-option
      *
      * @param string     $string    The string to interpolate
-     * @param bool|false $attribute Is this an attribute value or not
+     * @param bool|false $inCode Is this an attribute value or not
      *
      * @return string the interpolated PHTML
      */
-    protected function interpolate($string, $attribute = false)
+    protected function interpolate($string, $inCode = false)
     {
 
         $strlen = function_exists('mb_strlen') ? 'mb_strlen': 'strlen';
@@ -730,7 +730,7 @@ class Compiler
                         if ($escapeType !== '!')
                             $code = "htmlentities($code, \\ENT_QUOTES, '".$this->_options['escapeCharset']."')";
 
-                        $replacement = !$attribute ? $this->createShortCode($code) : '\'.('.$code.').\'';
+                        $replacement = !$inCode ? $this->createShortCode($code) : '\'.('.$code.').\'';
                         break;
                     case '[':
 
@@ -741,10 +741,11 @@ class Compiler
                         $node = $this->_parser->parse($subject);
                         $code = $this->compileNode($node);
 
-                        if ($escapeType === '!')
-                            $code = $this->createShortCode("htmlentities('".str_replace(
-                                '\'', '\\\'', $code
-                            )."', \\ENT_QUOTES, '".$this->_options['escapeCharset']."')");
+                        if ($escapeType === '!') {
+
+                            $code = 'htmlentities('.$this->exportScalar($code).', \\ENT_QUOTES, \''.$this->_options['escapeCharset'].'\')';
+                            $code = !$inCode ? $this->createShortCode($code) : '\'.('.$code.').\'';
+                        }
 
                         $replacement = $code;
                         break;
@@ -2097,7 +2098,14 @@ class Compiler
     protected function compileText(Node $node)
     {
 
-        return $this->interpolate($node->value).$this->compileChildren($node->children, true, true);
+        if ($node->escaped)
+            $text = $this->createShortCode(
+                'htmlentities('.$this->exportScalar($node->value, '\'', true).', \\ENT_QUOTES, \''.$this->_options['escapeCharset'].'\')'
+            );
+        else
+            $text = $this->interpolate($node->value);
+
+        return $text.$this->compileChildren($node->children, true, true);
     }
 
     /**
@@ -2208,7 +2216,7 @@ class Compiler
      *
      * @return string the exported scalar value
      */
-    protected function exportScalar($scalar, $quoteStyle = '\'')
+    protected function exportScalar($scalar, $quoteStyle = '\'', $inCode = false)
     {
 
         if ($scalar === 'null' || $scalar === null)
@@ -2225,7 +2233,7 @@ class Compiler
         if (is_numeric($scalar))
             return $scalar;
 
-        return $quoteStyle.$this->compileScalar($scalar).$quoteStyle;
+        return $quoteStyle.$this->compileScalar($scalar, $inCode).$quoteStyle;
     }
 
     /**

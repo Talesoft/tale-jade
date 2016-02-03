@@ -83,19 +83,17 @@ echo $renderer->render('your-jade-file');
 
 This way, the renderer will search for `your-jade-file.jade` in your `get_include_path()`-paths.
 Notice that the path passed to `render` should be relative. You can give it absolute paths, but it will make caching harder.
-Use absolute paths for testing only.
+
 We show you how to add alternative search paths further in the **Basic configuration** section below.
 
 When the Jade-file gets rendered, a `./cache/views`-directory is created automatically and the compiled PHTML will be stored in that directory.
 
-To change this directory, use the `path`-option in the `adapterOptions`
+To change this directory, use the `cachePath`-option
 
 ```php
 
 $renderer = new Jade\Renderer([
-    'adapterOptions' => [
-        'path' => '/your/absolute/cache/path'
-    ]
+    'cachePath' => '/your/absolute/cache/path'
 ]);
 ```
 
@@ -108,9 +106,7 @@ To enable a cache that won't render the files on each call, use the `lifeTime` o
 ```php
 
 $renderer = new Jade\Renderer([
-    'adapterOptions' => [
-        'lifeTime' => 3600 //Will cache the file for 3600 seconds (one hour)
-    ]
+    'lifeTime' => 3600 //Will cache the file for 3600 seconds (one hour)
 ]);
 ```
 
@@ -163,6 +159,7 @@ h1= $title
 +content-block($content)
 ```
 
+
 ---
 
 
@@ -208,10 +205,11 @@ By utilizing those features we aim to bring in more, compatible features into th
 - [Variable Access](http://sandbox.jade.talesoft.io?example=variable-access)
 - [Do/while and for-Loops](http://sandbox.jade.talesoft.io?example=loops)
 
+### Other cool features
 
-
-### Other, unrelated, cool features
-
+- Automatic isset-checks for simple variables with `?`-flag to disable the behavior
+- Inbuilt Markdown, CoffeeScript, LESS, SCSS/SASS and Stylus support
+- Escapable text for HTML/-PHP-output
 - UTF-8 support via PHP's mb_* extension
 - Indentation detection and support for any indentation kind you like
 - Hackable and customizable renderer, compiler, parser and lexer
@@ -219,7 +217,7 @@ By utilizing those features we aim to bring in more, compatible features into th
 - Graceful compiler forgiving many mistakes (e.g. spaces around the code)
 - Lightning fast and clean compilation
 - Detailed error handling
-- Renderer with different adapters (ease-of-use vs. performance)
+- Renderer with different adapters
 - Intelligent expression parsing based on bracket counting
 - Huge documentation available
 - Tested well and maintained actively
@@ -252,13 +250,13 @@ We love Jade, we love PHP, we love Node.js and we love the official and original
 [Tale Jade Live Compiler](http://sandbox.jade.talesoft.io)
 A compiler for you to play with in your browser as well as a whole bunch of examples to give you a grasp of what Tale Jade is capable of.
 
-[Official Node.js Jade Documentation](http://jade-lang.com)
-The real thing. This is where everything that we do here originates from.
-The syntax is the same, only the code-expressions are different.
-
 [The Tale Jade API Docs](http://jade.talesoft.io/docs)
 The documentation of the Tale Jade source code.
 Generated with phpDocumentor, but is's fairly enlightening.
+
+[Official Node.js Jade Documentation](http://jade-lang.com)
+The real thing. This is where everything that we do here originates from.
+The syntax is the same, only the code-expressions are different.
 
 [Tale Jade Bootstrap](https://github.com/Talesoft/tale-jade-bootstrap) 
 A quick-start project to get you up and running. Fork it, download it, play with it. 
@@ -299,6 +297,12 @@ Thanks to the Tale Jade Community we got some modules for existing frameworks th
 ### FlightPHP
 - [berkus' Integration](https://gist.github.com/berkus/f54347a4a1fd74e9e162)
 
+### Symphony XSLT CMS
+*(This is not the Symfony PHP Framework)*
+
+- [vdcrea's Jade Editor](http://www.getsymphony.com/download/extensions/view/111595/)
+
+
 **Your framework is missing? [Send us an e-mail](mailto:info@talesoft.io) and we'll get a bridge up and running as soon as possible!**
 
 A great thanks to the contributors of these modules!
@@ -311,18 +315,14 @@ A great thanks to the contributors of these modules!
 If you find a bug or miss a function, please use the [Issues](https://github.com/Talesoft/tale-jade/issues) on this page
 to tell us about it. We will gladly hear you out :)
 
+Don't forget to [support our work](https://www.paypal.me/TorbenKoehn) if you like it!
+
 If you'd like to contribute, fork us, send us pull requests and we'll take a deep look at what you've been working at!
 We're completely **Open Source**! You can do anything you like with our code as long as you stick to the
 **MIT-license** we've appended.
 
-You can also contact us via E-Mail.
+You can also contact us via E-Mail [info@talesoft.io](mailto:info@talesoft.io)
 
-If you're interested in other projects, you might contact us via E-Mail as well.
-
-**E-Mail: [info@talesoft.io](mailto:info@talesoft.io)**
-
-
-If you like what we created, [feel free to spend us a coffee!](https://www.paypal.me/TorbenKoehn)!
 
 **Thank you for using Tale Jade. Let us spread the Jade-language together!**
 

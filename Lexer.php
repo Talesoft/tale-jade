@@ -18,7 +18,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.7
+ * @version    1.4.0
  * @link       http://jade.talesoft.io/docs/files/Lexer.html
  * @since      File available since Release 1.0
  */
@@ -62,7 +62,7 @@ use Tale\Jade\Lexer\Exception;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.3.7
+ * @version    1.4.0
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Lexer.html
  * @since      File available since Release 1.0
  */
@@ -943,7 +943,7 @@ class Lexer
      *
      * @return \Generator
      */
-    protected function scanText()
+    protected function scanText($escaped = false)
     {
 
         foreach ($this->scanToken('text', "([^\n]*)") as $token) {
@@ -954,6 +954,7 @@ class Lexer
                 continue;
 
             $token['value'] = $value;
+            $token['escaped'] = $escaped;
             yield $token;
         }
     }
@@ -968,10 +969,10 @@ class Lexer
      *
      * @return \Generator
      */
-    protected function scanTextBlock()
+    protected function scanTextBlock($escaped = false)
     {
 
-        foreach ($this->scanText() as $token)
+        foreach ($this->scanText($escaped) as $token)
             yield $token;
 
         foreach ($this->scanNewLine() as $token)
@@ -994,14 +995,14 @@ class Lexer
                 yield $token;
             }
 
-            if ($level > 0) {
+            if ($level <= 0)
+                continue;
 
-                foreach ($this->scanText() as $token)
-                    yield $token;
+            foreach ($this->scanText($escaped) as $token)
+                yield $token;
 
-                foreach ($this->scanNewLine() as $token)
-                    yield $token;
-            }
+            foreach ($this->scanNewLine() as $token)
+                yield $token;
 
         } while (!$this->isAtEnd() && $level > 0);
     }
@@ -1015,11 +1016,12 @@ class Lexer
     protected function scanTextLine()
     {
 
-        if ($this->peek() !== '|')
+        if (!$this->match('([!]?)\|'))
             return;
 
-        $this->consume();
-        foreach ($this->scanTextBlock() as $token)
+        $this->consumeMatch();
+
+        foreach ($this->scanTextBlock($this->getMatch(1) === '!') as $token)
             yield $token;
     }
 
@@ -1464,10 +1466,20 @@ class Lexer
     protected function scanSub()
     {
 
-        if ($this->peek() === '.') {
+        //Escaped text after
+        if ($this->peek(2) === '! ') {
 
             $this->consume();
-            foreach ($this->scanTextBlock() as $token)
+
+            foreach ($this->scanText(true) as $token)
+                yield $token;
+        }
+
+        if ($this->match('([!]?)\.')) {
+
+            $this->consumeMatch();
+
+            foreach ($this->scanTextBlock($this->getMatch(1) === '!') as $token)
                 yield $token;
         }
 
