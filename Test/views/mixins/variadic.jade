@@ -1,0 +1,11 @@
+
+mixin item(title, ...items)
+
+    h1= $title
+    each $item in $items
+        item(name=$item['name'], id=$item['id'])
+
+
+
++item('Test 1', $items[0], $items[1], $items[3])
++item('Test 2', $items[4], $items[5], $items[6])

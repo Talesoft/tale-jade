@@ -14,9 +14,7 @@ class MixinTest extends \PHPUnit_Framework_TestCase
     {
 
         $this->_renderer = new Renderer([
-            'adapterOptions' => [
-                'path' => __DIR__.'/cache/mixins'
-            ],
+            'cachePath' => __DIR__.'/cache/mixins',
             'pretty' => false,
             'paths' => [__DIR__.'/views/mixins']
         ]);
@@ -62,5 +60,20 @@ class MixinTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('<button class="btn btn-default" id="someId">My Button Label</button>', $this->_renderer->render(
             'id-and-class-forwarding'
         ));
+    }
+
+    public function testVariadic()
+    {
+
+        $this->assertEquals('<h1>Test 1</h1><item name="Item 1" id="51"></item><item name="Item 2" id="52"></item><item name="Item 4" id="54"></item><h1>Test 2</h1><item name="Item 5" id="55"></item><item name="Item 6" id="56"></item><item name="Item 7" id="57"></item>', $this->_renderer->render('variadic', ['items' => [
+            ['name' => 'Item 1', 'id' => 51],
+            ['name' => 'Item 2', 'id' => 52],
+            ['name' => 'Item 3', 'id' => 53],
+            ['name' => 'Item 4', 'id' => 54],
+            ['name' => 'Item 5', 'id' => 55],
+            ['name' => 'Item 6', 'id' => 56],
+            ['name' => 'Item 7', 'id' => 57],
+            ['name' => 'Item 8', 'id' => 58],
+        ]]));
     }
 }

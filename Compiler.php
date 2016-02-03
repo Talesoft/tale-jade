@@ -201,6 +201,13 @@ class Compiler
     private $_level;
 
     /**
+     * Contains the current iterator ID to avoid name collisions.
+     *
+     * @var int
+     */
+    private $_iteratorId;
+
+    /**
      * Creates a new compiler instance.
      *
      * You can pass a modified parser or lexer.
@@ -441,6 +448,7 @@ class Compiler
         $this->_calledMixins = [];
         $this->_blocks = [];
         $this->_level = 0;
+        $this->_iteratorId = 0;
 
         //Parse the input into an AST
         $node = null;
@@ -1322,12 +1330,12 @@ class Compiler
 
             if ($variadicIndex !== null) {
 
-                $args[$variadicName] = "array_slice(\$__arguments, $variadicIndex);";
+                $args[$variadicName] = "array_slice(\$__arguments, $variadicIndex)";
             }
 
             $phtml .= $this->createCode(
                     '$__mixins[\''.$name.'\'] = function(array $__arguments) use($__args, $__mixins) {
-                        static $__defaults = '.$this->exportArray($args).';
+                        $__defaults = '.$this->exportArray($args).';
                         $__arguments = array_replace($__defaults, $__arguments);
                         $__args = array_replace($__args, $__arguments);
                         extract($__args);
@@ -1613,8 +1621,6 @@ class Compiler
     protected function compileEach(Node $node)
     {
 
-        static $id = 0;
-
         $subject = $node->subject;
 
         if ($this->isVariable($subject))
@@ -1625,7 +1631,7 @@ class Compiler
         if ($node->keyName)
             $as = "\${$node->keyName} => ".$as;
 
-        $var = '$__iterator'.($id++);
+        $var = '$__iterator'.($this->_iteratorId++);
         $phtml = $this->createCode("$var = {$subject};").$this->newLine();
         $phtml .= $this->indent().$this->createCode("foreach ($var as $as) {").$this->newLine();
         $phtml .= $this->compileChildren($node->children).$this->newLine();
