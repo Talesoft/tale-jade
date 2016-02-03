@@ -121,6 +121,28 @@ class EscapingTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('<a<?php $__value = $url; if (!\Tale\Jade\Compiler\is_null_or_false($__value)) echo \' href=\'.\Tale\Jade\Compiler\build_value($__value, \'"\', false); unset($__value);?>></a>', $this->_renderer->compile('a(href?!=$url)'));
     }
 
+    public function testUnescapedText()
+    {
+
+        $this->assertEquals('Some <b>Text</b>', $this->_renderer->compile('| Some <b>Text</b>'));
+        $this->assertEquals('<div>Some <b>Text</b></div>', $this->_renderer->compile('div Some <b>Text</b>'));
+        $this->assertEquals('<p>Some <b>Text</b> Some <i>further</i> text</p>', $this->_renderer->compile("p.\n\tSome <b>Text</b>\n\tSome <i>further</i> text"));
+    }
+
+    public function testEscapedText()
+    {
+
+        $this->assertEquals('<?=htmlentities(\'Some <b>Text</b>\', \ENT_QUOTES, \'UTF-8\')?>', $this->_renderer->compile('!| Some <b>Text</b>'));
+        $this->assertEquals('<div><?=htmlentities(\'Some <b>Text</b>\', \ENT_QUOTES, \'UTF-8\')?></div>', $this->_renderer->compile('div! Some <b>Text</b>'));
+        $this->assertEquals('<p><?=htmlentities(\'Some <b>Text</b>\', \ENT_QUOTES, \'UTF-8\')?> <?=htmlentities(\'Some <i>further</i> text\', \ENT_QUOTES, \'UTF-8\')?></p>', $this->_renderer->compile("p!.\n\tSome <b>Text</b>\n\tSome <i>further</i> text"));
+    }
+
+    public function testInterpolationInEscapedText()
+    {
+
+        $this->assertEquals('<p><?=htmlentities(\'This is some text \'.(isset($var[\'some var\']) ? $var[\'some var\'] : \'\').\' <a href="abc"></a>\', \ENT_QUOTES, \'UTF-8\')?></p>', $this->_renderer->compile('p! This is some text !{$var[\'some var\']} #[a(href!=\'abc\')]'));
+    }
+
     public function testNewLineEscaping()
     {
         $this->assertEquals("<input value=\"Line 1\nLine 2\">", $this->_renderer->compile('input(value="Line 1\nLine 2")'));

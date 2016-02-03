@@ -146,27 +146,6 @@ class Parser
     private $_mixinLevel;
 
     /**
-     * States if we're in a text block or not.
-     *
-     * @var bool
-     */
-    private $_inTextBlock;
-
-    /**
-     * The level our text-block is on
-     *
-     * @var int
-     */
-    private $_textBlockLevel;
-
-    /**
-     * States wether we escape all text tokens until the next outdent or not.
-     *
-     * @var bool
-     */
-    private $_escapeText;
-
-    /**
      * Stores an expanded node to attach it to the expanding node later.
      *
      * @var Node
@@ -796,16 +775,6 @@ class Parser
             $this->_current = $node;
     }
 
-    protected function handleTextBlock(array $token)
-    {
-
-        if ($token['escaped'])
-            $this->_escapeText = true;
-
-        $this->_inTextBlock = true;
-        $this->_textBlockLevel = $this->_level;
-    }
-
     /**
      * Handles an <code>-token into an code-node.
      *
@@ -1157,6 +1126,7 @@ class Parser
         $node = $this->createNode('text', $token);
         $node->value = $token['value'];
         $node->level = $token['level'];
+        $node->escaped = $token['escaped'];
 
         if ($this->_current) {
 
