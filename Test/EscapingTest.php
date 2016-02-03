@@ -140,7 +140,7 @@ class EscapingTest extends \PHPUnit_Framework_TestCase
     public function testInterpolationInEscapedText()
     {
 
-        $this->assertEquals('<p><?=htmlentities(\'This is some text \'.(isset($var[\'some var\']) ? $var[\'some var\'] : \'\').\' <a href="abc"></a>\', \ENT_QUOTES, \'UTF-8\')?></p>', $this->_renderer->compile('p! This is some text !{$var[\'some var\']} #[a(href!=\'abc\')]'));
+        $this->assertEquals('<p><?=htmlentities(\'This is some text \'.(isset($var[\'some var\']) ? $var[\'some var\'] : \'\').\' <a href="abc"></a>\', \ENT_QUOTES, \'UTF-8\')?></p>', $this->_renderer->compile('p! This is some text !{$var[\'some var\']}#[a(href!=\'abc\')]'));
     }
 
     public function testNewLineEscaping()

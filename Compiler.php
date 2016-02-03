@@ -127,6 +127,10 @@ class Compiler
      */
     const MODE_XHTML = 2;
 
+    const EXPORT_IN_STRING = 1;
+    const EXPORT_UNCHECKED = 2;
+    const EXPORT_ESCAPED = 4;
+
     /**
      * The lexer that is given to the parser.
      *
@@ -616,10 +620,13 @@ class Compiler
      *
      * @return string
      */
-    protected function compileScalar($value, $inCode = false)
+    protected function compileScalar($value, $quoteStyle = '\'', $inCode = false)
     {
 
         $sequences = $this->_options['escapeSequences'];
+
+        $sequences['\\'.$quoteStyle] = $quoteStyle;
+        $sequences[$quoteStyle] = '\\'.$quoteStyle;
 
         return $this->interpolate(trim(str_replace(array_keys($sequences), $sequences, $value), '\'"'), $inCode);
     }
@@ -2209,6 +2216,36 @@ class Compiler
         return '['.implode(', ', $pairs).']';
     }
 
+    protected function exportValue($value, $quoteStyle = null, $flags = null)
+    {
+
+        $quoteStyle = $quoteStyle ? $quoteStyle : null;
+        $flags = $flags !== null ? $flags : 0;
+
+        if (is_array($value))
+            return $this->exportArray($value, $quoteStyle, $flags);
+
+        $charSet = $quoteStyle.$this->_options['escapeCharset'].$quoteStyle;
+        $escape = sprintf('htmlentities(%s, \\ENT_QUOTES, %s)', '%s)', $charSet);
+
+        $isVariable = $this->isVariable($value);
+        if ($isVariable || !$this->isScalar($value)) {
+
+            if ($isVariable && ($flags & self::EXPORT_UNCHECKED) !== 0)
+                $value = sprintf('isset(%s) ? %s : null', $value);
+
+            if (($flags & self::EXPORT_ESCAPED) !== 0)
+                $value = sprintf($escape, $value);
+
+            if (($flags & self::EXPORT_IN_STRING) !== 0) {
+
+                return "$quoteStyle.($value).$quoteStyle";
+            }
+
+            return $this->createShortCode($value);
+        }
+    }
+
     /**
      * Exports a scalar value to the PHP representation.
      *
@@ -2225,21 +2262,7 @@ class Compiler
     protected function exportScalar($scalar, $quoteStyle = '\'', $inCode = false)
     {
 
-        if ($scalar === 'null' || $scalar === null)
-            return 'null';
 
-        if ($scalar === 'false' || $scalar === false)
-            return 'false';
-
-        if ($scalar === 'true' || $scalar === true)
-            return 'true';
-
-        $scalar = trim($scalar, '\'"');
-
-        if (is_numeric($scalar))
-            return $scalar;
-
-        return $quoteStyle.$this->compileScalar($scalar, $inCode).$quoteStyle;
     }
 
     /**
