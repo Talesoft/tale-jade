@@ -1464,9 +1464,17 @@ class Lexer
     protected function scanSub()
     {
 
-        if ($this->peek() === '.') {
+        if ($this->match('([!]?)\.')) {
 
-            $this->consume();
+            $this->consumeMatch();
+            $token = $this->createToken('textBlock');
+            $token['escaped'] = false;
+
+            if ($this->getMatch(1) === '!')
+                $token['escaped'] = true;
+
+            yield $token;
+
             foreach ($this->scanTextBlock() as $token)
                 yield $token;
         }
