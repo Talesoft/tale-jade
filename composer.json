@@ -36,6 +36,7 @@
         },
         "files": [
             "functions.php",
+            "Lexer/functions.php",
             "Compiler/functions.php"
         ]
     },

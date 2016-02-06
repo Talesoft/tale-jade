@@ -28,6 +28,19 @@ namespace Tale\Jade;
 use RuntimeException;
 use Tale\ConfigurableTrait;
 use Tale\Jade\Lexer\Exception;
+use Tale\Jade\Lexer\Reader;
+use Tale\Jade\Lexer\Scanner\BlockScanner;
+use Tale\Jade\Lexer\Scanner\CaseScanner;
+use Tale\Jade\Lexer\Scanner\CommentScanner;
+use Tale\Jade\Lexer\Scanner\FilterScanner;
+use Tale\Jade\Lexer\Scanner\ImportScanner;
+use Tale\Jade\Lexer\Scanner\IndentationScanner;
+use Tale\Jade\Lexer\Scanner\MarkupScanner;
+use Tale\Jade\Lexer\Scanner\NewLineScanner;
+use Tale\Jade\Lexer\Scanner\TextLineScanner;
+use Tale\Jade\Lexer\Scanner\TextScanner;
+use Tale\Jade\Lexer\ScannerInterface;
+use Tale\Jade\Lexer\TokenInterface;
 
 /**
  * Performs lexical analysis and provides a token generator.
@@ -70,52 +83,13 @@ class Lexer
 {
     use ConfigurableTrait;
 
-    /**
-     * Tab Indentation (\t)
-     */
+    const INDENT_SPACE = ' ';
     const INDENT_TAB = "\t";
 
     /**
-     * Space Indentation ( )
+     * @var Reader
      */
-    const INDENT_SPACE = ' ';
-
-    /**
-     * The current input string.
-     *
-     * @var string
-     */
-    private $_input;
-
-    /**
-     * The total length of the current input.
-     *
-     * @var int
-     */
-    private $_length;
-
-    /**
-     * The current position inside the input string.
-     *
-     * @var int
-     */
-    private $_position;
-
-    /**
-     * The current line we are on.
-     *
-     * @var int
-     */
-    private $_line;
-
-    /**
-     * The current offset in a line we are on.
-     *
-     * Resets on each new line and increases on each read character
-     *
-     * @var int
-     */
-    private $_offset;
+    private $_reader;
 
     /**
      * The current indentation level we are on.
@@ -123,39 +97,6 @@ class Lexer
      * @var int
      */
     private $_level;
-
-    /**
-     * The current indentation character.
-     *
-     * @var string
-     */
-    private $_indentStyle;
-
-    /**
-     * The width of the indentation.
-     *
-     * Specifies how often $_indentStyle
-     * is repeated for each $_level
-     *
-     * @var string
-     */
-    private $_indentWidth;
-
-    /**
-     * The last result gotten via ->peek().
-     *
-     * @see Lexer->peek
-     * @var string
-     */
-    private $_lastPeekResult;
-
-    /**
-     * The last matches gotten via ->match()
-     *
-     * @see Lexer->match
-     * @var array
-     */
-    private $_lastMatches;
 
     /**
      * Creates a new lexer instance.
@@ -166,7 +107,7 @@ class Lexer
      *
      * indentStyle:     The indentation character (auto-detected)
      * indentWidth:     How often to repeat indentStyle (auto-detected)
-     * encoding:        The encoding when working with mb_*-functions (Default: UTF-8)
+     * encoding:        The encoding when working with mb_*-functions (auto-detected)
      * scans:           An array of scans that will be performed
      *
      * Passing an indentation-style forces you to stick to that style.
@@ -188,7 +129,18 @@ class Lexer
         $this->defineOptions([
             'indentStyle' => null,
             'indentWidth' => null,
-            'encoding'    => mb_internal_encoding(),
+            'encoding'    => Lexer\get_internal_encoding(),
+            'scanners' => [
+                NewLineScanner::class, IndentationScanner::class,
+                ImportScanner::class,
+                BlockScanner::class,
+                CaseScanner::class,
+                CommentScanner::class, FilterScanner::class,
+
+                MarkupScanner::class,
+                TextLineScanner::class,
+                TextScanner::class
+            ],
             'scans'       => [
                 'newLine', 'indent',
                 'import',
@@ -208,73 +160,22 @@ class Lexer
             ]
         ], $options);
 
-        //Validate options
-        if (!in_array($this->_options['indentStyle'], [null, self::INDENT_TAB, self::INDENT_SPACE]))
-            throw new RuntimeException(
-                "indentStyle needs to be null or one of the INDENT_* constants of the lexer"
-            );
+        $this->_reader = null;
+        $this->_level = 0;
 
-        if (!is_null($this->_options['indentWidth']) &&
-            (!is_int($this->_options['indentWidth']) || $this->_options['indentWidth'] < 1)
-        )
-            throw new RuntimeException(
-                "indentWidth needs to be a integer above 0"
-            );
+        $this->validateIndentStyle($this->_options['indentStyle']);
+        $this->validateIndentWidth($this->_options['indentWidth']);
+
+        foreach ($this->_options['scanners'] as $scanner)
+            $this->validateScanner($scanner);
     }
 
     /**
-     * Returns the current input-string worked on.
-     *
-     * @return string
+     * @return Reader
      */
-    public function getInput()
+    public function getReader()
     {
-
-        return $this->_input;
-    }
-
-    /**
-     * Returns the total length of the current input-string.
-     *
-     * @return int
-     */
-    public function getLength()
-    {
-
-        return $this->_length;
-    }
-
-    /**
-     * Returns the total position in the current input-string.
-     *
-     * @return int
-     */
-    public function getPosition()
-    {
-
-        return $this->_position;
-    }
-
-    /**
-     * Returns the line we are working on in the current input-string.
-     *
-     * @return int
-     */
-    public function getLine()
-    {
-
-        return $this->_line;
-    }
-
-    /**
-     * Gets the offset on a line (Line-start is 0) in the current input-string.
-     *
-     * @return int
-     */
-    public function getOffset()
-    {
-
-        return $this->_offset;
+        return $this->_reader;
     }
 
     /**
@@ -288,6 +189,35 @@ class Lexer
         return $this->_level;
     }
 
+    public function setLevel($level)
+    {
+
+        if (!is_int($level))
+            $this->throwException(
+                "Level needs to be an integer"
+            );
+
+        $this->_level = $level;
+
+        return $this;
+    }
+
+    public function increaseLevel()
+    {
+
+        $this->_level++;
+
+        return $this;
+    }
+
+    public function decreaseLevel()
+    {
+
+        $this->_level--;
+
+        return $this;
+    }
+
     /**
      * Returns the detected or previously passed indentation style.
      *
@@ -296,7 +226,16 @@ class Lexer
     public function getIndentStyle()
     {
 
-        return $this->_indentStyle;
+        return $this->_options['indentStyle'];
+    }
+
+    public function setIndentStyle($indentStyle)
+    {
+
+        $this->validateIndentStyle($indentStyle);
+        $this->_options['indentStyle'] = $indentStyle;
+
+        return $this;
     }
 
     /**
@@ -307,31 +246,60 @@ class Lexer
     public function getIndentWidth()
     {
 
-        return $this->_indentWidth;
+        return $this->_options['indentWidth'];
     }
 
-    /**
-     * Returns the last result of ->peek().
-     *
-     * @see Lexer->peek
-     * @return string|null
-     */
-    public function getLastPeekResult()
+    public function setIndentWidth($indentWidth)
     {
 
-        return $this->_lastPeekResult;
+        $this->validateIndentWidth($indentWidth);
+        $this->_options['indentWidth'] = $indentWidth;
+
+        return $this;
     }
 
-    /**
-     * Returns the last array of matches through ->match.
-     *
-     * @see Lexer->match
-     * @return array|null
-     */
-    public function getLastMatches()
+    public function addScanner($scanner)
     {
 
-        return $this->_lastMatches;
+        $this->validateScanner($scanner);
+
+        $this->_options['scanners'][] = $scanner;
+
+        return $this;
+    }
+
+    public function validateScanner($scanner)
+    {
+
+        if (!is_subclass_of($scanner, ScannerInterface::class)) {
+
+            if (is_object($scanner))
+                $scanner = get_class($scanner);
+
+            $this->throwException(
+                "Scanner $scanner is not a valid ".ScannerInterface::class
+            );
+        }
+    }
+
+    public function validateIndentStyle($indentStyle)
+    {
+
+        if (!in_array($indentStyle, [null, self::INDENT_TAB, self::INDENT_SPACE]))
+            $this->throwException(
+                "indentStyle needs to be null or one of the INDENT_* constants of the lexer"
+            );
+    }
+
+    public function validateIndentWidth($indentWidth)
+    {
+
+        if (!is_null($this->_options['indentWidth']) &&
+            (!is_int($this->_options['indentWidth']) || $this->_options['indentWidth'] < 1)
+        )
+            $this->throwException(
+                "indentWidth needs to be null or an integer above 0"
+            );
     }
 
     /**
@@ -358,355 +326,15 @@ class Lexer
     public function lex($input)
     {
 
-        $this->_input = rtrim(str_replace([
-                "\r", "\0"
-            ], '', $input))."\n";
-        $this->_length = $this->strlen($this->_input);
-        $this->_position = 0;
-
-        $this->_line = 1;
-        $this->_offset = 0;
+        $this->_reader = new Reader($input, $this->_options['encoding']);
+        $this->_reader->normalize();
         $this->_level = 0;
 
-        $this->_indentStyle = $this->_options['indentStyle'];
-        $this->_indentWidth = $this->_options['indentWidth'];
-
-        $this->_lastPeekResult = null;
-        $this->_lastMatches = null;
-
-        foreach ($this->scanFor($this->_options['scans'], true) as $token)
+        foreach ($this->loopScan($this->_options['scanners']) as $token)
             yield $token;
-    }
 
-    /**
-     * Dumps jade-input into a set of string-represented tokens.
-     *
-     * This makes debugging the lexer easier.
-     *
-     * @param string $input the jade input to dump the tokens of
-     */
-    public function dump($input)
-    {
-
-        foreach ($this->lex($input) as $token) {
-
-            $type = $token['type'];
-            $line = $token['line'];
-            $offset = $token['offset'];
-            unset($token['type'], $token['line'], $token['offset']);
-
-            echo "[$type($line:$offset)";
-            $vals = implode(', ', array_map(function ($key, $value) {
-
-                return "$key=$value";
-            }, array_keys($token), $token));
-
-            if (!empty($vals))
-                echo " $vals";
-
-            echo ']';
-
-            if ($type === 'newLine')
-                echo "\n";
-        }
-    }
-
-    /**
-     * Checks if our read pointer is at the end of the code.
-     *
-     * @return bool
-     */
-    protected function isAtEnd()
-    {
-
-        return $this->_position >= $this->_length;
-    }
-
-    /**
-     * Shows the next characters in our input.
-     *
-     * Pass a $length to get more than one character.
-     * The character's _won't_ be consumed here, they are just shown.
-     * The position pointer won't be moved forward
-     *
-     * The result gets saved in $_lastPeekResult
-     *
-     * @param int $length the length of the string we want to peek on
-     *
-     * @return string the peeked string
-     */
-    protected function peek($length = 1)
-    {
-
-        $this->_lastPeekResult = $this->substr($this->_input, 0, $length);
-
-        return $this->_lastPeekResult;
-    }
-
-    /**
-     * Consumes a length or the length of the last peeked string.
-     *
-     * Internally $input = substr($input, $length) is done,
-     * so everything _before_ the consumed length will be cut off and
-     * removed from the RAM (since we probably tokenized it already,
-     * remember? sequential shit etc.?)
-     *
-     * @see Lexer->peek
-     *
-     * @param int|null $length the length to consume or null, to use the length of the last peeked string
-     *
-     * @return $this
-     * @throws Exception
-     */
-    protected function consume($length = null)
-    {
-
-        if ($length === null) {
-
-            if ($this->_lastPeekResult === null)
-                $this->throwException(
-                    "Failed to consume: Nothing has been peeked and you"
-                    ." didnt pass a length to consume"
-                );
-
-            $length = $this->strlen($this->_lastPeekResult);
-        }
-
-        $this->_input = $this->substr($this->_input, $length);
-        $this->_position += $length;
-        $this->_offset += $length;
-
-        return $this;
-    }
-
-    /**
-     * Peeks and consumes chars until the passed callback returns false.
-     *
-     * The callback takes the current character as the first argument.
-     *
-     * This works great with ctype_*-functions
-     *
-     * If the last character doesn't match, it also won't be consumed
-     * You can always go on reading right after a call to ->read()
-     *
-     * e.g.
-     * $alNumString = $this->read('ctype_alnum')
-     * $spaces = $this->read('ctype_space')
-     *
-     * @param callable $callback the callback to check the current character against
-     * @param int      $length   the length to peek. This will also increase the length of the characters passed to the callback
-     *
-     * @return string the read string
-     * @throws \Exception
-     */
-    protected function read($callback, $length = 1)
-    {
-
-        if (!is_callable($callback))
-            throw new \Exception(
-                "Argument 1 passed to peekWhile needs to be callback"
-            );
-
-        $result = '';
-        while (!$this->isAtEnd() && $callback($this->peek($length))) {
-
-            //Keep $_line and $_offset updated
-            $newLines = $this->substr_count($this->_lastPeekResult, "\n");
-            $this->_line += $newLines;
-
-            if ($newLines) {
-
-                if (strlen($this->_lastPeekResult) === 1)
-                    $this->_offset = 0;
-                else {
-
-                    $parts = explode("\n", $this->_lastPeekResult);
-                    $this->_offset = strlen($parts[count($parts) - 1]) - 1;
-                }
-            }
-
-            $this->consume();
-            $result .= $this->_lastPeekResult;
-        }
-
-        return $result;
-    }
-
-    /**
-     * Reads all TAB (\t) and SPACE ( ) chars until something else is found.
-     *
-     * This is primarily used to parse the indentation
-     * at the begin of each line.
-     *
-     * @return string the spaces that have been found
-     * @throws Exception
-     */
-    protected function readSpaces()
-    {
-
-        return $this->read(function ($char) {
-
-            return $char === self::INDENT_SPACE || $char === self::INDENT_TAB;
-        });
-    }
-
-    /**
-     * Reads a "value", 'value' or value style string really gracefully.
-     *
-     * It will stop on all chars passed to $breakChars as well as a closing ')'
-     * when _not_ inside an expression initiated with either
-     * ", ', (, [ or {.
-     *
-     * $breakChars might be [','] as an example to read sequential arguments
-     * into an array. Scan for ',', skip spaces, repeat readBracketContents
-     *
-     * Brackets are counted, strings are respected.
-     *
-     * Inside a " string, \" escaping is possible, inside a ' string, \' escaping
-     * is possible
-     *
-     * As soon as a ) is found and we're outside a string and outside any kind of bracket,
-     * the reading will stop and the value, including any quotes, will be returned
-     *
-     * Examples:
-     * ('`' marks the parts that are read, understood and returned by this function)
-     *
-     * <samp>
-     *      (arg1=`abc`, arg2=`"some expression"`, `'some string expression'`)
-     *      some-mixin(`'some arg'`, `[1, 2, 3, 4]`, `(isset($complex) ? $complex : 'complex')`)
-     *      and even
-     *      some-mixin(callback=`function($input) { return trim($input, '\'"'); }`)
-     * </samp>
-     *
-     * @param array|null $breakChars the chars to break on.
-     *
-     * @return string the (possibly quote-enclosed) result string
-     */
-    protected function readBracketContents(array $breakChars = null)
-    {
-
-        $breakChars = $breakChars ? $breakChars : [];
-        $value = '';
-        $prev = null;
-        $char = null;
-        $level = 0;
-        $inString = false;
-        $stringType = null;
-        $finished = false;
-        while (!$this->isAtEnd() && !$finished) {
-
-            if ($this->isAtEnd())
-                break;
-
-            $prev = $char;
-            $char = $this->peek();
-
-            switch ($char) {
-                case '"':
-                case '\'':
-
-                    if ($inString && $stringType === $char && $prev !== '\\')
-                        $inString = false;
-                    else if (!$inString) {
-
-                        $inString = true;
-                        $stringType = $char;
-                    }
-                    break;
-                case '(':
-                case '[':
-                case '{':
-
-                    if (!$inString)
-                        $level++;
-                    break;
-                case ')':
-                case ']':
-                case '}':
-
-                    if ($inString)
-                        break;
-
-                    if ($level === 0) {
-
-                        $finished = true;
-                        break;
-                    }
-
-                    $level--;
-                    break;
-            }
-
-            if (in_array($char, $breakChars, true) && !$inString && $level === 0)
-                $finished = true;
-
-            if (!$finished) {
-
-                $value .= $char;
-                $this->consume();
-            }
-        }
-
-        return trim($value);
-    }
-
-    /**
-     * Matches a pattern against the start of the current $input.
-     *
-     * Notice that this always takes the start of the current pointer
-     * position as a reference, since `consume` means cutting of the front
-     * of the input string
-     *
-     * After a match was successful, you can retrieve the matches
-     * with ->getMatch() and consume the whole match with ->consumeMatch()
-     *
-     * ^ gets automatically prepended to the pattern (since it makes no sense
-     * for a sequential lexer to search _inside_ the input)
-     *
-     * @param string $pattern   the regular expression without delimeters and a ^-prefix
-     * @param string $modifiers the usual PREG RegEx-modifiers
-     *
-     * @return bool
-     */
-    protected function match($pattern, $modifiers = '')
-    {
-
-        return preg_match(
-            "/^$pattern/$modifiers",
-            $this->_input,
-            $this->_lastMatches
-        ) ? true : false;
-    }
-
-    /**
-     * Consumes a match previously read and matched by ->match().
-     *
-     * @see Lexer->match
-     * @return $this
-     */
-    protected function consumeMatch()
-    {
-
-        //Make sure we don't consume matched newlines (We match for them sometimes)
-        //We need the newLine tokens and don't want them consumed here.
-        $match = $this->_lastMatches[0] !== "\n" ? rtrim($this->_lastMatches[0], "\n") : $this->_lastMatches[0];
-
-        return $this->consume($this->strlen($match));
-    }
-
-    /**
-     * Gets a match from the last ->match() call
-     *
-     * @see Lexer->match
-     *
-     * @param int|string $index the index of the usual PREG $matches argument
-     *
-     * @return mixed|null the value of the match or null, if none found
-     */
-    protected function getMatch($index)
-    {
-
-        return isset($this->_lastMatches[$index]) ? $this->_lastMatches[$index] : null;
+        $this->_reader = null;
+        $this->_level = 0;
     }
 
     /**
@@ -718,43 +346,72 @@ class Lexer
      * The passed scans get converted to methods
      * e.g. newLine => scanNewLine, blockExpansion => scanBlockExpansion etc.
      *
-     * @param array      $scans          the scans to perform
-     * @param bool|false $throwException throw an exception if no tokens in $scans found anymore
+     * @param array|string      $scanners          the scans to perform
+     * @param bool|false $required throw an exception if no tokens in $scans found anymore
      *
      * @return \Generator the generator yielding all tokens found
      * @throws Exception
      */
-    protected function scanFor(array $scans, $throwException = false)
+    public function scan($scanners)
     {
 
-        while (!$this->isAtEnd()) {
+        if (!$this->_reader)
+            $this->throwException(
+                "You need to be inside a lexing process to scan"
+            );
 
-            $found = false;
-            foreach ($scans as $name) {
+        $scanners = is_array($scanners) ? $scanners : [$scanners];
+        foreach ($scanners as $scanner) {
 
-                foreach (call_user_func([$this, 'scan'.ucfirst($name)]) as $token) {
+            $this->validateScanner($scanner);
 
-                    $found = true;
-                    yield $token;
-                }
+            /** @var ScannerInterface $scanner */
+            //var_dump("-> scan(".basename($scanner, 'Scanner').") -> [".$this->_reader->peek(10)."]");
+            $scanner = is_string($scanner) ? new $scanner() : $scanner;
+            $success = false;
+            foreach ($scanner->scan($this) as $token) {
 
-                if ($found)
-                    continue 2;
+                if (!($token instanceof TokenInterface))
+                    $this->throwException(
+                        "Scanner generator result is not a ".TokenInterface::class
+                    );
+
+                yield $token;
+                $success = true;
             }
+            $scanner = null;
 
-            $spaces = $this->readSpaces();
-            if (!empty($spaces) && !$this->isAtEnd())
-                continue;
-
-            if ($throwException) {
-
-                $this->throwException(
-                    'Unexpected `'.htmlentities($this->peek(20), \ENT_QUOTES).'`, '
-                    .implode(', ', $scans).' expected'
-                );
-            } else
+            if ($success)
                 return;
         }
+    }
+
+    public function loopScan($scanners, $required = false)
+    {
+
+        if (!$this->_reader)
+            $this->throwException(
+                "You need to be inside a lexing process to scan"
+            );
+
+        //var_dump("loopScan(".implode(',', array_map('basename', $scanners, array_fill(0, count($scanners), 'Scanner'))).')');
+        while ($this->_reader->hasLength()) {
+
+            $success = false;
+            foreach ($this->scan($scanners) as $token) {
+
+                $success = true;
+                yield $token;
+            }
+
+            if (!$success)
+                break;
+        }
+
+        if ($this->_reader->hasLength() && $required)
+            $this->throwException(
+                "Unexpected ".$this->_reader->peek(20)
+            );
     }
 
     /**
@@ -774,381 +431,49 @@ class Lexer
      *
      * @return array the token array
      */
-    protected function createToken($type)
+    public function createToken($className)
     {
 
-        return [
-            'type'   => $type,
-            'line'   => $this->_line,
-            'level'  => $this->_level,
-            'offset' => $this->_offset
-        ];
-    }
-
-    /**
-     * Scans for a specific token-type based on a pattern
-     * and converts it to a valid token automatically.
-     *
-     * All matches that have a name (RegEx (?<name>...)-directive
-     * will directly get a key with that name and value
-     * on the token array
-     *
-     * For matching, ->match() is used internally
-     *
-     * @see Lexer->match
-     *
-     * @param string $type      the token type to create, if matched
-     * @param string $pattern   the pattern to match
-     * @param string $modifiers the regex-modifiers for the pattern
-     *
-     * @return \Generator
-     */
-    protected function scanToken($type, $pattern, $modifiers = '')
-    {
-
-        if (!$this->match($pattern, $modifiers))
-            return;
-
-        $this->consumeMatch();
-        $token = $this->createToken($type);
-        foreach ($this->_lastMatches as $key => $value) {
-
-            //We append all STRING-Matches (?<name>) to the token
-            if (is_string($key)) {
-
-                $token[$key] = empty($value) ? null : $value;
-            }
-        }
-
-        yield $token;
-    }
-
-    /**
-     * Scans for indentation and automatically keeps
-     * the $_level updated through all tokens.
-     *
-     * Upon reaching a higher level, an <indent>-token is
-     * yielded, upon reaching a lower level, an <outdent>-token is yielded
-     *
-     * If you outdented 3 levels, 3 <outdent>-tokens are yielded
-     *
-     * The first indentation this function encounters will be used
-     * as the indentation style for this document.
-     *
-     * You can indent with everything between 1 space and a few million tabs
-     * other than most Jade implementations
-     *
-     * @return \Generator|void
-     * @throws Exception
-     */
-    protected function scanIndent()
-    {
-
-        if ($this->_offset !== 0 || !$this->match("([\t ]*)"))
-            return;
-
-        $this->consumeMatch();
-        $indent = $this->getMatch(1);
-
-        //If this is an empty line, we ignore the indentation completely.
-        foreach ($this->scanNewLine() as $token) {
-
-            yield $token;
-
-            return;
-        }
-
-        $oldLevel = $this->_level;
-        if (!empty($indent)) {
-
-            $spaces = $this->strpos($indent, ' ') !== false;
-            $tabs = $this->strpos($indent, "\t") !== false;
-            $mixed = $spaces && $tabs;
-
-            if ($mixed) {
-
-                switch ($this->_indentStyle) {
-                    case self::INDENT_SPACE:
-                    default:
-
-                        //Convert tabs to spaces based on indentWidth
-                        $spaces = str_replace(self::INDENT_TAB, str_repeat(
-                            self::INDENT_SPACE,
-                            $this->_indentWidth ? $this->_indentWidth : 4
-                        ), $spaces);
-                        $tabs = false;
-                        $mixed = false;
-                        break;
-                    case self::INDENT_TAB:
-
-                        //Convert spaces to tabs
-                        $spaces = str_replace(self::INDENT_SPACE, str_repeat(
-                            self::INDENT_TAB,
-                            $this->_indentWidth ? $this->_indentWidth : 1
-                        ), $spaces);
-                        $spaces = false;
-                        $mixed = false;
-                        break;
-                }
-            }
-
-            //Validate the indentation style
-            $this->_indentStyle = $tabs ? self::INDENT_TAB : self::INDENT_SPACE;
-
-            //Validate the indentation width
-            if (!$this->_indentWidth)
-                //We will use the pretty first indentation as our indent width
-                $this->_indentWidth = $this->strlen($indent);
-
-            $this->_level = intval(round($this->strlen($indent) / $this->_indentWidth));
-
-            if ($this->_level > $oldLevel + 1)
-                $this->_level = $oldLevel + 1;
-        } else
-            $this->_level = 0;
-
-        $levels = $this->_level - $oldLevel;
-
-        //Unchanged levels
-        if (!empty($indent) && $levels === 0)
-            return;
-
-        //We create a token for each indentation/outdentation
-        $type = $levels > 0 ? 'indent' : 'outdent';
-        $levels = abs($levels);
-
-        while ($levels--)
-            yield $this->createToken($type);
-    }
-
-    /**
-     * Scans for a new-line character and yields a <newLine>-token if found.
-     *
-     * @return \Generator
-     */
-    protected function scanNewLine()
-    {
-
-        foreach ($this->scanToken('newLine', "\n") as $token) {
-
-            $this->_line++;
-            $this->_offset = 0;
-            yield $token;
-        }
-    }
-
-    /**
-     * Scans for text until the end of the current line
-     * and yields a <text>-token if found.
-     *
-     * @return \Generator
-     */
-    protected function scanText($escaped = false)
-    {
-
-        foreach ($this->scanToken('text', "([^\n]*)") as $token) {
-
-            $value = trim($this->getMatch(1));
-
-            if (empty($value))
-                continue;
-
-            $token['value'] = $value;
-            $token['escaped'] = $escaped;
-            yield $token;
-        }
-    }
-
-
-    /**
-     * Scans for text and keeps scanning text, if you indent once
-     * until it is outdented again (e.g. .-text-blocks, expressions, comments).
-     *
-     * Yields anything between <text>, <newLine>, <indent> and <outdent> tokens
-     * it encounters
-     *
-     * @return \Generator
-     */
-    protected function scanTextBlock($escaped = false)
-    {
-
-        foreach ($this->scanText($escaped) as $token)
-            yield $token;
-
-        foreach ($this->scanNewLine() as $token)
-            yield $token;
-
-        if ($this->isAtEnd())
-            return;
-
-        $level = 0;
-        do {
-
-            foreach ($this->scanFor(['newLine', 'indent']) as $token) {
-
-                if ($token['type'] === 'indent')
-                    $level++;
-
-                if ($token['type'] === 'outdent')
-                    $level--;
-
-                yield $token;
-            }
-
-            if ($level <= 0)
-                continue;
-
-            foreach ($this->scanText($escaped) as $token)
-                yield $token;
-
-            foreach ($this->scanNewLine() as $token)
-                yield $token;
-
-        } while (!$this->isAtEnd() && $level > 0);
-    }
-
-    /**
-     * Scans for a |-style text-line and yields it along
-     * with a text-block, if it has any.
-     *
-     * @return \Generator
-     */
-    protected function scanTextLine()
-    {
-
-        if (!$this->match('([!]?)\|'))
-            return;
-
-        $this->consumeMatch();
-
-        foreach ($this->scanTextBlock($this->getMatch(1) === '!') as $token)
-            yield $token;
-    }
-
-    /**
-     * Scans for HTML-markup based on a starting '<'.
-     *
-     * The whole markup will be kept and yielded
-     * as a <text>-token
-     *
-     * @return \Generator
-     */
-    protected function scanMarkup()
-    {
-
-        if ($this->peek() !== '<')
-            return;
-
-        foreach ($this->scanText() as $token)
-            yield $token;
-    }
-
-    /**
-     * Scans for //-? comments yielding a <comment>
-     * token if found as well as a stack of text-block tokens.
-     *
-     * @return \Generator
-     */
-    protected function scanComment()
-    {
-
-        if (!$this->match("\\/\\/(-)?[\t ]*"))
-            return;
-
-        $this->consumeMatch();
-
-        $token = $this->createToken('comment');
-        $token['rendered'] = $this->getMatch(1) ? false : true;
-
-        yield $token;
-
-        foreach ($this->scanTextBlock() as $token)
-            yield $token;
-    }
-
-    /**
-     * Scans for :<filterName>-style filters and yields
-     * a <filter> token if found.
-     *
-     * Filter-tokens always have:
-     * name, which is the name of the filter
-     *
-     * @return \Generator
-     */
-    protected function scanFilter()
-    {
-
-        foreach ($this->scanToken('filter', ':(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*)') as $token) {
-
-            yield $token;
-
-            foreach ($this->scanTextBlock() as $subToken)
-                yield $subToken;
-        }
-    }
-
-    /**
-     * Scans for imports and yields an <import>-token if found.
-     *
-     * Import-tokens always have:
-     * importType, which is either "extends" or "include
-     * path, the (relative) path to which the import points
-     *
-     * Import-tokens may have:
-     * filter, which is an optional filter that should be only
-     *         usable on "include"
-     *
-     * @return \Generator
-     */
-    protected function scanImport()
-    {
-
-        return $this->scanToken(
-            'import',
-            '(?<importType>extends|include)(?::(?<filter>[a-zA-Z_][a-zA-Z0-9\-_]*))?[\t ]+(?<path>[a-zA-Z0-9\-_\\/\. ]+)'
+        if (!$this->_reader)
+            $this->throwException(
+                "You need to be inside a lexing process to create lexer tokens"
+            );
+
+        if (!is_subclass_of($className, TokenInterface::class))
+            $this->throwException(
+                "$className is not a valid token class"
+            );
+
+        return new $className(
+            $this->_reader->getLine(),
+            $this->_reader->getOffset(),
+            $this->_level
         );
     }
 
-    /**
-     * Scans for <block>-tokens.
-     *
-     * Blocks can have three styles:
-     * block append|prepend|replace name
-     * append|prepend|replace name
-     * or simply
-     * block (for mixin blocks)
-     *
-     * Block-tokens may have:
-     * mode, which is either "append", "prepend" or "replace"
-     * name, which is the name of the block
-     *
-     * @return \Generator
-     */
-    protected function scanBlock()
+    public function scanToken($className, $pattern, $modifiers = null)
     {
 
-        foreach ($this->scanToken(
-            'block',
-            'block(?:[\t ]+(?<mode>append|prepend|replace))?(?:[\t ]+(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*))?'
-        ) as $token) {
+        if (!$this->_reader)
+            $this->throwException(
+                "You need to be inside a lexing process to create lexer tokens"
+            );
 
-            yield $token;
+        if (!$this->_reader->match($pattern, $modifiers))
+            return;
 
-            //Allow direct content via <sub> token (should do <indent> in the parser)
-            foreach ($this->scanSub() as $subToken)
-                yield $subToken;
+        $data = $this->_reader->getMatchData();
+        $this->_reader->consume();
+        $token = $this->createToken($className);
+        foreach ($data as $key => $value) {
+
+            $method = 'set'.ucfirst($key);
+
+            if (method_exists($token, $method))
+                call_user_func([$token, $method], $value);
         }
 
-        foreach ($this->scanToken(
-            'block',
-            '(?<mode>append|prepend|replace)(?:[\t ]+(?<name>[a-zA-ZA-Z][a-zA-Z0-9\-_]*))'
-        ) as $token) {
-
-            yield $token;
-
-            foreach ($this->scanSub() as $subToken)
-                yield $subToken;
-        }
+        yield $token;
     }
 
     /**
@@ -1217,8 +542,6 @@ class Lexer
      *
      * If the condition can have a subject, the subject
      * will be set as the "subject"-value of the token
-     *
-     * @todo Avoid block parsing on <do>-loops
      *
      * @param string      $type          The token type that should be created if scan is successful
      * @param array       $names         The names the statement can have (e.g. do, while, if, else etc.)
@@ -1358,33 +681,6 @@ class Lexer
     }
 
     /**
-     * Scans for !=-style expression.
-     *
-     * e.g.
-     * != expr
-     * = expr
-     *
-     * Expression-tokens always have:
-     * escaped, which indicates that the expression result should be escaped
-     * value, which is the code of the expression
-     *
-     * @return \Generator
-     */
-    protected function scanExpression()
-    {
-
-        foreach ($this->scanToken(
-            'expression',
-            "([?]?[!]?[=])[\t ]*(?<value>[^\n]*)"
-        ) as $token) {
-
-            $token['escaped'] = strstr($this->getMatch(1), '!') ? false : true;
-            $token['unchecked'] = strstr($this->getMatch(1), '?') ? true : false;
-            yield $token;
-        }
-    }
-
-    /**
      * Scans for a code-block initiated with a dash (-) character.
      *
      * If the dash-character stands alone on a line, a multi-line code
@@ -1426,65 +722,6 @@ class Lexer
                 }
             }
         }
-    }
-
-    /**
-     * Scans for a <expansion>-token.
-     *
-     * (a: b-style expansion or a:b-style tags)
-     *
-     * Expansion-tokens always have:
-     * withSpace, which indicates wether there's a space after the double-colon
-     *
-     * Usually, if there's no space, it should be handled as part of a tag-name
-     *
-     * @return \Generator
-     */
-    protected function scanExpansion()
-    {
-
-        if ($this->peek() === ':') {
-
-            $this->consume();
-            $token = $this->createToken('expansion');
-
-            $spaces = $this->readSpaces();
-            $token['withSpace'] = !empty($spaces);
-
-            yield $token;
-        }
-    }
-
-    /**
-     * Scans sub-expressions of elements, e.g. a text-block
-     * initiated with a dot (.) or a block expansion.
-     *
-     * Yields whatever scanTextBlock() and scanExpansion() yield
-     *
-     * @return \Generator
-     */
-    protected function scanSub()
-    {
-
-        //Escaped text after
-        if ($this->peek(2) === '! ') {
-
-            $this->consume();
-
-            foreach ($this->scanText(true) as $token)
-                yield $token;
-        }
-
-        if ($this->match('([!]?)\.')) {
-
-            $this->consumeMatch();
-
-            foreach ($this->scanTextBlock($this->getMatch(1) === '!') as $token)
-                yield $token;
-        }
-
-        foreach ($this->scanExpansion() as $token)
-            yield $token;
     }
 
     /**
@@ -1803,96 +1040,21 @@ class Lexer
     protected function throwException($message)
     {
 
-        $message = "Failed to lex jade: $message (Line: {$this->_line}, Offset: {$this->_offset})";
-        throw new Exception($message);
-    }
+        $pattern = "Failed to lex jade: %s";
+        $args[] = $message;
 
-    /**
-     * mb_* compatible version of PHP's strlen.
-     *
-     * (so we don't require mb.func_overload)
-     *
-     * @see strlen
-     * @see mb_strlen
-     *
-     * @param string $string the string to get the length of
-     *
-     * @return int the multi-byte-respecting length of the string
-     */
-    protected function strlen($string)
-    {
+        if ($this->_reader) {
 
-        if (function_exists('mb_strlen'))
-            return mb_strlen($string, $this->_options['encoding']);
+            $pattern .= " \nNear: %s \nLine: %s \nOffset: %s \nPosition: %s";
+            array_push(
+                $args,
+                $this->_reader->peek(20),
+                $this->_reader->getLine(),
+                $this->_reader->getOffset(),
+                $this->_reader->getPosition()
+            );
+        }
 
-        return strlen($string);
-    }
-
-    /**
-     * mb_* compatible version of PHP's strpos.
-     *
-     * (so we don't require mb.func_overload)
-     *
-     * @see strpos
-     * @see mb_strpos
-     *
-     * @param string   $haystack the string to search in
-     * @param string   $needle   the string we search for
-     * @param int|null $offset   the offset at which we might expect it
-     *
-     * @return int|false the offset of the string or false, if not found
-     */
-    protected function strpos($haystack, $needle, $offset = null)
-    {
-
-        if (function_exists('mb_strpos'))
-            return mb_strpos($haystack, $needle, $offset, $this->_options['encoding']);
-
-        return strpos($haystack, $needle, $offset);
-    }
-
-    /**
-     * mb_* compatible version of PHP's substr.
-     *
-     * (so we don't require mb.func_overload)
-     *
-     * @see substr
-     * @see mb_substr
-     *
-     * @param string   $string the string to get a sub-string of
-     * @param int      $start  the start-index
-     * @param int|null $range  the amount of characters we want to get
-     *
-     * @return string the sub-string
-     */
-    protected function substr($string, $start, $range = null)
-    {
-
-        if (function_exists('mb_substr'))
-            return mb_substr($string, $start, $range, $this->_options['encoding']);
-
-        return substr($string, $start, $range);
-    }
-
-    /**
-     * mb_* compatible version of PHP's substr_count.
-     *
-     * (so we don't require mb.func_overload)
-     *
-     * @see substr_count
-     * @see mb_substr_count
-     *
-     * @param string $haystack the string we want to count sub-strings in
-     * @param string $needle   the sub-string we want to count inside $haystack
-     *
-     * @return int the amount of occurences of $needle in $haystack
-     */
-    protected function substr_count($haystack, $needle)
-    {
-
-        if (function_exists('mb_substr_count'))
-            return mb_substr_count($haystack, $needle, $this->_options['encoding']);
-
-        return substr_count($haystack, $needle);
+        throw new Exception(vsprintf($pattern, $args));
     }
 }
