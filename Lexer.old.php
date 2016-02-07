@@ -1255,6 +1255,17 @@ class _Lexer
                 $this->consumeMatch();
                 $token['itemName'] = $this->getMatch('itemName');
                 $token['keyName'] = $this->getMatch('keyName');
+                $this->readSpaces();if (!$this->match(
+                    '\$?(?<itemName>[a-zA-Z_][a-zA-Z0-9_]*)(?:[\t ]*,[\t ]*\$?(?<keyName>[a-zA-Z_][a-zA-Z0-9_]*))?[\t ]+in[\t ]+'
+                )) {
+                    $this->throwException(
+                        "The syntax for each is `each [$]itemName[, [$]keyName]] in [subject]`, not ".$this->peek(20)
+                    );
+                }
+
+                $this->consumeMatch();
+                $token['itemName'] = $this->getMatch('itemName');
+                $token['keyName'] = $this->getMatch('keyName');
                 $this->readSpaces();
             }
 

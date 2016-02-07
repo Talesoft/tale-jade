@@ -25,20 +25,36 @@
 
 namespace Tale\Jade;
 
-use RuntimeException;
 use Tale\ConfigurableTrait;
 use Tale\Jade\Lexer\Exception;
 use Tale\Jade\Lexer\Reader;
+use Tale\Jade\Lexer\Scanner\AssignmentScanner;
+use Tale\Jade\Lexer\Scanner\AttributeScanner;
 use Tale\Jade\Lexer\Scanner\BlockScanner;
 use Tale\Jade\Lexer\Scanner\CaseScanner;
+use Tale\Jade\Lexer\Scanner\ClassScanner;
+use Tale\Jade\Lexer\Scanner\CodeScanner;
 use Tale\Jade\Lexer\Scanner\CommentScanner;
+use Tale\Jade\Lexer\Scanner\ConditionalScanner;
+use Tale\Jade\Lexer\Scanner\DoctypeScanner;
+use Tale\Jade\Lexer\Scanner\DoScanner;
+use Tale\Jade\Lexer\Scanner\EachScanner;
+use Tale\Jade\Lexer\Scanner\ExpressionScanner;
 use Tale\Jade\Lexer\Scanner\FilterScanner;
+use Tale\Jade\Lexer\Scanner\ForScanner;
+use Tale\Jade\Lexer\Scanner\IdScanner;
 use Tale\Jade\Lexer\Scanner\ImportScanner;
 use Tale\Jade\Lexer\Scanner\IndentationScanner;
 use Tale\Jade\Lexer\Scanner\MarkupScanner;
+use Tale\Jade\Lexer\Scanner\MixinCallScanner;
+use Tale\Jade\Lexer\Scanner\MixinScanner;
 use Tale\Jade\Lexer\Scanner\NewLineScanner;
+use Tale\Jade\Lexer\Scanner\TagScanner;
 use Tale\Jade\Lexer\Scanner\TextLineScanner;
 use Tale\Jade\Lexer\Scanner\TextScanner;
+use Tale\Jade\Lexer\Scanner\VariableScanner;
+use Tale\Jade\Lexer\Scanner\WhenScanner;
+use Tale\Jade\Lexer\Scanner\WhileScanner;
 use Tale\Jade\Lexer\ScannerInterface;
 use Tale\Jade\Lexer\TokenInterface;
 
@@ -92,13 +108,6 @@ class Lexer
     private $_reader;
 
     /**
-     * The current indentation level we are on.
-     *
-     * @var int
-     */
-    private $_level;
-
-    /**
      * Creates a new lexer instance.
      *
      * The options should be an associative array
@@ -127,36 +136,38 @@ class Lexer
     {
 
         $this->defineOptions([
+            'level' => 0,
             'indentStyle' => null,
             'indentWidth' => null,
             'encoding'    => Lexer\get_internal_encoding(),
             'scanners' => [
-                NewLineScanner::class, IndentationScanner::class,
-                ImportScanner::class,
-                BlockScanner::class,
-                CaseScanner::class,
-                CommentScanner::class, FilterScanner::class,
-
-                MarkupScanner::class,
-                TextLineScanner::class,
-                TextScanner::class
-            ],
-            'scans'       => [
-                'newLine', 'indent',
-                'import',
-                'block',
-                'conditional', 'each', 'case', 'when', 'do', 'while', 'forLoop',
-                'mixin', 'mixinCall',
-                'doctype',
-                'tag', 'classes', 'id', 'attributes',
-                'assignment',
-                'variable',
-                'comment', 'filter',
-                'expression',
-                'code',
-                'markup',
-                'textLine',
-                'text'
+                'newLine' => new NewLineScanner(),
+                'indent' => new IndentationScanner(),
+                'import' => new ImportScanner(),
+                'block' => new BlockScanner(),
+                'conditional' => new ConditionalScanner(),
+                'each' => new EachScanner(),
+                'case' => new CaseScanner(),
+                'when' => new WhenScanner(),
+                'do' => new DoScanner(),
+                'while' => new WhileScanner(),
+                'for' => new ForScanner(),
+                'mixin' => new MixinScanner(),
+                'mixinCall' => new MixinCallScanner(),
+                'doctype' => new DoctypeScanner(),
+                'tag' => new TagScanner(),
+                'class' => new ClassScanner(),
+                'id' => new IdScanner(),
+                'attribute' => new AttributeScanner(),
+                'assignment' => new AssignmentScanner(),
+                'variable' => new VariableScanner(),
+                'comment' => new CommentScanner(),
+                'filter' => new FilterScanner(),
+                'expression' => new ExpressionScanner(),
+                'code' => new CodeScanner(),
+                'markup' => new MarkupScanner(),
+                'textLine' => new TextLineScanner(),
+                'text' => new TextScanner()
             ]
         ], $options);
 
@@ -186,7 +197,7 @@ class Lexer
     public function getLevel()
     {
 
-        return $this->_level;
+        return $this->_options['level'];
     }
 
     public function setLevel($level)
@@ -197,23 +208,7 @@ class Lexer
                 "Level needs to be an integer"
             );
 
-        $this->_level = $level;
-
-        return $this;
-    }
-
-    public function increaseLevel()
-    {
-
-        $this->_level++;
-
-        return $this;
-    }
-
-    public function decreaseLevel()
-    {
-
-        $this->_level--;
+        $this->_options['level'] = $level;
 
         return $this;
     }
@@ -258,12 +253,12 @@ class Lexer
         return $this;
     }
 
-    public function addScanner($scanner)
+    public function setScanner($name, $scanner)
     {
 
         $this->validateScanner($scanner);
 
-        $this->_options['scanners'][] = $scanner;
+        $this->_options['scanners'][$name] = $scanner;
 
         return $this;
     }
@@ -294,8 +289,8 @@ class Lexer
     public function validateIndentWidth($indentWidth)
     {
 
-        if (!is_null($this->_options['indentWidth']) &&
-            (!is_int($this->_options['indentWidth']) || $this->_options['indentWidth'] < 1)
+        if (!is_null($indentWidth) &&
+            (!is_int($indentWidth) || $indentWidth < 1)
         )
             $this->throwException(
                 "indentWidth needs to be null or an integer above 0"
@@ -328,13 +323,13 @@ class Lexer
 
         $this->_reader = new Reader($input, $this->_options['encoding']);
         $this->_reader->normalize();
-        $this->_level = 0;
+        $startLevel = $this->getLevel();
 
         foreach ($this->loopScan($this->_options['scanners']) as $token)
             yield $token;
 
         $this->_reader = null;
-        $this->_level = 0;
+        $this->setLevel($startLevel);
     }
 
     /**
@@ -347,7 +342,6 @@ class Lexer
      * e.g. newLine => scanNewLine, blockExpansion => scanBlockExpansion etc.
      *
      * @param array|string      $scanners          the scans to perform
-     * @param bool|false $required throw an exception if no tokens in $scans found anymore
      *
      * @return \Generator the generator yielding all tokens found
      * @throws Exception
@@ -361,19 +355,18 @@ class Lexer
             );
 
         $scanners = is_array($scanners) ? $scanners : [$scanners];
-        foreach ($scanners as $scanner) {
+        foreach ($scanners as $name => $scanner) {
 
             $this->validateScanner($scanner);
 
             /** @var ScannerInterface $scanner */
-            //var_dump("-> scan(".basename($scanner, 'Scanner').") -> [".$this->_reader->peek(10)."]");
             $scanner = is_string($scanner) ? new $scanner() : $scanner;
             $success = false;
             foreach ($scanner->scan($this) as $token) {
 
                 if (!($token instanceof TokenInterface))
                     $this->throwException(
-                        "Scanner generator result is not a ".TokenInterface::class
+                        "Scanner $name generator result is not a ".TokenInterface::class
                     );
 
                 yield $token;
@@ -394,7 +387,6 @@ class Lexer
                 "You need to be inside a lexing process to scan"
             );
 
-        //var_dump("loopScan(".implode(',', array_map('basename', $scanners, array_fill(0, count($scanners), 'Scanner'))).')');
         while ($this->_reader->hasLength()) {
 
             $success = false;
@@ -427,7 +419,7 @@ class Lexer
      * Before adding a new token-type, make sure that the Parser knows how
      * to handle it and the Compiler knows how to compile it.
      *
-     * @param string $type the type to give that token
+     * @param string $className the class name of the token
      *
      * @return array the token array
      */
@@ -477,557 +469,6 @@ class Lexer
     }
 
     /**
-     * Scans for a <case>-token.
-     *
-     * Case-tokens always have:
-     * subject, which is the expression between the parenthesis
-     *
-     * @return \Generator
-     */
-    protected function scanCase()
-    {
-
-        return $this->scanControlStatement('case', ['case']);
-    }
-
-    /**
-     * Scans for a <when>-token.
-     *
-     * When-tokens always have:
-     * name, which is either "when" or "default"
-     * subject, which is the expression behind "when ..."
-     *
-     * When-tokens may have:
-     * default, which indicates that this is the "default"-case
-     *
-     * @return \Generator
-     */
-    protected function scanWhen()
-    {
-
-        foreach ($this->scanControlStatement('when', ['when', 'default'], 'name') as $token) {
-
-            if ($token['type'] === 'when')
-                $token['default'] = ($token['name'] === 'default');
-
-            yield $token;
-        }
-    }
-
-    /**
-     * Scans for a <conditional>-token.
-     *
-     * Conditional-tokens always have:
-     * conditionType, which is either "if", "unless", "elseif", "else if" or "else"
-     * subject, which is the expression the between the parenthesis
-     *
-     * @return \Generator
-     */
-    protected function scanConditional()
-    {
-
-        return $this->scanControlStatement('conditional', [
-            'if', 'unless', 'elseif', 'else if', 'else'
-        ], 'conditionType');
-    }
-
-    /**
-     * Scans for a control-statement-kind of token.
-     *
-     * e.g.
-     * control-statement-name ($expression)
-     *
-     * Since the <each>-statement is a special little unicorn, it
-     * get's handled very specifically inside this function (But correctly!)
-     *
-     * If the condition can have a subject, the subject
-     * will be set as the "subject"-value of the token
-     *
-     * @param string      $type          The token type that should be created if scan is successful
-     * @param array       $names         The names the statement can have (e.g. do, while, if, else etc.)
-     * @param string|null $nameAttribute The attribute the name gets saved into, if wanted
-     *
-     * @return \Generator
-     * @throws \Tale\Jade\Lexer\Exception
-     */
-    protected function scanControlStatement($type, array $names, $nameAttribute = null)
-    {
-
-        foreach ($names as $name) {
-
-            if (!$this->match("{$name}[:\t \n]"))
-                continue;
-
-            $this->consumeMatch();
-            $this->readSpaces();
-
-            $token = $this->createToken($type);
-            if ($nameAttribute)
-                $token[$nameAttribute] = str_replace(' ', '', $name);
-            $token['subject'] = null;
-
-            //each is a special little unicorn
-            if ($name === 'each') {
-
-                if (!$this->match(
-                    '\$?(?<itemName>[a-zA-Z_][a-zA-Z0-9_]*)(?:[\t ]*,[\t ]*\$?(?<keyName>[a-zA-Z_][a-zA-Z0-9_]*))?[\t ]+in[\t ]+'
-                )) {
-                    $this->throwException(
-                        "The syntax for each is `each [$]itemName[, [$]keyName]] in [subject]`, not ".$this->peek(20)
-                    );
-                }
-
-                $this->consumeMatch();
-                $token['itemName'] = $this->getMatch('itemName');
-                $token['keyName'] = $this->getMatch('keyName');
-                $this->readSpaces();
-            }
-
-            if ($this->peek() === '(') {
-
-                $this->consume();
-                $token['subject'] = $this->readBracketContents();
-
-                if ($this->peek() !== ')')
-                    $this->throwException(
-                        "Unclosed control statement subject"
-                    );
-
-                $this->consume();
-            } elseif ($this->match("([^:\n]+)")) {
-
-                $this->consumeMatch();
-                $token['subject'] = trim($this->getMatch(1));
-            }
-
-            yield $token;
-
-            foreach ($this->scanSub() as $subToken)
-                yield $subToken;
-        }
-    }
-
-    /**
-     * Scans for a <variables>-token.
-     *
-     * Variable-tokens always have:
-     * name, which is the name of the variables to work on
-     *
-     * @return \Generator
-     */
-    protected function scanVariable()
-    {
-
-        return $this->scanToken('variable', '\$(?<name>[a-zA-Z_][a-zA-Z0-9_]*)[\t ]*');
-    }
-
-    /**
-     * Scans for an <each>-token.
-     *
-     * Each-tokens always have:
-     * itemName, which is the name of the item for each iteration
-     * subject, which is the expression to iterate
-     *
-     * Each-tokens may have:
-     * keyName, which is the name of the key for each iteration
-     *
-     * @return \Generator
-     */
-    protected function scanEach()
-    {
-
-        return $this->scanControlStatement('each', ['each']);
-    }
-
-    /**
-     * Scans for a <while>-token.
-     *
-     * While-tokens always have:
-     * subject, which is the expression between the parenthesis
-     *
-     * @return \Generator
-     */
-    protected function scanWhile()
-    {
-
-        return $this->scanControlStatement('while', ['while']);
-    }
-
-    /**
-     * Scans for a <for>-token.
-     *
-     * For-tokens always have:
-     * subject, which is the expression between the parenthesis
-     *
-     * @return \Generator
-     */
-    protected function scanForLoop()
-    {
-
-        return $this->scanControlStatement('for', ['for']);
-    }
-
-    /**
-     * Scans for a <do>-token.
-     *
-     * Do-tokens are always stand-alone
-     *
-     * @return \Generator
-     */
-    protected function scanDo()
-    {
-
-        return $this->scanControlStatement('do', ['do']);
-    }
-
-    /**
-     * Scans for a code-block initiated with a dash (-) character.
-     *
-     * If the dash-character stands alone on a line, a multi-line code
-     * block will be opened
-     *
-     * Examples:
-     * - if ($something):
-     *     p Do something
-     * - endif;
-     *
-     * -
-     *     doSomething();
-     *     doSomethingElse();
-     *
-     * Code-tokens always have:
-     * single, which indicates that the expression is not multi-line
-     *
-     * @return \Generator
-     */
-    protected function scanCode()
-    {
-
-        foreach ($this->scanToken(
-            'code',
-            "\\-[\t ]*(?<value>[^\n]*)"
-        ) as $token) {
-
-            $token['value'] = trim($token['value']);
-            $token['block'] = empty($token['value']);
-
-            yield $token;
-
-            if ($token['block']) {
-
-                //Expect a multi-line code block
-                foreach ($this->scanTextBlock() as $subToken) {
-
-                    yield $subToken;
-                }
-            }
-        }
-    }
-
-    /**
-     * Scans for a <doctype>-token.
-     *
-     * Doctype-tokens always have:
-     * name, which is the passed name of the doctype or a custom-doctype,
-     *       if the named doctype isn't provided
-     *
-     * @return \Generator
-     */
-    protected function scanDoctype()
-    {
-
-        return $this->scanToken('doctype', "(doctype|!!!) (?<name>[^\n]*)");
-    }
-
-    /**
-     * Scans for a <tag>-token.
-     *
-     * Tag-tokens always have:
-     * name, which is the name of the tag
-     *
-     * @return \Generator
-     */
-    protected function scanTag()
-    {
-
-        foreach ($this->scanToken('tag', '(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*)', 'i') as $token) {
-
-            yield $token;
-
-            //Make sure classes are scanned on this before we scan the . add-on
-            foreach ($this->scanClasses() as $subToken)
-                yield $subToken;
-
-            foreach ($this->scanSub() as $subToken)
-                yield $subToken;
-        }
-    }
-
-    /**
-     * Scans for a <class>-token (begins with dot (.)).
-     *
-     * Class-tokens always have:
-     * name, which is the name of the class
-     *
-     * @return \Generator
-     */
-    protected function scanClasses()
-    {
-
-        foreach ($this->scanToken('class', '(\.(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*))', 'i') as $token) {
-
-            yield $token;
-
-            //Make sure classes are scanned on this before we scan the . add-on
-            foreach ($this->scanClasses() as $subToken)
-                yield $subToken;
-
-            foreach ($this->scanSub() as $subToken)
-                yield $subToken;
-        }
-    }
-
-    /**
-     * Scans for a <id>-token (begins with hash (#)).
-     *
-     * ID-tokens always have:
-     * name, which is the name of the id
-     *
-     * @return \Generator
-     */
-    protected function scanId()
-    {
-
-        foreach ($this->scanToken('id', '(#(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*))', 'i') as $token) {
-
-            yield $token;
-
-            //Make sure classes are scanned on this before we scan the . add-on
-            foreach ($this->scanClasses() as $subToken)
-                yield $subToken;
-
-            foreach ($this->scanSub() as $subToken)
-                yield $subToken;
-        }
-    }
-
-    /**
-     * Scans for a mixin definition token (<mixin>).
-     *
-     * Mixin-token always have:
-     * name, which is the name of the mixin you want to define
-     *
-     * @return \Generator
-     */
-    protected function scanMixin()
-    {
-
-        foreach ($this->scanToken('mixin', "mixin[\t ]+(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*)") as $token) {
-
-            yield $token;
-
-            //Make sure classes are scanned on this before we scan the . add-on
-            foreach ($this->scanClasses() as $subToken)
-                yield $subToken;
-
-            foreach ($this->scanSub() as $subToken)
-                yield $subToken;
-        }
-    }
-
-    /**
-     * Scans for a <mixinCall>-token (begins with plus (+)).
-     *
-     * Mixin-Call-Tokens always have:
-     * name, which is the name of the called mixin
-     *
-     * @return \Generator
-     */
-    protected function scanMixinCall()
-    {
-
-        foreach ($this->scanToken('mixinCall', '\+(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*)') as $token) {
-
-            yield $token;
-
-            //Make sure classes are scanned on this before we scan the . add-on
-            foreach ($this->scanClasses() as $subToken)
-                yield $subToken;
-
-            foreach ($this->scanSub() as $subToken)
-                yield $subToken;
-        }
-    }
-
-    /**
-     * Scans for an <assignment>-token (begins with ampersand (&)).
-     *
-     * Assignment-Tokens always have:
-     * name, which is the name of the assignment
-     *
-     * @return \Generator
-     */
-    protected function scanAssignment()
-    {
-
-        foreach ($this->scanToken('assignment', '&(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*)') as $token) {
-
-            yield $token;
-        }
-    }
-
-    /**
-     * Scans for an attribute-block.
-     *
-     * Attribute blocks always consist of the following tokens:
-     *
-     * <attributeStart> ('(') -> Indicates that attributes start here
-     * <attribute>... (name*=*value*) -> Name and Value are both optional, but one of both needs to be provided
-     *                                   Multiple attributes are separated by a Comma (,) or white-space ( , \n, \t)
-     * <attributeEnd> (')') -> Required. Indicates the end of the attribute block
-     *
-     * This function will always yield an <attributeStart>-token first, if there's an attribute block
-     * Attribute-blocks can be split across multiple lines and don't respect indentation of any kind
-     * except for the <attributeStart> token
-     *
-     * After that it will continue to yield <attribute>-tokens containing
-     *  > name, which is the name of the attribute (Default: null)
-     *  > value, which is the value of the attribute (Default: null)
-     *  > escaped, which indicates that the attribute expression result should be escaped
-     *
-     * After that it will always require and yield an <attributeEnd> token
-     *
-     * If the <attributeEnd> is not found, this function will throw an exception
-     *
-     * Between <attributeStart>, <attribute>, and <attributeEnd>
-     * as well as around = and , of the attributes you can utilize as many
-     * spaces and new-lines as you like
-     *
-     * @return \Generator
-     * @throws Exception
-     */
-    protected function scanAttributes()
-    {
-
-        if ($this->peek() !== '(')
-            return;
-
-        $argSeparators = [',', ' ', "\n", "\t"];
-
-        $this->consume();
-        yield $this->createToken('attributeStart');
-        $this->read('ctype_space');
-
-        if ($this->peek() !== ')') {
-
-            $continue = true;
-            while (!$this->isAtEnd() && $continue) {
-
-                //We create the attribute token first (we don't need to yield it
-                //but we fill it sequentially)
-                $token = $this->createToken('attribute');
-                $token['name'] = null;
-                $token['value'] = null;
-                $token['escaped'] = true;
-                $token['unchecked'] = false;
-
-                if ($this->match('((\.\.\.)?[a-zA-Z_][a-zA-Z0-9\-_:]*)', 'i')) {
-
-                    $this->consumeMatch();
-
-                    //If we call a php function, e.g.
-                    //+button(strtoupper($someVar))
-                    //the match above will match the "strtoupper" and see it
-                    //as a attribute name. We'll take it as a partial value
-                    //if none of our arg separators, = or ! ) follows after it
-                    //TODO: strtoupper ($value) will probably still fail.
-                    if (!in_array($this->peek(), array_merge($argSeparators, ['=', '!', '?', ')']), true))
-                        $token['value'] = $this->getMatch(1);
-                    else {
-
-                        $token['name'] = $this->getMatch(1);
-                        $this->read('ctype_space');
-                    }
-                }
-
-                if ($this->match("\\/\\/[^\n]*[\n]")) {
-
-                    //Comment line, ignore it.
-                    //There'd be no senseful way to either keep or
-                    //even output the comment afterwards, so we just omit it.
-                    $this->consumeMatch();
-                    $this->read('ctype_space');
-                }
-
-                $char = $this->peek();
-
-                //Check unchecked-flag (?) if a name is given.
-                if ($token['name'] && $char === '?') {
-
-                    $token['unchecked'] = true;
-                    $this->consume();
-                    $char = $this->peek();
-                }
-
-                //Check escaping flag (!) if a name is given.
-                //Avoids escaping when you call e.g.
-                //+btn(!$someCondition)
-                if ($token['name'] && $char === '!') {
-
-                    $token['escaped'] = false;
-                    $this->consume();
-                    $char = $this->peek();
-                }
-
-                if (!$token['name'] || $char === '=') {
-
-                    if ($char === '=') {
-
-                        $this->consume();
-                        $this->read('ctype_space');
-                    }
-
-                    $value = $this->readBracketContents($argSeparators);
-                    $value = $value !== '' ? $value : null;
-
-                    //Notice that our partial value from above kicks in here.
-                    $token['value'] = $token['value'] !== null
-                                    ? $token['value'].$value
-                                    : $value;
-                }
-
-                yield $token;
-
-                if (in_array($this->peek(), $argSeparators, true)) {
-
-                    $this->consume();
-                    $this->read('ctype_space');
-
-                    $continue = $this->peek() !== ')';
-                } else {
-
-                    $continue = false;
-                }
-            }
-        }
-
-        if ($this->peek() !== ')')
-            $this->throwException(
-                "Unclosed attribute block"
-            );
-
-        $this->consume();
-        yield $this->createToken('attributeEnd');
-
-        //Make sure classes are scanned on this before we scan the . add-on
-        foreach ($this->scanClasses() as $token)
-            yield $token;
-
-        foreach ($this->scanSub() as $token)
-            yield $token;
-    }
-
-    /**
      * Throws a lexer-exception.
      *
      * The current line and offset of the exception
@@ -1037,7 +478,7 @@ class Lexer
      *
      * @throws Exception
      */
-    protected function throwException($message)
+    public function throwException($message)
     {
 
         $pattern = "Failed to lex jade: %s";

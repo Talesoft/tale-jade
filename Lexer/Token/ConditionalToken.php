@@ -6,6 +6,14 @@ use Tale\Jade\Lexer\TokenBase;
 
 class ConditionalToken extends TokenBase
 {
-    use TypeTrait;
+    use NameTrait;
     use SubjectTrait;
+
+    protected function dump()
+    {
+        return [
+            'name' => $this->getName(),
+            'subject' => $this->getSubject()
+        ];
+    }
 }

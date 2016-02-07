@@ -50,4 +50,13 @@ class EachToken extends TokenBase
 
         return $this;
     }
+
+    protected function dump()
+    {
+        return [
+            'itemName' => $this->getItemName(),
+            'keyName' => $this->getKeyName(),
+            'subject' => $this->getSubject()
+        ];
+    }
 }

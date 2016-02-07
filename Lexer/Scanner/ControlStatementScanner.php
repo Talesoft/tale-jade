@@ -24,12 +24,15 @@ class ControlStatementScanner implements ScannerInterface
         $reader = $lexer->getReader();
         $names = implode('|', $this->_names);
 
-        if (!$reader->match("({$names})[ \t]+"))
+        if (!$reader->match("({$names})[ \t\n:]", null, " \t\n:"))
             return;
 
         $token = $lexer->createToken($this->_tokenClassName);
         $name = $reader->getMatch(1);
         $reader->consume();
+
+        //Ignore spaces after identifier
+        $reader->readIndentation();
 
         if (method_exists($token, 'setName'))
             $token->setName($name);

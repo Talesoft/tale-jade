@@ -9,25 +9,11 @@ class WhenToken extends TokenBase
     use NameTrait;
     use SubjectTrait;
 
-    private $_default = false;
-
-    /**
-     * @return bool
-     */
-    public function isDefault()
+    protected function dump()
     {
-        return $this->_default;
-    }
-
-    /**
-     * @param bool $default
-     *
-     * @return BlockToken
-     */
-    public function setIsDefault($default)
-    {
-        $this->_default = $default;
-
-        return $this;
+        return [
+            'name' => $this->getName(),
+            'subject' => $this->getSubject()
+        ];
     }
 }

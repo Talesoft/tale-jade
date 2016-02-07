@@ -139,10 +139,11 @@ class Reader
         return $this->_lastPeekResult;
     }
 
-    public function match($pattern, $modifiers = null)
+    public function match($pattern, $modifiers = null, $ignoredSuffixes = null)
     {
 
         $modifiers = $modifiers ? $modifiers : '';
+        $ignoredSuffixes = $ignoredSuffixes ? $ignoredSuffixes : "\n";
 
         $result = preg_match(
             "/^$pattern/$modifiers",
@@ -158,7 +159,7 @@ class Reader
         if ($result === 0)
             return false;
 
-        $this->_nextConsumeLength = safe_strlen(rtrim($this->_lastMatchResult[0], "\n"));
+        $this->_nextConsumeLength = safe_strlen(rtrim($this->_lastMatchResult[0], $ignoredSuffixes));
         return true;
     }
 
@@ -170,7 +171,9 @@ class Reader
                 "Failed to get match $key: No match result found. Use match first"
             );
 
-        return $this->_lastMatchResult[$key];
+        return isset($this->_lastMatchResult[$key])
+             ? $this->_lastMatchResult[$key]
+             : null;
     }
 
     public function getMatchData()
@@ -291,6 +294,12 @@ class Reader
         return $this->peekChar(self::QUOTE_CHARACTERS);
     }
 
+    public function peekSpace()
+    {
+
+        return ctype_space($this->peek());
+    }
+
     public function peekDigit()
     {
 
@@ -336,6 +345,15 @@ class Reader
     {
 
         return $this->readUntil([$this, 'peekNewLine']);
+    }
+
+    public function readSpaces()
+    {
+
+        if (!$this->peekSpace())
+            return null;
+
+        return $this->readWhile('ctype_space');
     }
 
     public function readDigits()
@@ -436,13 +454,13 @@ class Reader
         return '';
     }
 
-    public function readExpression(array $breakChars = null, array $brackets = null)
+    public function readExpression(array $breaks = null, array $brackets = null)
     {
 
         if (!$this->hasLength())
             return null;
 
-        $breakChars = $breakChars ? $breakChars : [];
+        $breaks = $breaks ? $breaks : [];
         $brackets = $brackets ? $brackets : self::$_defaultExpressionBrackets;
         $expression = '';
         $char = null;
@@ -454,14 +472,24 @@ class Reader
             //count those
             $expression .= $this->readString(null, true);
 
+            if (!$this->hasLength())
+                break;
+
+            //Check for breaks
+            if (count($bracketStack) === 0) {
+
+                foreach ($breaks as $break)
+                    if ($this->peekString($break))
+                        break 2;
+            }
+
+            //Count brackets
             $char = $this->peek();
 
             if (in_array($char, array_keys($brackets), true)) {
 
                 $bracketStack[] = $char;
-            }
-
-            if (in_array($char, array_values($brackets), true)) {
+            } else if (in_array($char, array_values($brackets), true)) {
 
                 if (count($bracketStack) < 1)
                     $this->throwException(
@@ -477,9 +505,6 @@ class Reader
 
                 array_pop($bracketStack);
             }
-
-            if (in_array($char, $breakChars, true) && count($bracketStack) === 0)
-                break;
 
             $expression .= $char;
             $this->consume();

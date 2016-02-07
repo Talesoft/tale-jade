@@ -10,4 +10,15 @@ class AttributeToken extends TokenBase
     use ValueTrait;
     use EscapeTrait;
     use CheckTrait;
+
+    protected function dump()
+    {
+
+        return [
+            'name' => $this->getName(),
+            'value' => $this->getValue(),
+            'escaped' => $this->isEscaped() ? 'yes' : 'no',
+            'checked' => $this->isChecked() ? 'yes' : 'no'
+        ];
+    }
 }

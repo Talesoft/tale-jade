@@ -7,4 +7,11 @@ use Tale\Jade\Lexer\TokenBase;
 class WhileToken extends TokenBase
 {
     use SubjectTrait;
+
+    protected function dump()
+    {
+        return [
+            'subject' => $this->getSubject()
+        ];
+    }
 }

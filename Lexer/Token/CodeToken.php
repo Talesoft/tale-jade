@@ -23,4 +23,11 @@ class CodeToken extends TokenBase
 
         return $this;
     }
+
+    protected function dump()
+    {
+        return [
+            'block' => $this->isBlock() ? 'yes' : 'no'
+        ];
+    }
 }
