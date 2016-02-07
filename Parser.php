@@ -26,8 +26,38 @@
 namespace Tale\Jade;
 
 use Tale\ConfigurableTrait;
+use Tale\Jade\Lexer\TokenInterface;
 use Tale\Jade\Parser\Node;
 use Tale\Jade\Parser\Exception;
+use Tale\Jade\Lexer\Token\AssignmentToken;
+use Tale\Jade\Lexer\Token\AttributeEndToken;
+use Tale\Jade\Lexer\Token\AttributeStartToken;
+use Tale\Jade\Lexer\Token\AttributeToken;
+use Tale\Jade\Lexer\Token\BlockToken;
+use Tale\Jade\Lexer\Token\CaseToken;
+use Tale\Jade\Lexer\Token\ClassToken;
+use Tale\Jade\Lexer\Token\CodeToken;
+use Tale\Jade\Lexer\Token\CommentToken;
+use Tale\Jade\Lexer\Token\ConditionalToken;
+use Tale\Jade\Lexer\Token\DoToken;
+use Tale\Jade\Lexer\Token\DoctypeToken;
+use Tale\Jade\Lexer\Token\EachToken;
+use Tale\Jade\Lexer\Token\ExpansionToken;
+use Tale\Jade\Lexer\Token\ExpressionToken;
+use Tale\Jade\Lexer\Token\FilterToken;
+use Tale\Jade\Lexer\Token\ForToken;
+use Tale\Jade\Lexer\Token\IdToken;
+use Tale\Jade\Lexer\Token\ImportToken;
+use Tale\Jade\Lexer\Token\IndentToken;
+use Tale\Jade\Lexer\Token\MixinCallToken;
+use Tale\Jade\Lexer\Token\MixinToken;
+use Tale\Jade\Lexer\Token\NewLineToken;
+use Tale\Jade\Lexer\Token\OutdentToken;
+use Tale\Jade\Lexer\Token\TagToken;
+use Tale\Jade\Lexer\Token\TextToken;
+use Tale\Jade\Lexer\Token\VariableToken;
+use Tale\Jade\Lexer\Token\WhenToken;
+use Tale\Jade\Lexer\Token\WhileToken;
 
 /**
  * Takes tokens from the Lexer and creates an AST out of it.
@@ -173,7 +203,40 @@ class Parser
     public function __construct(array $options = null, Lexer $lexer = null)
     {
 
-        $this->defineOptions(['lexerOptions' => []], $options);
+        $this->defineOptions([
+            'lexerOptions' => [],
+            'handlers' => [
+                AssignmentToken::class => [$this, 'handleAssignment'],
+                AttributeEndToken::class => [$this, 'handleAttributeEnd'],
+                AttributeStartToken::class => [$this, 'handleAttributeStart'],
+                AttributeToken::class => [$this, 'handleAttribute'],
+                BlockToken::class => [$this, 'handleBlock'],
+                CaseToken::class => [$this, 'handleCase'],
+                ClassToken::class => [$this, 'handleClass'],
+                CodeToken::class => [$this, 'handleCode'],
+                CommentToken::class => [$this, 'handleComment'],
+                ConditionalToken::class => [$this, 'handleConditional'],
+                DoToken::class => [$this, 'handleDo'],
+                DoctypeToken::class => [$this, 'handleDoctype'],
+                EachToken::class => [$this, 'handleEach'],
+                ExpansionToken::class => [$this, 'handleExpansion'],
+                ExpressionToken::class => [$this, 'handleExpression'],
+                FilterToken::class => [$this, 'handleFilter'],
+                ForToken::class => [$this, 'handleFor'],
+                IdToken::class => [$this, 'handleId'],
+                ImportToken::class => [$this, 'handleImport'],
+                IndentToken::class => [$this, 'handleIndent'],
+                MixinCallToken::class => [$this, 'handleMixinCall'],
+                MixinToken::class => [$this, 'handleMixin'],
+                NewLineToken::class => [$this, 'handleNewLine'],
+                OutdentToken::class => [$this, 'handleOutdent'],
+                TagToken::class => [$this, 'handleTag'],
+                TextToken::class => [$this, 'handleText'],
+                VariableToken::class => [$this, 'handleVariable'],
+                WhenToken::class => [$this, 'handleWhen'],
+                WhileToken::class => [$this, 'handleWhile']
+            ]
+        ], $options);
 
         $this->_lexer = $lexer ? $lexer : new Lexer($this->_options['lexerOptions']);
     }
@@ -208,7 +271,7 @@ class Parser
 
         $this->_level = 0;
         $this->_tokens = $this->_lexer->lex($input);
-        $this->_document = $this->createNode('document', ['line' => 0, 'offset' => 0]);
+        $this->_document = $this->createNode('document');
         $this->_currentParent = $this->_document;
         $this->_current = null;
         $this->_last = null;
@@ -238,43 +301,38 @@ class Parser
     }
 
     /**
-     * Handles any kind of token returned by the lexer dynamically.
+     * Handles any kind of token returned by the lexer.
      *
-     * The token-type will be translated into a method name
-     * e.g.
-     *
-     * newLine      => handleNewLine
-     * attribute    => handleAttribute
-     * tag          => handleTag
-     *
-     * First argument of that method will always be the token array
+     * The token handler is translated according to the `handlers` option
      *
      * If no token is passed, it will take the current token
      * in the lexer's token generator
      *
-     * @param array|null $token a token or the current lexer's generator token
+     * @param TokenInterface $token a token or the current lexer's generator token
      *
      * @throws Exception when no token handler has been found
      */
-    protected function handleToken(array $token = null)
+    protected function handleToken(TokenInterface $token = null)
     {
 
         $token = $token ? $token : $this->getToken();
+        $className = get_class($token);
 
-        //Put together the method name
-        $method = 'handle'.ucfirst($token['type']);
-
-        //If the token has no handler, we throw an error
-        if (!method_exists($this, $method)) {
+        if (!isset($this->_options['handlers'][$className]))
             $this->throwException(
-                "Unexpected token `{$token['type']}`, no handler $method found",
+                "Unexpected token `$className`, no handler registered",
                 $token
             );
-        } else {
 
-            //Call the handler method and pass the token array as the first argument
-            call_user_func([$this, $method], $token);
-        }
+        $handler = $this->_options['handlers'][$className];
+        if (!is_callable($handler))
+            $this->throwException(
+                "Unexpected token `$className`, registered handler is not ".
+                "a valid callback",
+                $token
+            );
+
+        call_user_func($handler, $token);
     }
 
     /**
@@ -294,7 +352,7 @@ class Parser
         while ($this->hasTokens()) {
 
             $token = $this->getToken();
-            if (in_array($token['type'], $types, true))
+            if (in_array(get_class($token), $types, true))
                 yield $token;
             else
                 break;
@@ -357,38 +415,6 @@ class Parser
     }
 
     /**
-     * Throws an exception if the next token is not a newLine token.
-     *
-     * This states that "a line of instructions should end here"
-     *
-     * Notice that if the next token is _not_ a newLine, it gets
-     * handled through handleToken automatically
-     *
-     * @param array|null $relatedToken the token to relate the exception to
-     *
-     * @throws Exception when the next token is not a newLine token
-     */
-    protected function expectEnd(array $relatedToken = null)
-    {
-
-        foreach ($this->lookUpNext(['newLine']) as $token) {
-
-            $this->handleToken($token);
-
-            return;
-        }
-
-        if (!$this->expectNext(['newLine'])) {
-
-            $this->throwException(
-                "The statement should end here.",
-                $relatedToken
-            );
-        } else
-            $this->handleToken();
-    }
-
-    /**
      * Returns true, if there are still tokens left to be generated.
      *
      * If the lexer-generator still has tokens to generate,
@@ -448,17 +474,16 @@ class Parser
      * and retrieve them as an array later
      *
      * @param string     $type  the type the node should have
-     * @param array|null $token the token to relate this node to
+     * @param TokenInterface $token the token to relate this node to
      *
      * @return Node The newly created node
      */
-    protected function createNode($type, array $token = null)
+    protected function createNode($type, TokenInterface $token = null)
     {
 
-        $token = $token ? $token : ['line' => $this->_lexer->getLine(), 'offset' => $this->_lexer->getOffset()];
-        $node = new Node($type, $token['line'], $token['offset']);
+        $token = $token ? $token : new TextToken(0, 0, 0);
 
-        return $node;
+        return new Node($type, $token->getLine(), $token->getOffset());
     }
 
     /**
@@ -468,11 +493,11 @@ class Parser
      *
      * @todo Do this for a bunch of other elements as well, maybe all, maybe a centralized way?
      *
-     * @param array|null $token the token to relate this element to
+     * @param TokenInterface $token the token to relate this element to
      *
      * @return Node the newly created element-node
      */
-    protected function createElement(array $token = null)
+    protected function createElement(TokenInterface $token = null)
     {
 
         $node = $this->createNode('element', $token);
@@ -492,11 +517,11 @@ class Parser
      *
      * After an assignment, an attribute block is required
      *
-     * @param array $token the <assignment>-token
+     * @param AssignmentToken $token the <assignment>-token
      *
      * @throws Exception
      */
-    protected function handleAssignment(array $token)
+    protected function handleAssignment(AssignmentToken $token)
     {
 
         if (!$this->_current)
@@ -508,10 +533,10 @@ class Parser
             );
 
         $node = $this->createNode('assignment', $token);
-        $node->name = $token['name'];
+        $node->name = $token->getName();
         $this->_current->assignments[] = $node;
 
-        if ($this->expectNext(['attributeStart'])) {
+        if ($this->expectNext([AttributeStartToken::class])) {
 
             $element = $this->_current;
             $this->_current = $node;
@@ -532,21 +557,21 @@ class Parser
      *
      * Attributes in elements and mixins always need a valid name
      *
-     * @param array $token the <attribute>-token
+     * @param AttributeToken $token the <attribute>-token
      *
      * @throws Exception
      */
-    protected function handleAttribute(array $token)
+    protected function handleAttribute(AttributeToken $token)
     {
 
         if (!$this->_current)
             $this->_current = $this->createElement();
 
         $node = $this->createNode('attribute', $token);
-        $node->name = $token['name'];
-        $node->value = $token['value'];
-        $node->escaped = $token['escaped'];
-        $node->unchecked = $token['unchecked'];
+        $node->name = $token->getName();
+        $node->value = $token->getValue();
+        $node->escaped = $token->isEscaped();
+        $node->unchecked = $token->isChecked();
 
         if (!$node->name && in_array($this->_current->type, ['element', 'mixin']))
             $this->throwException('Attributes in elements and mixins need a name', $token);
@@ -569,11 +594,11 @@ class Parser
      * After that, an <attributeEnd>-token is expected
      * (When I think about it, the Lexer kind of does that already)
      *
-     * @param array $token the <attributeStart>-token
+     * @param AttributeStartToken $token the <attributeStart>-token
      *
      * @throws Exception
      */
-    protected function handleAttributeStart(array $token)
+    protected function handleAttributeStart(AttributeStartToken $token)
     {
 
         if (!$this->_current)
@@ -584,12 +609,12 @@ class Parser
                 "Attributes can only be placed on element, assignment, import, variable, mixin and mixinCall"
             );
 
-        foreach ($this->lookUpNext(['attribute']) as $subToken) {
+        foreach ($this->lookUpNext([AttributeToken::class]) as $subToken) {
 
             $this->handleToken($subToken);
         }
 
-        if (!$this->expect(['attributeEnd']))
+        if (!$this->expect([AttributeEndToken::class]))
             $this->throwException(
                 "Attribute list not ended",
                 $token
@@ -601,9 +626,9 @@ class Parser
      *
      * It does nothing (right now?)
      *
-     * @param array $token the <attributeEnd>-token
+     * @param AttributeEndToken $token the <attributeEnd>-token
      */
-    protected function handleAttributeEnd(array $token)
+    protected function handleAttributeEnd(AttributeEndToken $token)
     {
 
     }
@@ -613,16 +638,16 @@ class Parser
      *
      * Blocks outside a mixin always need a name! (That's what $_inMixin is for)
      *
-     * @param array $token the <block>-token
+     * @param BlockToken $token the <block>-token
      *
      * @throws Exception
      */
-    protected function handleBlock(array $token)
+    protected function handleBlock(BlockToken $token)
     {
 
         $node = $this->createNode('block', $token);
-        $node->name = isset($token['name']) ? $token['name'] : null;
-        $node->mode = isset($token['mode']) ? $token['mode'] : null;
+        $node->name = $token->getName();
+        $node->mode = $token->getMode();
 
         if (!$node->name && !$this->_inMixin)
             $this->throwException(
@@ -630,8 +655,6 @@ class Parser
             );
 
         $this->_current = $node;
-
-        $this->expectEnd($token);
     }
 
     /**
@@ -644,11 +667,11 @@ class Parser
      *
      * Classes can only exist on elements and mixinCalls
      *
-     * @param array $token the <class>-token
+     * @param ClassToken $token the <class>-token
      *
      * @throws Exception
      */
-    protected function handleClass(array $token)
+    protected function handleClass(ClassToken $token)
     {
 
         if (!$this->_current)
@@ -659,8 +682,9 @@ class Parser
 
         $attr = $this->createNode('attribute', $token);
         $attr->name = 'class';
-        $attr->value = $token['name'];
+        $attr->value = $token->getName();
         $attr->escaped = false;
+        $attr->checked = false;
         $this->_current->attributes[] = $attr;
     }
 
@@ -669,13 +693,13 @@ class Parser
      *
      * The comment node is set as the $_current element
      *
-     * @param array $token the <comment>-token
+     * @param CommentToken $token the <comment>-token
      */
-    protected function handleComment(array $token)
+    protected function handleComment(CommentToken $token)
     {
 
         $node = $this->createNode('comment', $token);
-        $node->rendered = $token['rendered'];
+        $node->rendered = $token->isRendered();
 
         $this->_current = $node;
     }
@@ -683,27 +707,27 @@ class Parser
     /**
      * Handles a <case>-token and parses it into a case-node.
      *
-     * @param array $token the <case>-token
+     * @param CaseToken $token the <case>-token
      */
-    protected function handleCase(array $token)
+    protected function handleCase(CaseToken $token)
     {
 
         $node = $this->createNode('case', $token);
-        $node->subject = $token['subject'];
+        $node->subject = $token->getSubject();
         $this->_current = $node;
     }
 
     /**
      * Handles a <conditional>-token and parses it into a conditional-node.
      *
-     * @param array $token the <conditional>-token
+     * @param ConditionalToken $token the <conditional>-token
      */
-    protected function handleConditional(array $token)
+    protected function handleConditional(ConditionalToken $token)
     {
 
         $node = $this->createNode('conditional', $token);
-        $node->subject = $token['subject'];
-        $node->conditionType = $token['conditionType'];
+        $node->subject = $token->getSubject();
+        $node->conditionType = $token->getName();
 
         $this->_current = $node;
     }
@@ -711,9 +735,9 @@ class Parser
     /**
      * Handles a <do>-token and parses it into a do-node.
      *
-     * @param array $token the <do>-token
+     * @param DoToken $token the <do>-token
      */
-    protected function handleDo(array $token)
+    protected function handleDo(DoToken $token)
     {
 
         $node = $this->createNode('do', $token);
@@ -723,13 +747,13 @@ class Parser
     /**
      * Handles a <doctype>-token and parses it into a doctype-node.
      *
-     * @param array $token the <doctype>-token
+     * @param DoctypeToken $token the <doctype>-token
      */
-    protected function handleDoctype(array $token)
+    protected function handleDoctype(DoctypeToken $token)
     {
 
         $node = $this->createNode('doctype', $token);
-        $node->name = $token['name'];
+        $node->name = $token->getName();
 
         $this->_current = $node;
     }
@@ -737,15 +761,15 @@ class Parser
     /**
      * Handles an <each>-token and parses it into an each-node.
      *
-     * @param array $token the <each>-token
+     * @param EachToken $token the <each>-token
      */
-    protected function handleEach(array $token)
+    protected function handleEach(EachToken $token)
     {
 
         $node = $this->createNode('each', $token);
-        $node->subject = $token['subject'];
-        $node->itemName = $token['itemName'];
-        $node->keyName = isset($token['keyName']) ? $token['keyName'] : null;
+        $node->subject = $token->getSubject();
+        $node->itemName = $token->getItemName();
+        $node->keyName = $token->getKeyName();
 
         $this->_current = $node;
     }
@@ -757,17 +781,17 @@ class Parser
      * to the $_current-element. If not, the expression itself
      * becomes the $_current element
      *
-     * @param array $token the <expression>-token
+     * @param ExpressionToken $token the <expression>-token
      *
      * @throws Exception
      */
-    protected function handleExpression(array $token)
+    protected function handleExpression(ExpressionToken $token)
     {
 
         $node = $this->createNode('expression', $token);
-        $node->escaped = $token['escaped'];
-        $node->unchecked = $token['unchecked'];
-        $node->value = $token['value'];
+        $node->escaped = $token->isEscaped();
+        $node->unchecked = $token->isChecked();
+        $node->value = $token->getValue();
 
         if ($this->_current)
             $this->_current->append($node);
@@ -778,16 +802,16 @@ class Parser
     /**
      * Handles an <code>-token into an code-node.
      *
-     * @param array $token the <code>-token
+     * @param CodeToken $token the <code>-token
      *
      * @throws Exception
      */
-    protected function handleCode(array $token)
+    protected function handleCode(CodeToken $token)
     {
 
         $node = $this->createNode('code', $token);
-        $node->value = $token['value'];
-        $node->block = $token['block'];
+        $node->value = $token->getValue();
+        $node->block = $token->isBlock();
 
         $this->_current = $node;
     }
@@ -795,13 +819,13 @@ class Parser
     /**
      * Handles a <filter>-token and parses it into a filter-node.
      *
-     * @param array $token the <filter>-token
+     * @param FilterToken $token the <filter>-token
      */
-    protected function handleFilter(array $token)
+    protected function handleFilter(FilterToken $token)
     {
 
         $node = $this->createNode('filter', $token);
-        $node->name = $token['name'];
+        $node->name = $token->getName();
         $this->_current = $node;
     }
 
@@ -814,11 +838,11 @@ class Parser
      *
      * They will get converted to attribute-nodes and appended to the current element
      *
-     * @param array $token the <id>-token
+     * @param IdToken $token the <id>-token
      *
      * @throws Exception
      */
-    protected function handleId(array $token)
+    protected function handleId(IdToken $token)
     {
 
         if (!$this->_current)
@@ -829,23 +853,24 @@ class Parser
 
         $attr = $this->createNode('attribute', $token);
         $attr->name = 'id';
-        $attr->value = $token['name'];
+        $attr->value = $token->getName();
         $attr->escaped = false;
+        $attr->checked = false;
         $this->_current->attributes[] = $attr;
     }
 
     /**
      * Handles a <variable>-token and parses it into a variable assignment.
      *
-     * @param array $token the <variable>-token
+     * @param VariableToken $token the <variable>-token
      *
      * @throws Exception
      */
-    protected function handleVariable(array $token)
+    protected function handleVariable(VariableToken $token)
     {
 
         $node = $this->createNode('variable');
-        $node->name = $token['name'];
+        $node->name = $token->getName();
         $node->attributes = [];
         $this->_current = $node;
     }
@@ -860,23 +885,23 @@ class Parser
      * Only "include" can have filters, though.
      * This gets checked in the Compiler, not here
      *
-     * @param array $token the <import>-token
+     * @param ImportToken $token the <import>-token
      *
      * @throws Exception
      */
-    protected function handleImport(array $token)
+    protected function handleImport(ImportToken $token)
     {
 
-        if ($token['importType'] === 'extends' && count($this->_document->children) > 0)
+        if ($token->getName() === 'extends' && count($this->_document->children) > 0)
             $this->throwException(
                 "extends should be the very first statement in a document",
                 $token
             );
 
         $node = $this->createNode('import', $token);
-        $node->importType = $token['importType'];
-        $node->path = $token['path'];
-        $node->filter = $token['filter'];
+        $node->importType = $token->getName();
+        $node->path = $token->getPath();
+        $node->filter = $token->getFilter();
         $node->attributes = [];
         $node->assignments = [];
 
@@ -900,11 +925,11 @@ class Parser
      *
      * @todo Are there other nodes that shouldn't have children?
      *
-     * @param array|null $token the <indent>-token
+     * @param IndentToken $token the <indent>-token
      *
      * @throws Exception
      */
-    protected function handleIndent(array $token = null)
+    protected function handleIndent(IndentToken $token = null)
     {
 
         $this->_level++;
@@ -930,11 +955,11 @@ class Parser
      *
      * @todo Maybe multiple tags could combine with :? Would be ugly and senseless to write a(...)b tho
      *
-     * @param array $token the <tag>-token
+     * @param TagToken $token the <tag>-token
      *
      * @throws Exception
      */
-    protected function handleTag(array $token)
+    protected function handleTag(TagToken $token)
     {
 
         if (!$this->_current)
@@ -946,7 +971,7 @@ class Parser
         if ($this->_current->tag)
             $this->throwException('This element already has a tag name', $token);
 
-        $this->_current->tag = $token['name'];
+        $this->_current->tag = $token->getName();
     }
 
     /**
@@ -956,11 +981,11 @@ class Parser
      * We use $_inMixin and $_mixinLevel for that
      * $_mixinLevel gets reset in handleOutdent
      *
-     * @param array $token the <mixin>-token
+     * @param MixinToken $token the <mixin>-token
      *
      * @throws Exception
      */
-    protected function handleMixin(array $token)
+    protected function handleMixin(MixinToken $token)
     {
 
         if ($this->_inMixin)
@@ -969,7 +994,7 @@ class Parser
             );
 
         $node = $this->createNode('mixin', $token);
-        $node->name = $token['name'];
+        $node->name = $token->getName();
         $node->attributes = [];
         $node->assignments = [];
 
@@ -982,13 +1007,13 @@ class Parser
     /**
      * Handles a <mixinCall>-token and parses it into a mixinCall-node.
      *
-     * @param array $token the <mixinCall>-token
+     * @param MixinCallToken $token the <mixinCall>-token
      */
-    protected function handleMixinCall(array $token)
+    protected function handleMixinCall(MixinCallToken $token)
     {
 
         $node = $this->createNode('mixinCall', $token);
-        $node->name = $token['name'];
+        $node->name = $token->getName();
         $node->attributes = [];
         $node->assignments = [];
 
@@ -1006,9 +1031,9 @@ class Parser
      * 3. Set's the $_last element to the $_current element
      * 4. Resets $_current to null
      *
-     * @param array|null $token the <newLine>-token or null
+     * @param NewLineToken $token the <newLine>-token or null
      */
-    protected function handleNewLine()
+    protected function handleNewLine(NewLineToken $token = null)
     {
 
         if ($this->_current) {
@@ -1039,9 +1064,9 @@ class Parser
      * If we're in a mixin and we're at or below our mixin-level again,
      * we're not in a mixin anymore
      *
-     * @param array|null $token the <outdent>-token
+     * @param OutdentToken $token the <outdent>-token
      */
-    protected function handleOutdent()
+    protected function handleOutdent(OutdentToken $token = null)
     {
 
         $this->_level--;
@@ -1072,11 +1097,11 @@ class Parser
      * $_current is reset after the expansion so that we can collect the expanding element
      * and handle it on a newLine or in an indent
      *
-     * @param array $token the <expansion>-token
+     * @param ExpansionToken $token the <expansion>-token
      *
      * @throws Exception
      */
-    protected function handleExpansion(array $token)
+    protected function handleExpansion(ExpansionToken $token)
     {
 
         if (!$this->_current)
@@ -1085,21 +1110,22 @@ class Parser
                 $token
             );
 
-        if ($this->_current->type === 'element' && !$token['withSpace']) {
+        if ($this->_current->type === 'element' && !$token->hasSpace()) {
 
-            if (!$this->expectNext(['tag'])) {
+            if (!$this->expectNext([TagToken::class])) {
                 $this->throwException(
                     sprintf(
                         "Expected tag name or expansion after double colon, "
                         ."%s received",
-                        $this->getToken()['type']
+                        get_class($this->getToken())
                     ),
                     $token
                 );
             }
 
+            /** @var TagToken $token */
             $token = $this->getToken();
-            $this->_current->tag .= ':'.$token['name'];
+            $this->_current->tag .= ':'.$token->getName();
 
             return;
         }
@@ -1118,15 +1144,15 @@ class Parser
      * If there's a $_current element, we append it to that element,
      * if not, it becomes the $_current element
      *
-     * @param array $token the <text>-token
+     * @param TextToken $token the <text>-token
      */
-    protected function handleText(array $token)
+    protected function handleText(TextToken $token)
     {
 
         $node = $this->createNode('text', $token);
-        $node->value = $token['value'];
-        $node->level = $token['level'];
-        $node->escaped = $token['escaped'];
+        $node->value = $token->getValue();
+        $node->level = $token->getLevel();
+        $node->escaped = $token->isEscaped();
 
         if ($this->_current) {
 
@@ -1138,27 +1164,27 @@ class Parser
     /**
      * Handles a <when>-token and parses it into a when-node.
      *
-     * @param array $token the <when>-token
+     * @param WhenToken $token the <when>-token
      */
-    protected function handleWhen(array $token)
+    protected function handleWhen(WhenToken $token)
     {
 
         $node = $this->createNode('when', $token);
-        $node->subject = $token['subject'];
-        $node->default = $token['default'];
+        $node->subject = $token->getSubject();
+        $node->default = $token->getName() === 'default';
         $this->_current = $node;
     }
 
     /**
      * Handles a <while>-token and parses it into a while-node.
      *
-     * @param array $token the <while>-token
+     * @param WhileToken $token the <while>-token
      */
-    protected function handleWhile(array $token)
+    protected function handleWhile(WhileToken $token)
     {
 
         $node = $this->createNode('while', $token);
-        $node->subject = $token['subject'];
+        $node->subject = $token->getSubject();
         $this->_current = $node;
     }
 
@@ -1166,13 +1192,13 @@ class Parser
     /**
      * Handles a <for>-token and parses it into a for-node.
      *
-     * @param array $token the <while>-token
+     * @param ForToken $token the <while>-token
      */
-    protected function handleFor(array $token)
+    protected function handleFor(ForToken $token)
     {
 
         $node = $this->createNode('for', $token);
-        $node->subject = $token['subject'];
+        $node->subject = $token->getSubject();
         $this->_current = $node;
     }
 

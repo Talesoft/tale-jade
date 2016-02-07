@@ -6,7 +6,7 @@ use Tale\Jade\Lexer\TokenBase;
 
 class ImportToken extends TokenBase
 {
-    use TypeTrait;
+    use NameTrait;
 
     private $_filter = null;
     private $_path = null;
@@ -54,7 +54,7 @@ class ImportToken extends TokenBase
     protected function dump()
     {
         return [
-            'type' => $this->getType(),
+            'name' => $this->getName(),
             'filter' => $this->getFilter(),
             'path' => $this->getPath()
         ];

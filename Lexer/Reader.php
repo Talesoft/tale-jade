@@ -2,7 +2,7 @@
 
 namespace Tale\Jade\Lexer;
 
-use Tale\Jade\Lexer\Reader\Exception;
+use Tale\Jade\Lexer\Reader\Exception as ReaderException;
 
 class Reader
 {
@@ -522,7 +522,7 @@ class Reader
     protected function throwException($message)
     {
 
-        throw new Exception(sprintf(
+        throw new ReaderException(sprintf(
             "Failed to read: %s \nNear: %s \nLine: %s \nOffset: %s \nPosition: %s",
             $message,
             $this->peek(20),

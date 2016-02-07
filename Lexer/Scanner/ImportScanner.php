@@ -13,7 +13,7 @@ class ImportScanner implements ScannerInterface
 
         return $lexer->scanToken(
             ImportToken::class,
-            '(?<type>extends|include)(?::(?<filter>[a-zA-Z_][a-zA-Z0-9\-_]*))?[\t ]+(?<path>[a-zA-Z0-9\-_\\/\. ]+)'
+            '(?<name>extends|include)(?::(?<filter>[a-zA-Z_][a-zA-Z0-9\-_]*))?[\t ]+(?<path>[a-zA-Z0-9\-_\\/\. ]+)'
         );
     }
 }

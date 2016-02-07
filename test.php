@@ -5,6 +5,24 @@ include 'vendor/autoload.php';
 $lexer = new Tale\Jade\Lexer();
 
 echo '<pre>';
+
+
+$files = glob('Lexer/Token/*Token.php');
+
+foreach ($files as $file) {
+
+    echo "use Tale\\Jade\\Lexer\\Token\\".basename($file, '.php').";\n";
+}
+
+echo "\n";
+
+foreach ($files as $file) {
+
+    echo basename($file, '.php')."::class => [\$this, 'handle".basename($file, 'Token.php')."'],\n";
+}
+
+
+
 $jade = <<<'JADE'
 | Some text
 !| Some text
