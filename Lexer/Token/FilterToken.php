@@ -3,6 +3,7 @@
 namespace Tale\Jade\Lexer\Token;
 
 use Tale\Jade\Lexer\TokenBase;
+use Tale\Jade\Util\NameTrait;
 
 class FilterToken extends TokenBase
 {
@@ -10,9 +11,7 @@ class FilterToken extends TokenBase
 
     protected function dump()
     {
-        return [
-            'name' => $this->getName()
-        ];
+        return $this->getName();
     }
 
 

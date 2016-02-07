@@ -4,6 +4,7 @@ namespace Tale\Jade\Lexer\Scanner;
 
 use Tale\Jade\Lexer;
 use Tale\Jade\Lexer\ScannerInterface;
+use Tale\Jade\Lexer\State;
 use Tale\Jade\Lexer\Token\AttributeEndToken;
 use Tale\Jade\Lexer\Token\AttributeStartToken;
 use Tale\Jade\Lexer\Token\AttributeToken;
@@ -11,10 +12,10 @@ use Tale\Jade\Lexer\Token\AttributeToken;
 class AttributeScanner implements ScannerInterface
 {
 
-    public function scan(Lexer $lexer)
+    public function scan(State $state)
     {
 
-        $reader = $lexer->getReader();
+        $reader = $state->getReader();
 
         if (!$reader->peekChar('('))
             return;
@@ -23,14 +24,14 @@ class AttributeScanner implements ScannerInterface
 
         $reader->consume();
 
-        yield $lexer->createToken(AttributeStartToken::class);
+        yield $state->createToken(AttributeStartToken::class);
 
         $reader->readSpaces();
 
         if ($reader->peekChar(')')) {
 
             $reader->consume();
-            yield $lexer->createToken(AttributeEndToken::class);
+            yield $state->createToken(AttributeEndToken::class);
             return;
         }
 
@@ -50,7 +51,7 @@ class AttributeScanner implements ScannerInterface
             //We create the attribute token first (we don't need to yield it
             //but we fill it sequentially)
             /** @var AttributeToken $token */
-            $token = $lexer->createToken(AttributeToken::class);
+            $token = $state->createToken(AttributeToken::class);
             $token->escape();
 
             $expr = $reader->readExpression(array_merge(
@@ -84,7 +85,6 @@ class AttributeScanner implements ScannerInterface
                 $reader->consume();
             }
 
-
             $token->setName($expr);
 
             if ($hasValue) {
@@ -112,17 +112,17 @@ class AttributeScanner implements ScannerInterface
         }
 
         if (!$reader->peekChar(')'))
-            $lexer->throwException(
+            $state->throwException(
                 "Unclosed attribute block"
             );
 
         $reader->consume();
-        yield $lexer->createToken(AttributeEndToken::class);
+        yield $state->createToken(AttributeEndToken::class);
 
-        foreach ($lexer->scan(ClassScanner::class) as $subToken)
+        foreach ($state->scan(ClassScanner::class) as $subToken)
             yield $subToken;
 
-        foreach ($lexer->scan(SubScanner::class) as $subToken)
+        foreach ($state->scan(SubScanner::class) as $subToken)
             yield $subToken;
     }
 }

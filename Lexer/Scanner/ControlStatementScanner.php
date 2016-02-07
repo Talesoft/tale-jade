@@ -4,6 +4,7 @@ namespace Tale\Jade\Lexer\Scanner;
 
 use Tale\Jade\Lexer;
 use Tale\Jade\Lexer\ScannerInterface;
+use Tale\Jade\Lexer\State;
 
 class ControlStatementScanner implements ScannerInterface
 {
@@ -18,16 +19,16 @@ class ControlStatementScanner implements ScannerInterface
         $this->_names = $names;
     }
 
-    public function scan(Lexer $lexer)
+    public function scan(State $state)
     {
 
-        $reader = $lexer->getReader();
+        $reader = $state->getReader();
         $names = implode('|', $this->_names);
 
         if (!$reader->match("({$names})[ \t\n:]", null, " \t\n:"))
             return;
 
-        $token = $lexer->createToken($this->_tokenClassName);
+        $token = $state->createToken($this->_tokenClassName);
         $name = $reader->getMatch(1);
         $reader->consume();
 
@@ -42,7 +43,7 @@ class ControlStatementScanner implements ScannerInterface
 
         yield $token;
 
-        foreach ($lexer->scan(SubScanner::class) as $token)
+        foreach ($state->scan(SubScanner::class) as $token)
             yield $token;
     }
 }

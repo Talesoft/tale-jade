@@ -3,6 +3,7 @@
 namespace Tale\Jade\Lexer\Token;
 
 use Tale\Jade\Lexer\TokenBase;
+use Tale\Jade\Util\NameTrait;
 
 class MixinCallToken extends TokenBase
 {
@@ -10,8 +11,6 @@ class MixinCallToken extends TokenBase
 
     protected function dump()
     {
-        return [
-            'name' => $this->getName()
-        ];
+        return $this->getName();
     }
 }

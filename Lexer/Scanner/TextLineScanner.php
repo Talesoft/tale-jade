@@ -4,14 +4,15 @@ namespace Tale\Jade\Lexer\Scanner;
 
 use Tale\Jade\Lexer;
 use Tale\Jade\Lexer\ScannerInterface;
+use Tale\Jade\Lexer\State;
 use Tale\Jade\Lexer\Token\TextToken;
 
 class TextLineScanner implements ScannerInterface
 {
-    public function scan(Lexer $lexer)
+    public function scan(State $state)
     {
 
-        $reader = $lexer->getReader();
+        $reader = $state->getReader();
 
         if (!$reader->match('([!]?)\|'))
             return;
@@ -20,7 +21,7 @@ class TextLineScanner implements ScannerInterface
 
         $reader->consume();
 
-        foreach ($lexer->scan(TextBlockScanner::class) as $token) {
+        foreach ($state->scan(TextBlockScanner::class) as $token) {
 
             if ($escaped && $token instanceof TextToken)
                 $token->escape();

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tale\Jade\Lexer\Token;
+namespace Tale\Jade\Util;
 
 trait ValueTrait
 {

@@ -3,60 +3,23 @@
 namespace Tale\Jade\Lexer\Token;
 
 use Tale\Jade\Lexer\TokenBase;
+use Tale\Jade\Util\FilterTrait;
+use Tale\Jade\Util\NameTrait;
+use Tale\Jade\Util\PathTrait;
 
 class ImportToken extends TokenBase
 {
     use NameTrait;
-
-    private $_filter = null;
-    private $_path = null;
-
-    /**
-     * @return string
-     */
-    public function getFilter()
-    {
-        return $this->_filter;
-    }
-
-    /**
-     * @param string $filter
-     *
-     * @return ImportToken
-     */
-    public function setFilter($filter)
-    {
-        $this->_filter = $filter;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPath()
-    {
-        return $this->_path;
-    }
-
-    /**
-     * @param string $path
-     *
-     * @return ImportToken
-     */
-    public function setPath($path)
-    {
-        $this->_path = $path;
-
-        return $this;
-    }
+    use PathTrait;
+    use FilterTrait;
 
     protected function dump()
     {
-        return [
-            'name' => $this->getName(),
-            'filter' => $this->getFilter(),
-            'path' => $this->getPath()
-        ];
+        return sprintf(
+            "%s (%s, %s)",
+            $this->getPath() ?: '[No path]',
+            $this->getName() ?: '[No name]',
+            $this->getFilter() ?: 'jade'
+        );
     }
 }

@@ -4,34 +4,35 @@ namespace Tale\Jade\Lexer\Scanner;
 
 use Tale\Jade\Lexer;
 use Tale\Jade\Lexer\ScannerInterface;
+use Tale\Jade\Lexer\State;
 use Tale\Jade\Lexer\Token\EachToken;
 
 class EachScanner implements ScannerInterface
 {
 
-    public function scan(Lexer $lexer)
+    public function scan(State $state)
     {
 
-        $reader = $lexer->getReader();
+        $reader = $state->getReader();
 
         if (!$reader->match("each[\t ]+"))
             return;
 
         /** @var EachToken $token */
-        $token = $lexer->createToken(EachToken::class);
+        $token = $state->createToken(EachToken::class);
         $reader->consume();
 
         if (!$reader->match(
             "\\$?(?<itemName>[a-zA-Z_][a-zA-Z0-9_]*)(?:[\t ]*,[\t ]*\\$?(?<keyName>[a-zA-Z_][a-zA-Z0-9_]*))?[\t ]+in[\t ]+"
         )) {
 
-            $lexer->throwException(
+            $state->throwException(
                 'The syntax for each is `each [$]itemName[, [$]keyName]] in [subject]`'
             );
         }
 
-        $token->setItemName($reader->getMatch('itemName'));
-        $token->setKeyName($reader->getMatch('keyName'));
+        $token->setItem($reader->getMatch('itemName'));
+        $token->setKey($reader->getMatch('keyName'));
 
         $reader->consume();
 

@@ -37,7 +37,8 @@
         "files": [
             "functions.php",
             "Lexer/functions.php",
-            "Compiler/functions.php"
+            "Compiler/functions.php",
+            "Compiler/runtime-functions.php"
         ]
     },
     "bin": ["tale-jade"],

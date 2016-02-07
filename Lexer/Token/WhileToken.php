@@ -3,6 +3,7 @@
 namespace Tale\Jade\Lexer\Token;
 
 use Tale\Jade\Lexer\TokenBase;
+use Tale\Jade\Util\SubjectTrait;
 
 class WhileToken extends TokenBase
 {
@@ -10,8 +11,6 @@ class WhileToken extends TokenBase
 
     protected function dump()
     {
-        return [
-            'subject' => $this->getSubject()
-        ];
+        return $this->getSubject();
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tale\Jade\Lexer\Token;
+namespace Tale\Jade\Util;
 
 trait EscapeTrait
 {
@@ -11,6 +11,14 @@ trait EscapeTrait
     {
 
         return $this->_escaped;
+    }
+
+    public function setIsEscaped($escaped)
+    {
+
+        $this->_escaped = $escaped;
+
+        return $this;
     }
 
     public function escape()

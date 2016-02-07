@@ -4,6 +4,7 @@ namespace Tale\Jade\Lexer\Scanner;
 
 use Tale\Jade\Lexer;
 use Tale\Jade\Lexer\ScannerInterface;
+use Tale\Jade\Lexer\State;
 use Tale\Jade\Lexer\Token\CaseToken;
 use Tale\Jade\Lexer\Token\CodeToken;
 use Tale\Jade\Lexer\Token\ExpressionToken;
@@ -11,19 +12,19 @@ use Tale\Jade\Lexer\Token\ExpressionToken;
 class CodeScanner implements ScannerInterface
 {
 
-    public function scan(Lexer $lexer)
+    public function scan(State $state)
     {
 
-        $reader = $lexer->getReader();
+        $reader = $state->getReader();
 
         if (!$reader->peekChar('-'))
             return;
 
         /** @var CodeToken $token */
-        $token = $lexer->createToken(CodeToken::class);
+        $token = $state->createToken(CodeToken::class);
         $reader->consume();
 
-        foreach ($lexer->scan(TextScanner::class) as $textToken) {
+        foreach ($state->scan(TextScanner::class) as $textToken) {
 
             yield $token;
             yield $textToken;
@@ -33,7 +34,7 @@ class CodeScanner implements ScannerInterface
         $token->setIsBlock(true);
         yield $token;
 
-        foreach ($lexer->scan(TextBlockScanner::class) as $token) {
+        foreach ($state->scan(TextBlockScanner::class) as $token) {
 
             yield $token;
         }

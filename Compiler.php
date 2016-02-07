@@ -344,8 +344,8 @@ class Compiler
             'lexerOptions'            => []
         ], $options);
 
-        $this->_lexer = $lexer ? $lexer : new Lexer($this->_options['lexerOptions']);
-        $this->_parser = $parser ? $parser : new Parser($this->_options['parserOptions'], $this->_lexer);
+        $this->_lexer = $lexer ?: new Lexer($this->_options['lexerOptions']);
+        $this->_parser = $parser ?: new Parser($this->_options['parserOptions'], $this->_lexer);
     }
 
     /**
@@ -485,7 +485,7 @@ class Compiler
         $helpers = '';
         if ($this->_options['standAlone']) {
 
-            $helpers = file_get_contents(__DIR__.'/Compiler/functions.php')."\n?>\n";
+            $helpers = file_get_contents(__DIR__.'/Compiler/runtime-functions.php')."\n?>\n";
             $helpers .= $this->createCode('namespace {');
         }
 

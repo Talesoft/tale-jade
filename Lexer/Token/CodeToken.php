@@ -3,31 +3,16 @@
 namespace Tale\Jade\Lexer\Token;
 
 use Tale\Jade\Lexer\TokenBase;
+use Tale\Jade\Util\BlockTrait;
+use Tale\Jade\Util\ValueTrait;
 
 class CodeToken extends TokenBase
 {
     use ValueTrait;
-
-    private $_block = false;
-
-    public function isBlock()
-    {
-
-        return $this->_block;
-    }
-
-    public function setIsBlock($block)
-    {
-
-        $this->_block = $block;
-
-        return $this;
-    }
+    use BlockTrait;
 
     protected function dump()
     {
-        return [
-            'block' => $this->isBlock() ? 'yes' : 'no'
-        ];
+        return  $this->isBlock() ? 'block' : 'line';
     }
 }

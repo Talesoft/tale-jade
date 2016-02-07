@@ -4,12 +4,13 @@ namespace Tale\Jade\Lexer\Scanner;
 
 use Tale\Jade\Lexer;
 use Tale\Jade\Lexer\ScannerInterface;
+use Tale\Jade\Lexer\State;
 use Tale\Jade\Lexer\Token\CaseToken;
 
 class CaseScanner implements ScannerInterface
 {
 
-    public function scan(Lexer $lexer)
+    public function scan(State $state)
     {
 
         $scanner = new ControlStatementScanner(
@@ -17,7 +18,7 @@ class CaseScanner implements ScannerInterface
             ['case']
         );
 
-        foreach ($lexer->scan($scanner) as $token)
+        foreach ($state->scan($scanner) as $token)
             yield $token;
     }
 }

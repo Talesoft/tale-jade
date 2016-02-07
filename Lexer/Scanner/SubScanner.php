@@ -4,14 +4,15 @@ namespace Tale\Jade\Lexer\Scanner;
 
 use Tale\Jade\Lexer;
 use Tale\Jade\Lexer\ScannerInterface;
+use Tale\Jade\Lexer\State;
 use Tale\Jade\Lexer\Token\TextToken;
 
 class SubScanner implements ScannerInterface
 {
-    public function scan(Lexer $lexer)
+    public function scan(State $state)
     {
 
-        $reader = $lexer->getReader();
+        $reader = $state->getReader();
 
         //Text block on tags etc. (p. some text|p!. some text)
         if ($reader->match('([!]?)\.')) {
@@ -19,7 +20,7 @@ class SubScanner implements ScannerInterface
             $escape = $reader->getMatch(1) === '!';
             $reader->consume();
 
-            foreach ($lexer->scan(TextBlockScanner::class) as $token) {
+            foreach ($state->scan(TextBlockScanner::class) as $token) {
 
                 if ($token instanceof TextToken && $escape)
                     $token->escape();
@@ -33,14 +34,14 @@ class SubScanner implements ScannerInterface
 
             $reader->consume();
 
-            foreach ($lexer->scan(TextScanner::class) as $token) {
+            foreach ($state->scan(TextScanner::class) as $token) {
 
                 $token->escape();
                 yield $token;
             }
         }
 
-        foreach ($lexer->scan(ExpansionScanner::class) as $token)
+        foreach ($state->scan(ExpansionScanner::class) as $token)
             yield $token;
     }
 }

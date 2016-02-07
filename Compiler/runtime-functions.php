@@ -1,8 +1,6 @@
 <?php
 
 namespace Tale\Jade\Compiler {
-    //We use the bracket-style here to be able to compile
-    //this file into compiled jade templates for valid PHP
 
     if (!function_exists(__NAMESPACE__.'\\build_value')) {
 

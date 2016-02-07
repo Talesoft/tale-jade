@@ -3,6 +3,8 @@
 namespace Tale\Jade\Lexer\Token;
 
 use Tale\Jade\Lexer\TokenBase;
+use Tale\Jade\Util\NameTrait;
+use Tale\Jade\Util\SubjectTrait;
 
 class ConditionalToken extends TokenBase
 {
@@ -11,9 +13,10 @@ class ConditionalToken extends TokenBase
 
     protected function dump()
     {
-        return [
-            'name' => $this->getName(),
-            'subject' => $this->getSubject()
-        ];
+        return sprintf(
+            "%s (%s)",
+            $this->getSubject() ?: '[No subject]',
+            $this->getName()
+        );
     }
 }

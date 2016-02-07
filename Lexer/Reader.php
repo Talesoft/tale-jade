@@ -38,6 +38,10 @@ class Reader
         $this->_lastPeekResult = null;
         $this->_lastMatchResult = null;
         $this->_nextConsumeLength = null;
+
+        $this->_position = 0;
+        $this->_line = 0;
+        $this->_offset = 0;
     }
 
     /**

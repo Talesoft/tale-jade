@@ -2,19 +2,21 @@
 
 namespace Tale\Jade\Lexer;
 
+use Tale\Jade\Util\LevelGetTrait;
+
 abstract class TokenBase implements TokenInterface
 {
+    use LevelGetTrait;
 
     private $_line;
     private $_offset;
-    private $_level;
 
-    public function __construct($line, $offset, $level)
+    public function __construct($line = null, $offset = null, $level = null)
     {
 
-        $this->_line = $line;
-        $this->_offset = $offset;
-        $this->_level = $level;
+        $this->_line = $line ?: 0;
+        $this->_offset = $offset ?: 0;
+        $this->_level = $level ?: 0;
     }
 
     /**
@@ -33,18 +35,10 @@ abstract class TokenBase implements TokenInterface
         return $this->_offset;
     }
 
-    /**
-     * @return int
-     */
-    public function getLevel()
-    {
-        return $this->_level;
-    }
-
     protected function dump()
     {
 
-        return [];
+        return '';
     }
 
     public function __toString()
@@ -53,18 +47,12 @@ abstract class TokenBase implements TokenInterface
         $name = basename(get_called_class(), 'Token');
         $line = $this->getLine();
         $offset = $this->getOffset();
-        $data = $this->dump();
-        $str = "[$name($line:$offset)";
+        $dump = $this->dump();
 
-        if (count($data)) {
-
-            $str .= ' '.implode(', ', array_map(function ($key, $value) {
-
-                return "$key=$value";
-            }, array_keys($data), $data));
-        }
-
-        $str .= ']';
+        $str = "[$name";
+        if (!empty($dump))
+            $str .= " $dump";
+        $str .= "]";
 
         return $str;
     }

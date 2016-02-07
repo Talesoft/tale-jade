@@ -3,6 +3,8 @@
 namespace Tale\Jade\Lexer\Token;
 
 use Tale\Jade\Lexer\TokenBase;
+use Tale\Jade\Util\EscapeTrait;
+use Tale\Jade\Util\ValueTrait;
 
 class TextToken extends TokenBase
 {
@@ -12,9 +14,10 @@ class TextToken extends TokenBase
     protected function dump()
     {
 
-        return [
-            'value' => htmlentities($this->getValue(), ENT_QUOTES, 'UTF-8'),
-            'escaped' => $this->isEscaped() ? 'yes' : 'no'
-        ];
+        return sprintf(
+            "%s (%s)",
+            $this->getValue() ?: '[No value]',
+            $this->isEscaped() ? 'escaped' : 'unescaped'
+        );
     }
 }

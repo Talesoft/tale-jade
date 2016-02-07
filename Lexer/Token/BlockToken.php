@@ -3,39 +3,21 @@
 namespace Tale\Jade\Lexer\Token;
 
 use Tale\Jade\Lexer\TokenBase;
+use Tale\Jade\Util\ModeTrait;
+use Tale\Jade\Util\NameTrait;
 
 class BlockToken extends TokenBase
 {
     use NameTrait;
-
-    private $_mode = null;
-
-    /**
-     * @return string
-     */
-    public function getMode()
-    {
-        return $this->_mode;
-    }
-
-    /**
-     * @param string $mode
-     *
-     * @return BlockToken
-     */
-    public function setMode($mode)
-    {
-        $this->_mode = $mode;
-
-        return $this;
-    }
+    use ModeTrait;
 
     protected function dump()
     {
-        return [
-            'name' => $this->getName(),
-            'mode' => $this->getMode()
-        ];
+        return sprintf(
+            "%s (%s)",
+            $this->getName() ?: '[No name]',
+            $this->getMode() ?: '[No mode]'
+        );
     }
 
 

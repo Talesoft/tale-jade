@@ -26,7 +26,6 @@
 namespace Tale\Jade;
 
 use Tale\ConfigurableTrait;
-use Tale\Jade\Lexer\Exception;
 use Tale\Jade\Lexer\Reader;
 use Tale\Jade\Lexer\Scanner\AssignmentScanner;
 use Tale\Jade\Lexer\Scanner\AttributeScanner;
@@ -56,7 +55,7 @@ use Tale\Jade\Lexer\Scanner\VariableScanner;
 use Tale\Jade\Lexer\Scanner\WhenScanner;
 use Tale\Jade\Lexer\Scanner\WhileScanner;
 use Tale\Jade\Lexer\ScannerInterface;
-use Tale\Jade\Lexer\TokenInterface;
+use Tale\Jade\Lexer\State;
 
 /**
  * Performs lexical analysis and provides a token generator.
@@ -103,9 +102,11 @@ class Lexer
     const INDENT_TAB = "\t";
 
     /**
-     * @var Reader
+     * @var State
      */
-    private $_reader;
+    private $_state;
+
+    private $_scanners;
 
     /**
      * Creates a new lexer instance.
@@ -130,12 +131,17 @@ class Lexer
      *
      * @param array|null $options the options passed to the lexer instance
      *
+     * @TODO: Maybe the scanners could be respresented as a tree,
+     *        that may remove many ->scan calls inside the scanners
+     *        and would make scan modifications easier
+     *
      * @throws \Exception
      */
     public function __construct(array $options = null)
     {
 
         $this->defineOptions([
+            'stateClassName' => State::class,
             'level' => 0,
             'indentStyle' => null,
             'indentWidth' => null,
@@ -171,130 +177,39 @@ class Lexer
             ]
         ], $options);
 
-        $this->_reader = null;
-        $this->_level = 0;
+        $this->_state = null;
+        $this->_scanners = [];
 
-        $this->validateIndentStyle($this->_options['indentStyle']);
-        $this->validateIndentWidth($this->_options['indentWidth']);
-
-        foreach ($this->_options['scanners'] as $scanner)
-            $this->validateScanner($scanner);
+        foreach ($this->getOption('scanners') as $name => $scanner)
+            $this->setScanner($name, $scanner);
     }
 
     /**
-     * @return Reader
+     * @return State
      */
-    public function getReader()
-    {
-        return $this->_reader;
-    }
-
-    /**
-     * Returns the current indentation level we are on.
-     *
-     * @return int
-     */
-    public function getLevel()
+    public function getState()
     {
 
-        return $this->_options['level'];
-    }
-
-    public function setLevel($level)
-    {
-
-        if (!is_int($level))
-            $this->throwException(
-                "Level needs to be an integer"
+        if (!$this->_state)
+            throw new \RuntimeException(
+                "Failed to get state: No lexing process active. "
+                ."Use the lex method"
             );
 
-        $this->_options['level'] = $level;
-
-        return $this;
-    }
-
-    /**
-     * Returns the detected or previously passed indentation style.
-     *
-     * @return string
-     */
-    public function getIndentStyle()
-    {
-
-        return $this->_options['indentStyle'];
-    }
-
-    public function setIndentStyle($indentStyle)
-    {
-
-        $this->validateIndentStyle($indentStyle);
-        $this->_options['indentStyle'] = $indentStyle;
-
-        return $this;
-    }
-
-    /**
-     * Returns the detected or previously passed indentation width.
-     *
-     * @return int
-     */
-    public function getIndentWidth()
-    {
-
-        return $this->_options['indentWidth'];
-    }
-
-    public function setIndentWidth($indentWidth)
-    {
-
-        $this->validateIndentWidth($indentWidth);
-        $this->_options['indentWidth'] = $indentWidth;
-
-        return $this;
+        return $this->_state;
     }
 
     public function setScanner($name, $scanner)
     {
 
-        $this->validateScanner($scanner);
-
-        $this->_options['scanners'][$name] = $scanner;
-
-        return $this;
-    }
-
-    public function validateScanner($scanner)
-    {
-
-        if (!is_subclass_of($scanner, ScannerInterface::class)) {
-
-            if (is_object($scanner))
-                $scanner = get_class($scanner);
-
-            $this->throwException(
+        if (!is_subclass_of($scanner, ScannerInterface::class))
+            throw new \InvalidArgumentException(
                 "Scanner $scanner is not a valid ".ScannerInterface::class
             );
-        }
-    }
 
-    public function validateIndentStyle($indentStyle)
-    {
+        $this->_scanners[$name] = $scanner;
 
-        if (!in_array($indentStyle, [null, self::INDENT_TAB, self::INDENT_SPACE]))
-            $this->throwException(
-                "indentStyle needs to be null or one of the INDENT_* constants of the lexer"
-            );
-    }
-
-    public function validateIndentWidth($indentWidth)
-    {
-
-        if (!is_null($indentWidth) &&
-            (!is_int($indentWidth) || $indentWidth < 1)
-        )
-            $this->throwException(
-                "indentWidth needs to be null or an integer above 0"
-            );
+        return $this;
     }
 
     /**
@@ -321,181 +236,24 @@ class Lexer
     public function lex($input)
     {
 
-        $this->_reader = new Reader($input, $this->_options['encoding']);
-        $this->_reader->normalize();
-        $startLevel = $this->getLevel();
+        $stateClassName = $this->getOption('stateClassName');
 
-        foreach ($this->loopScan($this->_options['scanners']) as $token)
+        if (!is_a($stateClassName, State::class, true))
+            throw new \InvalidArgumentException(
+                'stateClassName needs to be a valid '.State::class.' sub class'
+            );
+
+        $this->_state = new State([
+            'input' => $input,
+            'encoding' => $this->getOption('encoding'),
+            'indentStyle' => $this->getOption('indentStyle'),
+            'indentWidth' => $this->getOption('indentWidth'),
+            'level' => $this->getOption('level')
+        ]);
+
+        foreach ($this->_state->loopScan($this->_scanners) as $token)
             yield $token;
 
-        $this->_reader = null;
-        $this->setLevel($startLevel);
-    }
-
-    /**
-     * Keeps scanning for all types of tokens passed as the first argument.
-     *
-     * If one token is encountered that's not in $scans, the function breaks
-     * or throws an exception, if the second argument is true
-     *
-     * The passed scans get converted to methods
-     * e.g. newLine => scanNewLine, blockExpansion => scanBlockExpansion etc.
-     *
-     * @param array|string      $scanners          the scans to perform
-     *
-     * @return \Generator the generator yielding all tokens found
-     * @throws Exception
-     */
-    public function scan($scanners)
-    {
-
-        if (!$this->_reader)
-            $this->throwException(
-                "You need to be inside a lexing process to scan"
-            );
-
-        $scanners = is_array($scanners) ? $scanners : [$scanners];
-        foreach ($scanners as $name => $scanner) {
-
-            $this->validateScanner($scanner);
-
-            /** @var ScannerInterface $scanner */
-            $scanner = is_string($scanner) ? new $scanner() : $scanner;
-            $success = false;
-            foreach ($scanner->scan($this) as $token) {
-
-                if (!($token instanceof TokenInterface))
-                    $this->throwException(
-                        "Scanner $name generator result is not a ".TokenInterface::class
-                    );
-
-                yield $token;
-                $success = true;
-            }
-            $scanner = null;
-
-            if ($success)
-                return;
-        }
-    }
-
-    public function loopScan($scanners, $required = false)
-    {
-
-        if (!$this->_reader)
-            $this->throwException(
-                "You need to be inside a lexing process to scan"
-            );
-
-        while ($this->_reader->hasLength()) {
-
-            $success = false;
-            foreach ($this->scan($scanners) as $token) {
-
-                $success = true;
-                yield $token;
-            }
-
-            if (!$success)
-                break;
-        }
-
-        if ($this->_reader->hasLength() && $required)
-            $this->throwException(
-                "Unexpected ".$this->_reader->peek(20)
-            );
-    }
-
-    /**
-     * Creates a new token.
-     *
-     * A token is an associative array.
-     * The following keys _always_ exist:
-     *
-     * type:    The type of the node (e.g. newLine, tag, class, id)
-     * line:    The line we encountered this token on
-     * offset:  The offset on a line we encountered it on
-     *
-     * Before adding a new token-type, make sure that the Parser knows how
-     * to handle it and the Compiler knows how to compile it.
-     *
-     * @param string $className the class name of the token
-     *
-     * @return array the token array
-     */
-    public function createToken($className)
-    {
-
-        if (!$this->_reader)
-            $this->throwException(
-                "You need to be inside a lexing process to create lexer tokens"
-            );
-
-        if (!is_subclass_of($className, TokenInterface::class))
-            $this->throwException(
-                "$className is not a valid token class"
-            );
-
-        return new $className(
-            $this->_reader->getLine(),
-            $this->_reader->getOffset(),
-            $this->_level
-        );
-    }
-
-    public function scanToken($className, $pattern, $modifiers = null)
-    {
-
-        if (!$this->_reader)
-            $this->throwException(
-                "You need to be inside a lexing process to create lexer tokens"
-            );
-
-        if (!$this->_reader->match($pattern, $modifiers))
-            return;
-
-        $data = $this->_reader->getMatchData();
-        $this->_reader->consume();
-        $token = $this->createToken($className);
-        foreach ($data as $key => $value) {
-
-            $method = 'set'.ucfirst($key);
-
-            if (method_exists($token, $method))
-                call_user_func([$token, $method], $value);
-        }
-
-        yield $token;
-    }
-
-    /**
-     * Throws a lexer-exception.
-     *
-     * The current line and offset of the exception
-     * get automatically appended to the message
-     *
-     * @param string $message A meaningful error message
-     *
-     * @throws Exception
-     */
-    public function throwException($message)
-    {
-
-        $pattern = "Failed to lex jade: %s";
-        $args[] = $message;
-
-        if ($this->_reader) {
-
-            $pattern .= " \nNear: %s \nLine: %s \nOffset: %s \nPosition: %s";
-            array_push(
-                $args,
-                $this->_reader->peek(20),
-                $this->_reader->getLine(),
-                $this->_reader->getOffset(),
-                $this->_reader->getPosition()
-            );
-        }
-
-        throw new Exception(vsprintf($pattern, $args));
+        $this->_state = null;
     }
 }

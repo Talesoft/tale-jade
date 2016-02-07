@@ -1,6 +1,6 @@
 <?php
 
-namespace Tale\Jade\Lexer\Token;
+namespace Tale\Jade\Util;
 
 trait CheckTrait
 {
@@ -11,6 +11,14 @@ trait CheckTrait
     {
 
         return $this->_checked;
+    }
+
+    public function setIsChecked($checked)
+    {
+
+        $this->_checked = $checked;
+
+        return $this;
     }
 
     public function check()

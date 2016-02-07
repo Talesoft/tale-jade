@@ -58,6 +58,29 @@ use Tale\Jade\Lexer\Token\TextToken;
 use Tale\Jade\Lexer\Token\VariableToken;
 use Tale\Jade\Lexer\Token\WhenToken;
 use Tale\Jade\Lexer\Token\WhileToken;
+use Tale\Jade\Parser\Node\AssignmentNode;
+use Tale\Jade\Parser\Node\AttributeNode;
+use Tale\Jade\Parser\Node\BlockNode;
+use Tale\Jade\Parser\Node\CaseNode;
+use Tale\Jade\Parser\Node\CodeNode;
+use Tale\Jade\Parser\Node\CommentNode;
+use Tale\Jade\Parser\Node\ConditionalNode;
+use Tale\Jade\Parser\Node\DoctypeNode;
+use Tale\Jade\Parser\Node\DoNode;
+use Tale\Jade\Parser\Node\EachNode;
+use Tale\Jade\Parser\Node\ElementNode;
+use Tale\Jade\Parser\Node\ExpressionNode;
+use Tale\Jade\Parser\Node\FilterNode;
+use Tale\Jade\Parser\Node\ForNode;
+use Tale\Jade\Parser\Node\ImportNode;
+use Tale\Jade\Parser\Node\MixinCallNode;
+use Tale\Jade\Parser\Node\MixinNode;
+use Tale\Jade\Parser\Node\TextNode;
+use Tale\Jade\Parser\Node\VariableNode;
+use Tale\Jade\Parser\Node\WhenNode;
+use Tale\Jade\Parser\Node\WhileNode;
+use Tale\Jade\Parser\NodeInterface;
+use Tale\Jade\Parser\State;
 
 /**
  * Takes tokens from the Lexer and creates an AST out of it.
@@ -104,84 +127,14 @@ class Parser
     private $_lexer;
 
     /**
-     * The level we're currently on.
-     *
-     * This does not equal the Lexer-level or Compiler-level,
-     * it's an internal level to get the child/parent-relation between
-     * nodes right
-     *
-     * @var int
+     * @var State
      */
-    private $_level;
+    private $_state;
 
     /**
-     * The Generator returned by the ->lex() method of the lexer.
-     *
-     * @var \Generator
+     * @var callable[]
      */
-    private $_tokens;
-
-    /**
-     * The root node of the currently parsed document.
-     *
-     * @var Node
-     */
-    private $_document;
-
-    /**
-     * The parent that currently found childs are appended to.
-     *
-     * When an <outdent>-token is encountered, it moves one parent up
-     * ($_currentParent->parent becomes the new $_currentParent)
-     *
-     * @var Node
-     */
-    private $_currentParent;
-
-    /**
-     * The current element in the queue.
-     *
-     * Will be appended to $_currentParent when a <newLine>-token is encountered
-     * It will become the current parent, if an <indent>-token is encountered
-     *
-     * @var Node
-     */
-    private $_current;
-
-    /**
-     * The last element that was completely put together.
-     *
-     * Will be set on a <newLine>-token ($_current will become last)
-     *
-     * @var Node
-     */
-    private $_last;
-
-    /**
-     * States if we're in a mixin or not.
-     *
-     * Used to check for the mixin-block and nested mixins
-     *
-     * @var bool
-     */
-    private $_inMixin;
-
-    /**
-     * The level we're on inside a mixin.
-     *
-     * Used to check for the mixin-block and nested mixins
-     *
-     * @var int
-     */
-    private $_mixinLevel;
-
-    /**
-     * Stores an expanded node to attach it to the expanding node later.
-     *
-     * @var Node
-     */
-    private $_expansion;
-
+    private $_handlers;
 
     /**
      * Creates a new parser instance.
@@ -205,6 +158,7 @@ class Parser
 
         $this->defineOptions([
             'lexerOptions' => [],
+            'stateClassName' => State::class,
             'handlers' => [
                 AssignmentToken::class => [$this, 'handleAssignment'],
                 AttributeEndToken::class => [$this, 'handleAttributeEnd'],
@@ -238,7 +192,12 @@ class Parser
             ]
         ], $options);
 
-        $this->_lexer = $lexer ? $lexer : new Lexer($this->_options['lexerOptions']);
+        $this->_lexer = $lexer ?: new Lexer($this->getOption('lexerOptions'));
+        $this->_state = null;
+        $this->_handlers = [];
+
+        foreach ($this->getOption('handlers') as $className => $handler)
+            $this->setHandler($className, $handler);
     }
 
     /**
@@ -252,10 +211,24 @@ class Parser
         return $this->_lexer;
     }
 
+    public function setHandler($className, $handler)
+    {
+
+        if (!is_callable($handler))
+            throw new \InvalidArgumentException(
+                "Argument 2 of Parser->setHandler needs to be valid callback"
+            );
+
+        $this->_handlers[$className] = $handler;
+
+        return $this;
+    }
+
     /**
      * Parses the provided input-string to an AST.
      *
-     * The Abstract Syntax Tree (AST) will be an object-tree consisting of \Tale\Jade\Parser\Node instances.
+     * The Abstract Syntax Tree (AST) will be an object-tree consisting
+     * of \Tale\Jade\Parser\NodeInterface instances.
      *
      * You can either let the compiler compile it or compile it yourself
      *
@@ -264,40 +237,35 @@ class Parser
      *
      * @param string $input the input jade string that is to be parsed
      *
-     * @return Node the root-node of the parsed AST
+     * @return NodeInterface the root-node of the parsed AST
      */
     public function parse($input)
     {
 
-        $this->_level = 0;
-        $this->_tokens = $this->_lexer->lex($input);
-        $this->_document = $this->createNode('document');
-        $this->_currentParent = $this->_document;
-        $this->_current = null;
-        $this->_last = null;
-        $this->_inMixin = false;
-        $this->_mixinLevel = null;
-        $this->_expansion = null;
+        $stateClassName = $this->getOption('stateClassName');
 
-        //Fix HHVM generators needing ->next() before ->current()
-        //This will actually work as expected, no node will be skipped
-        //HHVM always needs a first ->next() (I don't know if this is a bug or
-        //expected behaviour)
-        if (defined('HHVM_VERSION')) {
+        if (!is_a($stateClassName, State::class, true))
+            throw new \InvalidArgumentException(
+                'stateClassName needs to be a valid '.State::class.' sub class'
+            );
 
-            $this->_tokens->next();
-        }
+        $this->_state = new $stateClassName(
+            $this->_lexer->lex($input)
+        );
 
         //While we have tokens, handle current token, then go to next token
         //rinse and repeat
-        while ($this->hasTokens()) {
+        while ($this->_state->hasTokens()) {
 
-            $this->handleToken();
-            $this->nextToken();
+            $this->handle();
+            $this->_state->nextToken();
         }
 
+        $document = $this->_state->getDocumentNode();
+        $this->_state = null;
+
         //Return the final document node with all its awesome child nodes
-        return $this->_document;
+        return $document;
     }
 
     /**
@@ -312,200 +280,25 @@ class Parser
      *
      * @throws Exception when no token handler has been found
      */
-    protected function handleToken(TokenInterface $token = null)
+    public function handle(TokenInterface $token = null)
     {
 
-        $token = $token ? $token : $this->getToken();
+        if (!$this->_state)
+            throw new Exception(
+                "Failed to handle token: No parsing process active"
+            );
+
+        $token = $token ? $token : $this->_state->getToken();
         $className = get_class($token);
 
-        if (!isset($this->_options['handlers'][$className]))
-            $this->throwException(
+        if (!isset($this->_handlers[$className]))
+            $this->_state->throwException(
                 "Unexpected token `$className`, no handler registered",
                 $token
             );
 
-        $handler = $this->_options['handlers'][$className];
-        if (!is_callable($handler))
-            $this->throwException(
-                "Unexpected token `$className`, registered handler is not ".
-                "a valid callback",
-                $token
-            );
-
-        call_user_func($handler, $token);
-    }
-
-    /**
-     * Yields tokens as long as the given types match.
-     *
-     * Yields tokens of the given types until
-     * a token is encountered, that is not given
-     * in the types-array
-     *
-     * @param array $types the token types that are allowed
-     *
-     * @return \Generator
-     */
-    protected function lookUp(array $types)
-    {
-
-        while ($this->hasTokens()) {
-
-            $token = $this->getToken();
-            if (in_array(get_class($token), $types, true))
-                yield $token;
-            else
-                break;
-
-            $this->nextToken();
-        }
-    }
-
-    /**
-     * Moves on the token generator by one and does ->lookUp().
-     *
-     * @see Parser->nextToken
-     * @see Parser->lookUp
-     *
-     * @param array $types the types that are allowed
-     *
-     * @return \Generator
-     */
-    protected function lookUpNext(array $types)
-    {
-
-        return $this->nextToken()->lookUp($types);
-    }
-
-    /**
-     * Returns the token of the given type if it is in the token queue.
-     *
-     * If the given token in the queue is not of the given type,
-     * this method returns null
-     *
-     * @param array $types the types that are expected
-     *
-     * @return Node|null
-     */
-    protected function expect(array $types)
-    {
-
-        foreach ($this->lookUp($types) as $token) {
-
-            return $token;
-        }
-
-        return null;
-    }
-
-    /**
-     * Moves the generator on by one and does ->expect().
-     *
-     * @see Parser->nextToken
-     * @see Parser->expect
-     *
-     * @param array $types the types that are expected
-     *
-     * @return Node|null
-     */
-    protected function expectNext(array $types)
-    {
-
-        return $this->nextToken()->expect($types);
-    }
-
-    /**
-     * Returns true, if there are still tokens left to be generated.
-     *
-     * If the lexer-generator still has tokens to generate,
-     * this returns true and false, if it doesn't
-     *
-     * @see \Generator->valid
-     *
-     * @return bool
-     */
-    protected function hasTokens()
-    {
-
-        return $this->_tokens->valid();
-    }
-
-    /**
-     * Moves the generator on by one token.
-     *
-     * (It calls ->next() on the generator, look at the PHP doc)
-     *
-     * @see \Generator->next
-     *
-     * @return $this
-     */
-    protected function nextToken()
-    {
-
-        $this->_tokens->next();
-
-        return $this;
-    }
-
-    /**
-     * Returns the current token in the lexer generator.
-     *
-     * @see \Generator->current
-     *
-     * @return array the token array (always _one_ token, as an array)
-     */
-    protected function getToken()
-    {
-
-        return $this->_tokens->current();
-    }
-
-
-    /**
-     * Creates a new node instance with the given type.
-     *
-     * If a token is given, the location in the code of that token
-     * is also passed to the Node instance
-     *
-     * If no token is passed, a dummy-token with the current
-     * lexer's offset and line is created
-     *
-     * Notice that nodes are expando-objects, you can add properties on-the-fly
-     * and retrieve them as an array later
-     *
-     * @param string     $type  the type the node should have
-     * @param TokenInterface $token the token to relate this node to
-     *
-     * @return Node The newly created node
-     */
-    protected function createNode($type, TokenInterface $token = null)
-    {
-
-        $token = $token ? $token : new TextToken(0, 0, 0);
-
-        return new Node($type, $token->getLine(), $token->getOffset());
-    }
-
-    /**
-     * Creates an element-node with the properties it should have consistently.
-     *
-     * This will create the following properties on the Node instance:
-     *
-     * @todo Do this for a bunch of other elements as well, maybe all, maybe a centralized way?
-     *
-     * @param TokenInterface $token the token to relate this element to
-     *
-     * @return Node the newly created element-node
-     */
-    protected function createElement(TokenInterface $token = null)
-    {
-
-        $node = $this->createNode('element', $token);
-        $node->tag = null;
-        $node->attributes = [];
-        $node->assignments = [];
-
-        return $node;
+        $handler = $this->_handlers[$className];
+        call_user_func($handler, $token, $this->_state);
     }
 
     /**
@@ -518,34 +311,38 @@ class Parser
      * After an assignment, an attribute block is required
      *
      * @param AssignmentToken $token the <assignment>-token
+     * @param State $state the parser state
      *
      * @throws Exception
      */
-    protected function handleAssignment(AssignmentToken $token)
+    protected function handleAssignment(AssignmentToken $token, State $state)
     {
 
-        if (!$this->_current)
-            $this->_current = $this->createElement();
+        if (!$state->getCurrentNode())
+            $state->setCurrentNode($state->createNode(ElementNode::class, $token));
 
-        if (!in_array($this->_current->type, ['element', 'mixinCall']))
-            $this->throwException(
-                "Assignments can only happen on elements and mixinCalls"
+        if (!$state->currentNodeIs([ElementNode::class, MixinCallNode::class]))
+            $state->throwException(
+                "Assignments can only happen on elements and mixinCalls",
+                $token
             );
 
-        $node = $this->createNode('assignment', $token);
-        $node->name = $token->getName();
-        $this->_current->assignments[] = $node;
+        /** @var AssignmentNode $node */
+        $node = $state->createNode(AssignmentNode::class, $token);
+        $node->setName($token->getName());
 
-        if ($this->expectNext([AttributeStartToken::class])) {
+        /** @var ElementNode|MixinCallNode $current */
+        $current = $state->getCurrentNode();
+        $current->getAssignments()->appendChild($node);
 
-            $element = $this->_current;
-            $this->_current = $node;
-            $this->handleToken();
-            $this->_current = $element;
-        } else
-            $this->throwException(
-                "Assignments require a parameter block"
-            );
+        if ($state->expectNext([AttributeStartToken::class])) {
+
+            $state->setCurrentNode($node);
+            //Will trigger iteration of consecutive attribute tokens
+            //in handleAttributeStart with $node as the target
+            $this->handle();
+            $state->setCurrentNode($current);
+        }
     }
 
     /**
@@ -558,31 +355,35 @@ class Parser
      * Attributes in elements and mixins always need a valid name
      *
      * @param AttributeToken $token the <attribute>-token
+     * @param State $state the parser state
      *
      * @throws Exception
      */
-    protected function handleAttribute(AttributeToken $token)
+    protected function handleAttribute(AttributeToken $token, State $state)
     {
 
-        if (!$this->_current)
-            $this->_current = $this->createElement();
+        if (!$state->getCurrentNode())
+            $state->setCurrentNode($state->createNode(ElementNode::class, $token));
 
-        $node = $this->createNode('attribute', $token);
-        $node->name = $token->getName();
-        $node->value = $token->getValue();
-        $node->escaped = $token->isEscaped();
-        $node->unchecked = $token->isChecked();
+        /** @var AttributeNode $node */
+        $node = $state->createNode(AttributeNode::class, $token);
+        $node->setName($token->getName());
+        $node->setValue($token->getValue());
+        $node->setIsEscaped($token->isEscaped());
+        $node->setIsChecked($token->isChecked());
 
-        if (!$node->name && in_array($this->_current->type, ['element', 'mixin']))
-            $this->throwException('Attributes in elements and mixins need a name', $token);
+        $name = $node->getName();
+        $value = $node->getValue();
 
-        if ($this->_current->type === 'mixinCall' && !$node->value) {
+        if ($state->currentNodeIs([MixinCallNode::class]) && ($value === '' || $value === null)) {
 
-            $node->value = $node->name;
-            $node->name = null;
+            $node->setValue($node->getName());
+            $node->setName(null);
         }
 
-        $this->_current->attributes[] = $node;
+        /** @var ElementNode|MixinCallNode $current */
+        $current = $state->getCurrentNode();
+        $current->getAttributes()->appendChild($node);
     }
 
     /**
@@ -595,28 +396,35 @@ class Parser
      * (When I think about it, the Lexer kind of does that already)
      *
      * @param AttributeStartToken $token the <attributeStart>-token
+     * @param State $state the parser state
      *
      * @throws Exception
      */
-    protected function handleAttributeStart(AttributeStartToken $token)
+    protected function handleAttributeStart(AttributeStartToken $token, State $state)
     {
 
-        if (!$this->_current)
-            $this->_current = $this->createElement();
+        if (!$state->getCurrentNode())
+            $state->setCurrentNode($state->createNode(ElementNode::class, $token));
 
-        if (!in_array($this->_current->type, ['element', 'assignment', 'import', 'variable', 'mixin', 'mixinCall']))
-            $this->throwException(
-                "Attributes can only be placed on element, assignment, import, variable, mixin and mixinCall"
+        if (!$state->currentNodeIs([
+            ElementNode::class, AssignmentNode::class,
+            ImportNode::class, VariableNode::class,
+            MixinNode::class, MixinCallNode::class
+        ]))
+            $state->throwException(
+                "Attributes can only be placed on element, assignment, "
+                ."import, variable, mixin and mixinCall",
+                $token
             );
 
-        foreach ($this->lookUpNext([AttributeToken::class]) as $subToken) {
+        foreach ($state->lookUpNext([AttributeToken::class]) as $subToken) {
 
-            $this->handleToken($subToken);
+            $this->handle($subToken);
         }
 
-        if (!$this->expect([AttributeEndToken::class]))
-            $this->throwException(
-                "Attribute list not ended",
+        if (!$state->expect([AttributeEndToken::class]))
+            $state->throwException(
+                "Attribute list not closed",
                 $token
             );
     }
@@ -627,10 +435,11 @@ class Parser
      * It does nothing (right now?)
      *
      * @param AttributeEndToken $token the <attributeEnd>-token
+     * @param State $state the parser state
      */
-    protected function handleAttributeEnd(AttributeEndToken $token)
+    protected function handleAttributeEnd(AttributeEndToken $token, State $state)
     {
-
+        //Nothing to do here.
     }
 
     /**
@@ -639,22 +448,18 @@ class Parser
      * Blocks outside a mixin always need a name! (That's what $_inMixin is for)
      *
      * @param BlockToken $token the <block>-token
+     * @param State $state the parser state
      *
      * @throws Exception
      */
-    protected function handleBlock(BlockToken $token)
+    protected function handleBlock(BlockToken $token, State $state)
     {
 
-        $node = $this->createNode('block', $token);
-        $node->name = $token->getName();
-        $node->mode = $token->getMode();
-
-        if (!$node->name && !$this->_inMixin)
-            $this->throwException(
-                "Blocks outside a mixin always need a name"
-            );
-
-        $this->_current = $node;
+        /** @var BlockNode $node */
+        $node = $state->createNode(BlockNode::class, $token);
+        $node->setName($token->getName());
+        $node->setMode($token->getMode());
+        $state->setCurrentNode($node);
     }
 
     /**
@@ -668,24 +473,32 @@ class Parser
      * Classes can only exist on elements and mixinCalls
      *
      * @param ClassToken $token the <class>-token
+     * @param State $state the parser state
      *
      * @throws Exception
      */
-    protected function handleClass(ClassToken $token)
+    protected function handleClass(ClassToken $token, State $state)
     {
 
-        if (!$this->_current)
-            $this->_current = $this->createElement();
+        if (!$state->getCurrentNode())
+            $state->setCurrentNode($state->createNode(ElementNode::class, $token));
 
-        if (!in_array($this->_current->type, ['element', 'mixinCall']))
-            $this->throwException("Classes can only be used on elements and mixin calls", $token);
+        if (!$state->currentNodeIs([ElementNode::class, MixinCallNode::class]))
+            $state->throwException(
+                "Classes can only be used on elements and mixin calls",
+                $token
+            );
 
-        $attr = $this->createNode('attribute', $token);
-        $attr->name = 'class';
-        $attr->value = $token->getName();
-        $attr->escaped = false;
-        $attr->checked = false;
-        $this->_current->attributes[] = $attr;
+        //We actually create a fake class attribute
+        /** @var AttributeNode $attr */
+        $attr = $state->createNode(AttributeNode::class, $token);
+        $attr->setName('class');
+        $attr->setValue($token->getName());
+        $attr->unescape()->uncheck();
+
+        /** @var ElementNode|MixinCallNode $current */
+        $current = $state->getCurrentNode();
+        $current->getAttributes()->appendChild($attr);
     }
 
     /**
@@ -694,84 +507,91 @@ class Parser
      * The comment node is set as the $_current element
      *
      * @param CommentToken $token the <comment>-token
+     * @param State $state the parser state
      */
-    protected function handleComment(CommentToken $token)
+    protected function handleComment(CommentToken $token, State $state)
     {
 
-        $node = $this->createNode('comment', $token);
-        $node->rendered = $token->isRendered();
-
-        $this->_current = $node;
+        /** @var CommentNode $node */
+        $node = $state->createNode(CommentNode::class, $token);
+        $node->setIsVisible($token->isVisible());
+        $state->setCurrentNode($node);
     }
 
     /**
      * Handles a <case>-token and parses it into a case-node.
      *
      * @param CaseToken $token the <case>-token
+     * @param State $state the parser state
      */
-    protected function handleCase(CaseToken $token)
+    protected function handleCase(CaseToken $token, State $state)
     {
 
-        $node = $this->createNode('case', $token);
-        $node->subject = $token->getSubject();
-        $this->_current = $node;
+        /** @var CaseNode $node */
+        $node = $state->createNode(CaseNode::class, $token);
+        $node->setSubject($token->getSubject());
+        $state->setCurrentNode($node);
     }
 
     /**
      * Handles a <conditional>-token and parses it into a conditional-node.
      *
      * @param ConditionalToken $token the <conditional>-token
+     * @param State $state the parser state
      */
-    protected function handleConditional(ConditionalToken $token)
+    protected function handleConditional(ConditionalToken $token, State $state)
     {
 
-        $node = $this->createNode('conditional', $token);
-        $node->subject = $token->getSubject();
-        $node->conditionType = $token->getName();
-
-        $this->_current = $node;
+        /** @var ConditionalNode $node */
+        $node = $state->createNode(ConditionalNode::class, $token);
+        $node->setSubject($token->getSubject());
+        $node->setName($token->getName());
+        $state->setCurrentNode($node);
     }
 
     /**
      * Handles a <do>-token and parses it into a do-node.
      *
      * @param DoToken $token the <do>-token
+     * @param State $state the parser state
      */
-    protected function handleDo(DoToken $token)
+    protected function handleDo(DoToken $token, State $state)
     {
 
-        $node = $this->createNode('do', $token);
-        $this->_current = $node;
+        $node = $state->createNode(DoNode::class, $token);
+        $state->setCurrentNode($node);
     }
 
     /**
      * Handles a <doctype>-token and parses it into a doctype-node.
      *
      * @param DoctypeToken $token the <doctype>-token
+     * @param State $state the parser state
      */
-    protected function handleDoctype(DoctypeToken $token)
+    protected function handleDoctype(DoctypeToken $token, State $state)
     {
 
-        $node = $this->createNode('doctype', $token);
-        $node->name = $token->getName();
-
-        $this->_current = $node;
+        /** @var DoctypeNode $node */
+        $node = $state->createNode(DoctypeNode::class, $token);
+        $node->setName($token->getName());
+        $state->setCurrentNode($node);
     }
 
     /**
      * Handles an <each>-token and parses it into an each-node.
      *
      * @param EachToken $token the <each>-token
+     * @param State $state the parser state
      */
-    protected function handleEach(EachToken $token)
+    protected function handleEach(EachToken $token, State $state)
     {
 
-        $node = $this->createNode('each', $token);
-        $node->subject = $token->getSubject();
-        $node->itemName = $token->getItemName();
-        $node->keyName = $token->getKeyName();
-
-        $this->_current = $node;
+        /** @var EachNode $node */
+        $node = $state->createNode(EachNode::class, $token);
+        $node->setSubject($token->getSubject());
+        $node->setItem($token->getItem());
+        $node->setKey($token->getKey());
+        $state->setCurrentNode($node);
     }
 
     /**
@@ -782,51 +602,56 @@ class Parser
      * becomes the $_current element
      *
      * @param ExpressionToken $token the <expression>-token
+     * @param State $state the parser state
      *
      * @throws Exception
      */
-    protected function handleExpression(ExpressionToken $token)
+    protected function handleExpression(ExpressionToken $token, State $state)
     {
 
-        $node = $this->createNode('expression', $token);
-        $node->escaped = $token->isEscaped();
-        $node->unchecked = $token->isChecked();
-        $node->value = $token->getValue();
+        /** @var ExpressionNode $node */
+        $node = $state->createNode(ExpressionNode::class, $token);
+        $node->setIsEscaped($token->isEscaped());
+        $node->setIsChecked($token->isChecked());
+        $node->setValue($token->getValue());
 
-        if ($this->_current)
-            $this->_current->append($node);
+        if ($state->getCurrentNode())
+            $state->getCurrentNode()->appendChild($node);
         else
-            $this->_current = $node;
+            $state->setCurrentNode($node);
     }
 
     /**
      * Handles an <code>-token into an code-node.
      *
      * @param CodeToken $token the <code>-token
+     * @param State $state the parser state
      *
      * @throws Exception
      */
-    protected function handleCode(CodeToken $token)
+    protected function handleCode(CodeToken $token, State $state)
     {
 
-        $node = $this->createNode('code', $token);
-        $node->value = $token->getValue();
-        $node->block = $token->isBlock();
-
-        $this->_current = $node;
+        /** @var CodeNode $node */
+        $node = $state->createNode(CodeNode::class, $token);
+        $node->setValue($token->getValue());
+        $node->setIsBlock($token->isBlock());
+        $state->setCurrentNode($node);
     }
 
     /**
      * Handles a <filter>-token and parses it into a filter-node.
      *
      * @param FilterToken $token the <filter>-token
+     * @param State $state the parser state
      */
-    protected function handleFilter(FilterToken $token)
+    protected function handleFilter(FilterToken $token, State $state)
     {
 
-        $node = $this->createNode('filter', $token);
-        $node->name = $token->getName();
-        $this->_current = $node;
+        /** @var FilterNode $node */
+        $node = $state->createNode(FilterNode::class, $token);
+        $node->setName($token->getName());
+        $state->setCurrentNode($node);
     }
 
     /**
@@ -839,40 +664,48 @@ class Parser
      * They will get converted to attribute-nodes and appended to the current element
      *
      * @param IdToken $token the <id>-token
+     * @param State $state the parser state
      *
      * @throws Exception
      */
-    protected function handleId(IdToken $token)
+    protected function handleId(IdToken $token, State $state)
     {
 
-        if (!$this->_current)
-            $this->_current = $this->createElement();
+        if (!$state->getCurrentNode())
+            $state->setCurrentNode($state->createNode(ElementNode::class));
 
-        if (!in_array($this->_current->type, ['element', 'mixinCall']))
-            $this->throwException("IDs can only be used on elements and mixin calls", $token);
+        if (!$state->currentNodeIs([ElementNode::class, MixinCallNode::class]))
+            $state->throwException(
+                'IDs can only be used on elements and mixin calls',
+                $token
+            );
 
-        $attr = $this->createNode('attribute', $token);
-        $attr->name = 'id';
-        $attr->value = $token->getName();
-        $attr->escaped = false;
-        $attr->checked = false;
-        $this->_current->attributes[] = $attr;
+        /** @var AttributeNode $attr */
+        $attr = $state->createNode(AttributeNode::class, $token);
+        $attr->setName('id');
+        $attr->setValue($token->getName());
+        $attr->unescape()->uncheck();
+
+        /** @var ElementNode|MixinCallNode $current */
+        $current = $state->getCurrentNode();
+        $current->getAttributes()->appendChild($attr);
     }
 
     /**
      * Handles a <variable>-token and parses it into a variable assignment.
      *
      * @param VariableToken $token the <variable>-token
+     * @param State $state the parser state
      *
      * @throws Exception
      */
-    protected function handleVariable(VariableToken $token)
+    protected function handleVariable(VariableToken $token, State $state)
     {
 
-        $node = $this->createNode('variable');
-        $node->name = $token->getName();
-        $node->attributes = [];
-        $this->_current = $node;
+        /** @var VariableNode $node */
+        $node = $state->createNode(VariableNode::class);
+        $node->setName($token->getName());
+        $state->setCurrentNode($node);
     }
 
     /**
@@ -886,26 +719,25 @@ class Parser
      * This gets checked in the Compiler, not here
      *
      * @param ImportToken $token the <import>-token
+     * @param State $state the parser state
      *
      * @throws Exception
      */
-    protected function handleImport(ImportToken $token)
+    protected function handleImport(ImportToken $token, State $state)
     {
 
-        if ($token->getName() === 'extends' && count($this->_document->children) > 0)
-            $this->throwException(
+        if ($token->getName() === 'extends' && $state->getDocumentNode()->hasChildren())
+            $state->throwException(
                 "extends should be the very first statement in a document",
                 $token
             );
 
-        $node = $this->createNode('import', $token);
-        $node->importType = $token->getName();
-        $node->path = $token->getPath();
-        $node->filter = $token->getFilter();
-        $node->attributes = [];
-        $node->assignments = [];
-
-        $this->_current = $node;
+        /** @var ImportNode $node */
+        $node = $state->createNode(ImportNode::class, $token);
+        $node->setName($token->getName());
+        $node->setPath($token->getPath());
+        $node->setFilter($token->getFilter());
+        $state->setCurrentNode($node);
     }
 
     /**
@@ -923,27 +755,15 @@ class Parser
      *
      * The opposite of this is, obviously, handleOutdent with <outdent>-tokens
      *
-     * @todo Are there other nodes that shouldn't have children?
-     *
      * @param IndentToken $token the <indent>-token
+     * @param State $state the parser state
      *
      * @throws Exception
      */
-    protected function handleIndent(IndentToken $token = null)
+    protected function handleIndent(IndentToken $token, State $state)
     {
 
-        $this->_level++;
-
-        if (!$this->_last)
-            return;
-
-        if (in_array($this->_last->type, ['import', 'expression', 'doctype']))
-            $this->throwException(
-                'The '.$this->_last->type.' instruction can\'t have children',
-                $token
-            );
-
-        $this->_currentParent = $this->_last;
+        $state->enter();
     }
 
     /**
@@ -953,25 +773,33 @@ class Parser
      * A tag can only exist once on an element
      * Only elements can have tags
      *
-     * @todo Maybe multiple tags could combine with :? Would be ugly and senseless to write a(...)b tho
-     *
      * @param TagToken $token the <tag>-token
+     * @param State $state the parser state
      *
      * @throws Exception
      */
-    protected function handleTag(TagToken $token)
+    protected function handleTag(TagToken $token, State $state)
     {
 
-        if (!$this->_current)
-            $this->_current = $this->createElement();
+        if (!$state->getCurrentNode())
+            $state->setCurrentNode($state->createNode(ElementNode::class, $token));
 
-        if ($this->_current->type !== 'element')
-            $this->throwException("Tags can only be used on elements", $token);
+        if (!$state->currentNodeIs([ElementNode::class]))
+            $state->throwException(
+                'Tags can only be used on elements',
+                $token
+            );
 
-        if ($this->_current->tag)
-            $this->throwException('This element already has a tag name', $token);
+        /** @var ElementNode $current */
+        $current = $state->getCurrentNode();
 
-        $this->_current->tag = $token->getName();
+        if ($current->getName())
+            $state->throwException(
+                'The element already has a tag name',
+                $token
+            );
+
+        $current->setName($token->getName());
     }
 
     /**
@@ -982,42 +810,32 @@ class Parser
      * $_mixinLevel gets reset in handleOutdent
      *
      * @param MixinToken $token the <mixin>-token
+     * @param State $state the parser state
      *
      * @throws Exception
      */
-    protected function handleMixin(MixinToken $token)
+    protected function handleMixin(MixinToken $token, State $state)
     {
 
-        if ($this->_inMixin)
-            $this->throwException(
-                "Failed to define mixin: Mixins cant be nested"
-            );
-
-        $node = $this->createNode('mixin', $token);
-        $node->name = $token->getName();
-        $node->attributes = [];
-        $node->assignments = [];
-
-        $this->_inMixin = true;
-        $this->_mixinLevel = $this->_level;
-
-        $this->_current = $node;
+        /** @var MixinNode $node */
+        $node = $state->createNode(MixinNode::class, $token);
+        $node->setName($token->getName());
+        $state->setCurrentNode($node);
     }
 
     /**
      * Handles a <mixinCall>-token and parses it into a mixinCall-node.
      *
      * @param MixinCallToken $token the <mixinCall>-token
+     * @param State $state the parser state
      */
-    protected function handleMixinCall(MixinCallToken $token)
+    protected function handleMixinCall(MixinCallToken $token, State $state)
     {
 
-        $node = $this->createNode('mixinCall', $token);
-        $node->name = $token->getName();
-        $node->attributes = [];
-        $node->assignments = [];
-
-        $this->_current = $node;
+        /** @var MixinCallNode $node */
+        $node = $state->createNode(MixinCallNode::class, $token);
+        $node->setName($token->getName());
+        $state->setCurrentNode($node);
     }
 
     /**
@@ -1032,25 +850,12 @@ class Parser
      * 4. Resets $_current to null
      *
      * @param NewLineToken $token the <newLine>-token or null
+     * @param State $state the parser state
      */
-    protected function handleNewLine(NewLineToken $token = null)
+    protected function handleNewLine(NewLineToken $token, State $state)
     {
 
-        if ($this->_current) {
-
-            //Is there any expansion?
-            if ($this->_expansion) {
-
-                //Tell the current element who expands it
-                $this->_current->expands = $this->_expansion;
-                $this->_expansion = null;
-            }
-
-            //Append to current parent
-            $this->_currentParent->append($this->_current);
-            $this->_last = $this->_current;
-            $this->_current = null;
-        }
+        $state->store();
     }
 
     /**
@@ -1065,19 +870,12 @@ class Parser
      * we're not in a mixin anymore
      *
      * @param OutdentToken $token the <outdent>-token
+     * @param State $state the parser state
      */
-    protected function handleOutdent(OutdentToken $token = null)
+    protected function handleOutdent(OutdentToken $token, State $state)
     {
 
-        $this->_level--;
-
-        $this->_currentParent = $this->_currentParent->parent;
-
-        if ($this->_inMixin && $this->_level <= $this->_mixinLevel) {
-
-            $this->_inMixin = false;
-            $this->_mixinLevel = null;
-        }
+        $state->leave();
     }
 
     /**
@@ -1098,43 +896,47 @@ class Parser
      * and handle it on a newLine or in an indent
      *
      * @param ExpansionToken $token the <expansion>-token
+     * @param State $state the parser state
      *
      * @throws Exception
      */
-    protected function handleExpansion(ExpansionToken $token)
+    protected function handleExpansion(ExpansionToken $token, State $state)
     {
 
-        if (!$this->_current)
-            $this->throwException(
+        if (!$state->getCurrentNode())
+            $state->throwException(
                 "Expansion needs an element to work on",
                 $token
             );
 
-        if ($this->_current->type === 'element' && !$token->hasSpace()) {
+        if (!$state->currentNodeIs([ElementNode::class]) && !$token->hasSpace()) {
 
-            if (!$this->expectNext([TagToken::class])) {
-                $this->throwException(
+            if (!$state->expectNext([TagToken::class])) {
+                $state->throwException(
                     sprintf(
                         "Expected tag name or expansion after double colon, "
                         ."%s received",
-                        get_class($this->getToken())
+                        basename(get_class($state->getToken()), 'Token')
                     ),
                     $token
                 );
             }
 
             /** @var TagToken $token */
-            $token = $this->getToken();
-            $this->_current->tag .= ':'.$token->getName();
+            $token = $state->getToken();
+            /** @var ElementNode $current */
+            $current = $state->getCurrentNode();
+            $current->setName($current->getName().':'.$token->getName());
 
             return;
         }
 
-        if ($this->_expansion)
-            $this->_current->expands = $this->_expansion;
+        //Make sure to keep the expansion saved
+        if ($state->getOuterNode())
+            $state->getCurrentNode()->setOuterNode($state->getOuterNode());
 
-        $this->_expansion = $this->_current;
-        $this->_current = null;
+        $state->setOuterNode($state->getCurrentNode());
+        $state->setCurrentNode(null);
     }
 
 
@@ -1145,47 +947,53 @@ class Parser
      * if not, it becomes the $_current element
      *
      * @param TextToken $token the <text>-token
+     * @param State $state the parser state
      */
-    protected function handleText(TextToken $token)
+    protected function handleText(TextToken $token, State $state)
     {
 
-        $node = $this->createNode('text', $token);
-        $node->value = $token->getValue();
-        $node->level = $token->getLevel();
-        $node->escaped = $token->isEscaped();
+        /** @var TextNode $node */
+        $node = $state->createNode(TextNode::class, $token);
+        $node->setValue($token->getValue());
+        $node->setLevel($token->getLevel());
+        $node->setIsEscaped($token->isEscaped());
 
-        if ($this->_current) {
+        if ($state->getCurrentNode()) {
 
-            $this->_current->append($node);
+            $state->getCurrentNode()->appendChild($node);
         } else
-            $this->_current = $node;
+            $state->setCurrentNode($node);
     }
 
     /**
      * Handles a <when>-token and parses it into a when-node.
      *
      * @param WhenToken $token the <when>-token
+     * @param State $state the parser state
      */
-    protected function handleWhen(WhenToken $token)
+    protected function handleWhen(WhenToken $token, State $state)
     {
 
-        $node = $this->createNode('when', $token);
-        $node->subject = $token->getSubject();
-        $node->default = $token->getName() === 'default';
-        $this->_current = $node;
+        /** @var WhenNode $node */
+        $node = $state->createNode(WhenNode::class, $token);
+        $node->setSubject($token->getSubject());
+        $node->setName($token->getName());
+        $state->setCurrentNode($node);
     }
 
     /**
      * Handles a <while>-token and parses it into a while-node.
      *
      * @param WhileToken $token the <while>-token
+     * @param State $state the parser state
      */
-    protected function handleWhile(WhileToken $token)
+    protected function handleWhile(WhileToken $token, State $state)
     {
 
-        $node = $this->createNode('while', $token);
-        $node->subject = $token->getSubject();
-        $this->_current = $node;
+        /** @var WhileNode $node */
+        $node = $state->createNode(WhileNode::class, $token);
+        $node->setSubject($token->getSubject());
+        $state->setCurrentNode($node);
     }
 
 
@@ -1193,37 +1001,14 @@ class Parser
      * Handles a <for>-token and parses it into a for-node.
      *
      * @param ForToken $token the <while>-token
+     * @param State $state the parser state
      */
-    protected function handleFor(ForToken $token)
+    protected function handleFor(ForToken $token, State $state)
     {
 
-        $node = $this->createNode('for', $token);
-        $node->subject = $token->getSubject();
-        $this->_current = $node;
-    }
-
-
-    /**
-     * Throws a Parser-Exception.
-     *
-     * If a related token is passed, it will also append
-     * the location in the input of that token
-     *
-     * @param string     $message      a meaningful error-message
-     * @param array|null $relatedToken the token related to this error
-     *
-     * @throws Exception
-     */
-    protected function throwException($message, array $relatedToken = null)
-    {
-
-        if ($relatedToken)
-            $message .= "\n(".$relatedToken['type']
-                .' at '.$relatedToken['line']
-                .':'.$relatedToken['offset'].')';
-
-        throw new Exception(
-            "Failed to parse Jade: $message"
-        );
+        /** @var ForNode $node */
+        $node = $state->createNode(ForNode::class, $token);
+        $node->setSubject($token->getSubject());
+        $state->setCurrentNode($node);
     }
 }

@@ -3,15 +3,14 @@
 namespace Tale\Jade\Lexer\Token;
 
 use Tale\Jade\Lexer\TokenBase;
+use Tale\Jade\Util\VisibleTrait;
 
 class CommentToken extends TokenBase
 {
-    use RenderTrait;
+    use VisibleTrait;
 
     protected function dump()
     {
-        return [
-            'rendered' => $this->isRendered() ? 'yes' : 'no'
-        ];
+        return $this->isVisible() ? 'rendered' : 'hidden';
     }
 }

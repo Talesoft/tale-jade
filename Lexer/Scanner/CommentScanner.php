@@ -4,14 +4,15 @@ namespace Tale\Jade\Lexer\Scanner;
 
 use Tale\Jade\Lexer;
 use Tale\Jade\Lexer\ScannerInterface;
+use Tale\Jade\Lexer\State;
 use Tale\Jade\Lexer\Token\CommentToken;
 
 class CommentScanner implements ScannerInterface
 {
-    public function scan(Lexer $lexer)
+    public function scan(State $state)
     {
 
-        $reader = $lexer->getReader();
+        $reader = $state->getReader();
 
         if (!$reader->peekString('//'))
             return;
@@ -19,17 +20,17 @@ class CommentScanner implements ScannerInterface
         $reader->consume();
 
         /** @var CommentToken $token */
-        $token = $lexer->createToken(CommentToken::class);
+        $token = $state->createToken(CommentToken::class);
 
         if ($reader->peekChar('-')) {
 
             $reader->consume();
-            $token->unrender();
+            $token->hide();
         }
 
         yield $token;
 
-        foreach ($lexer->scan(TextBlockScanner::class) as $token)
+        foreach ($state->scan(TextBlockScanner::class) as $token)
             yield $token;
     }
 }

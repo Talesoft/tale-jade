@@ -3,27 +3,13 @@
 include 'vendor/autoload.php';
 
 $lexer = new Tale\Jade\Lexer();
+$parser = new Tale\Jade\Parser();
 
-echo '<pre>';
-
-
-$files = glob('Lexer/Token/*Token.php');
-
-foreach ($files as $file) {
-
-    echo "use Tale\\Jade\\Lexer\\Token\\".basename($file, '.php').";\n";
-}
-
-echo "\n";
-
-foreach ($files as $file) {
-
-    echo basename($file, '.php')."::class => [\$this, 'handle".basename($file, 'Token.php')."'],\n";
-}
-
-
+header('Content-Type: text/plain');
 
 $jade = <<<'JADE'
+
+extends some-file
 | Some text
 !| Some text
 <some markup>
@@ -41,29 +27,27 @@ p.a.b.c#d(e=f, g, h='i')
         some filtered
         content
     include some-file
-    extends some-file
     includeextends
 
     block some-block
     append append-block
     prepend prepend-block
     replace replace-block
-    block
 
-    block.
+    a.
         some
         block
         include
 
-    block! some text
+    a! some text
 
-    block!.
+    a!.
         some text
 
     append a: prepend b
 
     case abc: def
-    case (a ? b : c):
+    case (a ? b : c)
         when (d ? e : f): ghi.jkl
         when ("d:e:f" ? "g" : 'h:')
             i.jk
@@ -71,7 +55,7 @@ p.a.b.c#d(e=f, g, h='i')
         default
             default2
 
-    case "ab:c":
+    case "ab:c"
         def
     case
 
@@ -108,7 +92,7 @@ p.a.b.c#d(e=f, g, h='i')
         p something else
     - endif;
 
-    some-tag.a-class.b-class.c-class#someId.d-class&some-assignment
+    some-tag.a-class.b-class.c-class#someId.d-class&some-assignment()
 
     ($someKey="some value" some-key?=($a ? $b : ', d'), $some['value'])
 
@@ -124,31 +108,36 @@ p.a.b.c#d(e=f, g, h='i')
     ?= $someUncheckedExpression
     ?!= $someUnescapedUncheckedExpression
 
+    mixin article(title)
+
+        h2= $title
+        p
+            if block
+                block
+
+    +article('Article 1')
+        strong Block Content 1
+        | Awesome, isn't it?
+
 JADE;
 
 echo htmlentities($jade, ENT_QUOTES, 'UTF-8');
 
 echo "\n\n================\n\n";
 
-foreach ($lexer->lex($jade) as $token) {
+try {
+    echo $parser->parse($jade);
+} catch(Exception $e) {
+    echo $e->getMessage();
+}
 
-    echo '<span';
-    if ($token instanceof \Tale\Jade\Lexer\Token\IndentToken)
-        echo ' style="color: blue;"';
+echo "\n\n================\n\n";
 
-    if ($token instanceof \Tale\Jade\Lexer\Token\OutdentToken)
-        echo ' style="color: red;"';
+try {
+    foreach ($lexer->lex($jade) as $token) {
 
-    if ($token instanceof \Tale\Jade\Lexer\Token\NewLineToken)
-        echo ' style="color: lightcyan;"';
-
-    if ($token instanceof \Tale\Jade\Lexer\Token\CommentToken)
-        echo ' style="color: lightgray;"';
-
-    if ($token instanceof \Tale\Jade\Lexer\Token\TextToken)
-        echo ' style="color: lime;"';
-
-    echo '>';
-    echo $token;
-    echo '</span>';
+        echo $token;
+    }
+} catch(Exception $e) {
+    echo $e->getMessage();
 }

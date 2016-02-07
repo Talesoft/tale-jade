@@ -7,5 +7,5 @@ use Tale\Jade\Lexer;
 interface ScannerInterface
 {
 
-    public function scan(Lexer $lexer);
+    public function scan(State $state);
 }

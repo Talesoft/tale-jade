@@ -4,23 +4,24 @@ namespace Tale\Jade\Lexer\Scanner;
 
 use Tale\Jade\Lexer;
 use Tale\Jade\Lexer\ScannerInterface;
+use Tale\Jade\Lexer\State;
 use Tale\Jade\Lexer\Token\ExpressionToken;
 
 class ExpressionScanner implements ScannerInterface
 {
 
-    public function scan(Lexer $lexer)
+    public function scan(State $state)
     {
 
-        $reader = $lexer->getReader();
+        $reader = $state->getReader();
 
-        if (!$reader->match('\??!?=?[\t ]*'))
+        if (!$reader->match('\??!?=[\t ]*'))
             return;
 
         $prefix = $reader->consume();
 
         /** @var ExpressionToken $token */
-        $token = $lexer->createToken(ExpressionToken::class);
+        $token = $state->createToken(ExpressionToken::class);
 
         if (Lexer\safe_strpos($prefix, '!') !== false)
             $token->escape();
