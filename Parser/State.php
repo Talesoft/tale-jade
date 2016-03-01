@@ -22,7 +22,7 @@ class State
     /**
      * The root node of the currently parsed document.
      *
-     * @var NodeInterface
+     * @var Node
      */
     private $_documentNode;
 
@@ -32,7 +32,7 @@ class State
      * When an <outdent>-token is encountered, it moves one parent up
      * ($_currentParent->parent becomes the new $_currentParent)
      *
-     * @var NodeInterface
+     * @var Node
      */
     private $_parentNode;
 
@@ -42,7 +42,7 @@ class State
      * Will be appended to $_currentParent when a <newLine>-token is encountered
      * It will become the current parent, if an <indent>-token is encountered
      *
-     * @var NodeInterface
+     * @var Node
      */
     private $_currentNode;
 
@@ -51,14 +51,14 @@ class State
      *
      * Will be set on a <newLine>-token ($_current will become last)
      *
-     * @var NodeInterface
+     * @var Node
      */
     private $_lastNode;
 
     /**
      * Stores an expanded node to attach it to the expanding node later.
      *
-     * @var NodeInterface
+     * @var Node
      */
     private $_outerNode;
 
@@ -105,7 +105,7 @@ class State
     }
 
     /**
-     * @return NodeInterface
+     * @return Node
      */
     public function getDocumentNode()
     {
@@ -114,8 +114,9 @@ class State
     }
 
     /**
-     * @param NodeInterface $document
-     * @return $this
+     * @param Node $document
+     *
+*@return $this
      */
     public function setDocumentNode($document)
     {
@@ -126,7 +127,7 @@ class State
     }
 
     /**
-     * @return NodeInterface
+     * @return Node
      */
     public function getParentNode()
     {
@@ -135,8 +136,9 @@ class State
     }
 
     /**
-     * @param NodeInterface $currentParent
-     * @return $this
+     * @param Node $currentParent
+     *
+*@return $this
      */
     public function setParentNode($currentParent)
     {
@@ -147,7 +149,7 @@ class State
     }
 
     /**
-     * @return NodeInterface
+     * @return Node
      */
     public function getCurrentNode()
     {
@@ -156,8 +158,9 @@ class State
     }
 
     /**
-     * @param NodeInterface $current
-     * @return $this
+     * @param Node $current
+     *
+*@return $this
      */
     public function setCurrentNode($current)
     {
@@ -168,7 +171,7 @@ class State
     }
 
     /**
-     * @return NodeInterface
+     * @return Node
      */
     public function getLastNode()
     {
@@ -177,8 +180,9 @@ class State
     }
 
     /**
-     * @param NodeInterface $last
-     * @return $this
+     * @param Node $last
+     *
+*@return $this
      */
     public function setLastNode($last)
     {
@@ -189,7 +193,7 @@ class State
     }
 
     /**
-     * @return NodeInterface
+     * @return Node
      */
     public function getOuterNode()
     {
@@ -198,10 +202,11 @@ class State
     }
 
     /**
-     * @param NodeInterface $node
-     * @return $this
+     * @param Node $node
+     *
+*@return $this
      */
-    public function setOuterNode(NodeInterface $node)
+    public function setOuterNode(Node $node)
     {
 
         $this->_outerNode = $node;
@@ -259,7 +264,7 @@ class State
      *
      * @param array $types the types that are expected
      *
-     * @return NodeInterface|null
+     * @return Node|null
      */
     public function expect(array $types)
     {
@@ -280,7 +285,7 @@ class State
      *
      * @param array $types the types that are expected
      *
-     * @return NodeInterface|null
+     * @return Node|null
      */
     public function expectNext(array $types)
     {
@@ -334,7 +339,7 @@ class State
         return $this->_tokens->current();
     }
 
-    public function is(NodeInterface $node, array $classNames)
+    public function is(Node $node, array $classNames)
     {
 
         foreach ($classNames as $className)
@@ -386,12 +391,12 @@ class State
      * @param string $className  the type the node should have
      * @param TokenInterface $token the token to relate this node to
      *
-     * @return NodeInterface The newly created node
+     * @return Node The newly created node
      */
     public function createNode($className, TokenInterface $token = null)
     {
 
-        if (!is_subclass_of($className, NodeInterface::class))
+        if (!is_subclass_of($className, Node::class))
             throw new \InvalidArgumentException(
                 "$className is not a valid token class"
             );

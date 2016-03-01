@@ -2,8 +2,8 @@
 
 namespace Tale\Jade\Parser\Node;
 
-use Tale\Jade\Parser\NodeBase;
+use Tale\Jade\Parser\Node;
 
-class DocumentNode extends NodeBase
+class DocumentNode extends Node
 {
 }

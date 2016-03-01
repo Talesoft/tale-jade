@@ -10,9 +10,4 @@ class CodeToken extends TokenBase
 {
     use ValueTrait;
     use BlockTrait;
-
-    protected function dump()
-    {
-        return  $this->isBlock() ? 'block' : 'line';
-    }
 }

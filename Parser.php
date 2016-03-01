@@ -79,7 +79,6 @@ use Tale\Jade\Parser\Node\TextNode;
 use Tale\Jade\Parser\Node\VariableNode;
 use Tale\Jade\Parser\Node\WhenNode;
 use Tale\Jade\Parser\Node\WhileNode;
-use Tale\Jade\Parser\NodeInterface;
 use Tale\Jade\Parser\State;
 
 /**
@@ -228,7 +227,7 @@ class Parser
      * Parses the provided input-string to an AST.
      *
      * The Abstract Syntax Tree (AST) will be an object-tree consisting
-     * of \Tale\Jade\Parser\NodeInterface instances.
+     * of \Tale\Jade\Parser\Node instances.
      *
      * You can either let the compiler compile it or compile it yourself
      *
@@ -237,7 +236,7 @@ class Parser
      *
      * @param string $input the input jade string that is to be parsed
      *
-     * @return NodeInterface the root-node of the parsed AST
+     * @return Node the root-node of the parsed AST
      */
     public function parse($input)
     {
@@ -263,6 +262,26 @@ class Parser
 
         $document = $this->_state->getDocumentNode();
         $this->_state = null;
+
+        //Some work after parsing needed
+        /*
+        //Resolve expansions/outer nodes
+        if (isset($node->expands)) {
+
+            $current = $node;
+            while (isset($current->expands)) {
+
+                $expandedNode = $current->expands;
+                unset($current->expands);
+
+                $current->parent->insertBefore($current, $expandedNode);
+                $current->parent->remove($current);
+                $expandedNode->append($current);
+                $current = $expandedNode;
+            }
+
+            return $this->compileNode($current);
+        }*/
 
         //Return the final document node with all its awesome child nodes
         return $document;

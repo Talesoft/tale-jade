@@ -10,15 +10,4 @@ class BlockToken extends TokenBase
 {
     use NameTrait;
     use ModeTrait;
-
-    protected function dump()
-    {
-        return sprintf(
-            "%s (%s)",
-            $this->getName() ?: '[No name]',
-            $this->getMode() ?: '[No mode]'
-        );
-    }
-
-
 }

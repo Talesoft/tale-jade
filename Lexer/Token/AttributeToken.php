@@ -14,16 +14,4 @@ class AttributeToken extends TokenBase
     use ValueTrait;
     use EscapeTrait;
     use CheckTrait;
-
-    protected function dump()
-    {
-
-        return sprintf(
-            "%s=%s (%s, %s)",
-            $this->getName() ?: '[No name]',
-            $this->getValue() ?: '[No value]',
-            $this->isEscaped() ? 'escaped' : 'unescaped',
-            $this->isChecked() ? 'checked' : 'unchecked'
-        );
-    }
 }

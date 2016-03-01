@@ -10,14 +10,4 @@ class EachToken extends TokenBase
 {
     use SubjectTrait;
     use PairTrait;
-
-    protected function dump()
-    {
-        return sprintf(
-            "%s, %s in %s",
-            $this->getItem() ?: '[No item name]',
-            $this->getKey() ?: '[No key name]',
-            $this->getSubject() ?: '[No subject]'
-        );
-    }
 }

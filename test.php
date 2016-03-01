@@ -5,7 +5,7 @@ include 'vendor/autoload.php';
 $lexer = new Tale\Jade\Lexer();
 $parser = new Tale\Jade\Parser();
 
-header('Content-Type: text/plain');
+header('Content-Type: text/plain; encoding=utf-8');
 
 $jade = <<<'JADE'
 
@@ -134,10 +134,8 @@ try {
 echo "\n\n================\n\n";
 
 try {
-    foreach ($lexer->lex($jade) as $token) {
 
-        echo $token;
-    }
+    echo $lexer->dump($jade);
 } catch(Exception $e) {
     echo $e->getMessage();
 }

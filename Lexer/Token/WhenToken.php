@@ -10,13 +10,4 @@ class WhenToken extends TokenBase
 {
     use NameTrait;
     use SubjectTrait;
-
-    protected function dump()
-    {
-        return sprintf(
-            "%s (%s)",
-            $this->getSubject() ?: '[No subject]',
-            $this->getName()
-        );
-    }
 }

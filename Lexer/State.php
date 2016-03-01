@@ -115,7 +115,7 @@ class State
                 );
 
             /** @var ScannerInterface $scanner */
-            $scanner = is_string($scanner) ? new $scanner() : $scanner;
+            $scanner = $scanner instanceof ScannerInterface ? $scanner : new $scanner();
             $success = false;
             foreach ($scanner->scan($this) as $token) {
 

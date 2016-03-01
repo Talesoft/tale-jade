@@ -8,11 +8,4 @@ use Tale\Jade\Util\NameTrait;
 class FilterToken extends TokenBase
 {
     use NameTrait;
-
-    protected function dump()
-    {
-        return $this->getName();
-    }
-
-
 }

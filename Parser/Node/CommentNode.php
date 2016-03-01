@@ -2,10 +2,10 @@
 
 namespace Tale\Jade\Parser\Node;
 
-use Tale\Jade\Parser\NodeBase;
+use Tale\Jade\Parser\Node;
 use Tale\Jade\Util\VisibleTrait;
 
-class CommentNode extends NodeBase
+class CommentNode extends Node
 {
     use VisibleTrait;
 }

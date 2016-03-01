@@ -21,7 +21,7 @@
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
  * @version    1.4.0
- * @link       http://jade.talesoft.io/docs/files/Parser.NodeBase.html
+ * @link       http://jade.talesoft.io/docs/files/Parser.Node.html
  * @since      File available since Release 1.0
  */
 
@@ -49,7 +49,7 @@ use Traversable;
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Parser.Node.html
  * @since      File available since Release 1.0
  */
-abstract class NodeBase implements NodeInterface
+class Node
 {
     use LevelGetTrait;
 
@@ -72,14 +72,14 @@ abstract class NodeBase implements NodeInterface
     /**
      * The parent-node of this node.
      *
-     * @var NodeInterface|null
+     * @var Node|null
      */
     private $_parent;
 
     /**
      * The children of this node.
      *
-     * @var NodeInterface[]
+     * @var Node[]
      */
     private $_children;
 
@@ -116,7 +116,7 @@ abstract class NodeBase implements NodeInterface
     /**
      * @param int|null $line
      *
-     * @return NodeBase
+     * @return Node
      */
     public function setLine($line)
     {
@@ -136,7 +136,7 @@ abstract class NodeBase implements NodeInterface
     /**
      * @param int|null $offset
      *
-     * @return NodeBase
+     * @return Node
      */
     public function setOffset($offset)
     {
@@ -146,7 +146,7 @@ abstract class NodeBase implements NodeInterface
     }
 
     /**
-     * @return NodeInterface
+     * @return Node
      */
     public function getOuterNode()
     {
@@ -154,10 +154,11 @@ abstract class NodeBase implements NodeInterface
     }
 
     /**
-     * @param NodeInterface $node
-     * @return $this
+     * @param Node $node
+     *
+*@return $this
      */
-    public function setOuterNode(NodeInterface $node)
+    public function setOuterNode(Node $node)
     {
 
         $this->_outerNode = $node;
@@ -166,7 +167,7 @@ abstract class NodeBase implements NodeInterface
     }
 
     /**
-     * @return NodeInterface|null
+     * @return Node|null
      */
     public function getParent()
     {
@@ -174,11 +175,11 @@ abstract class NodeBase implements NodeInterface
     }
 
     /**
-     * @param null|NodeInterface $parent
+     * @param null|Node $parent
      *
-     * @return NodeBase
+     * @return Node
      */
-    public function setParent(NodeInterface $parent)
+    public function setParent(Node $parent)
     {
         $this->_parent = $parent;
 
@@ -195,7 +196,7 @@ abstract class NodeBase implements NodeInterface
     }
 
     /**
-     * @return NodeInterface[]
+     * @return Node[]
      */
     public function getChildren()
     {
@@ -203,9 +204,9 @@ abstract class NodeBase implements NodeInterface
     }
 
     /**
-     * @param NodeInterface[] $children
+     * @param Node[] $children
      *
-     * @return NodeBase
+     * @return Node
      */
     public function setChildren(array $children)
     {
@@ -223,7 +224,7 @@ abstract class NodeBase implements NodeInterface
         return $this->_children[$index];
     }
 
-    public function setChildAt($index, NodeInterface $node)
+    public function setChildAt($index, Node $node)
     {
 
         if ($index === null)
@@ -261,17 +262,17 @@ abstract class NodeBase implements NodeInterface
      *
      * @see array_search
      *
-     * @param NodeInterface $node the child-node to get the index of
+     * @param Node $node the child-node to get the index of
      *
      * @return int|false
      */
-    public function getIndexOf(NodeInterface $node)
+    public function getIndexOf(Node $node)
     {
 
         return array_search($node, $this->_children, true);
     }
 
-    public function hasChild(NodeInterface $node)
+    public function hasChild(Node $node)
     {
 
         return $this->getIndexOf($node) !== false;
@@ -286,7 +287,7 @@ abstract class NodeBase implements NodeInterface
      *
      * [element:c]->prev() === [element:b]
      *
-     * @return NodeInterface|null
+     * @return Node|null
      * @throws Exception
      */
     public function getPreviousSibling()
@@ -312,7 +313,7 @@ abstract class NodeBase implements NodeInterface
      *
      * [element:b]->next() === [element:c]
      *
-     * @return NodeInterface|null
+     * @return Node|null
      * @throws Exception
      */
     public function getNextSibling()
@@ -345,11 +346,11 @@ abstract class NodeBase implements NodeInterface
      *    (1)[element:c]
      *    (2)[element:d]
      *
-     * @param NodeInterface $node the new child node to be appended
+     * @param Node $node the new child node to be appended
      *
      * @return $this
      */
-    public function appendChild(NodeInterface $node)
+    public function appendChild(Node $node)
     {
 
         $this->_children[] = $node;
@@ -376,11 +377,11 @@ abstract class NodeBase implements NodeInterface
      *    (1)[element:b]
      *    (2)[element:c]
      *
-     * @param NodeInterface $node the new child node to be prepended
+     * @param Node $node the new child node to be prepended
      *
      * @return $this
      */
-    public function prependChild(NodeInterface $node)
+    public function prependChild(Node $node)
     {
 
         array_unshift($this->_children, $node);
@@ -407,11 +408,11 @@ abstract class NodeBase implements NodeInterface
      *    (0)[element:b]
      *    (1)[element:d]
      *
-     * @param NodeInterface $node the node to remove from this node's children
+     * @param Node $node the node to remove from this node's children
      *
      * @return $this
      */
-    public function removeChild(NodeInterface $node)
+    public function removeChild(Node $node)
     {
 
         $index = $this->getIndexOf($node);
@@ -456,14 +457,15 @@ abstract class NodeBase implements NodeInterface
      *    (1)[element:d]
      *    (2)[element:c]
      *
-     * @param NodeInterface $node    the child node of this node's children the new
+     * @param Node $node    the child node of this node's children the new
      *                      node will be inserted after
-     * @param NodeInterface $newNode the new node that will be inserted after the
+     * @param Node $newNode the new node that will be inserted after the
      *                      first node
-     * @throws Exception
+     *
+*@throws Exception
      * @return $this
      */
-    public function insertAfter(NodeInterface $node, NodeInterface $newNode)
+    public function insertAfter(Node $node, Node $newNode)
     {
 
         $index = $this->getIndexOf($node);
@@ -501,14 +503,15 @@ abstract class NodeBase implements NodeInterface
      *    (1)[element:d]
      *    (2)[element:c]
      *
-     * @param NodeInterface $node    the child node of this node's children the new
+     * @param Node $node    the child node of this node's children the new
      *                      node will be inserted before
-     * @param NodeInterface $newNode the new node that will be inserted before
+     * @param Node $newNode the new node that will be inserted before
      *                      the first node
-     * @throws Exception
+     *
+*@throws Exception
      * @return $this
      */
-    public function insertBefore(NodeInterface $node, NodeInterface $newNode)
+    public function insertBefore(Node $node, Node $newNode)
     {
 
         $index = $this->getIndexOf($node);
@@ -538,7 +541,7 @@ abstract class NodeBase implements NodeInterface
         return $this;
     }
 
-    public function wrap(NodeInterface $node)
+    public function wrap(Node $node)
     {
 
         $this->_parent->insertBefore($this, $node);
@@ -740,17 +743,21 @@ abstract class NodeBase implements NodeInterface
      *
      * This is also the default-action for __toString on every node
      *
-     * @param int $level the initial indentation level
-     *
      * @return string the string to debug the node-tree
      */
-    public function dump($level = 0)
+    protected function dump()
+    {
+
+        return '';
+    }
+
+    public function getDump($level = 0)
     {
 
         $indent = str_repeat('    ', $level);
         $str = $indent.'['.basename(get_class($this), 'Node').']'."\n";
         foreach ($this as $child)
-            $str .= $child->dump($level + 1);
+            $str .= $child->getDump($level + 1);
 
         return $str;
     }

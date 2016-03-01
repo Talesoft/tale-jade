@@ -8,9 +8,4 @@ use Tale\Jade\Util\NameTrait;
 class MixinCallToken extends TokenBase
 {
     use NameTrait;
-
-    protected function dump()
-    {
-        return $this->getName();
-    }
 }

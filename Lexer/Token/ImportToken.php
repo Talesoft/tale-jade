@@ -12,14 +12,4 @@ class ImportToken extends TokenBase
     use NameTrait;
     use PathTrait;
     use FilterTrait;
-
-    protected function dump()
-    {
-        return sprintf(
-            "%s (%s, %s)",
-            $this->getPath() ?: '[No path]',
-            $this->getName() ?: '[No name]',
-            $this->getFilter() ?: 'jade'
-        );
-    }
 }

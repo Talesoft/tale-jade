@@ -8,9 +8,4 @@ use Tale\Jade\Util\SubjectTrait;
 class ForToken extends TokenBase
 {
     use SubjectTrait;
-
-    protected function dump()
-    {
-        return $this->getSubject();
-    }
 }

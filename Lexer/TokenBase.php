@@ -34,26 +34,4 @@ abstract class TokenBase implements TokenInterface
     {
         return $this->_offset;
     }
-
-    protected function dump()
-    {
-
-        return '';
-    }
-
-    public function __toString()
-    {
-
-        $name = basename(get_called_class(), 'Token');
-        $line = $this->getLine();
-        $offset = $this->getOffset();
-        $dump = $this->dump();
-
-        $str = "[$name";
-        if (!empty($dump))
-            $str .= " $dump";
-        $str .= "]";
-
-        return $str;
-    }
 }

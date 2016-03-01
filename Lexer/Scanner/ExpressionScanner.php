@@ -27,7 +27,7 @@ class ExpressionScanner implements ScannerInterface
             $token->escape();
 
         if (Lexer\safe_strpos($prefix, '?') !== false)
-            $token->check();
+            $token->uncheck();
 
         $token->setValue($reader->readExpression(["\n", '//']));
 

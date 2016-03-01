@@ -2,12 +2,12 @@
 
 namespace Tale\Jade\Parser\Node;
 
-use Tale\Jade\Parser\NodeBase;
+use Tale\Jade\Parser\Node;
 use Tale\Jade\Util\EscapeTrait;
 use Tale\Jade\Util\LevelTrait;
 use Tale\Jade\Util\ValueTrait;
 
-class TextNode extends NodeBase
+class TextNode extends Node
 {
     use ValueTrait;
     use EscapeTrait;

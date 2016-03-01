@@ -2,12 +2,12 @@
 
 namespace Tale\Jade\Parser\Node;
 
-use Tale\Jade\Parser\NodeBase;
+use Tale\Jade\Parser\Node;
 use Tale\Jade\Util\AssignmentTrait;
 use Tale\Jade\Util\AttributeTrait;
 use Tale\Jade\Util\NameTrait;
 
-class ElementNode extends NodeBase
+class ElementNode extends Node
 {
     use NameTrait;
     use AttributeTrait;

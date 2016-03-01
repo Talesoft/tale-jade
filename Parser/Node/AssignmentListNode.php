@@ -2,8 +2,8 @@
 
 namespace Tale\Jade\Parser\Node;
 
-use Tale\Jade\Parser\NodeBase;
+use Tale\Jade\Parser\Node;
 
-class AssignmentListNode extends NodeBase
+class AssignmentListNode extends Node
 {
 }

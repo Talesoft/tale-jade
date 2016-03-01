@@ -8,9 +8,4 @@ use Tale\Jade\Util\VisibleTrait;
 class CommentToken extends TokenBase
 {
     use VisibleTrait;
-
-    protected function dump()
-    {
-        return $this->isVisible() ? 'rendered' : 'hidden';
-    }
 }

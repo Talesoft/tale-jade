@@ -26,6 +26,9 @@
 namespace Tale\Jade;
 
 use Tale\ConfigurableTrait;
+use Tale\Jade\Lexer\Dumper\Html;
+use Tale\Jade\Lexer\Dumper\Text;
+use Tale\Jade\Lexer\DumperInterface;
 use Tale\Jade\Lexer\Reader;
 use Tale\Jade\Lexer\Scanner\AssignmentScanner;
 use Tale\Jade\Lexer\Scanner\AttributeScanner;
@@ -106,7 +109,15 @@ class Lexer
      */
     private $_state;
 
+    /**
+     * @var ScannerInterface[]
+     */
     private $_scanners;
+
+    /**
+     * @var DumperInterface[]
+     */
+    private $_dumpers;
 
     /**
      * Creates a new lexer instance.
@@ -146,42 +157,47 @@ class Lexer
             'indentStyle' => null,
             'indentWidth' => null,
             'encoding'    => Lexer\get_internal_encoding(),
-            'scanners' => [
-                'newLine' => new NewLineScanner(),
-                'indent' => new IndentationScanner(),
-                'import' => new ImportScanner(),
-                'block' => new BlockScanner(),
-                'conditional' => new ConditionalScanner(),
-                'each' => new EachScanner(),
-                'case' => new CaseScanner(),
-                'when' => new WhenScanner(),
-                'do' => new DoScanner(),
-                'while' => new WhileScanner(),
-                'for' => new ForScanner(),
-                'mixin' => new MixinScanner(),
-                'mixinCall' => new MixinCallScanner(),
-                'doctype' => new DoctypeScanner(),
-                'tag' => new TagScanner(),
-                'class' => new ClassScanner(),
-                'id' => new IdScanner(),
-                'attribute' => new AttributeScanner(),
-                'assignment' => new AssignmentScanner(),
-                'variable' => new VariableScanner(),
-                'comment' => new CommentScanner(),
-                'filter' => new FilterScanner(),
-                'expression' => new ExpressionScanner(),
-                'code' => new CodeScanner(),
-                'markup' => new MarkupScanner(),
-                'textLine' => new TextLineScanner(),
-                'text' => new TextScanner()
-            ]
+            'scanners' => [],
+            'dumpers' => []
         ], $options);
+
+        $this->setDefaults([
+            'dumpers' => [
+                'text' => Text::class,
+                'html' => Html::class
+            ]
+        ], true);
 
         $this->_state = null;
         $this->_scanners = [];
 
-        foreach ($this->getOption('scanners') as $name => $scanner)
-            $this->setScanner($name, $scanner);
+        $scanners = $this->getOption('scanners');
+
+        if (count($scanners) < 1)
+            $scanners = array_values(static::createDefaultScanners());
+
+        foreach ($scanners as $scanner)
+            $this->addScanner($scanner);
+
+
+        foreach ($this->getOption('dumpers') as $name => $dumper)
+            $this->setDumper($name, $dumper);
+    }
+
+    /**
+     * @return ScannerInterface[]
+     */
+    public function getScanners()
+    {
+        return $this->_scanners;
+    }
+
+    /**
+     * @return DumperInterface[]
+     */
+    public function getDumpers()
+    {
+        return $this->_dumpers;
     }
 
     /**
@@ -199,7 +215,13 @@ class Lexer
         return $this->_state;
     }
 
-    public function setScanner($name, $scanner)
+    /**
+     * @param ScannerInterface|string $scanner
+     * @param bool|false $prepend
+     *
+     * @return $this
+     */
+    public function addScanner($scanner, $prepend = false)
     {
 
         if (!is_subclass_of($scanner, ScannerInterface::class))
@@ -207,7 +229,23 @@ class Lexer
                 "Scanner $scanner is not a valid ".ScannerInterface::class
             );
 
-        $this->_scanners[$name] = $scanner;
+        if ($prepend)
+            array_unshift($this->_scanners, $scanner);
+        else
+            $this->_scanners[] = $scanner;
+
+        return $this;
+    }
+
+    public function setDumper($name, $dumper)
+    {
+
+        if (!is_subclass_of($dumper, DumperInterface::class))
+            throw new \InvalidArgumentException(
+                "Passed dumper $dumper is not a valid ".DumperInterface::class
+            );
+
+        $this->_dumpers[$name] = $dumper;
 
         return $this;
     }
@@ -243,6 +281,7 @@ class Lexer
                 'stateClassName needs to be a valid '.State::class.' sub class'
             );
 
+        //Put together our initial state
         $this->_state = new State([
             'input' => $input,
             'encoding' => $this->getOption('encoding'),
@@ -251,9 +290,66 @@ class Lexer
             'level' => $this->getOption('level')
         ]);
 
-        foreach ($this->_state->loopScan($this->_scanners) as $token)
+        $scanners = $this->_scanners;
+
+        //We always scan for text at the very end.
+        $scanners[] = new TextScanner();
+
+        //Scan for tokens
+        foreach ($this->_state->loopScan($scanners) as $token)
             yield $token;
 
+        //Free state
         $this->_state = null;
+    }
+
+    public function dump($input, $format = null)
+    {
+
+        $format = $format ?: key($this->_dumpers);
+
+        if (!isset($this->_dumpers[$format]))
+            throw new \InvalidArgumentException(
+                "Passed format $format doesnt have a dumper class "
+                ."associated"
+            );
+
+        $dumper = $this->_dumpers[$format];
+        $dumper = $dumper instanceof DumperInterface ? $dumper : new $dumper();
+
+        return $dumper->dump($this->lex($input));
+    }
+
+    public static function createDefaultScanners()
+    {
+
+        return [
+            'newLine' => new NewLineScanner(),
+            'indent' => new IndentationScanner(),
+            'import' => new ImportScanner(),
+            'block' => new BlockScanner(),
+            'conditional' => new ConditionalScanner(),
+            'each' => new EachScanner(),
+            'case' => new CaseScanner(),
+            'when' => new WhenScanner(),
+            'do' => new DoScanner(),
+            'while' => new WhileScanner(),
+            'for' => new ForScanner(),
+            'mixin' => new MixinScanner(),
+            'mixinCall' => new MixinCallScanner(),
+            'doctype' => new DoctypeScanner(),
+            'tag' => new TagScanner(),
+            'class' => new ClassScanner(),
+            'id' => new IdScanner(),
+            'attribute' => new AttributeScanner(),
+            'assignment' => new AssignmentScanner(),
+            'variable' => new VariableScanner(),
+            'comment' => new CommentScanner(),
+            'filter' => new FilterScanner(),
+            'expression' => new ExpressionScanner(),
+            'code' => new CodeScanner(),
+            'markup' => new MarkupScanner(),
+            'textLine' => new TextLineScanner()
+        ];
     }
 }
