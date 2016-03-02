@@ -286,7 +286,7 @@ Thanks to the Tale Jade Community we got some modules for existing frameworks th
 - [Official Tale Jade Bridge](http://github.com/Talesoft/tale-jade-laravel)
 
 ### Yii2 Framework
-- [jacmoe's Extension](https://bitbucket.org/jacmoe/yii2-tale-jade)
+- [jacmoe's Extension](https://github.com/jacmoe/yii2-tale-jade)
 
 ### SimpleMVCFramework
 - [Cagatay's SMVC Fork](https://github.com/Talesoft/tale-jade-smvc)
