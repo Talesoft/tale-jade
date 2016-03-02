@@ -5,18 +5,18 @@ namespace Tale\Jade\Util;
 trait VisibleTrait
 {
 
-    private $_visible = true;
+    private $visible = true;
 
     public function isVisible()
     {
 
-        return $this->_visible;
+        return $this->visible;
     }
 
     public function setIsVisible($visible)
     {
 
-        $this->_visible = $visible;
+        $this->visible = $visible;
 
         return $this;
     }
@@ -24,7 +24,7 @@ trait VisibleTrait
     public function show()
     {
 
-        $this->_visible = true;
+        $this->visible = true;
 
         return $this;
     }
@@ -32,7 +32,7 @@ trait VisibleTrait
     public function hide()
     {
 
-        $this->_visible = false;
+        $this->visible = false;
 
         return $this;
     }

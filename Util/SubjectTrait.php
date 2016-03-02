@@ -5,18 +5,18 @@ namespace Tale\Jade\Util;
 trait SubjectTrait
 {
 
-    private $_subject = null;
+    private $subject = null;
 
     public function getSubject()
     {
 
-        return $this->_subject;
+        return $this->subject;
     }
 
     public function setSubject($subject)
     {
 
-        $this->_subject = $subject;
+        $this->subject = $subject;
 
         return $this;
     }

@@ -25,10 +25,9 @@
     "minimum-stability": "stable",
     "require": {
         "php": ">=5.5.0",
-        "talesoft/tale-config": "0.1"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "~4.0"
+        "talesoft/tale-config": "0.2",
+        "talesoft/tale-factory": "0.1",
+        "talesoft/tale-tree": "0.1"
     },
     "autoload": {
         "psr-4": {

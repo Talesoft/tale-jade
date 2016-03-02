@@ -5,18 +5,18 @@ namespace Tale\Jade\Util;
 trait BlockTrait
 {
 
-    private $_block = false;
+    private $block = false;
 
     public function isBlock()
     {
 
-        return $this->_block;
+        return $this->block;
     }
 
     public function setIsBlock($block)
     {
 
-        $this->_block = $block;
+        $this->block = $block;
 
         return $this;
     }

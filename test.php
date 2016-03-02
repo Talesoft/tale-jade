@@ -4,12 +4,15 @@ include 'vendor/autoload.php';
 
 $lexer = new Tale\Jade\Lexer();
 $parser = new Tale\Jade\Parser();
+$compiler = new Tale\Jade\Compiler(['pretty' => true]);
+
+ini_set('xdebug.max_nesting_level', 10000);
 
 header('Content-Type: text/plain; encoding=utf-8');
 
 $jade = <<<'JADE'
 
-extends some-file
+//extends some-file
 | Some text
 !| Some text
 <some markup>
@@ -23,11 +26,11 @@ here shall be tag
     comment
 !| here be normal stuff again
 p.a.b.c#d(e=f, g, h='i')
-    :some-filter
+    :css
         some filtered
         content
-    include some-file
-    includeextends
+    //include some-file
+    //includeextends
 
     block some-block
     append append-block
@@ -46,7 +49,6 @@ p.a.b.c#d(e=f, g, h='i')
 
     append a: prepend b
 
-    case abc: def
     case (a ? b : c)
         when (d ? e : f): ghi.jkl
         when ("d:e:f" ? "g" : 'h:')
@@ -55,9 +57,6 @@ p.a.b.c#d(e=f, g, h='i')
         default
             default2
 
-    case "ab:c"
-        def
-    case
 
     if somexpr: some if stuff
     else if some other expr
@@ -126,7 +125,16 @@ echo htmlentities($jade, ENT_QUOTES, 'UTF-8');
 echo "\n\n================\n\n";
 
 try {
-    echo $parser->parse($jade);
+
+    echo htmlentities($compiler->compile($jade), ENT_QUOTES, 'UTF-8');
+} catch(Exception $e) {
+    echo $e->getMessage();
+}
+
+echo "\n\n================\n\n";
+
+try {
+    echo $parser->dump($jade);
 } catch(Exception $e) {
     echo $e->getMessage();
 }

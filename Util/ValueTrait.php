@@ -5,17 +5,17 @@ namespace Tale\Jade\Util;
 trait ValueTrait
 {
 
-    private $_value = null;
+    private $value = null;
 
     public function getValue()
     {
 
-        return $this->_value;
+        return $this->value;
     }
 
     public function setValue($value)
     {
 
-        $this->_value = $value;
+        $this->value = $value;
     }
 }

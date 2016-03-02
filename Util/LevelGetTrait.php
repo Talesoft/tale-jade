@@ -5,13 +5,13 @@ namespace Tale\Jade\Util;
 trait LevelGetTrait
 {
 
-    private $_level = 0;
+    private $level = 0;
 
     /**
      * @return int
      */
     public function getLevel()
     {
-        return $this->_level;
+        return $this->level;
     }
 }

@@ -5,7 +5,7 @@ namespace Tale\Jade\Lexer;
 abstract class DumperBase implements DumperInterface
 {
 
-    public function getTokenName(TokenInterface $token)
+    protected function getTokenName(TokenInterface $token)
     {
 
         return basename(get_class($token), 'Token');

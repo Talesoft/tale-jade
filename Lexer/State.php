@@ -4,6 +4,7 @@ namespace Tale\Jade\Lexer;
 
 use Tale\ConfigurableTrait;
 use Tale\Jade\Lexer;
+use Tale\Jade\LexerException;
 use Tale\Jade\Util\LevelTrait;
 
 class State
@@ -11,10 +12,10 @@ class State
     use ConfigurableTrait;
     use LevelTrait;
 
-    /** @var Reader $_reader */
-    private $_reader;
-    private $_indentStyle;
-    private $_indentWidth;
+    /** @var Reader $reader */
+    private $reader;
+    private $indentStyle;
+    private $indentWidth;
 
     public function __construct(array $options)
     {
@@ -27,15 +28,15 @@ class State
             'indentStyle' => null
         ], $options);
 
-        $this->_reader = new Reader(
-            $this->getOption('input'),
-            $this->getOption('encoding')
+        $this->reader = new Reader(
+            $this->options['input'],
+            $this->options['encoding']
         );
-        $this->_indentStyle = $this->getOption('indentWidth');
-        $this->_indentWidth = $this->getOption('indentStyle');
-        $this->setLevel($this->getOption('level'));
+        $this->indentStyle = $this->options['indentWidth'];
+        $this->indentWidth = $this->options['indentStyle'];
+        $this->setLevel($this->options['level']);
 
-        $this->_reader->normalize();
+        $this->reader->normalize();
     }
 
     /**
@@ -43,7 +44,8 @@ class State
      */
     public function getReader()
     {
-        return $this->_reader;
+
+        return $this->reader;
     }
 
     /**
@@ -51,7 +53,8 @@ class State
      */
     public function getIndentStyle()
     {
-        return $this->_indentStyle;
+
+        return $this->indentStyle;
     }
 
     public function setIndentStyle($indentStyle)
@@ -62,7 +65,7 @@ class State
                 "indentStyle needs to be null or one of the INDENT_* constants of the lexer"
             );
 
-        $this->_indentStyle = $indentStyle;
+        $this->indentStyle = $indentStyle;
 
         return $this;
     }
@@ -72,7 +75,7 @@ class State
      */
     public function getIndentWidth()
     {
-        return $this->_indentWidth;
+        return $this->indentWidth;
     }
 
     public function setIndentWidth($indentWidth)
@@ -85,7 +88,7 @@ class State
                 "indentWidth needs to be null or an integer above 0"
             );
 
-        $this->_indentWidth = $indentWidth;
+        $this->indentWidth = $indentWidth;
 
         return $this;
     }
@@ -101,7 +104,7 @@ class State
      * @param array|string      $scanners          the scans to perform
      *
      * @return \Generator the generator yielding all tokens found
-     * @throws Exception
+     * @throws LexerException
      */
     public function scan($scanners)
     {
@@ -137,7 +140,7 @@ class State
     public function loopScan($scanners, $required = false)
     {
 
-        while ($this->_reader->hasLength()) {
+        while ($this->reader->hasLength()) {
 
             $success = false;
             foreach ($this->scan($scanners) as $token) {
@@ -150,9 +153,9 @@ class State
                 break;
         }
 
-        if ($this->_reader->hasLength() && $required)
+        if ($this->reader->hasLength() && $required)
             $this->throwException(
-                "Unexpected ".$this->_reader->peek(20)
+                "Unexpected ".$this->reader->peek(20)
             );
     }
 
@@ -191,13 +194,13 @@ class State
     public function scanToken($className, $pattern, $modifiers = null)
     {
 
-        if (!$this->_reader->match($pattern, $modifiers))
+        if (!$this->reader->match($pattern, $modifiers))
             return;
 
-        $data = $this->_reader->getMatchData();
+        $data = $this->reader->getMatchData();
 
         $token = $this->createToken($className);
-        $this->_reader->consume();
+        $this->reader->consume();
         foreach ($data as $key => $value) {
 
             $method = 'set'.ucfirst($key);
@@ -217,19 +220,19 @@ class State
      *
      * @param string $message A meaningful error message
      *
-     * @throws Exception
+     * @throws LexerException
      */
     public function throwException($message)
     {
 
         $pattern = "Failed to lex: %s \nNear: %s \nLine: %s \nOffset: %s \nPosition: %s";
 
-        throw new Exception(vsprintf($pattern, [
+        throw new LexerException(vsprintf($pattern, [
             $message,
-            $this->_reader->peek(20),
-            $this->_reader->getLine(),
-            $this->_reader->getOffset(),
-            $this->_reader->getPosition()
+            $this->reader->peek(20),
+            $this->reader->getLine(),
+            $this->reader->getOffset(),
+            $this->reader->getPosition()
         ]));
     }
 }

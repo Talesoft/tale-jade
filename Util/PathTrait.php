@@ -5,14 +5,14 @@ namespace Tale\Jade\Util;
 trait PathTrait
 {
 
-    private $_path = null;
+    private $path = null;
 
     /**
      * @return string
      */
     public function getPath()
     {
-        return $this->_path;
+        return $this->path;
     }
 
     /**
@@ -22,7 +22,7 @@ trait PathTrait
      */
     public function setPath($path)
     {
-        $this->_path = $path;
+        $this->path = $path;
 
         return $this;
     }

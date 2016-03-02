@@ -1,9 +1,9 @@
 <?php
 /**
- * The Tale Jade Lexer Exception.
+ * The Tale Jade Parser Exception.
  *
- * Contains an exception that is thrown when the lexer encounters
- * invalid token relations
+ * Contains an exception that is thrown when the parser encounters
+ * invalid node relations
  *
  * LICENSE:
  * The code of this file is distributed under the MIT license.
@@ -11,33 +11,33 @@
  * read it here http://licenses.talesoft.io/2015/MIT.txt
  *
  * @category   Presentation
- * @package    Tale\Jade\Lexer
+ * @package    Tale\Jade\Parser
  * @author     Torben Koehn <tk@talesoft.io>
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
  * @version    1.4.0
- * @link       http://jade.talesoft.io/docs/files/Lexer.Exception.html
+ * @link       http://jade.talesoft.io/docs/files/Parser.Exception.html
  * @since      File available since Release 1.0
  */
 
-namespace Tale\Jade\Lexer;
+namespace Tale\Jade;
 
 /**
- * Represents an exception that is thrown during the lexical analysis.
+ * Represents an exception that is thrown during the parsing process.
  *
- * This exception is thrown when the lexer encounters invalid token relations
+ * This exception is thrown when the parser encounters invalid node relations
  *
  * @category   Presentation
- * @package    Tale\Jade\Lexer
+ * @package    Tale\Jade\Parser
  * @author     Torben Koehn <tk@talesoft.io>
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
  * @version    1.4.0
- * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Lexer.Exception.html
+ * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Parser.Exception.html
  * @since      File available since Release 1.0
  */
-class Exception extends \Exception
+class ParserException extends \Exception
 {
 }

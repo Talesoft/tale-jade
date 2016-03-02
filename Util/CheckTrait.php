@@ -5,18 +5,18 @@ namespace Tale\Jade\Util;
 trait CheckTrait
 {
 
-    private $_checked = true;
+    private $checked = true;
 
     public function isChecked()
     {
 
-        return $this->_checked;
+        return $this->checked;
     }
 
     public function setIsChecked($checked)
     {
 
-        $this->_checked = $checked;
+        $this->checked = $checked;
 
         return $this;
     }
@@ -24,7 +24,7 @@ trait CheckTrait
     public function check()
     {
 
-        $this->_checked = true;
+        $this->checked = true;
 
         return $this;
     }
@@ -32,7 +32,7 @@ trait CheckTrait
     public function uncheck()
     {
 
-        $this->_checked = false;
+        $this->checked = false;
 
         return $this;
     }

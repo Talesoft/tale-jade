@@ -26,6 +26,8 @@
 namespace Tale\Jade;
 
 use Tale\ConfigurableTrait;
+use Tale\Factory;
+use Tale\Factory\SingletonFactory;
 use Tale\Jade\Lexer\Dumper\Html;
 use Tale\Jade\Lexer\Dumper\Text;
 use Tale\Jade\Lexer\DumperInterface;
@@ -107,17 +109,14 @@ class Lexer
     /**
      * @var State
      */
-    private $_state;
+    private $state;
 
     /**
      * @var ScannerInterface[]
      */
-    private $_scanners;
+    private $scanners;
 
-    /**
-     * @var DumperInterface[]
-     */
-    private $_dumpers;
+    private $dumperFactory;
 
     /**
      * Creates a new lexer instance.
@@ -158,8 +157,8 @@ class Lexer
             'indentWidth' => null,
             'encoding'    => Lexer\get_internal_encoding(),
             'scanners' => [],
-            'dumpers' => []
-        ], $options);
+            'dumper' => 'text'
+        ], $options, true);
 
         $this->setDefaults([
             'dumpers' => [
@@ -168,20 +167,17 @@ class Lexer
             ]
         ], true);
 
-        $this->_state = null;
-        $this->_scanners = [];
+        $this->state = null;
+        $this->scanners = [];
+        $this->dumperFactory = null;
 
-        $scanners = $this->getOption('scanners');
+        $scanners = $this->options['scanners'];
 
         if (count($scanners) < 1)
             $scanners = array_values(static::createDefaultScanners());
 
         foreach ($scanners as $scanner)
             $this->addScanner($scanner);
-
-
-        foreach ($this->getOption('dumpers') as $name => $dumper)
-            $this->setDumper($name, $dumper);
     }
 
     /**
@@ -189,15 +185,7 @@ class Lexer
      */
     public function getScanners()
     {
-        return $this->_scanners;
-    }
-
-    /**
-     * @return DumperInterface[]
-     */
-    public function getDumpers()
-    {
-        return $this->_dumpers;
+        return $this->scanners;
     }
 
     /**
@@ -206,13 +194,25 @@ class Lexer
     public function getState()
     {
 
-        if (!$this->_state)
+        if (!$this->state)
             throw new \RuntimeException(
                 "Failed to get state: No lexing process active. "
                 ."Use the lex method"
             );
 
-        return $this->_state;
+        return $this->state;
+    }
+
+    public function getDumperFactory()
+    {
+
+        if (!$this->dumperFactory)
+            $this->dumperFactory = new SingletonFactory(
+                DumperInterface::class,
+                $this->options['dumpers']
+            );
+
+        return $this->dumperFactory;
     }
 
     /**
@@ -230,22 +230,9 @@ class Lexer
             );
 
         if ($prepend)
-            array_unshift($this->_scanners, $scanner);
+            array_unshift($this->scanners, $scanner);
         else
-            $this->_scanners[] = $scanner;
-
-        return $this;
-    }
-
-    public function setDumper($name, $dumper)
-    {
-
-        if (!is_subclass_of($dumper, DumperInterface::class))
-            throw new \InvalidArgumentException(
-                "Passed dumper $dumper is not a valid ".DumperInterface::class
-            );
-
-        $this->_dumpers[$name] = $dumper;
+            $this->scanners[] = $scanner;
 
         return $this;
     }
@@ -282,7 +269,7 @@ class Lexer
             );
 
         //Put together our initial state
-        $this->_state = new State([
+        $this->state = new State([
             'input' => $input,
             'encoding' => $this->getOption('encoding'),
             'indentStyle' => $this->getOption('indentStyle'),
@@ -290,33 +277,23 @@ class Lexer
             'level' => $this->getOption('level')
         ]);
 
-        $scanners = $this->_scanners;
+        $scanners = $this->scanners;
 
         //We always scan for text at the very end.
         $scanners[] = new TextScanner();
 
         //Scan for tokens
-        foreach ($this->_state->loopScan($scanners) as $token)
+        foreach ($this->state->loopScan($scanners) as $token)
             yield $token;
 
         //Free state
-        $this->_state = null;
+        $this->state = null;
     }
 
-    public function dump($input, $format = null)
+    public function dump($input, $dumper = null)
     {
 
-        $format = $format ?: key($this->_dumpers);
-
-        if (!isset($this->_dumpers[$format]))
-            throw new \InvalidArgumentException(
-                "Passed format $format doesnt have a dumper class "
-                ."associated"
-            );
-
-        $dumper = $this->_dumpers[$format];
-        $dumper = $dumper instanceof DumperInterface ? $dumper : new $dumper();
-
+        $dumper = $this->getDumperFactory()->get($dumper ?: $this->options['dumper']);
         return $dumper->dump($this->lex($input));
     }
 

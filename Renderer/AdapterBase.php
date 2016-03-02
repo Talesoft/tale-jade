@@ -54,7 +54,7 @@ abstract class AdapterBase
      *
      * @var Renderer
      */
-    private $_renderer;
+    private $renderer;
 
 
     /**
@@ -76,7 +76,7 @@ abstract class AdapterBase
     public function __construct(Renderer $renderer, array $options = null)
     {
 
-        $this->_renderer = $renderer;
+        $this->renderer = $renderer;
 
         if ($options)
             $this->setOptions($options);
@@ -90,7 +90,7 @@ abstract class AdapterBase
     public function getRenderer()
     {
 
-        return $this->_renderer;
+        return $this->renderer;
     }
 
     /**

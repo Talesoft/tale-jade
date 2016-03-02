@@ -28,6 +28,7 @@
 namespace Tale\Jade\Renderer\Adapter;
 
 use RuntimeException;
+use Tale\Jade\CompilerException;
 use Tale\Jade\Renderer;
 use Tale\Jade\Renderer\AdapterBase;
 
@@ -92,7 +93,7 @@ class File extends AdapterBase
             'lifeTime'  => 0
         ]);
 
-        $dir = $this->getOption('path');
+        $dir = $this->options['path'];
 
         //Automatically create directory if it doesn't exist (or try to do so)
         if (!is_dir($dir)) {
@@ -127,8 +128,8 @@ class File extends AdapterBase
      * @param array|null $args the variables for the template
      *
      * @return string the rendered markup
-     * @throws \Exception when the directory can't be created
-     * @throws \Tale\Jade\Compiler\Exception when the file to render wasnt found
+     * @throws \RuntimeException when the directory can't be created
+     * @throws CompilerException when the file to render wasnt found
      */
     public function render($path, array $args = null)
     {

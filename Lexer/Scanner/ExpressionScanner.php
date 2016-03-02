@@ -15,7 +15,7 @@ class ExpressionScanner implements ScannerInterface
 
         $reader = $state->getReader();
 
-        if (!$reader->match('\??!?=[\t ]*'))
+        if (!$reader->match('[\t ]*[?]?[!]?=[\t ]*'))
             return;
 
         $prefix = $reader->consume();

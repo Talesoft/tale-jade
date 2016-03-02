@@ -5,18 +5,18 @@ namespace Tale\Jade\Util;
 trait NameTrait
 {
 
-    private $_name = null;
+    private $name = null;
 
     public function getName()
     {
 
-        return $this->_name;
+        return $this->name;
     }
 
     public function setName($name)
     {
 
-        $this->_name = $name;
+        $this->name = $name;
 
         return $this;
     }

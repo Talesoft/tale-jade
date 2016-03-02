@@ -2,46 +2,45 @@
 
 namespace Tale\Jade\Lexer;
 
-use Tale\Jade\Lexer\Reader\Exception as ReaderException;
+use Tale\Jade\Util\LineOffsetTrait;
 
 class Reader
 {
+    use LineOffsetTrait;
 
     const DEFAULT_ENCODING = 'UTF-8';
     const BAD_CHARACTERS = "\0\r\v";
     const INDENT_CHARACTERS = "\t ";
     const QUOTE_CHARACTERS = "\"'";
 
-    private static $_defaultExpressionBrackets = [
+    private static $defaultExpressionBrackets = [
         '(' => ')',
         '[' => ']',
         '{' => '}'
     ];
 
-    private $_input;
-    private $_encoding;
+    private $input;
+    private $encoding;
 
-    private $_lastPeekResult;
-    private $_lastMatchResult;
-    private $_nextConsumeLength;
+    private $lastPeekResult;
+    private $lastMatchResult;
+    private $nextConsumeLength;
 
-    private $_position;
-    private $_line;
-    private $_offset;
+    private $position;
 
     public function __construct($input, $encoding = null)
     {
 
-        $this->_input = $input;
-        $this->_encoding = $encoding ? $encoding : self::DEFAULT_ENCODING;
+        $this->input = $input;
+        $this->encoding = $encoding ? $encoding : self::DEFAULT_ENCODING;
 
-        $this->_lastPeekResult = null;
-        $this->_lastMatchResult = null;
-        $this->_nextConsumeLength = null;
+        $this->lastPeekResult = null;
+        $this->lastMatchResult = null;
+        $this->nextConsumeLength = null;
 
-        $this->_position = 0;
-        $this->_line = 0;
-        $this->_offset = 0;
+        $this->position = 0;
+        $this->line = 0;
+        $this->offset = 0;
     }
 
     /**
@@ -49,7 +48,7 @@ class Reader
      */
     public function getInput()
     {
-        return $this->_input;
+        return $this->input;
     }
 
     /**
@@ -57,7 +56,7 @@ class Reader
      */
     public function getEncoding()
     {
-        return $this->_encoding;
+        return $this->encoding;
     }
 
     /**
@@ -65,7 +64,7 @@ class Reader
      */
     public function getLastPeekResult()
     {
-        return $this->_lastPeekResult;
+        return $this->lastPeekResult;
     }
 
     /**
@@ -73,7 +72,7 @@ class Reader
      */
     public function getLastMatchResult()
     {
-        return $this->_lastMatchResult;
+        return $this->lastMatchResult;
     }
 
     /**
@@ -81,7 +80,7 @@ class Reader
      */
     public function getNextConsumeLength()
     {
-        return $this->_nextConsumeLength;
+        return $this->nextConsumeLength;
     }
 
     /**
@@ -89,29 +88,13 @@ class Reader
      */
     public function getPosition()
     {
-        return $this->_position;
-    }
-
-    /**
-     * @return int
-     */
-    public function getLine()
-    {
-        return $this->_line;
-    }
-
-    /**
-     * @return int
-     */
-    public function getOffset()
-    {
-        return $this->_offset;
+        return $this->position;
     }
 
     public function normalize()
     {
 
-        $this->_input = str_replace(str_split(self::BAD_CHARACTERS), '', $this->_input);
+        $this->input = str_replace(str_split(self::BAD_CHARACTERS), '', $this->input);
 
         return $this;
     }
@@ -119,7 +102,7 @@ class Reader
     public function getLength()
     {
 
-        return safe_strlen($this->_input, $this->_encoding);
+        return safe_strlen($this->input, $this->encoding);
     }
 
     public function hasLength()
@@ -137,10 +120,10 @@ class Reader
         $length = $length ? $length : 1;
         $start = $start !== null ? $start : 0;
 
-        $this->_lastPeekResult = safe_substr($this->_input, $start, $length, $this->_encoding);
-        $this->_nextConsumeLength = $start + safe_strlen($this->_lastPeekResult, $this->_encoding);
+        $this->lastPeekResult = safe_substr($this->input, $start, $length, $this->encoding);
+        $this->nextConsumeLength = $start + safe_strlen($this->lastPeekResult, $this->encoding);
 
-        return $this->_lastPeekResult;
+        return $this->lastPeekResult;
     }
 
     public function match($pattern, $modifiers = null, $ignoredSuffixes = null)
@@ -151,8 +134,8 @@ class Reader
 
         $result = preg_match(
             "/^$pattern/$modifiers",
-            $this->_input,
-            $this->_lastMatchResult
+            $this->input,
+            $this->lastMatchResult
         );
 
         if ($result === false)
@@ -163,33 +146,33 @@ class Reader
         if ($result === 0)
             return false;
 
-        $this->_nextConsumeLength = safe_strlen(rtrim($this->_lastMatchResult[0], $ignoredSuffixes));
+        $this->nextConsumeLength = safe_strlen(rtrim($this->lastMatchResult[0], $ignoredSuffixes));
         return true;
     }
 
     public function getMatch($key)
     {
 
-        if (!$this->_lastMatchResult)
+        if (!$this->lastMatchResult)
             $this->throwException(
                 "Failed to get match $key: No match result found. Use match first"
             );
 
-        return isset($this->_lastMatchResult[$key])
-             ? $this->_lastMatchResult[$key]
+        return isset($this->lastMatchResult[$key])
+             ? $this->lastMatchResult[$key]
              : null;
     }
 
     public function getMatchData()
     {
 
-        if (!$this->_lastMatchResult)
+        if (!$this->lastMatchResult)
             $this->throwException(
                 "Failed to get match data: No match result found. Use match first"
             );
 
         $data = [];
-        foreach ($this->_lastMatchResult as $key => $value)
+        foreach ($this->lastMatchResult as $key => $value)
             if (is_string($key))
                 $data[$key] = $value;
 
@@ -199,43 +182,43 @@ class Reader
     public function consume($length = null)
     {
 
-        $length = $length ? $length : $this->_nextConsumeLength;
+        $length = $length ? $length : $this->nextConsumeLength;
 
         if ($length === null)
             $this->throwException(
                 "Failed to consume: No length given. Peek or match first."
             );
 
-        $consumedPart = safe_substr($this->_input, 0, $length, $this->_encoding);;
-        $this->_input = safe_substr($this->_input, $length, safe_strlen($this->_input) - $length, $this->_encoding);
-        $this->_position += $length;
-        $this->_offset += $length;
+        $consumedPart = safe_substr($this->input, 0, $length, $this->encoding);;
+        $this->input = safe_substr($this->input, $length, safe_strlen($this->input) - $length, $this->encoding);
+        $this->position += $length;
+        $this->offset += $length;
 
         //Check for new-lines in consumed part to increase line and offset correctly
         $newLines = safe_substr_count($consumedPart, "\n");
-        $this->_line += $newLines;
+        $this->line += $newLines;
 
         if ($newLines) {
 
             //if we only have one new-line character, the new offset is 0
             //Else the offset is the length of the last line read - 1
-            if (safe_strlen($consumedPart, $this->_encoding) === 1)
-                $this->_offset = 0;
+            if (safe_strlen($consumedPart, $this->encoding) === 1)
+                $this->offset = 0;
             else {
 
                 $parts = explode("\n", $consumedPart);
-                $this->_offset = safe_strlen($parts[count($parts) - 1], $this->_encoding) - 1;
+                $this->offset = safe_strlen($parts[count($parts) - 1], $this->encoding) - 1;
             }
         }
 
-        $this->_nextConsumeLength = null;
-        $this->_lastPeekResult = null;
-        $this->_lastMatchResult = null;
+        $this->nextConsumeLength = null;
+        $this->lastPeekResult = null;
+        $this->lastMatchResult = null;
 
         return $consumedPart;
     }
 
-    public function readWhile($callback, $peekLength = null, $inclusive = false)
+    public function readWhile($callback, $peekLength = null)
     {
 
         if (!is_callable($callback))
@@ -465,7 +448,7 @@ class Reader
             return null;
 
         $breaks = $breaks ? $breaks : [];
-        $brackets = $brackets ? $brackets : self::$_defaultExpressionBrackets;
+        $brackets = $brackets ? $brackets : self::$defaultExpressionBrackets;
         $expression = '';
         $char = null;
         $bracketStack = [];
@@ -530,9 +513,9 @@ class Reader
             "Failed to read: %s \nNear: %s \nLine: %s \nOffset: %s \nPosition: %s",
             $message,
             $this->peek(20),
-            $this->_line,
-            $this->_offset,
-            $this->_position
+            $this->line,
+            $this->offset,
+            $this->position
         ));
     }
 }

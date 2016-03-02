@@ -3,6 +3,7 @@
 namespace Tale\Test\Jade\Lexer;
 
 use Tale\Jade\Lexer\Reader;
+use Tale\Jade\Lexer\ReaderException;
 
 class ReaderTest extends \PHPUnit_Framework_TestCase
 {
@@ -55,7 +56,7 @@ class ReaderTest extends \PHPUnit_Framework_TestCase
     public function testInvalidBracketPlacement($input)
     {
 
-        $this->setExpectedException(Reader\Exception::class);
+        $this->setExpectedException(ReaderException::class);
 
         $reader = new Reader($input);
         $reader->readExpression();

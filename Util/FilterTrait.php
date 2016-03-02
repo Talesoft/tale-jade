@@ -5,14 +5,14 @@ namespace Tale\Jade\Util;
 trait FilterTrait
 {
 
-    private $_filter = null;
+    private $filter = null;
 
     /**
      * @return string
      */
     public function getFilter()
     {
-        return $this->_filter;
+        return $this->filter;
     }
 
     /**
@@ -22,7 +22,7 @@ trait FilterTrait
      */
     public function setFilter($filter)
     {
-        $this->_filter = $filter;
+        $this->filter = $filter;
 
         return $this;
     }

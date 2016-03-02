@@ -13,7 +13,7 @@ trait LevelTrait
      */
     public function setLevel($level)
     {
-        $this->_level = $level;
+        $this->level = $level;
 
         return $this;
     }
@@ -21,7 +21,7 @@ trait LevelTrait
     public function increaseLevel()
     {
 
-        $this->_level++;
+        $this->level++;
 
         return $this;
     }
@@ -29,7 +29,7 @@ trait LevelTrait
     public function decreaseLevel()
     {
 
-        $this->_level--;
+        $this->level--;
 
         return $this;
     }

@@ -1,9 +1,9 @@
 <?php
 /**
- * The Tale Jade Parser Exception.
+ * The Tale Jade Compiler Exception.
  *
- * Contains an exception that is thrown when the parser encounters
- * invalid node relations
+ * Contains an exception that is thrown when the compiler doesnt find files
+ * or encounters invalid node relations
  *
  * LICENSE:
  * The code of this file is distributed under the MIT license.
@@ -11,33 +11,34 @@
  * read it here http://licenses.talesoft.io/2015/MIT.txt
  *
  * @category   Presentation
- * @package    Tale\Jade\Parser
+ * @package    Tale\Jade\Compiler
  * @author     Torben Koehn <tk@talesoft.io>
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
  * @version    1.4.0
- * @link       http://jade.talesoft.io/docs/files/Parser.Exception.html
+ * @link       http://jade.talesoft.io/docs/files/Compiler.Exception.html
  * @since      File available since Release 1.0
  */
 
-namespace Tale\Jade\Parser;
+namespace Tale\Jade;
 
 /**
- * Represents an exception that is thrown during the parsing process.
+ * Represents an exception that is thrown during the compilation process.
  *
- * This exception is thrown when the parser encounters invalid node relations
+ * This exception is thrown when the compiler doesnt find
+ * a file or encounters invalid node relations
  *
  * @category   Presentation
- * @package    Tale\Jade\Parser
+ * @package    Tale\Jade\Compiler
  * @author     Torben Koehn <tk@talesoft.io>
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
  * @version    1.4.0
- * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Parser.Exception.html
+ * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Compiler.Exception.html
  * @since      File available since Release 1.0
  */
-class Exception extends \Exception
+class CompilerException extends \Exception
 {
 }

@@ -7,18 +7,18 @@ use Tale\Jade\Lexer\TokenBase;
 class ExpansionToken extends TokenBase
 {
 
-    private $_space = false;
+    private $space = false;
 
     public function hasSpace()
     {
 
-        return $this->_space;
+        return $this->space;
     }
 
     public function setHasSpace($space)
     {
 
-        $this->_space = $space;
+        $this->space = $space;
 
         return $this;
     }

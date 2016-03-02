@@ -28,6 +28,11 @@
 namespace Tale\Jade;
 
 use Tale\Jade\Parser\Node;
+use lessc;
+use Parsedown;
+use CoffeeScript\Compiler as CoffeeScriptCompiler;
+use Stylus\Stylus as Stylus;
+use Leafo\ScssPhp\Compiler as SassCompiler;
 
 /**
  * Provides basic, static filters for the compiler.
@@ -116,7 +121,7 @@ class Filter
     public static function filterPlain(Node $node, $indent, $newLine)
     {
 
-        $text = trim($node->text());
+        $text = trim($node->getText());
 
         //Normalize newlines to $newLine and append our indent
         $i = 0;
@@ -196,15 +201,15 @@ class Filter
     public static function filterMarkdown(Node $node, $indent, $newLine)
     {
 
-        if (!class_exists('Parsedown'))
+        if (!class_exists(Parsedown::class))
             throw new Compiler\Exception(
                 "Failed to compile Markdown: "
                 ."Please install the erusev/parsedown composer package"
             );
 
-        $parsedown = new \Parsedown();
+        $parsedown = new Parsedown();
 
-        return $parsedown->text($node->text());
+        return $parsedown->text($node->getText());
     }
 
 
@@ -221,13 +226,13 @@ class Filter
     public static function filterCoffeeScript(Node $node, $indent, $newLine)
     {
 
-        if (!class_exists('CoffeeScript\\Compiler'))
+        if (!class_exists(CoffeeScriptCompiler::class))
             throw new Compiler\Exception(
                 "Failed to compile CoffeeScript: "
                 ."Please install the coffeescript/coffeescript composer package"
             );
 
-        $js = \CoffeeScript\Compiler::compile($node->text(), [
+        $js = CoffeeScriptCompiler::compile($node->getText(), [
             'header' => '',
             'filename' => 'Imported-at-('.$node->line.':'.$node->offset.').coffee'
         ]);
@@ -248,14 +253,14 @@ class Filter
     public static function filterLess(Node $node, $indent, $newLine)
     {
 
-        if (!class_exists('lessc'))
+        if (!class_exists(lessc::class))
             throw new Compiler\Exception(
                 "Failed to compile LESS: "
                 ."Please install the leafo/lessphp composer package"
             );
 
-        $less = new \lessc;
-        $css = $less->compile($node->text());
+        $less = new lessc;
+        $css = $less->compile($node->getText());
 
         return '<style>'.$newLine.$indent.$css.$newLine.$indent.'</style>';
     }
@@ -273,14 +278,14 @@ class Filter
     public static function filterStylus(Node $node, $indent, $newLine)
     {
 
-        if (!class_exists('Stylus\\Stylus'))
+        if (!class_exists(Stylus::class))
             throw new Compiler\Exception(
                 "Failed to compile Stylus: "
                 ."Please install the neemzy/stylus composer package"
             );
 
-        $stylus = new \Stylus\Stylus;
-        $css = $stylus->fromString($node->text())->toString();
+        $stylus = new Stylus;
+        $css = $stylus->fromString($node->getText())->toString();
 
         return '<style>'.$newLine.$indent.$css.$newLine.$indent.'</style>';
     }
@@ -298,14 +303,14 @@ class Filter
     public static function filterSass(Node $node, $indent, $newLine)
     {
 
-        if (!class_exists('Leafo\\ScssPhp\\Compiler'))
+        if (!class_exists(SassCompiler::class))
             throw new Compiler\Exception(
                 "Failed to compile SASS: "
                 ."Please install the leafo/scssphp composer package"
             );
 
-        $sass = new \Leafo\ScssPhp\Compiler;
-        $css = $sass->compile($node->text());
+        $sass = new SassCompiler;
+        $css = $sass->compile($node->getText());
 
         return '<style>'.$newLine.$indent.$css.$newLine.$indent.'</style>';
     }

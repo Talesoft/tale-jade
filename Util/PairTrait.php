@@ -5,15 +5,15 @@ namespace Tale\Jade\Util;
 trait PairTrait
 {
 
-    private $_item = null;
-    private $_key = null;
+    private $item = null;
+    private $key = null;
 
     /**
      * @return string
      */
     public function getItem()
     {
-        return $this->_item;
+        return $this->item;
     }
 
     /**
@@ -23,7 +23,7 @@ trait PairTrait
      */
     public function setItem($itemName)
     {
-        $this->_item = $itemName;
+        $this->item = $itemName;
 
         return $this;
     }
@@ -33,7 +33,7 @@ trait PairTrait
      */
     public function getKey()
     {
-        return $this->_key;
+        return $this->key;
     }
 
     /**
@@ -43,7 +43,7 @@ trait PairTrait
      */
     public function setKey($keyName)
     {
-        $this->_key = $keyName;
+        $this->key = $keyName;
 
         return $this;
     }

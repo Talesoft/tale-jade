@@ -26,9 +26,12 @@
 namespace Tale\Jade;
 
 use Tale\ConfigurableTrait;
+use Tale\Factory\SingletonFactory;
 use Tale\Jade\Lexer\TokenInterface;
+use Tale\Jade\Parser\Dumper\Html;
+use Tale\Jade\Parser\Dumper\Text;
+use Tale\Jade\Parser\DumperInterface;
 use Tale\Jade\Parser\Node;
-use Tale\Jade\Parser\Exception;
 use Tale\Jade\Lexer\Token\AssignmentToken;
 use Tale\Jade\Lexer\Token\AttributeEndToken;
 use Tale\Jade\Lexer\Token\AttributeStartToken;
@@ -79,6 +82,7 @@ use Tale\Jade\Parser\Node\TextNode;
 use Tale\Jade\Parser\Node\VariableNode;
 use Tale\Jade\Parser\Node\WhenNode;
 use Tale\Jade\Parser\Node\WhileNode;
+use Tale\Jade\Parser\ParserException;
 use Tale\Jade\Parser\State;
 
 /**
@@ -123,17 +127,19 @@ class Parser
      *
      * @var Lexer
      */
-    private $_lexer;
+    private $lexer;
 
     /**
      * @var State
      */
-    private $_state;
+    private $state;
 
     /**
      * @var callable[]
      */
-    private $_handlers;
+    private $handlers;
+
+    private $dumperFactory;
 
     /**
      * Creates a new parser instance.
@@ -158,6 +164,7 @@ class Parser
         $this->defineOptions([
             'lexerOptions' => [],
             'stateClassName' => State::class,
+            'dumper' => 'text',
             'handlers' => [
                 AssignmentToken::class => [$this, 'handleAssignment'],
                 AttributeEndToken::class => [$this, 'handleAttributeEnd'],
@@ -191,11 +198,19 @@ class Parser
             ]
         ], $options);
 
-        $this->_lexer = $lexer ?: new Lexer($this->getOption('lexerOptions'));
-        $this->_state = null;
-        $this->_handlers = [];
 
-        foreach ($this->getOption('handlers') as $className => $handler)
+        $this->setDefaults([
+            'dumpers' => [
+                'text' => Text::class,
+                'html' => Html::class
+            ]
+        ], true);
+
+        $this->lexer = $lexer ?: new Lexer($this->getOption('lexerOptions'));
+        $this->state = null;
+        $this->handlers = [];
+
+        foreach ($this->options['handlers'] as $className => $handler)
             $this->setHandler($className, $handler);
     }
 
@@ -207,7 +222,7 @@ class Parser
     public function getLexer()
     {
 
-        return $this->_lexer;
+        return $this->lexer;
     }
 
     public function setHandler($className, $handler)
@@ -218,9 +233,21 @@ class Parser
                 "Argument 2 of Parser->setHandler needs to be valid callback"
             );
 
-        $this->_handlers[$className] = $handler;
+        $this->handlers[$className] = $handler;
 
         return $this;
+    }
+
+    public function getDumperFactory()
+    {
+
+        if (!$this->dumperFactory)
+            $this->dumperFactory = new SingletonFactory(
+                DumperInterface::class,
+                $this->options['dumpers']
+            );
+
+        return $this->dumperFactory;
     }
 
     /**
@@ -241,27 +268,27 @@ class Parser
     public function parse($input)
     {
 
-        $stateClassName = $this->getOption('stateClassName');
+        $stateClassName = $this->options['stateClassName'];
 
         if (!is_a($stateClassName, State::class, true))
             throw new \InvalidArgumentException(
                 'stateClassName needs to be a valid '.State::class.' sub class'
             );
 
-        $this->_state = new $stateClassName(
-            $this->_lexer->lex($input)
+        $this->state = new $stateClassName(
+            $this->lexer->lex($input)
         );
 
         //While we have tokens, handle current token, then go to next token
         //rinse and repeat
-        while ($this->_state->hasTokens()) {
+        while ($this->state->hasTokens()) {
 
             $this->handle();
-            $this->_state->nextToken();
+            $this->state->nextToken();
         }
 
-        $document = $this->_state->getDocumentNode();
-        $this->_state = null;
+        $document = $this->state->getDocumentNode();
+        $this->state = null;
 
         //Some work after parsing needed
         /*
@@ -287,6 +314,13 @@ class Parser
         return $document;
     }
 
+    public function dump($input, $dumper = null)
+    {
+
+        $dumper = $this->getDumperFactory()->get($dumper ?: $this->options['dumper']);
+        return $dumper->dump($this->parse($input));
+    }
+
     /**
      * Handles any kind of token returned by the lexer.
      *
@@ -297,27 +331,27 @@ class Parser
      *
      * @param TokenInterface $token a token or the current lexer's generator token
      *
-     * @throws Exception when no token handler has been found
+     * @throws ParserException when no token handler has been found
      */
     public function handle(TokenInterface $token = null)
     {
 
-        if (!$this->_state)
-            throw new Exception(
+        if (!$this->state)
+            throw new ParserException(
                 "Failed to handle token: No parsing process active"
             );
 
-        $token = $token ? $token : $this->_state->getToken();
+        $token = $token ? $token : $this->state->getToken();
         $className = get_class($token);
 
-        if (!isset($this->_handlers[$className]))
-            $this->_state->throwException(
+        if (!isset($this->handlers[$className]))
+            $this->state->throwException(
                 "Unexpected token `$className`, no handler registered",
                 $token
             );
 
-        $handler = $this->_handlers[$className];
-        call_user_func($handler, $token, $this->_state);
+        $handler = $this->handlers[$className];
+        call_user_func($handler, $token, $this->state);
     }
 
     /**
@@ -332,7 +366,7 @@ class Parser
      * @param AssignmentToken $token the <assignment>-token
      * @param State $state the parser state
      *
-     * @throws Exception
+     * @throws ParserException
      */
     protected function handleAssignment(AssignmentToken $token, State $state)
     {
@@ -376,7 +410,7 @@ class Parser
      * @param AttributeToken $token the <attribute>-token
      * @param State $state the parser state
      *
-     * @throws Exception
+     * @throws ParserException
      */
     protected function handleAttribute(AttributeToken $token, State $state)
     {
@@ -386,17 +420,16 @@ class Parser
 
         /** @var AttributeNode $node */
         $node = $state->createNode(AttributeNode::class, $token);
-        $node->setName($token->getName());
-        $node->setValue($token->getValue());
+        $name = $node->getName();
+        $value = $node->getValue();
+        $node->setName($name);
+        $node->setValue($value);
         $node->setIsEscaped($token->isEscaped());
         $node->setIsChecked($token->isChecked());
 
-        $name = $node->getName();
-        $value = $node->getValue();
-
         if ($state->currentNodeIs([MixinCallNode::class]) && ($value === '' || $value === null)) {
 
-            $node->setValue($node->getName());
+            $node->setValue($name);
             $node->setName(null);
         }
 
@@ -417,7 +450,7 @@ class Parser
      * @param AttributeStartToken $token the <attributeStart>-token
      * @param State $state the parser state
      *
-     * @throws Exception
+     * @throws ParserException
      */
     protected function handleAttributeStart(AttributeStartToken $token, State $state)
     {
@@ -469,7 +502,7 @@ class Parser
      * @param BlockToken $token the <block>-token
      * @param State $state the parser state
      *
-     * @throws Exception
+     * @throws ParserException
      */
     protected function handleBlock(BlockToken $token, State $state)
     {
@@ -494,7 +527,7 @@ class Parser
      * @param ClassToken $token the <class>-token
      * @param State $state the parser state
      *
-     * @throws Exception
+     * @throws ParserException
      */
     protected function handleClass(ClassToken $token, State $state)
     {
@@ -623,7 +656,7 @@ class Parser
      * @param ExpressionToken $token the <expression>-token
      * @param State $state the parser state
      *
-     * @throws Exception
+     * @throws ParserException
      */
     protected function handleExpression(ExpressionToken $token, State $state)
     {
@@ -646,7 +679,7 @@ class Parser
      * @param CodeToken $token the <code>-token
      * @param State $state the parser state
      *
-     * @throws Exception
+     * @throws ParserException
      */
     protected function handleCode(CodeToken $token, State $state)
     {
@@ -685,7 +718,7 @@ class Parser
      * @param IdToken $token the <id>-token
      * @param State $state the parser state
      *
-     * @throws Exception
+     * @throws ParserException
      */
     protected function handleId(IdToken $token, State $state)
     {
@@ -716,7 +749,7 @@ class Parser
      * @param VariableToken $token the <variable>-token
      * @param State $state the parser state
      *
-     * @throws Exception
+     * @throws ParserException
      */
     protected function handleVariable(VariableToken $token, State $state)
     {
@@ -740,7 +773,7 @@ class Parser
      * @param ImportToken $token the <import>-token
      * @param State $state the parser state
      *
-     * @throws Exception
+     * @throws ParserException
      */
     protected function handleImport(ImportToken $token, State $state)
     {
@@ -777,7 +810,7 @@ class Parser
      * @param IndentToken $token the <indent>-token
      * @param State $state the parser state
      *
-     * @throws Exception
+     * @throws ParserException
      */
     protected function handleIndent(IndentToken $token, State $state)
     {
@@ -795,7 +828,7 @@ class Parser
      * @param TagToken $token the <tag>-token
      * @param State $state the parser state
      *
-     * @throws Exception
+     * @throws ParserException
      */
     protected function handleTag(TagToken $token, State $state)
     {
@@ -831,7 +864,7 @@ class Parser
      * @param MixinToken $token the <mixin>-token
      * @param State $state the parser state
      *
-     * @throws Exception
+     * @throws ParserException
      */
     protected function handleMixin(MixinToken $token, State $state)
     {
@@ -900,7 +933,7 @@ class Parser
     /**
      * Handles an <expansion>-token.
      *
-     * If there's no current element, we don't expand anything and throw an exception
+     * If there's no current element, we don't expand anything and throw an ParserException
      *
      * If there's no space behind the : and the next token is a <tag>-token,
      * we don't treat this as an expansion, but rather as a tag-extension
@@ -917,7 +950,7 @@ class Parser
      * @param ExpansionToken $token the <expansion>-token
      * @param State $state the parser state
      *
-     * @throws Exception
+     * @throws ParserException
      */
     protected function handleExpansion(ExpansionToken $token, State $state)
     {

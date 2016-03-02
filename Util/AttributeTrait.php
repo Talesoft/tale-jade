@@ -7,14 +7,14 @@ use Tale\Jade\Parser\Node\AttributeListNode;
 trait AttributeTrait
 {
 
-    private $_attributes = null;
+    private $attributes = null;
 
     public function getAttributes()
     {
 
-        if (!$this->_attributes)
-            $this->_attributes = new AttributeListNode;
+        if (!$this->attributes)
+            $this->attributes = new AttributeListNode;
 
-        return $this->_attributes;
+        return $this->attributes;
     }
 }

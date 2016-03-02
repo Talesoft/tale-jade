@@ -2,10 +2,11 @@
 
 namespace Tale\Jade\Parser;
 
-use Tale\Jade\Compiler\Exception;
 use Tale\Jade\Lexer;
 use Tale\Jade\Lexer\TokenInterface;
+use Tale\Jade\Parser;
 use Tale\Jade\Parser\Node\DocumentNode;
+use Tale\Jade\ParserException;
 use Tale\Jade\Util\LevelTrait;
 
 class State
@@ -17,14 +18,14 @@ class State
      *
      * @var \Generator
      */
-    private $_tokens;
+    private $tokens;
 
     /**
      * The root node of the currently parsed document.
      *
      * @var Node
      */
-    private $_documentNode;
+    private $documentNode;
 
     /**
      * The parent that currently found childs are appended to.
@@ -34,7 +35,7 @@ class State
      *
      * @var Node
      */
-    private $_parentNode;
+    private $parentNode;
 
     /**
      * The current element in the queue.
@@ -44,7 +45,7 @@ class State
      *
      * @var Node
      */
-    private $_currentNode;
+    private $currentNode;
 
     /**
      * The last element that was completely put together.
@@ -53,34 +54,32 @@ class State
      *
      * @var Node
      */
-    private $_lastNode;
+    private $lastNode;
 
     /**
      * Stores an expanded node to attach it to the expanding node later.
      *
      * @var Node
      */
-    private $_outerNode;
+    private $outerNode;
 
     public function __construct(\Generator $tokens)
     {
 
         $this->setLevel(0);
-        $this->_tokens = $tokens;
-        $this->_documentNode = $this->createNode(DocumentNode::class);
-        $this->_parentNode = $this->_documentNode;
-        $this->_currentNode = null;
-        $this->_lastNode = null;
-        $this->_inMixin = false;
-        $this->_mixinLevel = null;
-        $this->_outerNode = null;
+        $this->tokens = $tokens;
+        $this->documentNode = $this->createNode(DocumentNode::class);
+        $this->parentNode = $this->documentNode;
+        $this->currentNode = null;
+        $this->lastNode = null;
+        $this->outerNode = null;
 
         //Fix HHVM generators needing ->next() before ->current()
         //This will actually work as expected, no node will be skipped
         //HHVM always needs a first ->next() (I don't know if this is a bug or
         //expected behaviour)
         if (defined('HHVM_VERSION'))
-            $this->_tokens->next();
+            $this->tokens->next();
     }
 
     /**
@@ -89,7 +88,7 @@ class State
     public function getTokens()
     {
 
-        return $this->_tokens;
+        return $this->tokens;
     }
 
     /**
@@ -99,7 +98,7 @@ class State
     public function setTokens($tokens)
     {
 
-        $this->_tokens = $tokens;
+        $this->tokens = $tokens;
 
         return $this;
     }
@@ -110,7 +109,7 @@ class State
     public function getDocumentNode()
     {
 
-        return $this->_documentNode;
+        return $this->documentNode;
     }
 
     /**
@@ -121,7 +120,7 @@ class State
     public function setDocumentNode($document)
     {
 
-        $this->_documentNode = $document;
+        $this->documentNode = $document;
 
         return $this;
     }
@@ -132,7 +131,7 @@ class State
     public function getParentNode()
     {
 
-        return $this->_parentNode;
+        return $this->parentNode;
     }
 
     /**
@@ -143,7 +142,7 @@ class State
     public function setParentNode($currentParent)
     {
 
-        $this->_parentNode = $currentParent;
+        $this->parentNode = $currentParent;
 
         return $this;
     }
@@ -154,7 +153,7 @@ class State
     public function getCurrentNode()
     {
 
-        return $this->_currentNode;
+        return $this->currentNode;
     }
 
     /**
@@ -165,7 +164,7 @@ class State
     public function setCurrentNode($current)
     {
 
-        $this->_currentNode = $current;
+        $this->currentNode = $current;
 
         return $this;
     }
@@ -176,7 +175,7 @@ class State
     public function getLastNode()
     {
 
-        return $this->_lastNode;
+        return $this->lastNode;
     }
 
     /**
@@ -187,7 +186,7 @@ class State
     public function setLastNode($last)
     {
 
-        $this->_lastNode = $last;
+        $this->lastNode = $last;
 
         return $this;
     }
@@ -198,7 +197,7 @@ class State
     public function getOuterNode()
     {
 
-        return $this->_outerNode;
+        return $this->outerNode;
     }
 
     /**
@@ -209,7 +208,7 @@ class State
     public function setOuterNode(Node $node)
     {
 
-        $this->_outerNode = $node;
+        $this->outerNode = $node;
 
         return $this;
     }
@@ -306,7 +305,7 @@ class State
     public function hasTokens()
     {
 
-        return $this->_tokens->valid();
+        return $this->tokens->valid();
     }
 
     /**
@@ -321,7 +320,7 @@ class State
     public function nextToken()
     {
 
-        $this->_tokens->next();
+        $this->tokens->next();
 
         return $this;
     }
@@ -336,14 +335,14 @@ class State
     public function getToken()
     {
 
-        return $this->_tokens->current();
+        return $this->tokens->current();
     }
 
     public function is(Node $node, array $classNames)
     {
 
         foreach ($classNames as $className)
-            if ($node->is($className))
+            if (is_a($node, $className))
                 return true;
 
         return false;
@@ -352,28 +351,28 @@ class State
     public function currentNodeIs(array $classNames)
     {
 
-        if (!$this->_currentNode)
+        if (!$this->currentNode)
             return false;
 
-        return $this->is($this->_currentNode, $classNames);
+        return $this->is($this->currentNode, $classNames);
     }
 
     public function lastNodeIs(array $classNames)
     {
 
-        if (!$this->_lastNode)
+        if (!$this->lastNode)
             return false;
 
-        return $this->is($this->_lastNode, $classNames);
+        return $this->is($this->lastNode, $classNames);
     }
 
     public function parentNodeIs(array $classNames)
     {
 
-        if (!$this->_parentNode)
+        if (!$this->parentNode)
             return false;
 
-        return $this->is($this->_parentNode, $classNames);
+        return $this->is($this->parentNode, $classNames);
     }
 
     /**
@@ -413,10 +412,10 @@ class State
 
         $this->increaseLevel();
 
-        if (!$this->_lastNode)
+        if (!$this->lastNode)
             return $this;
 
-        $this->_parentNode = $this->_lastNode;
+        $this->parentNode = $this->lastNode;
 
         return $this;
     }
@@ -426,34 +425,34 @@ class State
 
         $this->decreaseLevel();
 
-        if (!$this->_parentNode->getParent())
+        if (!$this->parentNode->getParent())
             $this->throwException(
                 "Failed to outdent: No parent to outdent to. "
                 ."Seems the parser moved out too many levels."
             );
 
-        $this->_parentNode = $this->_parentNode->getParent();
+        $this->parentNode = $this->parentNode->getParent();
     }
 
     public function store()
     {
 
-        if (!$this->_currentNode)
+        if (!$this->currentNode)
             return $this;
 
 
         //Is there any expansion?
-        if ($this->_outerNode) {
+        if ($this->outerNode) {
 
             //Store outer node on current node for expansion
-            $this->_currentNode->setOuterNode($this->_outerNode);
-            $this->_outerNode = null;
+            $this->currentNode->setOuterNode($this->outerNode);
+            $this->outerNode = null;
         }
 
         //Append to current parent
-        $this->_parentNode->appendChild($this->_currentNode);
-        $this->_lastNode = $this->getCurrentNode();
-        $this->_currentNode = null;
+        $this->parentNode->appendChild($this->currentNode);
+        $this->lastNode = $this->getCurrentNode();
+        $this->currentNode = null;
 
         return $this;
     }
@@ -467,16 +466,16 @@ class State
      * @param string $message A meaningful error message
      * @param TokenInterface $relatedToken
      *
-     * @throws Exception
+     * @throws ParserException
      */
     public function throwException($message, TokenInterface $relatedToken = null)
     {
 
         $pattern = "Failed to parse: %s \nToken: %s \nLine: %s \nOffset: %s";
 
-        throw new Exception(vsprintf($pattern, [
+        throw new ParserException(vsprintf($pattern, [
             $message,
-            $relatedToken ? $relatedToken : null,
+            $relatedToken ?: null,
             $relatedToken ? $relatedToken->getLine() : '',
             $relatedToken ? $relatedToken->getOffset() : '',
         ]));

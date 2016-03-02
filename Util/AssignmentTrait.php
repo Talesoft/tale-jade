@@ -7,14 +7,14 @@ use Tale\Jade\Parser\Node\AttributeListNode;
 trait AssignmentTrait
 {
 
-    private $_assignments = null;
+    private $assignments = null;
 
     public function getAssignments()
     {
 
-        if (!$this->_assignments)
-            $this->_assignments = new AttributeListNode;
+        if (!$this->assignments)
+            $this->assignments = new AttributeListNode;
 
-        return $this->_assignments;
+        return $this->assignments;
     }
 }

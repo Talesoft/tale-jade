@@ -5,18 +5,18 @@ namespace Tale\Jade\Util;
 trait EscapeTrait
 {
 
-    private $_escaped = false;
+    private $escaped = false;
 
     public function isEscaped()
     {
 
-        return $this->_escaped;
+        return $this->escaped;
     }
 
     public function setIsEscaped($escaped)
     {
 
-        $this->_escaped = $escaped;
+        $this->escaped = $escaped;
 
         return $this;
     }
@@ -24,7 +24,7 @@ trait EscapeTrait
     public function escape()
     {
 
-        $this->_escaped = true;
+        $this->escaped = true;
 
         return $this;
     }
@@ -32,7 +32,7 @@ trait EscapeTrait
     public function unescape()
     {
 
-        $this->_escaped = false;
+        $this->escaped = false;
 
         return $this;
     }
