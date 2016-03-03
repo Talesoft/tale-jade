@@ -86,7 +86,7 @@ class Node extends TreeNode implements NodeInterface
     }
 
     /**
-     * @return Node
+     * @return NodeInterface
      */
     public function getOuterNode()
     {
@@ -94,11 +94,11 @@ class Node extends TreeNode implements NodeInterface
     }
 
     /**
-     * @param Node $node
+     * @param NodeInterface $node
      *
      * @return $this
      */
-    public function setOuterNode(Node $node = null)
+    public function setOuterNode(NodeInterface $node = null)
     {
 
         $this->outerNode = $node;

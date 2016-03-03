@@ -391,10 +391,8 @@ class Reader
         if (!$this->peekQuote())
             return null;
 
-        $escapeSequences = $escapeSequences ? $escapeSequences : [];
-
+        $escapeSequences = $escapeSequences ?: [];
         $quoteStyle = $this->consume();
-
         $escapeSequences[$quoteStyle] = $quoteStyle;
 
         $last = null;

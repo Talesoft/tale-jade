@@ -152,13 +152,6 @@ class Compiler
     const EXPORT_ESCAPED = 4;
 
     /**
-     * The lexer that is given to the parser.
-     *
-     * @var Lexer
-     */
-    private $lexer;
-
-    /**
      * The parse this compiler instance gets its nodes off.
      *
      * @var Parser
@@ -292,10 +285,9 @@ class Compiler
      *
      *
      * @param array|null  $options an array of options
-     * @param Parser|null $parser  an existing parser instance
-     * @param Lexer|null  $lexer   an existing lexer instance
+     * @throws CompilerException
      */
-    public function __construct(array $options = null, Parser $parser = null, Lexer $lexer = null)
+    public function __construct(array $options = null)
     {
 
         $this->defineOptions([
@@ -369,12 +361,23 @@ class Compiler
             'echoXmlDoctype'          => defined('HHVM_VERSION'),
             'paths'                   => [],
             'extensions'              => ['.jd', '.jade'],
+            'parserClassName'         => Parser::class,
             'parserOptions'           => [],
+            'lexerClassName'          => Lexer::class,
             'lexerOptions'            => []
-        ], $options);
+        ], $options, true);
 
-        $this->lexer = $lexer ?: new Lexer($this->options['lexerOptions']);
-        $this->parser = $parser ?: new Parser($this->options['parserOptions'], $this->lexer);
+        $parserClassName = $this->options['parserClassName'];
+        if (!is_a($this->options['parserClassName'], Parser::class))
+            throw new CompilerException(
+                "Passed parser class $parserClassName is ".
+                "not a valid ".Parser::class
+            );
+
+        $this->forwardOption('lexerClassName', 'parserOptions');
+        $this->forwardOption('lexerOptions', 'parserOptions');
+
+        $this->parser = $parserClassName($this->options['parserOptions']);
     }
 
     /**
@@ -385,7 +388,7 @@ class Compiler
     public function getLexer()
     {
 
-        return $this->lexer;
+        return $this->parser->getLexer();
     }
 
     /**

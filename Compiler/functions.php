@@ -40,6 +40,8 @@ function is_scalar($value)
  * $obj->someArray['someKey']
  * etc.
  *
+ * It's used for auto-checking (automatically enclosing isset())
+ *
  * @param string $value the value to be checked
  *
  * @return bool

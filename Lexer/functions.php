@@ -2,6 +2,44 @@
 
 namespace Tale\Jade\Lexer;
 
+/**
+ * Checks if a variables is scalar (or "not an expression").
+ *
+ * These values don't get much special handling, they are mostly
+ * simple attributes values like `type="button"` or `method='post'`
+ *
+ * A scalar value is either a closed string containing only
+ * a-z, A-Z, 0-9, _ and -, e.g. Some-Static_Value
+ * or a quote-enclosed string that can contain anything
+ * except the quote style it used
+ * e.g. "Some Random String", 'This can" contain quotes"'
+ *
+ * @param string $value the value to be checked
+ * @param string $encoding
+ *
+ * @return bool
+ */
+function is_scalar($value, $encoding = null)
+{
+
+    if ((!is_string($value) && !is_numeric($value)) || $value === '')
+        return false;
+
+    $reader = new Reader($value, $encoding);
+    if ($reader->peekQuote()) {
+
+        $string = $reader->readString(null, true);
+
+        if ($string === $value)
+            return true;
+    }
+
+    return preg_match('/^[0-9]+(\.[0-9]+)?$/', $value) === 1;
+}
+
+
+
+
 function preg_last_error_text()
 {
 

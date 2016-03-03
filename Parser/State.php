@@ -104,25 +104,12 @@ class State
     }
 
     /**
-     * @return Node
+     * @return DocumentNode
      */
     public function getDocumentNode()
     {
 
         return $this->documentNode;
-    }
-
-    /**
-     * @param Node $document
-     *
-*@return $this
-     */
-    public function setDocumentNode($document)
-    {
-
-        $this->documentNode = $document;
-
-        return $this;
     }
 
     /**
@@ -137,7 +124,7 @@ class State
     /**
      * @param Node $currentParent
      *
-*@return $this
+     * @return $this
      */
     public function setParentNode($currentParent)
     {

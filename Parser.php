@@ -82,7 +82,7 @@ use Tale\Jade\Parser\Node\TextNode;
 use Tale\Jade\Parser\Node\VariableNode;
 use Tale\Jade\Parser\Node\WhenNode;
 use Tale\Jade\Parser\Node\WhileNode;
-use Tale\Jade\Parser\ParserException;
+use Tale\Jade\Parser\NodeInterface;
 use Tale\Jade\Parser\State;
 
 /**
@@ -156,15 +156,20 @@ class Parser
      * lexerOptions:   The options for the lexer
      *
      * @param array|null $options the options array
-     * @param Lexer|null $lexer   an existing lexer instance (lexer-option will be ignored)
+     * @throws ParserException
      */
-    public function __construct(array $options = null, Lexer $lexer = null)
+    public function __construct(array $options = null)
     {
 
         $this->defineOptions([
+            'lexerClassName' => Lexer::class,
             'lexerOptions' => [],
             'stateClassName' => State::class,
             'dumper' => 'text',
+            'dumpers' => [
+                'text' => Text::class,
+                'html' => Html::class
+            ],
             'handlers' => [
                 AssignmentToken::class => [$this, 'handleAssignment'],
                 AttributeEndToken::class => [$this, 'handleAttributeEnd'],
@@ -196,17 +201,16 @@ class Parser
                 WhenToken::class => [$this, 'handleWhen'],
                 WhileToken::class => [$this, 'handleWhile']
             ]
-        ], $options);
+        ], $options, true);
 
+        $lexerClassName = $this->options['lexerClassName'];
+        if (!is_a($this->options['lexerClassName'], Lexer::class))
+            throw new ParserException(
+                "Passed lexer class $lexerClassName is ".
+                "not a valid ".Lexer::class
+            );
 
-        $this->setDefaults([
-            'dumpers' => [
-                'text' => Text::class,
-                'html' => Html::class
-            ]
-        ], true);
-
-        $this->lexer = $lexer ?: new Lexer($this->getOption('lexerOptions'));
+        $this->lexer = new $lexerClassName($this->options['lexerOptions']);
         $this->state = null;
         $this->handlers = [];
 
@@ -269,7 +273,6 @@ class Parser
     {
 
         $stateClassName = $this->options['stateClassName'];
-
         if (!is_a($stateClassName, State::class, true))
             throw new \InvalidArgumentException(
                 'stateClassName needs to be a valid '.State::class.' sub class'
@@ -288,27 +291,30 @@ class Parser
         }
 
         $document = $this->state->getDocumentNode();
-        $this->state = null;
 
         //Some work after parsing needed
-        /*
         //Resolve expansions/outer nodes
-        if (isset($node->expands)) {
+        $expandingNodes = $document->find(function(NodeInterface $node) {
 
-            $current = $node;
-            while (isset($current->expands)) {
+            return $node->getOuterNode() !== null;
+        });
 
-                $expandedNode = $current->expands;
-                unset($current->expands);
+        foreach ($expandingNodes as $expandingNode) {
 
-                $current->parent->insertBefore($current, $expandedNode);
-                $current->parent->remove($current);
-                $expandedNode->append($current);
+            $current = $expandingNode;
+            while ($outerNode = $expandingNode->getOuterNode()) {
+
+                /** @var NodeInterface $expandedNode */
+                $expandedNode = $outerNode;
+                $current->setOuterNode(null);
+                $current->prepend($expandedNode);
+                $current->remove();
+                $expandedNode->appendChild($current);
                 $current = $expandedNode;
             }
+        }
 
-            return $this->compileNode($current);
-        }*/
+        $this->state = null;
 
         //Return the final document node with all its awesome child nodes
         return $document;

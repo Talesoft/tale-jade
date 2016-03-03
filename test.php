@@ -124,7 +124,7 @@ echo htmlentities($jade, ENT_QUOTES, 'UTF-8');
 
 echo "\n\n================\n\n";
 
-try {
+/*try {
 
     echo htmlentities($compiler->compile($jade), ENT_QUOTES, 'UTF-8');
 } catch(Exception $e) {
@@ -132,6 +132,7 @@ try {
 }
 
 echo "\n\n================\n\n";
+*/
 
 try {
     echo $parser->dump($jade);

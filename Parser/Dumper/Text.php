@@ -17,6 +17,10 @@ class Text extends DumperBase
             default:
 
                 $text = $this->getNodeName($node);
+
+                if ($outerNode = $node->getOuterNode())
+                    $text .= ' outer='.get_class($outerNode);
+
                 break;
         }
 

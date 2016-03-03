@@ -33,13 +33,13 @@ class Formatter
             'level' => 0
         ]);
 
-        $this->setLevel($this->getOption('level'));
+        $this->level = $this->options['level'];
     }
 
     public function formatsPretty()
     {
 
-        return $this->getOption('pretty');
+        return $this->options['pretty'];
     }
 
     public function getIndentation($offset = null)
@@ -51,8 +51,8 @@ class Formatter
             return '';
 
         return str_repeat(
-            $this->getOption('indentStyle'),
-            $this->getOption('indentWidth') * ($this->getLevel() + $offset)
+            $this->options['indentStyle'],
+            $this->options['indentWidth'] * ($this->level + $offset)
         );
     }
 
@@ -62,15 +62,18 @@ class Formatter
         if (!$this->formatsPretty())
             return '';
 
-        return $this->getOption('lineBreak');
+        return $this->options['lineBreak'];
     }
 
     public function wrap($string, $prefix, $suffix, $block = false)
     {
 
         $break = $block
-             ? $this->getLineBreak()
-             : ' ';
+               ? $this->getLineBreak()
+               : ' ';
+
+
+
         $indent = $block
                 ? $this->getIndentation(1)
                 : '';
