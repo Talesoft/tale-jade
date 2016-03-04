@@ -44,41 +44,17 @@ or add it to your `composer.json` by yourself
 }
 ```
 
-### Install by downloading the sources
-
-You can also download the sources by yourself.
-
-Tale Jade is compatible with the [PSR-0](http://www.php-fig.org/psr/psr-0/) and [PSR-4](http://www.php-fig.org/psr/psr-4/) autoloading standards.
-
-Put the sources inside your a `Tale/Jade` subfolder inside your autoloading directories, e.g. `library/Tale/Jade` and you're ready to go!
-
-The easiest way might be to just put a clone of the repository there, that way you can update it easier
-
-```bash
-$ git clone git@github.com:Talesoft/tale-jade.git library/Tale/Jade
-```
-
-or as a sub-module if you're using git for your project as well
-
-```bash
-$ git submodule add git@github.com:Talesoft/tale-jade.git library/Tale/Jade
-```
-
-
 ### Rendering a Jade Template
 
 Include the `vendor/autoload.php` file of composer in your PHP script and get started with Tale Jade!
 
 ```php
-
 use Tale\Jade;
 
 //Include the vendor/autoload.php if you're using composer!
 include('vendor/autoload.php');
 
-$renderer = new Jade\Renderer();
-
-echo $renderer->render('your-jade-file');
+echo Jade::render('your-jade-file');
 ```
 
 This way, the renderer will search for `your-jade-file.jade` in your `get_include_path()`-paths.
@@ -91,8 +67,7 @@ When the Jade-file gets rendered, a `./cache/views`-directory is created automat
 To change this directory, use the `cachePath`-option
 
 ```php
-
-$renderer = new Jade\Renderer([
+echo Jade::render('your-jade-file', null, [
     'cachePath' => '/your/absolute/cache/path'
 ]);
 ```
@@ -104,8 +79,7 @@ To enable a cache that won't render the files on each call, use the `lifeTime` o
 
 
 ```php
-
-$renderer = new Jade\Renderer([
+echo Jade::render('your-jade-file', null, [
     'lifeTime' => 3600 //Will cache the file for 3600 seconds (one hour)
 ]);
 ```
@@ -117,8 +91,7 @@ $renderer = new Jade\Renderer([
 To enable formatting of the PHTML-output, use the `pretty`-option
 
 ```php
-
-$renderer = new Jade\Renderer([
+echo Jade::render('your-jade-file', null, [
     'pretty' => true
 ]);
 ```
@@ -128,14 +101,9 @@ If you don't want to use the `get_include_path()`-paths (which could actually ha
 Rendered and included Jade-files will be searched in those paths and not in the `get_include_path()`-paths anymore.
 
 ```php
-
-//Either with
-$renderer = new Jade\Renderer([
+echo Jade::render('your-jade-file', null, [
     'paths' => [__DIR__.'/views']
 ]);
-
-//or with
-$renderer->addPath(__DIR__.'/views');
 ```
 
 As soon as you pass *any* path, the loading from the `get_include_path()`-paths will be disabled and you always load from your passed directory/ies.
@@ -143,8 +111,7 @@ As soon as you pass *any* path, the loading from the `get_include_path()`-paths 
 To pass variables to your Jade-file, use the second argument of the `render`-method
 
 ```php
-
-echo $renderer->render('index', [
+echo Jade::render('index', [
     'title' => 'Jade is awesome!',
     'content' => 'Oh yeah, it is.'
 ]);
@@ -232,14 +199,10 @@ We don't stick to the Jade-convention, but we'll always provide compatibility to
 We love Jade, we love PHP, we love Node.js and we love the official and original Jade-contributors.
 
 **Planned features:**
-- [x] Command line tools
 - [ ] Import Attributes (`include some-file(some-var='some-value')`)
 - [ ] Helper Libraries (Own custom helper libraries)
 - [ ] Aliases (Like mixins, just smaller)
 - [ ] Website Kit for easy website creation with Tale Jade
-- [x] Stylus integration
-- [x] CoffeeScript integration
-- [x] Markdown integration
 - [ ] Extensions and package manager
 
 ---

@@ -155,17 +155,14 @@ class Lexer
             'level' => 0,
             'indentStyle' => null,
             'indentWidth' => null,
-            'encoding'    => Lexer\get_internal_encoding(),
+            'encoding'    => extension_loaded('mb') ? mb_internal_encoding() : 'UTF-8',
             'scanners' => [],
-            'dumper' => 'text'
-        ], $options, true);
-
-        $this->setDefaults([
+            'dumper' => 'text',
             'dumpers' => [
                 'text' => Text::class,
                 'html' => Html::class
             ]
-        ], true);
+        ], $options, true);
 
         $this->state = null;
         $this->scanners = [];

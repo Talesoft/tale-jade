@@ -2,6 +2,7 @@
 
 namespace Tale\Jade\Lexer;
 
+use Tale\Reader;
 use Tale\ConfigurableTrait;
 use Tale\Jade\Lexer;
 use Tale\Jade\LexerException;

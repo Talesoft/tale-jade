@@ -14,9 +14,7 @@ These guidelines span over all web-related languages (PHP, JavaScript, HTML, CSS
   (Exceptions: Single-letter abbrevations, e.g. PInvoke, GClient)
 - Avoid longer string concatenations
   (e.g. "[$item]" instead of '['.$item.']', implode('', [..substrings..]) for of more than 3 concatenations)
-- All private properties and methods need to be prefixed with _
-  (To keep consistency with __get/__set-classes and leave all property names open)
-- Protected properties and methods are not to be prefixed with anything
+- Properties and methods are not to be prefixed with anything
 
 
 ---
@@ -24,8 +22,9 @@ These guidelines span over all web-related languages (PHP, JavaScript, HTML, CSS
 
 ## Verbs vs. Nouns:
 
-- Nouns are taken as is and not shortened 
+- Nouns are taken as is and not shortened or abbrevated in any form
   (e.g. Name -> NameInterface, NameBase, NameTrait)
+  Some common abbrevations can be used, this includes most known standards (Http, Xml, Html etc.)
 - Verbs are converted to nouns for functions, classes, interfaces (*able, if verb ends with e, e is stripped)
   (e.g. cache -> CachableInterface, CachableBase, Cachable)
   (Avoid "*able" as class name, try to use meaningful alternatives (e.g. CachableObject, CachableItem))
@@ -129,7 +128,7 @@ In some cases `append/prepend` can be combined into a single `add*`
 ### When to use protected:
 
 #### On properties:
-- Never
+- For properties that extending classes can overwrite with different values
 #### On methods:
 - For abstract methods or methods that can/should be overridden
 

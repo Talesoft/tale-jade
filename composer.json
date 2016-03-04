@@ -27,18 +27,13 @@
         "php": ">=5.5.0",
         "talesoft/tale-config": "0.2",
         "talesoft/tale-factory": "0.1",
-        "talesoft/tale-tree": "0.1"
+        "talesoft/tale-tree": "0.1",
+        "talesoft/tale-reader": "0.1"
     },
     "autoload": {
         "psr-4": {
-            "Tale\\Jade\\": ""
-        },
-        "files": [
-            "functions.php",
-            "Lexer/functions.php",
-            "Compiler/functions.php",
-            "Compiler/runtime-functions.php"
-        ]
+            "Tale\\": ""
+        }
     },
     "bin": ["tale-jade"],
     "suggest": {
