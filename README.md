@@ -17,6 +17,7 @@ Tale Jade is the first complete and most powerful Jade implementation in PHP.
 ---
 
 **Update Time!**
+
 Tale Jade is receiving a larger update at this time which will bring in more stability, extensibility and better integration possibilities.
 
 If you're starting a larger project right now, be assured that there will be API changes from 1.4 to 1.5.
