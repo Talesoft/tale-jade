@@ -24,7 +24,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase
         $this->lexer = new Lexer([]);
     }
 
-    public function testAssignmentToken()
+    public function testAssignmentScan()
     {
 
         $this->assertTokens(
@@ -33,7 +33,7 @@ class LexerTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testAttributes()
+    public function testAttributeScan()
     {
 
         $this->assertTokens(
@@ -54,8 +54,73 @@ class LexerTest extends \PHPUnit_Framework_TestCase
             AttributeEndToken::class
         );
 
-        $this->setExpectedException(LexerException::class);
-        $this->lexer->lex('(a=b');
+        $this->assertTokens(
+            $this->lexer->lex('(a=b
+        c=d     e=f
+        //ignored line
+    ,g=h        )'),
+            AttributeStartToken::class,
+            AttributeToken::class,
+            AttributeToken::class,
+            AttributeToken::class,
+            AttributeToken::class,
+            AttributeEndToken::class
+        );
+
+
+        $this->assertTokens(
+            $this->lexer->lex('(
+                a//ignore
+                b //ignore
+                c//ignore
+                =d
+                e=//ignore
+                f//ignore
+                g=h//ignore
+            )'),
+            AttributeStartToken::class,
+            AttributeToken::class,
+            AttributeToken::class,
+            AttributeToken::class,
+            AttributeToken::class,
+            AttributeToken::class,
+            AttributeEndToken::class
+        );
+
+        $this->expectException(LexerException::class);
+        iterator_to_array($this->lexer->lex('(a=b'));
+    }
+
+    public function testAttributeDetailScan()
+    {
+
+        /** @var AttributeToken $attr */
+        $attr = iterator_to_array($this->lexer->lex('(a=b)'))[1];
+        $this->assertEquals('a', $attr->getName());
+        $this->assertEquals('b', $attr->getValue());
+        $this->assertEquals(true, $attr->isEscaped());
+        $this->assertEquals(true, $attr->isChecked());
+
+        /** @var AttributeToken $attr */
+        $attr = iterator_to_array($this->lexer->lex('(a!=b)'))[1];
+        $this->assertEquals('a', $attr->getName());
+        $this->assertEquals('b', $attr->getValue());
+        $this->assertEquals(false, $attr->isEscaped());
+        $this->assertEquals(true, $attr->isChecked());
+
+        /** @var AttributeToken $attr */
+        $attr = iterator_to_array($this->lexer->lex('(a?=b)'))[1];
+        $this->assertEquals('a', $attr->getName());
+        $this->assertEquals('b', $attr->getValue());
+        $this->assertEquals(true, $attr->isEscaped());
+        $this->assertEquals(false, $attr->isChecked());
+
+        /** @var AttributeToken $attr */
+        $attr = iterator_to_array($this->lexer->lex('(a?!=b)'))[1];
+        $this->assertEquals('a', $attr->getName());
+        $this->assertEquals('b', $attr->getValue());
+        $this->assertEquals(false, $attr->isEscaped());
+        $this->assertEquals(false, $attr->isChecked());
     }
 
     public function testDoctypeScan()
