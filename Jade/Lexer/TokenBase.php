@@ -3,7 +3,7 @@
 namespace Tale\Jade\Lexer;
 
 use Tale\Jade\Util\LevelGetTrait;
-use Tale\Jade\Util\LineOffsetTrait;
+use Tale\Reader\LineOffsetTrait;
 
 abstract class TokenBase implements TokenInterface
 {

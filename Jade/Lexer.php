@@ -27,11 +27,11 @@ namespace Tale\Jade;
 
 use Tale\ConfigurableTrait;
 use Tale\Factory;
+use Tale\Reader;
 use Tale\Factory\SingletonFactory;
 use Tale\Jade\Lexer\Dumper\Html;
 use Tale\Jade\Lexer\Dumper\Text;
 use Tale\Jade\Lexer\DumperInterface;
-use Tale\Jade\Lexer\Reader;
 use Tale\Jade\Lexer\Scanner\AssignmentScanner;
 use Tale\Jade\Lexer\Scanner\AttributeScanner;
 use Tale\Jade\Lexer\Scanner\BlockScanner;
@@ -156,7 +156,34 @@ class Lexer
             'indentStyle' => null,
             'indentWidth' => null,
             'encoding'    => extension_loaded('mb') ? mb_internal_encoding() : 'UTF-8',
-            'scanners' => [],
+            'scanners' => [
+                'newLine' => NewLineScanner::class,
+                'indent' => IndentationScanner::class,
+                'import' => ImportScanner::class,
+                'block' => BlockScanner::class,
+                'conditional' => ConditionalScanner::class,
+                'each' => EachScanner::class,
+                'case' => CaseScanner::class,
+                'when' => WhenScanner::class,
+                'do' => DoScanner::class,
+                'while' => WhileScanner::class,
+                'for' => ForScanner::class,
+                'mixin' => MixinScanner::class,
+                'mixinCall' => MixinCallScanner::class,
+                'doctype' => DoctypeScanner::class,
+                'tag' => TagScanner::class,
+                'class' => ClassScanner::class,
+                'id' => IdScanner::class,
+                'attribute' => AttributeScanner::class,
+                'assignment' => AssignmentScanner::class,
+                'variable' => VariableScanner::class,
+                'comment' => CommentScanner::class,
+                'filter' => FilterScanner::class,
+                'expression' => ExpressionScanner::class,
+                'code' => CodeScanner::class,
+                'markup' => MarkupScanner::class,
+                'textLine' => TextLineScanner::class
+            ],
             'dumper' => 'text',
             'dumpers' => [
                 'text' => Text::class,
@@ -168,12 +195,7 @@ class Lexer
         $this->scanners = [];
         $this->dumperFactory = null;
 
-        $scanners = $this->options['scanners'];
-
-        if (count($scanners) < 1)
-            $scanners = array_values(static::createDefaultScanners());
-
-        foreach ($scanners as $scanner)
+        foreach ($this->options['scanners'] as $scanner)
             $this->addScanner($scanner);
     }
 
@@ -258,7 +280,7 @@ class Lexer
     public function lex($input)
     {
 
-        $stateClassName = $this->getOption('stateClassName');
+        $stateClassName = $this->options['stateClassName'];
 
         if (!is_a($stateClassName, State::class, true))
             throw new \InvalidArgumentException(
@@ -268,16 +290,16 @@ class Lexer
         //Put together our initial state
         $this->state = new State([
             'input' => $input,
-            'encoding' => $this->getOption('encoding'),
-            'indentStyle' => $this->getOption('indentStyle'),
-            'indentWidth' => $this->getOption('indentWidth'),
-            'level' => $this->getOption('level')
+            'encoding' => $this->options['encoding'],
+            'indentStyle' => $this->options['indentStyle'],
+            'indentWidth' => $this->options['indentWidth'],
+            'level' => $this->options['level']
         ]);
 
         $scanners = $this->scanners;
 
         //We always scan for text at the very end.
-        $scanners[] = new TextScanner();
+        $scanners[] = TextScanner::class;
 
         //Scan for tokens
         foreach ($this->state->loopScan($scanners) as $token)
@@ -292,38 +314,5 @@ class Lexer
 
         $dumper = $this->getDumperFactory()->get($dumper ?: $this->options['dumper']);
         return $dumper->dump($this->lex($input));
-    }
-
-    public static function createDefaultScanners()
-    {
-
-        return [
-            'newLine' => new NewLineScanner(),
-            'indent' => new IndentationScanner(),
-            'import' => new ImportScanner(),
-            'block' => new BlockScanner(),
-            'conditional' => new ConditionalScanner(),
-            'each' => new EachScanner(),
-            'case' => new CaseScanner(),
-            'when' => new WhenScanner(),
-            'do' => new DoScanner(),
-            'while' => new WhileScanner(),
-            'for' => new ForScanner(),
-            'mixin' => new MixinScanner(),
-            'mixinCall' => new MixinCallScanner(),
-            'doctype' => new DoctypeScanner(),
-            'tag' => new TagScanner(),
-            'class' => new ClassScanner(),
-            'id' => new IdScanner(),
-            'attribute' => new AttributeScanner(),
-            'assignment' => new AssignmentScanner(),
-            'variable' => new VariableScanner(),
-            'comment' => new CommentScanner(),
-            'filter' => new FilterScanner(),
-            'expression' => new ExpressionScanner(),
-            'code' => new CodeScanner(),
-            'markup' => new MarkupScanner(),
-            'textLine' => new TextLineScanner()
-        ];
     }
 }

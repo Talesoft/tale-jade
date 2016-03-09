@@ -29,7 +29,7 @@ namespace Tale\Jade\Parser;
 
 use Tale\Jade\Parser\Node\TextNode;
 use Tale\Jade\Util\LevelGetTrait;
-use Tale\Jade\Util\LineOffsetTrait;
+use Tale\Reader\LineOffsetTrait;
 use Tale\Tree\Node as TreeNode;
 
 /**
