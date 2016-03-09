@@ -9,6 +9,7 @@ class Util
 {
 
     const CHECK_FORMAT = 'isset(%s) ? %s : %s';
+    const ESCAPE_FORMAT = 'htmlentities(%s, \ENT_QUOTES, %s)';
 
     private function __construct() {}
 
@@ -40,44 +41,38 @@ class Util
     public static function interpolate(
         $value,
         callable $replacer,
-        $prefixes = null,
         array $brackets = null,
         $encoding = null
     )
     {
 
-        $prefixes = $prefixes ?: '!#';
-        $brackets = $brackets ?: ['[' => ']', '{' => '}'];
-
-        $parse = false;
-        foreach (str_split($prefixes) as $prefix)
-            if (mb_strstr($value, $prefix))
-                $parse = true;
-
-        if (!$parse)
+        //Avoid needless interpolation
+        if (mb_strstr($value, '#') === false && mb_strstr($value, '!') === false)
             return $value;
 
+        $brackets = $brackets ?: ['[' => ']', '{' => '}'];
         $reader = new Reader($value, $encoding);
         $newValue = '';
         while ($reader->hasLength()) {
 
-            if ($reader->peekChars($prefixes) && in_array($reader->peek(1, 1), array_keys($brackets))) {
+            foreach ($brackets as $openBracket => $closeBracket) {
 
-                $prefix = $reader->peek();
-                $reader->consume();
-                $openBracket = $reader->peek();
-                $closeBracket = $brackets[$openBracket];
-                $reader->consume();
+                if ($reader->match('([?]?)([#!])'.preg_quote($openBracket, '/'))) {
 
-                $subject = $reader->readExpression([$closeBracket]);
+                    $escaped = $reader->getMatch(2) === '#';
+                    $checked = $reader->getMatch(1) !== '?';
+                    $reader->consume();
 
-                if (!$reader->peekChar($closeBracket))
-                    throw new ReaderException(
-                        "Failed to read interpolation: Interpolation was not closed with a $closeBracket"
-                    );
+                    $subject = $reader->readExpression([$closeBracket]);
 
-                $reader->consume();
-                $newValue .= $replacer($subject, $prefix, $openBracket, $closeBracket);
+                    if (!$reader->peekChar($closeBracket))
+                        throw new ReaderException(
+                            "Failed to read interpolation: Interpolation was not closed with a $closeBracket"
+                        );
+
+                    $reader->consume();
+                    $newValue .= $replacer($subject, $escaped, $checked, $openBracket, $closeBracket);
+                }
             }
 
             if (!$reader->hasLength())
@@ -101,6 +96,16 @@ class Util
             $value,
             $value,
             self::exportValue($defaultValue)
+        );
+    }
+
+    public static function escape($value, $encoding = null)
+    {
+
+        return sprintf(
+            self::ESCAPE_FORMAT,
+            $value,
+            self::exportValue($encoding ?: 'UTF-8')
         );
     }
 

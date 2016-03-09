@@ -46,28 +46,44 @@ class UtilTest extends \PHPUnit_Framework_TestCase
     public function testInterpolation()
     {
 
-        $this->assertEquals('Some interpolated text', Util::interpolate('Some #{$text}', function ($value, $prefix, $openBracket, $closeBracket) {
+        $this->assertEquals('Some interpolated text', Util::interpolate('Some #{$text}', function ($value, $escaped, $checked, $openBracket, $closeBracket) {
 
-            if ($value === '$text' && $prefix === '#' && $openBracket === '{' && $closeBracket === '}')
+            if ($value === '$text' && $escaped && $checked && $openBracket === '{' && $closeBracket === '}')
                 return 'interpolated text';
 
-            return '';
+            return 'fail 1';
         }));
 
-        $this->assertEquals('Some interpolated text', Util::interpolate('Some ![$text]', function ($value, $prefix, $openBracket, $closeBracket) {
+        $this->assertEquals('Some interpolated text', Util::interpolate('Some ![$text]', function ($value, $escaped, $checked, $openBracket, $closeBracket) {
 
-            if ($value === '$text' && $prefix === '!' && $openBracket === '[' && $closeBracket === ']')
+            if ($value === '$text' && !$escaped && $checked && $openBracket === '[' && $closeBracket === ']')
                 return 'interpolated text';
 
-            return '';
+            return 'fail 2';
         }));
 
-        $this->assertEquals('Some interpolated text', Util::interpolate('Some ![$text[someFunc()]]', function ($value, $prefix, $openBracket, $closeBracket) {
+        $this->assertEquals('Some interpolated text', Util::interpolate('Some ![$text[someFunc()]]', function ($value, $escaped, $checked, $openBracket, $closeBracket) {
 
-            if ($value === '$text[someFunc()]' && $prefix === '!' && $openBracket === '[' && $closeBracket === ']')
+            if ($value === '$text[someFunc()]' && !$escaped && $checked && $openBracket === '[' && $closeBracket === ']')
                 return 'interpolated text';
 
-            return '';
+            return 'fail 3';
+        }));
+
+        $this->assertEquals('Some interpolated text', Util::interpolate('Some ?#{$text}', function ($value, $escaped, $checked, $openBracket, $closeBracket) {
+
+            if ($value === '$text' && $escaped && !$checked && $openBracket === '{' && $closeBracket === '}')
+                return 'interpolated text';
+
+            return 'fail 4';
+        }));
+
+        $this->assertEquals('Some interpolated text', Util::interpolate('Some ?!{$text}', function ($value, $escaped, $checked, $openBracket, $closeBracket) {
+
+            if ($value === '$text' && !$escaped && !$checked && $openBracket === '{' && $closeBracket === '}')
+                return 'interpolated text';
+
+            return 'fail 5';
         }));
     }
 

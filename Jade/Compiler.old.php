@@ -356,7 +356,7 @@ class Compiler
             'allowImports'            => true,
             'defaultTag'              => 'div',
             'quoteStyle'              => '"',
-            'encoding'           => 'UTF-8',
+            'escapeCharset'           => 'UTF-8',
             'replaceMixins'           => false,
             'echoXmlDoctype'          => defined('HHVM_VERSION'),
             'paths'                   => [],
@@ -622,6 +622,29 @@ class Compiler
     }
 
     /**
+     * Checks if a variables is scalar (or "not an expression").
+     *
+     * These values don't get much special handling, they are mostly
+     * simple attributes values like `type="button"` or `method='post'`
+     *
+     * A scalar value is either a closed string containing only
+     * a-z, A-Z, 0-9, _ and -, e.g. Some-Static_Value
+     * or a quote-enclosed string that can contain anything
+     * except the quote style it used
+     * e.g. "Some Random String", 'This can" contain quotes"'
+     *
+     * @param string $value the value to be checked
+     *
+     * @return bool
+     */
+    protected function isScalar($value)
+    {
+
+        return preg_match('/^([a-z0-9\_\-]+|"[^"]*"|\'[^\']*\')$/i', $value) ? true : false;
+    }
+
+
+    /**
      * Compiles and sanitizes a scalar value.
      *
      * @param string     $value  the scalar value
@@ -639,6 +662,32 @@ class Compiler
         $sequences[$quoteStyle] = '\\'.$quoteStyle;
 
         return $this->interpolate(trim(str_replace(array_keys($sequences), $sequences, $value), '\'"'), $inCode);
+    }
+
+    /**
+     * Checks if a value is a variables.
+     *
+     * A variables needs to start with $.
+     * After that only a-z, A-Z and _ can follow
+     * After that you can use any character of
+     * a-z, A-Z, 0-9, _, [, ], -, >, ' and "
+     * This will match all of the following:
+     *
+     * $__someVar
+     * $obj->someProperty
+     * $arr['someKey']
+     * $arr[0]
+     * $obj->someArray['someKey']
+     * etc.
+     *
+     * @param string $value the value to be checked
+     *
+     * @return bool
+     */
+    protected function isVariable($value)
+    {
+
+        return preg_match('/^\$[a-z_\$](\$?\w*|\[[^\]]+\]|\->(\$?\w+|\{[^\}]+\}))*$/i', $value) ? true : false;
     }
 
     /**
@@ -660,48 +709,98 @@ class Compiler
      * inside a string respecting the quoteStyle-option
      *
      * @param string     $string    The string to interpolate
-     * @param bool|false $inExpressionString Is this an attribute value or not
+     * @param bool|false $inCode Is this an attribute value or not
      *
      * @return string the interpolated PHTML
      */
-    protected function interpolate($string, $inExpressionString = false)
+    protected function interpolate($string, $inCode = false)
     {
 
-        Util::interpolate($string, function($subject, $escaped, $checked, $openBracket)
-            use ($inExpressionString) {
+        $strlen = function_exists('mb_strlen') ? 'mb_strlen': 'strlen';
+        $substr = function_exists('mb_substr') ? 'mb_substr' : 'substr';
 
-                switch ($openBracket) {
+        $brackets = ['[' => ']', '{' => '}'];
+        foreach ($brackets as $open => $close) {
+
+            $match = null;
+            while (preg_match(
+                '/([?]?)([#!])'.preg_quote($open, '/').'/',
+                $string,
+                $match,
+                \PREG_OFFSET_CAPTURE
+            )) {
+
+                list(, $start) = $match[0];
+                list($escapeType) = $match[2];
+                list($checkType) = $match[1];
+                $prefixLen = $strlen($escapeType) + $strlen($checkType) + $strlen($open);
+                $offset = $start + $prefixLen;
+                $level = 1;
+                $subject = '';
+
+                do {
+
+                    $char = $substr($string, $offset, 1);
+
+                    if ($char === $open)
+                        $level++;
+
+                    if ($char === $close) {
+
+                        $level--;
+
+                        if ($level === 0)
+                            break;
+                    }
+
+                    $subject .= $char;
+                    $offset++;
+                } while ($level > 0 && $offset < $strlen($string));
+
+                if ($offset >= $strlen($string)) {
+
+                    $this->throwException(
+                        "Failed to interpolate value, $open is not closed with $close"
+                    );
+                }
+
+                $len = $prefixLen + $strlen($subject) + $strlen($close);
+                $target = $substr($string, $start, $len);
+                $replacement = $subject;
+
+                switch ($open) {
                     case '{':
 
-                        if ($checked)
-                            $subject = Util::check($subject, '""');
+                        $code = $this->isVariable($subject) && $checkType !== '?'
+                            ? "isset($subject) ? $subject : ''"
+                            : $subject;
 
-                        if ($escaped)
-                            $subject = Util::escape($subject, $this->options['encoding']);
+                        if ($escapeType !== '!')
+                            $code = "htmlentities($code, \\ENT_QUOTES, '".$this->options['escapeCharset']."')";
 
-                        return !$inExpressionString
-                            ? $this->createShortCode($subject)
-                            : '\'.('.$subject.').\'';
+                        $replacement = !$inCode ? $this->createShortCode($code) : '\'.('.$code.').\'';
+                        break;
                     case '[':
 
                         //This is a fix for <![endif]--> in IE conditional tags
                         if (strtolower($subject) === 'endif')
-                            return $subject;
+                            break;
 
                         $node = $this->parser->parse($subject);
                         $code = $this->compileNode($node);
 
                         if ($escapeType === '!') {
 
-                            $code = 'htmlentities('.$this->exportScalar($code).', \\ENT_QUOTES, \''.$this->options['encoding'].'\')';
+                            $code = 'htmlentities('.$this->exportScalar($code).', \\ENT_QUOTES, \''.$this->options['escapeCharset'].'\')';
                             $code = !$inCode ? $this->createShortCode($code) : '\'.('.$code.').\'';
                         }
 
                         $replacement = $code;
                         break;
+
                 }
 
-                return $subject;
+                $string = str_replace($target, $replacement, $string);
             }
         }
 
@@ -1123,7 +1222,7 @@ class Compiler
 
             switch ($mode) {
                 default:
-                    /** @noinspection PhpMissingBreakStatementInspection */
+                /** @noinspection PhpMissingBreakStatementInspection */
                 case 'replace':
 
                     $node->removeChildren();
@@ -1324,11 +1423,11 @@ class Compiler
 
             $hasBlock = true;
             $phtml = $this->createCode(
-                    '$__block = function(array $__arguments = []) use($__args, $__mixins) {
+                '$__block = function(array $__arguments = []) use($__args, $__mixins) {
                     extract($__args);
                     extract($__arguments);
                 '
-                ).$this->newLine();
+            ).$this->newLine();
             $phtml .= $this->compileChildren($node->getChildren(), false).$this->newLine();
             $phtml .= $this->indent().$this->createCode('};').$this->newLine();
         }
@@ -1750,7 +1849,7 @@ class Compiler
 
             //No children, this is simple variable output (Escaped!)
             return $this->createShortCode(
-                "htmlentities(\${$name}, \\ENT_QUOTES, '".$this->options['encoding']."')"
+                "htmlentities(\${$name}, \\ENT_QUOTES, '".$this->options['escapeCharset']."')"
             );
         }
 
@@ -2065,7 +2164,7 @@ class Compiler
 
         if ($node->isEscaped())
             $text = $this->createShortCode(
-                'htmlentities('.$this->exportScalar($node->getValue(), '\'', true).', \\ENT_QUOTES, \''.$this->options['encoding'].'\')'
+                'htmlentities('.$this->exportScalar($node->getValue(), '\'', true).', \\ENT_QUOTES, \''.$this->options['escapeCharset'].'\')'
             );
         else
             $text = $this->interpolate($node->getValue());
@@ -2083,7 +2182,7 @@ class Compiler
     protected function compileExpression(ExpressionNode $node)
     {
 
-        $code = $node->isEscaped() ? 'htmlentities(%s, \\ENT_QUOTES, \''.$this->options['encoding'].'\')' : '%s';
+        $code = $node->isEscaped() ? 'htmlentities(%s, \\ENT_QUOTES, \''.$this->options['escapeCharset'].'\')' : '%s';
 
         $value = rtrim(trim($node->getValue()), ';');
 
@@ -2107,8 +2206,8 @@ class Compiler
         if ($node->isBlock()) {
 
             return $this->createCode($node->getValue())
-            .$this->newLine()
-            .$this->compileChildren($node->getChildren(), true, true);
+                  .$this->newLine()
+                  .$this->compileChildren($node->getChildren(), true, true);
         }
 
         return $this->createCode(trim($this->compileChildren($node->getChildren(), true, true)));
