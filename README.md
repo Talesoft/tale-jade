@@ -27,7 +27,7 @@ If you know you've extended Tale Jade in 1.4 you might as well just stick to 1.4
 
 If you want to take a look at what we're up to, check out the [compiler-enhancements branch](https://github.com/Talesoft/tale-jade/tree/compiler-enhancements). It contains the latest updates (It's not a working version yet, though!)
 
-1.5 will be released in a around the ~~10th of March~ **15th of April** this year.
+1.5 will be released in a around the <del>10th of March</del> **15th of April** this year.
 
 ---
 
