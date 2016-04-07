@@ -19,6 +19,9 @@ class AttributeTest extends \PHPUnit_Framework_TestCase
             'adapterOptions' => [
                 'path' => __DIR__.'/cache/attributes'
             ],
+            'compilerOptions' => [
+                'echoXmlDoctype' => false
+            ],
             'pretty' => false,
             'paths' => [__DIR__.'/views/attributes']
         ]);
