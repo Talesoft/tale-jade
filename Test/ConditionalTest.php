@@ -9,12 +9,12 @@ class ConditionalTest extends \PHPUnit_Framework_TestCase
 {
 
     /** @var \Tale\Jade\Renderer */
-    private $_renderer;
+    private $renderer;
 
     public function setUp()
     {
 
-        $this->_renderer = new Renderer([
+        $this->renderer = new Renderer([
             'adapterOptions' => [
                 'path' => __DIR__.'/cache/conditionals'
             ],
@@ -26,7 +26,7 @@ class ConditionalTest extends \PHPUnit_Framework_TestCase
     public function testIfCompilation()
     {
 
-        $this->assertEquals('<?php if (isset($something) ? $something : false) {?><p>Do something</p><?php }?>', $this->_renderer->compile('if $something
+        $this->assertEquals('<?php if (isset($something) ? $something : false) {?><p>Do something</p><?php }?>', $this->renderer->compile('if $something
     p Do something'));
     }
 
@@ -35,14 +35,14 @@ class ConditionalTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             '<p>1 This should be printed</p><p>4 This should be printed</p><p>5 This should be printed</p><p>6 This should be printed</p><p>9 This should be printed</p>',
-            $this->_renderer->render('if', ['condition' => true, 'negativeCondition' => false])
+            $this->renderer->render('if', ['condition' => true, 'negativeCondition' => false])
         );
     }
 
     public function testUnlessCompilation()
     {
 
-        $this->assertEquals('<?php if (!(isset($something) ? $something : false)) {?><p>Do something</p><?php }?>', $this->_renderer->compile('unless $something
+        $this->assertEquals('<?php if (!(isset($something) ? $something : false)) {?><p>Do something</p><?php }?>', $this->renderer->compile('unless $something
     p Do something'));
     }
 
@@ -51,7 +51,7 @@ class ConditionalTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             '<p>2 This should be printed</p><p>3 This should be printed</p>',
-            $this->_renderer->render('unless', ['condition' => true, 'negativeCondition' => false])
+            $this->renderer->render('unless', ['condition' => true, 'negativeCondition' => false])
         );
     }
 
@@ -60,7 +60,7 @@ class ConditionalTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             '<?php if (isset($something) ? $something : false) {?><p>Do something</p><?php } else {?><p>Do some other thing</p><?php }?>',
-            $this->_renderer->compile('if $something
+            $this->renderer->compile('if $something
     p Do something
 else
     p Do some other thing'));
@@ -71,7 +71,7 @@ else
 
         $this->assertEquals(
             '<p>1 This should be printed</p><p>4 This should be printed</p>',
-            $this->_renderer->render('if-else', ['condition' => true, 'negativeCondition' => false])
+            $this->renderer->render('if-else', ['condition' => true, 'negativeCondition' => false])
         );
     }
 
@@ -97,7 +97,7 @@ JADE;
 
         $this->assertEquals(
             '<div><?php $menuItems[] = [\'label\' => \'Issues\', \'url\' => [\'/issue/index\']]?><?php if (Yii::$app->user->isGuest) {?><?php $menuItems[] = [\'label\' => \'Login\', \'url\' => [\'/site/login\']]?><?php $menuItems[] = [\'label\' => \'Users\', \'url\' => [\'/user/index\']]?><?php } else {?><?php $menuItems[] = [\'label\' => \'Gii\', \'url\' => [\'/gii\']]?><?php }?></div>',
-            $this->_renderer->compile($jade)
+            $this->renderer->compile($jade)
         );
 
 
@@ -118,7 +118,7 @@ JADE;
 
         $this->assertEquals(
             '<div><?php $menuItems[] = [\'label\' => \'Issues\', \'url\' => [\'/issue/index\']]?><?php if (Yii::$app->user->isGuest) {?><?php $menuItems[] = [\'label\' => \'Login\', \'url\' => [\'/site/login\']]?><?php $menuItems[] = [\'label\' => \'Users\', \'url\' => [\'/user/index\']]?><?php } else {?><?php $menuItems[] = [\'label\' => \'Gii\', \'url\' => [\'/gii\']]?><?php }?></div>',
-            $this->_renderer->compile($jade)
+            $this->renderer->compile($jade)
         );
 
 
@@ -140,7 +140,7 @@ div
 
         $this->assertEquals(
             '<div><?php $menuItems[] = [\'label\' => \'Issues\', \'url\' => [\'/issue/index\']]?><?php if (Yii::$app->user->isGuest) {?><?php $menuItems[] = [\'label\' => \'Login\', \'url\' => [\'/site/login\']]?><?php $menuItems[] = [\'label\' => \'Users\', \'url\' => [\'/user/index\']]?><?php } else {?><?php $menuItems[] = [\'label\' => \'Gii\', \'url\' => [\'/gii\']]?><?php }?></div>',
-            $this->_renderer->compile($jade)
+            $this->renderer->compile($jade)
         );
     }
 
@@ -179,7 +179,7 @@ JADE;
 
         $this->assertEquals(
             '<?php if ($something):?><p>Do something</p><?php endif;?><?php if ($something && $somethingElse) {?><p>Do some random stuff</p><?php }?><?php if ($something && $somethingElse) {echo "No jade handling here"; } $array = ["a","b""c", "d","e", "f", "g", "h"];?><p>and it goes on normally...</p>',
-            $this->_renderer->compile($jade)
+            $this->renderer->compile($jade)
         );
     }
 }

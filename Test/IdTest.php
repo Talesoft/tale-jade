@@ -8,18 +8,18 @@ class IdTest extends \PHPUnit_Framework_TestCase
 {
 
     /** @var \Tale\Jade\Compiler */
-    private $_compiler;
+    private $compiler;
 
     public function setUp()
     {
 
-        $this->_compiler = new Compiler();
+        $this->compiler = new Compiler();
     }
 
     public function testId()
     {
 
-        $this->assertEquals('<div id="test">Test</div>', $this->_compiler->compile('#test Test'));
+        $this->assertEquals('<div id="test">Test</div>', $this->compiler->compile('#test Test'));
     }
 
     public function testNestedId()
@@ -30,13 +30,13 @@ class IdTest extends \PHPUnit_Framework_TestCase
     #testChild Test
 JADE;
 
-        $this->assertEquals('<div id="testParent"><div id="testChild">Test</div></div>', $this->_compiler->compile($jade));
+        $this->assertEquals('<div id="testParent"><div id="testChild">Test</div></div>', $this->compiler->compile($jade));
     }
 
     public function testTagIdCombination()
     {
 
-        $this->assertEquals('<p id="test">Test</p>', $this->_compiler->compile('p#test Test'));
+        $this->assertEquals('<p id="test">Test</p>', $this->compiler->compile('p#test Test'));
     }
 
     public function testNestedTagIdCombination()
@@ -47,7 +47,7 @@ div#testParent
     p#testChild Test
 JADE;
 
-        $this->assertEquals('<div id="testParent"><p id="testChild">Test</p></div>', $this->_compiler->compile($jade));
+        $this->assertEquals('<div id="testParent"><p id="testChild">Test</p></div>', $this->compiler->compile($jade));
     }
 
     public function testComplexTagIdCombination()
@@ -81,6 +81,6 @@ JADE;
                 a#testLink9
 JADE;
 
-        $this->assertEquals('<div id="testContainer"><nav id="testNav1"><ul id="testMenu1"><li id="testItem1"><a id="testLink1"></a></li><li id="testItem2"><a id="testLink2"></a></li><li id="testItem3"><a id="testLink3"></a></li></ul></nav><nav id="testNav2"><ul id="testMenu2"><li id="testItem4"><a id="testLink4"></a></li><li id="testItem5"><a id="testLink5"></a></li><li id="testItem6"><a id="testLink6"></a></li></ul></nav><nav id="testNav3"><ul id="testMenu3"><li id="testItem7"><a id="testLink7"></a></li><li id="testItem8"><a id="testLink8"></a></li><li id="testItem9"><a id="testLink9"></a></li></ul></nav></div>', $this->_compiler->compile($jade));
+        $this->assertEquals('<div id="testContainer"><nav id="testNav1"><ul id="testMenu1"><li id="testItem1"><a id="testLink1"></a></li><li id="testItem2"><a id="testLink2"></a></li><li id="testItem3"><a id="testLink3"></a></li></ul></nav><nav id="testNav2"><ul id="testMenu2"><li id="testItem4"><a id="testLink4"></a></li><li id="testItem5"><a id="testLink5"></a></li><li id="testItem6"><a id="testLink6"></a></li></ul></nav><nav id="testNav3"><ul id="testMenu3"><li id="testItem7"><a id="testLink7"></a></li><li id="testItem8"><a id="testLink8"></a></li><li id="testItem9"><a id="testLink9"></a></li></ul></nav></div>', $this->compiler->compile($jade));
     }
 }

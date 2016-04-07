@@ -10,40 +10,40 @@ class AntiTest extends \PHPUnit_Framework_TestCase
 {
 
     /** @var \Tale\Jade\Compiler */
-    private $_compiler;
+    private $compiler;
 
     public function setUp()
     {
 
-        $this->_compiler = new Compiler();
+        $this->compiler = new Compiler();
     }
 
     public function testWhenNotCaseChild()
     {
         $this->setExpectedException(Compiler\Exception::class);
 
-        $this->_compiler->compile('when "abc"');
+        $this->compiler->compile('when "abc"');
     }
 
     public function testUnclosedAttributeBlockOnElement()
     {
         $this->setExpectedException(Compiler\Exception::class);
 
-        $this->_compiler->compile('some-element(abc, def');
+        $this->compiler->compile('some-element(abc, def');
     }
 
     public function testUnclosedAttributeBlockOnMixin()
     {
         $this->setExpectedException(Compiler\Exception::class);
 
-        $this->_compiler->compile('mixin some-mixin(abc, def');
+        $this->compiler->compile('mixin some-mixin(abc, def');
     }
 
     public function testUnclosedAttributeBlockOnMixinCall()
     {
         $this->setExpectedException(Compiler\Exception::class);
 
-        $this->_compiler->compile('+some-mixin(abc, def');
+        $this->compiler->compile('+some-mixin(abc, def');
     }
 
     public function testNestedMixin()
@@ -51,21 +51,21 @@ class AntiTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException(Compiler\Exception::class);
 
-        $this->_compiler->compile("mixin some-mixin()\n\tmixin some-sub-mixin()");
+        $this->compiler->compile("mixin some-mixin()\n\tmixin some-sub-mixin()");
     }
 
     public function testDoWithoutWhile()
     {
         $this->setExpectedException(Compiler\Exception::class);
 
-        $this->_compiler->compile("do\n\tp Something\nnot-a-while-element");
+        $this->compiler->compile("do\n\tp Something\nnot-a-while-element");
     }
 
     public function testStandaloneWhile()
     {
         $this->setExpectedException(Compiler\Exception::class);
 
-        $this->_compiler->compile("while \$something");
+        $this->compiler->compile("while \$something");
     }
 
     public function testDoWhileWithWhileChildren()
@@ -73,6 +73,6 @@ class AntiTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException(Compiler\Exception::class);
 
-        $this->_compiler->compile("do\n\tp Something\nwhile \$something\n\tp Anything");
+        $this->compiler->compile("do\n\tp Something\nwhile \$something\n\tp Anything");
     }
 }

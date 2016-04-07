@@ -10,12 +10,12 @@ class DoctypeTest extends \PHPUnit_Framework_TestCase
 {
 
     /** @var \Tale\Jade\Renderer */
-    private $_renderer;
+    private $renderer;
 
     public function setUp()
     {
 
-        $this->_renderer = new Renderer([
+        $this->renderer = new Renderer([
             'adapterOptions' => [
                 'path' => __DIR__.'/cache/doctypes'
             ],
@@ -27,7 +27,7 @@ class DoctypeTest extends \PHPUnit_Framework_TestCase
     public function testXmlDoctype()
     {
 
-        $this->assertEquals('<?xml version="1.0" encoding="utf-8"?><!-- these should be (self)-closed --><hr /><img /><link /><area /><!-- These shouldn\'t repeat --><a disabled="" selected="" checked="">Some link</a><!-- this should self-close --><some-element /><!-- this shouldn\'t self-close --><some-element>Some Content</some-element>', $this->_renderer->render(
+        $this->assertEquals('<?xml version="1.0" encoding="utf-8"?><!-- these should be (self)-closed --><hr /><img /><link /><area /><!-- These shouldn\'t repeat --><a disabled="" selected="" checked="">Some link</a><!-- this should self-close --><some-element /><!-- this shouldn\'t self-close --><some-element>Some Content</some-element>', $this->renderer->render(
             'xml'
         ));
     }
@@ -35,7 +35,7 @@ class DoctypeTest extends \PHPUnit_Framework_TestCase
     public function testHtmlDoctype()
     {
 
-        $this->assertEquals('<!DOCTYPE html><!-- these should be left open --><hr><img><link><area><!-- These should repeat --><a disabled="disabled" selected="selected" checked="checked">Some link</a><!-- this should self-close --><some-element></some-element><!-- this shouldn\'t self-close --><some-element>Some Content</some-element>', $this->_renderer->render(
+        $this->assertEquals('<!DOCTYPE html><!-- these should be left open --><hr><img><link><area><!-- These shouldn\'t repeat --><a disabled selected checked>Some link</a><!-- this should self-close --><some-element></some-element><!-- this shouldn\'t self-close --><some-element>Some Content</some-element>', $this->renderer->render(
             'html'
         ));
     }
@@ -43,7 +43,7 @@ class DoctypeTest extends \PHPUnit_Framework_TestCase
     public function testXhtmlDoctype()
     {
 
-        $this->assertEquals('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"><!-- these should (self)-close --><hr /><img /><link /><area /><!-- These should repeat --><a disabled="disabled" selected="selected" checked="checked">Some link</a><!-- this should self-close --><some-element></some-element><!-- this shouldn\'t self-close --><some-element>Some Content</some-element>', $this->_renderer->render(
+        $this->assertEquals('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"><!-- these should (self)-close --><hr /><img /><link /><area /><!-- These should repeat --><a disabled="disabled" selected="selected" checked="checked">Some link</a><!-- this should self-close --><some-element></some-element><!-- this shouldn\'t self-close --><some-element>Some Content</some-element>', $this->renderer->render(
             'xhtml'
         ));
     }

@@ -8,18 +8,18 @@ class ClassTest extends \PHPUnit_Framework_TestCase
 {
 
     /** @var \Tale\Jade\Compiler */
-    private $_compiler;
+    private $compiler;
 
     public function setUp()
     {
 
-        $this->_compiler = new Compiler();
+        $this->compiler = new Compiler();
     }
 
     public function testClass()
     {
 
-        $this->assertEquals('<div class="test">Test</div>', $this->_compiler->compile('.test Test'));
+        $this->assertEquals('<div class="test">Test</div>', $this->compiler->compile('.test Test'));
     }
 
     public function testNestedClass()
@@ -30,13 +30,13 @@ class ClassTest extends \PHPUnit_Framework_TestCase
     .test-child Test
 JADE;
 
-        $this->assertEquals('<div class="test-parent"><div class="test-child">Test</div></div>', $this->_compiler->compile($jade));
+        $this->assertEquals('<div class="test-parent"><div class="test-child">Test</div></div>', $this->compiler->compile($jade));
     }
 
     public function testTagClassCombination()
     {
 
-        $this->assertEquals('<p class="test">Test</p>', $this->_compiler->compile('p.test Test'));
+        $this->assertEquals('<p class="test">Test</p>', $this->compiler->compile('p.test Test'));
     }
 
     public function testNestedTagClassCombination()
@@ -47,7 +47,7 @@ div.test-parent
     p.test-child Test
 JADE;
 
-        $this->assertEquals('<div class="test-parent"><p class="test-child">Test</p></div>', $this->_compiler->compile($jade));
+        $this->assertEquals('<div class="test-parent"><p class="test-child">Test</p></div>', $this->compiler->compile($jade));
     }
 
     public function testComplexTagClassCombination()
@@ -81,6 +81,6 @@ JADE;
                 a.test-link
 JADE;
 
-        $this->assertEquals('<div class="test-container"><nav class="test-nav"><ul class="test-menu"><li class="test-item"><a class="test-link"></a></li><li class="test-item"><a class="test-link"></a></li><li class="test-item"><a class="test-link"></a></li></ul></nav><nav class="test-nav"><ul class="test-menu"><li class="test-item"><a class="test-link"></a></li><li class="test-item"><a class="test-link"></a></li><li class="test-item"><a class="test-link"></a></li></ul></nav><nav class="test-nav"><ul class="test-menu"><li class="test-item"><a class="test-link"></a></li><li class="test-item"><a class="test-link"></a></li><li class="test-item"><a class="test-link"></a></li></ul></nav></div>', $this->_compiler->compile($jade));
+        $this->assertEquals('<div class="test-container"><nav class="test-nav"><ul class="test-menu"><li class="test-item"><a class="test-link"></a></li><li class="test-item"><a class="test-link"></a></li><li class="test-item"><a class="test-link"></a></li></ul></nav><nav class="test-nav"><ul class="test-menu"><li class="test-item"><a class="test-link"></a></li><li class="test-item"><a class="test-link"></a></li><li class="test-item"><a class="test-link"></a></li></ul></nav><nav class="test-nav"><ul class="test-menu"><li class="test-item"><a class="test-link"></a></li><li class="test-item"><a class="test-link"></a></li><li class="test-item"><a class="test-link"></a></li></ul></nav></div>', $this->compiler->compile($jade));
     }
 }

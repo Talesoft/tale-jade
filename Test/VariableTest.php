@@ -9,12 +9,12 @@ class VariableTest extends \PHPUnit_Framework_TestCase
 {
 
     /** @var \Tale\Jade\Renderer */
-    private $_renderer;
+    private $renderer;
 
     public function setUp()
     {
 
-        $this->_renderer = new Renderer([
+        $this->renderer = new Renderer([
             'adapterOptions' => [
                 'path' => __DIR__.'/cache/variables'
             ],
@@ -26,7 +26,7 @@ class VariableTest extends \PHPUnit_Framework_TestCase
     public function testAssignment()
     {
 
-        $this->assertEquals('<p>Hello World!</p>nowrap212<div style="width: 100%; height: 50%"></div>', $this->_renderer->render('assignment', [
+        $this->assertEquals('<p>Hello World!</p>nowrap212<div style="width: 100%; height: 50%"></div>', $this->renderer->render('assignment', [
             'existing' => ['style' => ['width' => '100%'], 'class' => 'test']
         ]));
     }
