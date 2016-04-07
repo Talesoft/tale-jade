@@ -21,7 +21,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.0
+ * @version    1.4.2
  * @link       http://jade.talesoft.io/docs/files/Compiler.html
  * @since      File available since Release 1.0
  */
@@ -92,7 +92,7 @@ use Tale\Jade\Parser\Node;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.0
+ * @version    1.4.2
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Compiler.html
  * @since      File available since Release 1.0
  */
@@ -132,14 +132,14 @@ class Compiler
      *
      * @var Lexer
      */
-    private $_lexer;
+    private $lexer;
 
     /**
      * The parse this compiler instance gets its nodes off.
      *
      * @var Parser
      */
-    private $_parser;
+    private $parser;
 
     /**
      * The current file stack.
@@ -149,7 +149,7 @@ class Compiler
      *
      * @var string[]
      */
-    private $_files;
+    private $files;
 
     /**
      * The mixins we found in the whole input.
@@ -171,14 +171,14 @@ class Compiler
      *
      * @var array
      */
-    private $_mixins;
+    private $mixins;
 
     /**
      * A stack of names of the mixins we actually called in the code.
      *
      * @var string[]
      */
-    private $_calledMixins;
+    private $calledMixins;
 
     /**
      * A list of all blocks in our whole input.
@@ -187,7 +187,7 @@ class Compiler
      *
      * @var Node[]
      */
-    private $_blocks;
+    private $blocks;
 
     /**
      * The level we're currently in.
@@ -198,14 +198,14 @@ class Compiler
      *
      * @var int
      */
-    private $_level;
+    private $level;
 
     /**
      * Contains the current iterator ID to avoid name collisions.
      *
      * @var int
      */
-    private $_iteratorId;
+    private $iteratorId;
 
     /**
      * Creates a new compiler instance.
@@ -340,8 +340,8 @@ class Compiler
             'lexerOptions'            => []
         ], $options);
 
-        $this->_lexer = $lexer ? $lexer : new Lexer($this->_options['lexerOptions']);
-        $this->_parser = $parser ? $parser : new Parser($this->_options['parserOptions'], $this->_lexer);
+        $this->lexer = $lexer ? $lexer : new Lexer($this->options['lexerOptions']);
+        $this->parser = $parser ? $parser : new Parser($this->options['parserOptions'], $this->lexer);
     }
 
     /**
@@ -352,7 +352,7 @@ class Compiler
     public function getLexer()
     {
 
-        return $this->_lexer;
+        return $this->lexer;
     }
 
     /**
@@ -363,7 +363,7 @@ class Compiler
     public function getParser()
     {
 
-        return $this->_parser;
+        return $this->parser;
     }
 
     /**
@@ -378,7 +378,7 @@ class Compiler
     public function addPath($path)
     {
 
-        $this->_options['paths'][] = $path;
+        $this->options['paths'][] = $path;
 
         return $this;
     }
@@ -410,7 +410,7 @@ class Compiler
                 "Argument 2 of addFilter must be valid callback"
             );
 
-        $this->_options['filters'][$name] = $callback;
+        $this->options['filters'][$name] = $callback;
 
         return $this;
     }
@@ -443,18 +443,18 @@ class Compiler
     {
 
         //Compiler reset
-        $this->_files = $path ? [$path] : [];
-        $this->_mixins = [];
-        $this->_calledMixins = [];
-        $this->_blocks = [];
-        $this->_level = 0;
-        $this->_iteratorId = 0;
+        $this->files = $path ? [$path] : [];
+        $this->mixins = [];
+        $this->calledMixins = [];
+        $this->blocks = [];
+        $this->level = 0;
+        $this->iteratorId = 0;
 
         //Parse the input into an AST
         $node = null;
         try {
 
-            $node = $this->_parser->parse($input);
+            $node = $this->parser->parse($input);
         } catch(\Exception $e) {
 
             //This is needed to be able to keep track of the
@@ -474,12 +474,12 @@ class Compiler
 
 
         //Reset the level again for our next operations
-        $this->_level = 0;
+        $this->level = 0;
         //Now we append/prepend specific stuff (like mixin functions and helpers)
         $mixins = $this->compileMixins();
 
         $helpers = '';
-        if ($this->_options['standAlone']) {
+        if ($this->options['standAlone']) {
 
             $helpers = file_get_contents(__DIR__.'/Compiler/functions.php')."\n?>\n";
             $helpers .= $this->createCode('namespace {');
@@ -488,14 +488,14 @@ class Compiler
         //Put everything together
         $phtml = implode('', [$helpers, $mixins, $phtml]);
 
-        if ($this->_options['standAlone'])
+        if ($this->options['standAlone'])
             $phtml .= $this->createCode('}');
 
         //Reset the files after compilation so that compileFile may resolve correctly
         //Happens when you call compileFile twice on different files
         //Note that Compiler only uses the include-path, when there is no file in the
         //file name storage $_files
-        $this->_files = [];
+        $this->files = [];
 
         //Return the compiled PHTML
         return trim($phtml);
@@ -528,8 +528,8 @@ class Compiler
         if (!$fullPath)
             throw new \Exception(
                 "File $path wasnt found in ".
-                implode(', ', $this->_options['paths']).
-                ", Extensions: ".implode(', ', $this->_options['extensions']).
+                implode(', ', $this->options['paths']).
+                ", Extensions: ".implode(', ', $this->options['extensions']).
                 ", Include path: ".get_include_path()
             );
 
@@ -549,7 +549,7 @@ class Compiler
     protected function isMode($mode)
     {
 
-        return $this->_options['mode'] === $mode;
+        return $this->options['mode'] === $mode;
     }
 
     /**
@@ -604,7 +604,7 @@ class Compiler
     protected function isScalar($value)
     {
 
-        return preg_match('/^([a-z0-9\_\-]+|"[^"]*"|\'[^\']*\')$/i', $value) ? true : false;
+        return empty($value) || preg_match('/^([a-z0-9\_\-]+|"[^"]*"|\'[^\']*\')$/i', $value) ? true : false;
     }
 
 
@@ -619,7 +619,7 @@ class Compiler
     protected function compileScalar($value, $inCode = false)
     {
 
-        $sequences = $this->_options['escapeSequences'];
+        $sequences = $this->options['escapeSequences'];
 
         return $this->interpolate(trim(str_replace(array_keys($sequences), $sequences, $value), '\'"'), $inCode);
     }
@@ -736,7 +736,7 @@ class Compiler
                             : $subject;
 
                         if ($escapeType !== '!')
-                            $code = "htmlentities($code, \\ENT_QUOTES, '".$this->_options['escapeCharset']."')";
+                            $code = "htmlentities($code, \\ENT_QUOTES, '".$this->options['escapeCharset']."')";
 
                         $replacement = !$inCode ? $this->createShortCode($code) : '\'.('.$code.').\'';
                         break;
@@ -744,14 +744,14 @@ class Compiler
 
                         //This is a fix for <![endif]--> in IE conditional tags
                         if (strtolower($subject) === 'endif')
-                            break;
+                            break 2;
 
-                        $node = $this->_parser->parse($subject);
+                        $node = $this->parser->parse($subject);
                         $code = $this->compileNode($node);
 
                         if ($escapeType === '!') {
 
-                            $code = 'htmlentities('.$this->exportScalar($code).', \\ENT_QUOTES, \''.$this->_options['escapeCharset'].'\')';
+                            $code = 'htmlentities('.$this->exportScalar($code).', \\ENT_QUOTES, \''.$this->options['escapeCharset'].'\')';
                             $code = !$inCode ? $this->createShortCode($code) : '\'.('.$code.').\'';
                         }
 
@@ -775,7 +775,7 @@ class Compiler
     protected function newLine()
     {
 
-        return $this->_options['pretty']
+        return $this->options['pretty']
             ? "\n"
             : '';
     }
@@ -792,8 +792,8 @@ class Compiler
     protected function indent($offset = 0)
     {
 
-        return $this->_options['pretty']
-            ? str_repeat($this->_options['indentStyle'], ($this->_level + $offset) * $this->_options['indentWidth'])
+        return $this->options['pretty']
+            ? str_repeat($this->options['indentStyle'], ($this->level + $offset) * $this->options['indentWidth'])
             : '';
     }
 
@@ -813,10 +813,10 @@ class Compiler
 
         if (strpos($code, "\n") !== false) {
 
-            $this->_level++;
+            $this->level++;
             $code = implode($this->newLine().$this->indent(), preg_split("/\n[\t ]*/", $code))
                 .$this->newLine().$this->indent(-1);
-            $this->_level--;
+            $this->level--;
         }
 
         return $prefix.$code.$suffix;
@@ -937,19 +937,19 @@ class Compiler
     {
 
         $name = $node->name;
-        $value = isset($this->_options['doctypes'][$name]) ? $this->_options['doctypes'][$name] : '<!DOCTYPE '.$name.'>';
+        $value = isset($this->options['doctypes'][$name]) ? $this->options['doctypes'][$name] : '<!DOCTYPE '.$name.'>';
 
         if ($name === 'xml') {
 
-            $this->_options['mode'] = self::MODE_XML;
+            $this->options['mode'] = self::MODE_XML;
 
-            if ($this->_options['echoXmlDoctype'])
+            if ($this->options['echoXmlDoctype'])
                 $value = "<?='$value'?>";
 
-        } else if (in_array($name, $this->_options['xhtmlModes']))
-            $this->_options['mode'] = self::MODE_XHTML;
+        } else if (in_array($name, $this->options['xhtmlModes']))
+            $this->options['mode'] = self::MODE_XHTML;
         else
-            $this->_options['mode'] = self::MODE_HTML;
+            $this->options['mode'] = self::MODE_HTML;
 
         return $value;
     }
@@ -975,8 +975,8 @@ class Compiler
     public function resolvePath($path, $extensions = null)
     {
 
-        $paths = $this->_options['paths'];
-        $exts = $extensions ? $extensions : $this->_options['extensions'];
+        $paths = $this->options['paths'];
+        $exts = $extensions ? $extensions : $this->options['extensions'];
 
         if (is_array($exts)) {
 
@@ -1003,8 +1003,8 @@ class Compiler
         }
 
         //Add the path were currently compiling in (e.g. include, extends)
-        if (count($this->_files) > 0)
-            $paths[] = dirname(end($this->_files));
+        if (count($this->files) > 0)
+            $paths[] = dirname(end($this->files));
 
         //Iterate paths and check file existence via realpath
         foreach ($paths as $directory) {
@@ -1031,7 +1031,7 @@ class Compiler
 
         foreach ($node->find('import') as $importNode) {
 
-            if (!$this->_options['allowImports'])
+            if (!$this->options['allowImports'])
                 $this->throwException(
                     'Imports are not allowed in this compiler instance',
                     $node
@@ -1059,21 +1059,21 @@ class Compiler
 
             $ext = pathinfo($path, \PATHINFO_EXTENSION);
 
-            if (empty($ext) && $node->filter && in_array($node->filter, $this->_options['filterMap'], true)) {
+            if (empty($ext) && $node->filter && in_array($node->filter, $this->options['filterMap'], true)) {
 
                 //Get our extension from our filter map
-                $ext = array_search($node->filter, $this->_options['filterMap']);
+                $ext = array_search($node->filter, $this->options['filterMap']);
             }
 
-            if (!empty($ext) && (!in_array(".$ext", $this->_options['extensions']) || $node->filter)) {
+            if (!empty($ext) && (!in_array(".$ext", $this->options['extensions']) || $node->filter)) {
 
-                if (!$node->filter && isset($this->_options['filterMap'][$ext]))
-                    $node->filter = $this->_options['filterMap'][$ext];
+                if (!$node->filter && isset($this->options['filterMap'][$ext]))
+                    $node->filter = $this->options['filterMap'][$ext];
 
                 $fullPath = $this->resolvePath($path, ".$ext");
                 if (!$fullPath)
                     $this->throwException(
-                        "File $path not found in ".implode(', ', $this->_options['paths']).", Include path: ".get_include_path(),
+                        "File $path not found in ".implode(', ', $this->options['paths']).", Include path: ".get_include_path(),
                         $node
                     );
 
@@ -1111,14 +1111,14 @@ class Compiler
 
         if (!$fullPath)
             $this->throwException(
-                "File $path wasnt found in ".implode(', ', $this->_options['paths']).", Include path: ".get_include_path(),
+                "File $path wasnt found in ".implode(', ', $this->options['paths']).", Include path: ".get_include_path(),
                 $node
             );
 
-        $importedNode = $this->_parser->parse(file_get_contents($fullPath));
-        $this->_files[] = $fullPath;
+        $importedNode = $this->parser->parse(file_get_contents($fullPath));
+        $this->files[] = $fullPath;
         $this->handleImports($importedNode);
-        array_pop($this->_files);
+        array_pop($this->files);
 
         //Notice that include might have an expansion before
         //We'd need to resolve that before we remove the import \Tale\Jade\Parser\Node alltogether
@@ -1146,8 +1146,8 @@ class Compiler
     protected function handleBlocks(Node $node)
     {
 
-        $this->_blocks = $node->findArray('block');
-        foreach ($this->_blocks as $blockNode)
+        $this->blocks = $node->findArray('block');
+        foreach ($this->blocks as $blockNode)
             $this->handleBlock($blockNode);
 
         return $this;
@@ -1171,7 +1171,7 @@ class Compiler
             return $this;
 
         //Find all other blocks with that name
-        foreach ($this->_blocks as $block) {
+        foreach ($this->blocks as $block) {
 
             if ($block === $node || $block->name !== $node->name)
                 continue;
@@ -1237,20 +1237,20 @@ class Compiler
 
         $mixins = $node->findArray('mixin');
 
-        //Save all mixins in $this->_mixins for our mixinCalls to reference them
+        //Save all mixins in $this->mixins for our mixinCalls to reference them
         foreach ($mixins as $mixinNode) {
 
-            if (isset($this->_mixins[$mixinNode->name]) && !$this->_options['replaceMixins'])
+            if (isset($this->mixins[$mixinNode->name]) && !$this->options['replaceMixins'])
                 $this->throwException(
                     "Duplicate mixin name $mixinNode->name",
                     $mixinNode
                 );
 
-            $this->_mixins[$mixinNode->name] = $mixinNode;
+            $this->mixins[$mixinNode->name] = $mixinNode;
         }
 
         //Handle the mixins
-        foreach ($this->_mixins as $mixinNode) {
+        foreach ($this->mixins as $mixinNode) {
             $this->handleMixin($mixinNode);
         }
 
@@ -1278,7 +1278,7 @@ class Compiler
         //Detach
         $node->parent->remove($node);
 
-        $this->_mixins[$node->name] = [
+        $this->mixins[$node->name] = [
             'node' => $node,
             'phtml' => $this->compileChildren($node->children, false)
         ];
@@ -1297,17 +1297,17 @@ class Compiler
     protected function compileMixins()
     {
 
-        if (count($this->_mixins) < 1)
+        if (count($this->mixins) < 1)
             return '';
 
         $phtml = '';
         $phtml .= $this->createCode('$__args = isset($__args) ? $__args : [];').$this->newLine();
         $phtml .= $this->createCode('$__mixins = [];').$this->newLine();
 
-        foreach ($this->_mixins as $name => $mixin) {
+        foreach ($this->mixins as $name => $mixin) {
 
             //Don't compile the mixin if we dont use it (opt-out)
-            if (!$this->_options['compileUncalledMixins'] && !in_array($name, $this->_calledMixins, true))
+            if (!$this->options['compileUncalledMixins'] && !in_array($name, $this->calledMixins, true))
                 continue; //Skip compilation
 
             //Put the arguments together
@@ -1363,16 +1363,16 @@ class Compiler
         $name = $node->name;
         $hasBlock = false;
 
-        if (!isset($this->_mixins[$name]))
+        if (!isset($this->mixins[$name]))
             $this->throwException(
                 "Mixin $name is not defined",
                 $node
             );
 
-        if (!in_array($name, $this->_calledMixins, true))
-            $this->_calledMixins[] = $name;
+        if (!in_array($name, $this->calledMixins, true))
+            $this->calledMixins[] = $name;
 
-        $mixin = $this->_mixins[$name];
+        $mixin = $this->mixins[$name];
         $phtml = '';
 
         if (count($node->children) > 0) {
@@ -1631,7 +1631,7 @@ class Compiler
         if ($node->keyName)
             $as = "\${$node->keyName} => ".$as;
 
-        $var = '$__iterator'.($this->_iteratorId++);
+        $var = '$__iterator'.($this->iteratorId++);
         $phtml = $this->createCode("$var = {$subject};").$this->newLine();
         $phtml .= $this->indent().$this->createCode("foreach ($var as $as) {").$this->newLine();
         $phtml .= $this->compileChildren($node->children).$this->newLine();
@@ -1795,7 +1795,7 @@ class Compiler
 
             //No children, this is simple variable output (Escaped!)
             return $this->createShortCode(
-                "htmlentities(\${$node->name}, \\ENT_QUOTES, '".$this->_options['escapeCharset']."')"
+                "htmlentities(\${$node->name}, \\ENT_QUOTES, '".$this->options['escapeCharset']."')"
             );
         }
 
@@ -1825,13 +1825,13 @@ class Compiler
 
         $name = $node->name;
 
-        if (!isset($this->_options['filters'][$name]))
+        if (!isset($this->options['filters'][$name]))
             $this->throwException(
                 "Filter $name doesnt exist",
                 $node
             );
 
-        $result = call_user_func($this->_options['filters'][$name], $node, $this->indent(), $this->newLine(), $this);
+        $result = call_user_func($this->options['filters'][$name], $node, $this->indent(), $this->newLine(), $this);
 
         return $result instanceof \Tale\Jade\Parser\Node ? $this->compileNode($result) : (string)$result;
     }
@@ -1851,26 +1851,26 @@ class Compiler
     {
 
         $phtml = '';
-        $this->_level += $indent ? 1 : 0;
+        $this->level += $indent ? 1 : 0;
 
         if (count($nodes) === 1 && $allowInline) {
 
             $compiled = $this->compileNode($nodes[0]);
-            $this->_level--;
+            $this->level--;
 
             return trim($compiled);
         }
 
         foreach ($nodes as $idx => $node) {
 
-            if ($node->type === 'text' && !$this->_options['pretty'] && $idx > 0) {
+            if ($node->type === 'text' && !$this->options['pretty'] && $idx > 0) {
 
                 $phtml .= ' ';
             }
 
             $phtml .= $this->newLine().$this->indent().$this->compileNode($node);
         }
-        $this->_level -= $indent ? 1 : 0;
+        $this->level -= $indent ? 1 : 0;
 
         return $phtml;
     }
@@ -1890,19 +1890,21 @@ class Compiler
         $phtml = '';
 
         if (!$node->tag)
-            $node->tag = $this->_options['defaultTag'];
+            $node->tag = $this->options['defaultTag'];
 
         $phtml .= "<{$node->tag}";
 
         $htmlMode = $this->isHtml();
-        $anyHtmlMode = $this->isHtml() || $this->isXhtml();
+        $xhtmlMode = $this->isXhtml();
         $xmlMode = $this->isXml();
+        $anyHtmlMode = $htmlMode || $xhtmlMode;
+        $anyXmlMode = $xmlMode || $xhtmlMode;
 
         $nodeAttributes = $node->attributes;
 
         //In the following lines we kind of map assignments
         //to attributes (that's the core of how cross-assignments work)
-        //&href('a', 'b', 'c') will add 3 attributes href=a, href=b and href=b
+        //&href('a', 'b', 'c') will add 3 attributes href=a, href=b and href=b          lkrueger
         //to the attributes we work on
         foreach ($node->assignments as $assignment) {
 
@@ -1975,7 +1977,7 @@ class Compiler
 
                         if ($this->isVariable($value) && !$attr->unchecked) {
 
-                            $values[] = 'isset('.$value.') ? '.$value.' : false';
+                            $values[] = 'isset(' . $value . ') ? ' . $value . ' : false';
                         } else {
 
                             $values[] = $value;
@@ -1986,13 +1988,16 @@ class Compiler
                         $escaped = false;
                 }
 
-                //In HTML-mode, self-repeating attributes are automatically expanded
-                if ($anyHtmlMode && count($values) < 1 && in_array($name, $this->_options['selfRepeatingAttributes'])) {
+                //In XML-mode, self-repeating attributes are automatically expanded
+                if ($anyXmlMode || $xmlMode && count($values) < 1) {
 
-                    $values[] = $name;
+                    if ($xhtmlMode && in_array($name, $this->options['selfRepeatingAttributes']))
+                        $values[] = $name;
+                    else
+                        $values[] = '';
                 }
 
-                $quot = $this->_options['quoteStyle'];
+                $quot = $this->options['quoteStyle'];
                 $builder = '\\Tale\\Jade\\Compiler\\build_value';
 
                 //Handle specific attribute styles for HTML
@@ -2014,10 +2019,13 @@ class Compiler
                 $escaped = $escaped ? 'true' : 'false';
 
                 $pair = '';
-                if (count(array_filter($values, [$this, 'isScalar'])) === count($values)) {
+                if (count($values) < 1) {
+
+                    $pair = " $name";
+                } else if (count(array_filter($values, [$this, 'isScalar'])) === count($values)) {
 
                     //We got all scalar values, we can evaluate them directly, so no code needed in the PHTML output
-                    $pair .= " $name=";
+                    $pair = " $name=";
                     $values = array_map(function ($val) {
 
                         return $this->compileScalar($val);
@@ -2062,7 +2070,7 @@ class Compiler
         }
 
         $hasChildren = count($node->children) > 0;
-        $isSelfClosing = in_array($node->tag, $this->_options['selfClosingTags']);
+        $isSelfClosing = in_array($node->tag, $this->options['selfClosingTags']);
 
         if (!$hasChildren && (!$htmlMode || !$isSelfClosing)) {
 
@@ -2106,7 +2114,7 @@ class Compiler
 
         if ($node->escaped)
             $text = $this->createShortCode(
-                'htmlentities('.$this->exportScalar($node->value, '\'', true).', \\ENT_QUOTES, \''.$this->_options['escapeCharset'].'\')'
+                'htmlentities('.$this->exportScalar($node->value, '\'', true).', \\ENT_QUOTES, \''.$this->options['escapeCharset'].'\')'
             );
         else
             $text = $this->interpolate($node->value);
@@ -2124,7 +2132,7 @@ class Compiler
     protected function compileExpression(Node $node)
     {
 
-        $code = $node->escaped ? 'htmlentities(%s, \\ENT_QUOTES, \''.$this->_options['escapeCharset'].'\')' : '%s';
+        $code = $node->escaped ? 'htmlentities(%s, \\ENT_QUOTES, \''.$this->options['escapeCharset'].'\')' : '%s';
 
         $value = rtrim(trim($node->value), ';');
 
@@ -2258,8 +2266,8 @@ class Compiler
                 .' at '.$relatedNode->line
                 .':'.$relatedNode->offset.')';
 
-        if (!empty($this->_files))
-            $message .= "\n[".end($this->_files).']';
+        if (!empty($this->files))
+            $message .= "\n[".end($this->files).']';
 
         throw new Exception(
             "Failed to compile Jade: $message"

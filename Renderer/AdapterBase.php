@@ -18,7 +18,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.0
+ * @version    1.4.2
  * @link       http://jade.talesoft.io/docs/files/Renderer.AdapterBase.html
  * @since      File available since Release 1.0
  */
@@ -41,7 +41,7 @@ use Tale\ConfigurableTrait;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.0
+ * @version    1.4.2
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Renderer.AdapterBase.html
  * @since      File available since Release 1.0
  */
@@ -54,7 +54,7 @@ abstract class AdapterBase
      *
      * @var Renderer
      */
-    private $_renderer;
+    private $renderer;
 
 
     /**
@@ -76,7 +76,7 @@ abstract class AdapterBase
     public function __construct(Renderer $renderer, array $options = null)
     {
 
-        $this->_renderer = $renderer;
+        $this->renderer = $renderer;
 
         if ($options)
             $this->setOptions($options);
@@ -90,7 +90,7 @@ abstract class AdapterBase
     public function getRenderer()
     {
 
-        return $this->_renderer;
+        return $this->renderer;
     }
 
     /**

@@ -20,7 +20,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.0
+ * @version    1.4.2
  * @link       http://jade.talesoft.io/docs/files/Parser.Node.html
  * @since      File available since Release 1.0
  */
@@ -40,7 +40,7 @@ namespace Tale\Jade\Parser;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.0
+ * @version    1.4.2
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Parser.Node.html
  * @since      File available since Release 1.0
  */
@@ -89,7 +89,7 @@ class Node
      *
      * @var array
      */
-    private $_data;
+    private $data;
 
     /**
      * Creates a new, detached node without children or a parent.
@@ -114,7 +114,7 @@ class Node
         $this->parent = null;
         $this->children = [];
 
-        $this->_data = [];
+        $this->data = [];
     }
 
     /**
@@ -455,7 +455,7 @@ class Node
                     : '{'.implode(', ', array_map('trim', array_map('strval', $value))).'}';
 
             return $str;
-        }, array_keys($this->_data), $this->_data));
+        }, array_keys($this->data), $this->data));
 
         $indent = str_repeat('    ', $level);
         $str = $indent.'['.$this->type.(empty($export) ? '' : " $export").']'."\n";
@@ -477,7 +477,7 @@ class Node
     public function __isset($key)
     {
 
-        return isset($this->_data[$key]);
+        return isset($this->data[$key]);
     }
 
     /**
@@ -490,7 +490,7 @@ class Node
     public function __unset($key)
     {
 
-        unset($this->_data[$key]);
+        unset($this->data[$key]);
     }
 
     /**
@@ -505,7 +505,7 @@ class Node
     public function &__get($key)
     {
 
-        return $this->_data[$key];
+        return $this->data[$key];
     }
 
     /**
@@ -519,7 +519,7 @@ class Node
     public function __set($key, $value)
     {
 
-        $this->_data[$key] = $value;
+        $this->data[$key] = $value;
     }
 
     /**

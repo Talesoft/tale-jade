@@ -10,12 +10,12 @@ class AttributeTest extends \PHPUnit_Framework_TestCase
 {
 
     /** @var \Tale\Jade\Renderer */
-    private $_renderer;
+    private $renderer;
 
     public function setUp()
     {
 
-        $this->_renderer = new Renderer([
+        $this->renderer = new Renderer([
             'adapterOptions' => [
                 'path' => __DIR__.'/cache/attributes'
             ],
@@ -27,31 +27,31 @@ class AttributeTest extends \PHPUnit_Framework_TestCase
     public function testNumberValue()
     {
 
-        $this->assertEquals('<a href="some-literal-value"></a>', $this->_renderer->compile('a(href=some-literal-value)'));
+        $this->assertEquals('<a href="some-literal-value"></a>', $this->renderer->compile('a(href=some-literal-value)'));
     }
 
     public function testSingleQuotedValue()
     {
 
-        $this->assertEquals('<a href="some value"></a>', $this->_renderer->compile('a(href=\'some value\')'));
+        $this->assertEquals('<a href="some value"></a>', $this->renderer->compile('a(href=\'some value\')'));
     }
 
     public function testDoubleQuotedValue()
     {
 
-        $this->assertEquals('<a href="some value"></a>', $this->_renderer->compile('a(href="some value")'));
+        $this->assertEquals('<a href="some value"></a>', $this->renderer->compile('a(href="some value")'));
     }
 
     public function testDoubleColonName()
     {
 
-        $this->assertEquals('<a ns:sub-ns:href="some value"></a>', $this->_renderer->compile('a(ns:sub-ns:href="some value")'));
+        $this->assertEquals('<a ns:sub-ns:href="some value"></a>', $this->renderer->compile('a(ns:sub-ns:href="some value")'));
     }
 
     public function testLiteralValue()
     {
 
-        $this->assertEquals('<a href="1337"></a>', $this->_renderer->compile('a(href=1337)'));
+        $this->assertEquals('<a href="1337"></a>', $this->renderer->compile('a(href=1337)'));
     }
 
     public function testSingleVariableExpression()
@@ -59,7 +59,7 @@ class AttributeTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             '<a<?php $__value = isset($url) ? $url : false; if (!\Tale\Jade\Compiler\is_null_or_false($__value)) echo \' href=\'.\Tale\Jade\Compiler\build_value($__value, \'"\', true); unset($__value);?>></a>',
-            $this->_renderer->compile('a(href=$url)')
+            $this->renderer->compile('a(href=$url)')
         );
     }
 
@@ -68,7 +68,7 @@ class AttributeTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             '<a href="1234"></a><div class="first second third fourth fifth sixth"></div>',
-            $this->_renderer->render('cross-assignments', [
+            $this->renderer->render('cross-assignments', [
                 'externAttrs' => [
                     'class' => ['second', 'third', ['fourth', 'fifth']],
                     'style' => [
@@ -85,19 +85,19 @@ class AttributeTest extends \PHPUnit_Framework_TestCase
     public function testRepeation()
     {
 
-        $this->assertEquals('<a href="firstsecond"></a>', $this->_renderer->compile('a(href="first", href=\'second\')'));
+        $this->assertEquals('<a href="firstsecond"></a>', $this->renderer->compile('a(href="first", href=\'second\')'));
     }
 
     public function testClassRepeation()
     {
 
-        $this->assertEquals('<a class="first second"></a>', $this->_renderer->compile('a(class="first", class=\'second\')'));
+        $this->assertEquals('<a class="first second"></a>', $this->renderer->compile('a(class="first", class=\'second\')'));
     }
 
     public function testStyleRepeation()
     {
 
-        $this->assertEquals('<a style="first: first-value; second: second-value"></a>', $this->_renderer->compile(
+        $this->assertEquals('<a style="first: first-value; second: second-value"></a>', $this->renderer->compile(
             'a(style="first: first-value", style=\'second: second-value\')'
         ));
     }
@@ -108,7 +108,7 @@ class AttributeTest extends \PHPUnit_Framework_TestCase
     public function testAttributeValues($value, $expected)
     {
 
-        $this->assertEquals($expected, $this->_renderer->render(
+        $this->assertEquals($expected, $this->renderer->render(
             'single-value',
             ['value' => $value]
         ));
@@ -134,19 +134,21 @@ class AttributeTest extends \PHPUnit_Framework_TestCase
     {
 
         $this->setExpectedException(Compiler\Exception::class);
-        $this->assertEquals('', $this->_renderer->compile('a(="some value")'));
+        $this->assertEquals('', $this->renderer->compile('a(="some value")'));
     }
 
     public function testExpectedButNotGivenValue()
     {
 
-        $this->assertEquals('<a href=""></a>', $this->_renderer->compile('a(href=)'));
+        $this->assertEquals('<!DOCTYPE html><a href></a>', $this->renderer->compile("doctype html\na(href=)"));
+        $this->assertEquals('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><a href=""></a>', $this->renderer->compile("doctype default\na(href=)"));
+        $this->assertEquals('<?xml version="1.0" encoding="utf-8"?><a href="" />', $this->renderer->compile("doctype xml\na(href=)"));
     }
 
     public function testSpaceSeparated()
     {
 
-        $this->assertEquals('<meta name="viewport" content="some viewport content"><a href="google.de" target="_blank" title="Some link title"></a>', $this->_renderer->render(
+        $this->assertEquals('<meta name="viewport" content="some viewport content"><a href="google.de" target="_blank" title="Some link title"></a>', $this->renderer->render(
             'space-separated'
         ));
     }

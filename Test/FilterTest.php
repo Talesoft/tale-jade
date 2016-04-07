@@ -8,18 +8,18 @@ class FilterTest extends \PHPUnit_Framework_TestCase
 {
 
     /** @var \Tale\Jade\Compiler */
-    private $_compiler;
+    private $compiler;
 
     public function setUp()
     {
 
-        $this->_compiler = new Compiler();
+        $this->compiler = new Compiler();
     }
 
     public function testSingleLineJsFilter()
     {
 
-        $this->assertEquals('<script>some.java.script();</script>', $this->_compiler->compile(':js some.java.script();'));
+        $this->assertEquals('<script>some.java.script();</script>', $this->compiler->compile(':js some.java.script();'));
     }
 
     public function testMultiLineJsFilter()
@@ -33,14 +33,14 @@ JADE;
 
         $this->assertEquals(
             '<script>some.java.script(); some.more.java.script();</script>',
-            $this->_compiler->compile($jade)
+            $this->compiler->compile($jade)
         );
     }
 
     public function testSingleLineCssFilter()
     {
 
-        $this->assertEquals('<style>some, random {css: code;}</style>', $this->_compiler->compile(':css some, random {css: code;}'));
+        $this->assertEquals('<style>some, random {css: code;}</style>', $this->compiler->compile(':css some, random {css: code;}'));
     }
 
     public function testMultiLineCssFilter()
@@ -57,7 +57,7 @@ JADE;
 
         $this->assertEquals(
             '<style>body, html { can-you: imagine; that: this; works: perfectly; }</style>',
-            $this->_compiler->compile($jade)
+            $this->compiler->compile($jade)
         );
     }
 }

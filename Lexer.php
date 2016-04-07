@@ -18,7 +18,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.0
+ * @version    1.4.2
  * @link       http://jade.talesoft.io/docs/files/Lexer.html
  * @since      File available since Release 1.0
  */
@@ -62,7 +62,7 @@ use Tale\Jade\Lexer\Exception;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.0
+ * @version    1.4.2
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Lexer.html
  * @since      File available since Release 1.0
  */
@@ -85,28 +85,28 @@ class Lexer
      *
      * @var string
      */
-    private $_input;
+    private $input;
 
     /**
      * The total length of the current input.
      *
      * @var int
      */
-    private $_length;
+    private $length;
 
     /**
      * The current position inside the input string.
      *
      * @var int
      */
-    private $_position;
+    private $position;
 
     /**
      * The current line we are on.
      *
      * @var int
      */
-    private $_line;
+    private $line;
 
     /**
      * The current offset in a line we are on.
@@ -115,21 +115,21 @@ class Lexer
      *
      * @var int
      */
-    private $_offset;
+    private $offset;
 
     /**
      * The current indentation level we are on.
      *
      * @var int
      */
-    private $_level;
+    private $level;
 
     /**
      * The current indentation character.
      *
      * @var string
      */
-    private $_indentStyle;
+    private $indentStyle;
 
     /**
      * The width of the indentation.
@@ -139,7 +139,7 @@ class Lexer
      *
      * @var string
      */
-    private $_indentWidth;
+    private $indentWidth;
 
     /**
      * The last result gotten via ->peek().
@@ -147,7 +147,7 @@ class Lexer
      * @see Lexer->peek
      * @var string
      */
-    private $_lastPeekResult;
+    private $lastPeekResult;
 
     /**
      * The last matches gotten via ->match()
@@ -155,7 +155,7 @@ class Lexer
      * @see Lexer->match
      * @var array
      */
-    private $_lastMatches;
+    private $lastMatches;
 
     /**
      * Creates a new lexer instance.
@@ -209,13 +209,13 @@ class Lexer
         ], $options);
 
         //Validate options
-        if (!in_array($this->_options['indentStyle'], [null, self::INDENT_TAB, self::INDENT_SPACE]))
+        if (!in_array($this->options['indentStyle'], [null, self::INDENT_TAB, self::INDENT_SPACE]))
             throw new RuntimeException(
                 "indentStyle needs to be null or one of the INDENT_* constants of the lexer"
             );
 
-        if (!is_null($this->_options['indentWidth']) &&
-            (!is_int($this->_options['indentWidth']) || $this->_options['indentWidth'] < 1)
+        if (!is_null($this->options['indentWidth']) &&
+            (!is_int($this->options['indentWidth']) || $this->options['indentWidth'] < 1)
         )
             throw new RuntimeException(
                 "indentWidth needs to be a integer above 0"
@@ -230,7 +230,7 @@ class Lexer
     public function getInput()
     {
 
-        return $this->_input;
+        return $this->input;
     }
 
     /**
@@ -241,7 +241,7 @@ class Lexer
     public function getLength()
     {
 
-        return $this->_length;
+        return $this->length;
     }
 
     /**
@@ -252,7 +252,7 @@ class Lexer
     public function getPosition()
     {
 
-        return $this->_position;
+        return $this->position;
     }
 
     /**
@@ -263,7 +263,7 @@ class Lexer
     public function getLine()
     {
 
-        return $this->_line;
+        return $this->line;
     }
 
     /**
@@ -274,7 +274,7 @@ class Lexer
     public function getOffset()
     {
 
-        return $this->_offset;
+        return $this->offset;
     }
 
     /**
@@ -285,7 +285,7 @@ class Lexer
     public function getLevel()
     {
 
-        return $this->_level;
+        return $this->level;
     }
 
     /**
@@ -296,7 +296,7 @@ class Lexer
     public function getIndentStyle()
     {
 
-        return $this->_indentStyle;
+        return $this->indentStyle;
     }
 
     /**
@@ -307,7 +307,7 @@ class Lexer
     public function getIndentWidth()
     {
 
-        return $this->_indentWidth;
+        return $this->indentWidth;
     }
 
     /**
@@ -319,7 +319,7 @@ class Lexer
     public function getLastPeekResult()
     {
 
-        return $this->_lastPeekResult;
+        return $this->lastPeekResult;
     }
 
     /**
@@ -331,7 +331,7 @@ class Lexer
     public function getLastMatches()
     {
 
-        return $this->_lastMatches;
+        return $this->lastMatches;
     }
 
     /**
@@ -358,23 +358,23 @@ class Lexer
     public function lex($input)
     {
 
-        $this->_input = rtrim(str_replace([
+        $this->input = rtrim(str_replace([
                 "\r", "\0"
             ], '', $input))."\n";
-        $this->_length = $this->strlen($this->_input);
-        $this->_position = 0;
+        $this->length = $this->strlen($this->input);
+        $this->position = 0;
 
-        $this->_line = 1;
-        $this->_offset = 0;
-        $this->_level = 0;
+        $this->line = 1;
+        $this->offset = 0;
+        $this->level = 0;
 
-        $this->_indentStyle = $this->_options['indentStyle'];
-        $this->_indentWidth = $this->_options['indentWidth'];
+        $this->indentStyle = $this->options['indentStyle'];
+        $this->indentWidth = $this->options['indentWidth'];
 
-        $this->_lastPeekResult = null;
-        $this->_lastMatches = null;
+        $this->lastPeekResult = null;
+        $this->lastMatches = null;
 
-        foreach ($this->scanFor($this->_options['scans'], true) as $token)
+        foreach ($this->scanFor($this->options['scans'], true) as $token)
             yield $token;
     }
 
@@ -419,7 +419,7 @@ class Lexer
     protected function isAtEnd()
     {
 
-        return $this->_position >= $this->_length;
+        return $this->position >= $this->length;
     }
 
     /**
@@ -438,9 +438,9 @@ class Lexer
     protected function peek($length = 1)
     {
 
-        $this->_lastPeekResult = $this->substr($this->_input, 0, $length);
+        $this->lastPeekResult = $this->substr($this->input, 0, $length);
 
-        return $this->_lastPeekResult;
+        return $this->lastPeekResult;
     }
 
     /**
@@ -463,18 +463,18 @@ class Lexer
 
         if ($length === null) {
 
-            if ($this->_lastPeekResult === null)
+            if ($this->lastPeekResult === null)
                 $this->throwException(
                     "Failed to consume: Nothing has been peeked and you"
                     ." didnt pass a length to consume"
                 );
 
-            $length = $this->strlen($this->_lastPeekResult);
+            $length = $this->strlen($this->lastPeekResult);
         }
 
-        $this->_input = $this->substr($this->_input, $length);
-        $this->_position += $length;
-        $this->_offset += $length;
+        $this->input = $this->substr($this->input, $length);
+        $this->position += $length;
+        $this->offset += $length;
 
         return $this;
     }
@@ -511,22 +511,22 @@ class Lexer
         while (!$this->isAtEnd() && $callback($this->peek($length))) {
 
             //Keep $_line and $_offset updated
-            $newLines = $this->substr_count($this->_lastPeekResult, "\n");
-            $this->_line += $newLines;
+            $newLines = $this->substr_count($this->lastPeekResult, "\n");
+            $this->line += $newLines;
 
             if ($newLines) {
 
-                if (strlen($this->_lastPeekResult) === 1)
-                    $this->_offset = 0;
+                if (strlen($this->lastPeekResult) === 1)
+                    $this->offset = 0;
                 else {
 
-                    $parts = explode("\n", $this->_lastPeekResult);
-                    $this->_offset = strlen($parts[count($parts) - 1]) - 1;
+                    $parts = explode("\n", $this->lastPeekResult);
+                    $this->offset = strlen($parts[count($parts) - 1]) - 1;
                 }
             }
 
             $this->consume();
-            $result .= $this->_lastPeekResult;
+            $result .= $this->lastPeekResult;
         }
 
         return $result;
@@ -673,8 +673,8 @@ class Lexer
 
         return preg_match(
             "/^$pattern/$modifiers",
-            $this->_input,
-            $this->_lastMatches
+            $this->input,
+            $this->lastMatches
         ) ? true : false;
     }
 
@@ -689,7 +689,7 @@ class Lexer
 
         //Make sure we don't consume matched newlines (We match for them sometimes)
         //We need the newLine tokens and don't want them consumed here.
-        $match = $this->_lastMatches[0] !== "\n" ? rtrim($this->_lastMatches[0], "\n") : $this->_lastMatches[0];
+        $match = $this->lastMatches[0] !== "\n" ? rtrim($this->lastMatches[0], "\n") : $this->lastMatches[0];
 
         return $this->consume($this->strlen($match));
     }
@@ -706,7 +706,7 @@ class Lexer
     protected function getMatch($index)
     {
 
-        return isset($this->_lastMatches[$index]) ? $this->_lastMatches[$index] : null;
+        return isset($this->lastMatches[$index]) ? $this->lastMatches[$index] : null;
     }
 
     /**
@@ -779,9 +779,9 @@ class Lexer
 
         return [
             'type'   => $type,
-            'line'   => $this->_line,
-            'level'  => $this->_level,
-            'offset' => $this->_offset
+            'line'   => $this->line,
+            'level'  => $this->level,
+            'offset' => $this->offset
         ];
     }
 
@@ -811,7 +811,7 @@ class Lexer
 
         $this->consumeMatch();
         $token = $this->createToken($type);
-        foreach ($this->_lastMatches as $key => $value) {
+        foreach ($this->lastMatches as $key => $value) {
 
             //We append all STRING-Matches (?<name>) to the token
             if (is_string($key)) {
@@ -844,7 +844,7 @@ class Lexer
     protected function scanIndent()
     {
 
-        if ($this->_offset !== 0 || !$this->match("([\t ]*)"))
+        if ($this->offset !== 0 || !$this->match("([\t ]*)"))
             return;
 
         $this->consumeMatch();
@@ -858,7 +858,7 @@ class Lexer
             return;
         }
 
-        $oldLevel = $this->_level;
+        $oldLevel = $this->level;
         if (!empty($indent)) {
 
             $spaces = $this->strpos($indent, ' ') !== false;
@@ -867,14 +867,14 @@ class Lexer
 
             if ($mixed) {
 
-                switch ($this->_indentStyle) {
+                switch ($this->indentStyle) {
                     case self::INDENT_SPACE:
                     default:
 
                         //Convert tabs to spaces based on indentWidth
                         $spaces = str_replace(self::INDENT_TAB, str_repeat(
                             self::INDENT_SPACE,
-                            $this->_indentWidth ? $this->_indentWidth : 4
+                            $this->indentWidth ? $this->indentWidth : 4
                         ), $spaces);
                         $tabs = false;
                         $mixed = false;
@@ -884,7 +884,7 @@ class Lexer
                         //Convert spaces to tabs
                         $spaces = str_replace(self::INDENT_SPACE, str_repeat(
                             self::INDENT_TAB,
-                            $this->_indentWidth ? $this->_indentWidth : 1
+                            $this->indentWidth ? $this->indentWidth : 1
                         ), $spaces);
                         $spaces = false;
                         $mixed = false;
@@ -893,21 +893,21 @@ class Lexer
             }
 
             //Validate the indentation style
-            $this->_indentStyle = $tabs ? self::INDENT_TAB : self::INDENT_SPACE;
+            $this->indentStyle = $tabs ? self::INDENT_TAB : self::INDENT_SPACE;
 
             //Validate the indentation width
-            if (!$this->_indentWidth)
+            if (!$this->indentWidth)
                 //We will use the pretty first indentation as our indent width
-                $this->_indentWidth = $this->strlen($indent);
+                $this->indentWidth = $this->strlen($indent);
 
-            $this->_level = intval(round($this->strlen($indent) / $this->_indentWidth));
+            $this->level = intval(round($this->strlen($indent) / $this->indentWidth));
 
-            if ($this->_level > $oldLevel + 1)
-                $this->_level = $oldLevel + 1;
+            if ($this->level > $oldLevel + 1)
+                $this->level = $oldLevel + 1;
         } else
-            $this->_level = 0;
+            $this->level = 0;
 
-        $levels = $this->_level - $oldLevel;
+        $levels = $this->level - $oldLevel;
 
         //Unchanged levels
         if (!empty($indent) && $levels === 0)
@@ -931,8 +931,8 @@ class Lexer
 
         foreach ($this->scanToken('newLine', "\n") as $token) {
 
-            $this->_line++;
-            $this->_offset = 0;
+            $this->line++;
+            $this->offset = 0;
             yield $token;
         }
     }
@@ -1693,6 +1693,7 @@ class Lexer
                 $token['value'] = null;
                 $token['escaped'] = true;
                 $token['unchecked'] = false;
+                $spaces = null;
 
                 if ($this->match('((\.\.\.)?[a-zA-Z_][a-zA-Z0-9\-_:]*)', 'i')) {
 
@@ -1709,7 +1710,7 @@ class Lexer
                     else {
 
                         $token['name'] = $this->getMatch(1);
-                        $this->read('ctype_space');
+                        $spaces = $this->read('ctype_space');
                     }
                 }
 
@@ -1730,6 +1731,7 @@ class Lexer
                     $token['unchecked'] = true;
                     $this->consume();
                     $char = $this->peek();
+                    $spaces = null;
                 }
 
                 //Check escaping flag (!) if a name is given.
@@ -1740,6 +1742,7 @@ class Lexer
                     $token['escaped'] = false;
                     $this->consume();
                     $char = $this->peek();
+                    $spaces = null;
                 }
 
                 if (!$token['name'] || $char === '=') {
@@ -1757,9 +1760,16 @@ class Lexer
                     $token['value'] = $token['value'] !== null
                                     ? $token['value'].$value
                                     : $value;
+                    $spaces = null;
                 }
 
                 yield $token;
+
+                if (!empty($spaces)) {
+
+                    $continue = true;
+                    continue;
+                }
 
                 if (in_array($this->peek(), $argSeparators, true)) {
 
@@ -1803,7 +1813,8 @@ class Lexer
     protected function throwException($message)
     {
 
-        $message = "Failed to lex jade: $message (Line: {$this->_line}, Offset: {$this->_offset})";
+        $near = $this->isAtEnd() ? 'END' : $this->peek(10);
+        $message = "Failed to lex jade: $message (Line: {$this->line}, Offset: {$this->offset}, Near: `$near`)";
         throw new Exception($message);
     }
 
@@ -1823,7 +1834,7 @@ class Lexer
     {
 
         if (function_exists('mb_strlen'))
-            return mb_strlen($string, $this->_options['encoding']);
+            return mb_strlen($string, $this->options['encoding']);
 
         return strlen($string);
     }
@@ -1846,7 +1857,7 @@ class Lexer
     {
 
         if (function_exists('mb_strpos'))
-            return mb_strpos($haystack, $needle, $offset, $this->_options['encoding']);
+            return mb_strpos($haystack, $needle, $offset, $this->options['encoding']);
 
         return strpos($haystack, $needle, $offset);
     }
@@ -1869,7 +1880,7 @@ class Lexer
     {
 
         if (function_exists('mb_substr'))
-            return mb_substr($string, $start, $range, $this->_options['encoding']);
+            return mb_substr($string, $start, $range, $this->options['encoding']);
 
         return substr($string, $start, $range);
     }
@@ -1891,7 +1902,7 @@ class Lexer
     {
 
         if (function_exists('mb_substr_count'))
-            return mb_substr_count($haystack, $needle, $this->_options['encoding']);
+            return mb_substr_count($haystack, $needle, $this->options['encoding']);
 
         return substr_count($haystack, $needle);
     }

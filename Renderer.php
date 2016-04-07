@@ -18,7 +18,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.0
+ * @version    1.4.2
  * @link       http://jade.talesoft.io/docs/files/Renderer.html
  * @since      File available since Release 1.0
  */
@@ -52,7 +52,7 @@ use Tale\Jade\Renderer\AdapterBase;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.0
+ * @version    1.4.2
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Renderer.html
  * @since      File available since Release 1.0
  */
@@ -65,28 +65,28 @@ class Renderer
      *
      * @var Compiler
      */
-    private $_compiler;
+    private $compiler;
 
     /**
      * The parser that is used in this renderer instance.
      *
      * @var Parser
      */
-    private $_parser;
+    private $parser;
 
     /**
      * The lexer that is used in this renderer instance.
      *
      * @var Lexer
      */
-    private $_lexer;
+    private $lexer;
 
     /**
      * The adapter that actually renders the files in a dynamic manner.
      *
      * @var AdapterBase
      */
-    private $_adapter;
+    private $adapter;
 
     /**
      * Creates a new Tale Jade Renderer instance to render Jade files.
@@ -144,9 +144,9 @@ class Renderer
         $this->forwardOption('filters', 'compilerOptions');
         $this->forwardOption('filterMap', 'compilerOptions');
 
-        $this->_lexer = $lexer ? $lexer : new Lexer($this->_options['lexerOptions']);
-        $this->_parser = $parser ? $parser : new Parser($this->_options['parserOptions'], $this->_lexer);
-        $this->_compiler = $compiler ? $compiler : new Compiler($this->_options['compilerOptions'], $this->_parser);
+        $this->lexer = $lexer ? $lexer : new Lexer($this->options['lexerOptions']);
+        $this->parser = $parser ? $parser : new Parser($this->options['parserOptions'], $this->lexer);
+        $this->compiler = $compiler ? $compiler : new Compiler($this->options['compilerOptions'], $this->parser);
     }
 
     /**
@@ -157,7 +157,7 @@ class Renderer
     public function getCompiler()
     {
 
-        return $this->_compiler;
+        return $this->compiler;
     }
 
     /**
@@ -168,7 +168,7 @@ class Renderer
     public function getParser()
     {
 
-        return $this->_parser;
+        return $this->parser;
     }
 
     /**
@@ -179,7 +179,7 @@ class Renderer
     public function getLexer()
     {
 
-        return $this->_lexer;
+        return $this->lexer;
     }
 
     /**
@@ -241,11 +241,11 @@ class Renderer
     public function getAdapter()
     {
 
-        if (!isset($this->_adapter)) {
+        if (!isset($this->adapter)) {
 
-            $adapter = $this->_options['adapter'];
+            $adapter = $this->options['adapter'];
             $className = strpos($adapter, '\\') === false
-                ? __NAMESPACE__.'\\Renderer\\Adapter\\'.ucfirst($this->_options['adapter'])
+                ? __NAMESPACE__.'\\Renderer\\Adapter\\'.ucfirst($this->options['adapter'])
                 : $adapter;
 
             if (!class_exists($className))
@@ -258,10 +258,10 @@ class Renderer
                     "The passed adapter doesnt extend Tale\\Jade\\Renderer\\AdapterBase"
                 );
 
-            $this->_adapter = new $className($this, $this->_options['adapterOptions']);
+            $this->adapter = new $className($this, $this->options['adapterOptions']);
         }
 
-        return $this->_adapter;
+        return $this->adapter;
     }
 
     /**
@@ -287,7 +287,7 @@ class Renderer
     public function compile($input, $path = null)
     {
 
-        return $this->_compiler->compile($input, $path);
+        return $this->compiler->compile($input, $path);
     }
 
     /**
@@ -309,7 +309,7 @@ class Renderer
     public function compileFile($path)
     {
 
-        return $this->_compiler->compileFile($path);
+        return $this->compiler->compileFile($path);
     }
 
     /**

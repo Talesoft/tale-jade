@@ -18,7 +18,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.0
+ * @version    1.4.2
  * @link       http://jade.talesoft.io/docs/files/Parser.html
  * @since      File available since Release 1.0
  */
@@ -58,7 +58,7 @@ use Tale\Jade\Parser\Exception;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.0
+ * @version    1.4.2
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Parser.html
  * @since      File available since Release 1.0
  */
@@ -71,7 +71,7 @@ class Parser
      *
      * @var Lexer
      */
-    private $_lexer;
+    private $lexer;
 
     /**
      * The level we're currently on.
@@ -82,21 +82,21 @@ class Parser
      *
      * @var int
      */
-    private $_level;
+    private $level;
 
     /**
      * The Generator returned by the ->lex() method of the lexer.
      *
      * @var \Generator
      */
-    private $_tokens;
+    private $tokens;
 
     /**
      * The root node of the currently parsed document.
      *
      * @var Node
      */
-    private $_document;
+    private $document;
 
     /**
      * The parent that currently found childs are appended to.
@@ -106,7 +106,7 @@ class Parser
      *
      * @var Node
      */
-    private $_currentParent;
+    private $currentParent;
 
     /**
      * The current element in the queue.
@@ -116,7 +116,7 @@ class Parser
      *
      * @var Node
      */
-    private $_current;
+    private $current;
 
     /**
      * The last element that was completely put together.
@@ -125,7 +125,7 @@ class Parser
      *
      * @var Node
      */
-    private $_last;
+    private $last;
 
     /**
      * States if we're in a mixin or not.
@@ -134,7 +134,7 @@ class Parser
      *
      * @var bool
      */
-    private $_inMixin;
+    private $inMixin;
 
     /**
      * The level we're on inside a mixin.
@@ -143,14 +143,14 @@ class Parser
      *
      * @var int
      */
-    private $_mixinLevel;
+    private $mixinLevel;
 
     /**
      * Stores an expanded node to attach it to the expanding node later.
      *
      * @var Node
      */
-    private $_expansion;
+    private $expansion;
 
 
     /**
@@ -175,7 +175,7 @@ class Parser
 
         $this->defineOptions(['lexerOptions' => []], $options);
 
-        $this->_lexer = $lexer ? $lexer : new Lexer($this->_options['lexerOptions']);
+        $this->lexer = $lexer ? $lexer : new Lexer($this->options['lexerOptions']);
     }
 
     /**
@@ -186,7 +186,7 @@ class Parser
     public function getLexer()
     {
 
-        return $this->_lexer;
+        return $this->lexer;
     }
 
     /**
@@ -206,15 +206,15 @@ class Parser
     public function parse($input)
     {
 
-        $this->_level = 0;
-        $this->_tokens = $this->_lexer->lex($input);
-        $this->_document = $this->createNode('document', ['line' => 0, 'offset' => 0]);
-        $this->_currentParent = $this->_document;
-        $this->_current = null;
-        $this->_last = null;
-        $this->_inMixin = false;
-        $this->_mixinLevel = null;
-        $this->_expansion = null;
+        $this->level = 0;
+        $this->tokens = $this->lexer->lex($input);
+        $this->document = $this->createNode('document', ['line' => 0, 'offset' => 0]);
+        $this->currentParent = $this->document;
+        $this->current = null;
+        $this->last = null;
+        $this->inMixin = false;
+        $this->mixinLevel = null;
+        $this->expansion = null;
 
         //Fix HHVM generators needing ->next() before ->current()
         //This will actually work as expected, no node will be skipped
@@ -222,7 +222,7 @@ class Parser
         //expected behaviour)
         if (defined('HHVM_VERSION')) {
 
-            $this->_tokens->next();
+            $this->tokens->next();
         }
 
         //While we have tokens, handle current token, then go to next token
@@ -234,7 +234,7 @@ class Parser
         }
 
         //Return the final document node with all its awesome child nodes
-        return $this->_document;
+        return $this->document;
     }
 
     /**
@@ -401,7 +401,7 @@ class Parser
     protected function hasTokens()
     {
 
-        return $this->_tokens->valid();
+        return $this->tokens->valid();
     }
 
     /**
@@ -416,7 +416,7 @@ class Parser
     protected function nextToken()
     {
 
-        $this->_tokens->next();
+        $this->tokens->next();
 
         return $this;
     }
@@ -431,7 +431,7 @@ class Parser
     protected function getToken()
     {
 
-        return $this->_tokens->current();
+        return $this->tokens->current();
     }
 
 
@@ -455,7 +455,7 @@ class Parser
     protected function createNode($type, array $token = null)
     {
 
-        $token = $token ? $token : ['line' => $this->_lexer->getLine(), 'offset' => $this->_lexer->getOffset()];
+        $token = $token ? $token : ['line' => $this->lexer->getLine(), 'offset' => $this->lexer->getOffset()];
         $node = new Node($type, $token['line'], $token['offset']);
 
         return $node;
@@ -499,24 +499,24 @@ class Parser
     protected function handleAssignment(array $token)
     {
 
-        if (!$this->_current)
-            $this->_current = $this->createElement();
+        if (!$this->current)
+            $this->current = $this->createElement();
 
-        if (!in_array($this->_current->type, ['element', 'mixinCall']))
+        if (!in_array($this->current->type, ['element', 'mixinCall']))
             $this->throwException(
                 "Assignments can only happen on elements and mixinCalls"
             );
 
         $node = $this->createNode('assignment', $token);
         $node->name = $token['name'];
-        $this->_current->assignments[] = $node;
+        $this->current->assignments[] = $node;
 
         if ($this->expectNext(['attributeStart'])) {
 
-            $element = $this->_current;
-            $this->_current = $node;
+            $element = $this->current;
+            $this->current = $node;
             $this->handleToken();
-            $this->_current = $element;
+            $this->current = $element;
         } else
             $this->throwException(
                 "Assignments require a parameter block"
@@ -539,8 +539,8 @@ class Parser
     protected function handleAttribute(array $token)
     {
 
-        if (!$this->_current)
-            $this->_current = $this->createElement();
+        if (!$this->current)
+            $this->current = $this->createElement();
 
         $node = $this->createNode('attribute', $token);
         $node->name = $token['name'];
@@ -548,16 +548,16 @@ class Parser
         $node->escaped = $token['escaped'];
         $node->unchecked = $token['unchecked'];
 
-        if (!$node->name && in_array($this->_current->type, ['element', 'mixin']))
+        if (!$node->name && in_array($this->current->type, ['element', 'mixin']))
             $this->throwException('Attributes in elements and mixins need a name', $token);
 
-        if ($this->_current->type === 'mixinCall' && !$node->value) {
+        if ($this->current->type === 'mixinCall' && !$node->value) {
 
             $node->value = $node->name;
             $node->name = null;
         }
 
-        $this->_current->attributes[] = $node;
+        $this->current->attributes[] = $node;
     }
 
     /**
@@ -576,10 +576,10 @@ class Parser
     protected function handleAttributeStart(array $token)
     {
 
-        if (!$this->_current)
-            $this->_current = $this->createElement();
+        if (!$this->current)
+            $this->current = $this->createElement();
 
-        if (!in_array($this->_current->type, ['element', 'assignment', 'import', 'variable', 'mixin', 'mixinCall']))
+        if (!in_array($this->current->type, ['element', 'assignment', 'import', 'variable', 'mixin', 'mixinCall']))
             $this->throwException(
                 "Attributes can only be placed on element, assignment, import, variable, mixin and mixinCall"
             );
@@ -624,12 +624,12 @@ class Parser
         $node->name = isset($token['name']) ? $token['name'] : null;
         $node->mode = isset($token['mode']) ? $token['mode'] : null;
 
-        if (!$node->name && !$this->_inMixin)
+        if (!$node->name && !$this->inMixin)
             $this->throwException(
                 "Blocks outside a mixin always need a name"
             );
 
-        $this->_current = $node;
+        $this->current = $node;
 
         $this->expectEnd($token);
     }
@@ -651,17 +651,17 @@ class Parser
     protected function handleClass(array $token)
     {
 
-        if (!$this->_current)
-            $this->_current = $this->createElement();
+        if (!$this->current)
+            $this->current = $this->createElement();
 
-        if (!in_array($this->_current->type, ['element', 'mixinCall']))
+        if (!in_array($this->current->type, ['element', 'mixinCall']))
             $this->throwException("Classes can only be used on elements and mixin calls", $token);
 
         $attr = $this->createNode('attribute', $token);
         $attr->name = 'class';
         $attr->value = $token['name'];
         $attr->escaped = false;
-        $this->_current->attributes[] = $attr;
+        $this->current->attributes[] = $attr;
     }
 
     /**
@@ -677,7 +677,7 @@ class Parser
         $node = $this->createNode('comment', $token);
         $node->rendered = $token['rendered'];
 
-        $this->_current = $node;
+        $this->current = $node;
     }
 
     /**
@@ -690,7 +690,7 @@ class Parser
 
         $node = $this->createNode('case', $token);
         $node->subject = $token['subject'];
-        $this->_current = $node;
+        $this->current = $node;
     }
 
     /**
@@ -705,7 +705,7 @@ class Parser
         $node->subject = $token['subject'];
         $node->conditionType = $token['conditionType'];
 
-        $this->_current = $node;
+        $this->current = $node;
     }
 
     /**
@@ -717,7 +717,7 @@ class Parser
     {
 
         $node = $this->createNode('do', $token);
-        $this->_current = $node;
+        $this->current = $node;
     }
 
     /**
@@ -731,7 +731,7 @@ class Parser
         $node = $this->createNode('doctype', $token);
         $node->name = $token['name'];
 
-        $this->_current = $node;
+        $this->current = $node;
     }
 
     /**
@@ -747,7 +747,7 @@ class Parser
         $node->itemName = $token['itemName'];
         $node->keyName = isset($token['keyName']) ? $token['keyName'] : null;
 
-        $this->_current = $node;
+        $this->current = $node;
     }
 
     /**
@@ -769,10 +769,10 @@ class Parser
         $node->unchecked = $token['unchecked'];
         $node->value = $token['value'];
 
-        if ($this->_current)
-            $this->_current->append($node);
+        if ($this->current)
+            $this->current->append($node);
         else
-            $this->_current = $node;
+            $this->current = $node;
     }
 
     /**
@@ -789,7 +789,7 @@ class Parser
         $node->value = $token['value'];
         $node->block = $token['block'];
 
-        $this->_current = $node;
+        $this->current = $node;
     }
 
     /**
@@ -802,7 +802,7 @@ class Parser
 
         $node = $this->createNode('filter', $token);
         $node->name = $token['name'];
-        $this->_current = $node;
+        $this->current = $node;
     }
 
     /**
@@ -821,17 +821,17 @@ class Parser
     protected function handleId(array $token)
     {
 
-        if (!$this->_current)
-            $this->_current = $this->createElement();
+        if (!$this->current)
+            $this->current = $this->createElement();
 
-        if (!in_array($this->_current->type, ['element', 'mixinCall']))
+        if (!in_array($this->current->type, ['element', 'mixinCall']))
             $this->throwException("IDs can only be used on elements and mixin calls", $token);
 
         $attr = $this->createNode('attribute', $token);
         $attr->name = 'id';
         $attr->value = $token['name'];
         $attr->escaped = false;
-        $this->_current->attributes[] = $attr;
+        $this->current->attributes[] = $attr;
     }
 
     /**
@@ -847,7 +847,7 @@ class Parser
         $node = $this->createNode('variable');
         $node->name = $token['name'];
         $node->attributes = [];
-        $this->_current = $node;
+        $this->current = $node;
     }
 
     /**
@@ -867,7 +867,7 @@ class Parser
     protected function handleImport(array $token)
     {
 
-        if ($token['importType'] === 'extends' && count($this->_document->children) > 0)
+        if ($token['importType'] === 'extends' && count($this->document->children) > 0)
             $this->throwException(
                 "extends should be the very first statement in a document",
                 $token
@@ -880,7 +880,7 @@ class Parser
         $node->attributes = [];
         $node->assignments = [];
 
-        $this->_current = $node;
+        $this->current = $node;
     }
 
     /**
@@ -907,18 +907,18 @@ class Parser
     protected function handleIndent(array $token = null)
     {
 
-        $this->_level++;
+        $this->level++;
 
-        if (!$this->_last)
+        if (!$this->last)
             return;
 
-        if (in_array($this->_last->type, ['import', 'expression', 'doctype']))
+        if (in_array($this->last->type, ['import', 'expression', 'doctype']))
             $this->throwException(
-                'The '.$this->_last->type.' instruction can\'t have children',
+                'The '.$this->last->type.' instruction can\'t have children',
                 $token
             );
 
-        $this->_currentParent = $this->_last;
+        $this->currentParent = $this->last;
     }
 
     /**
@@ -937,16 +937,16 @@ class Parser
     protected function handleTag(array $token)
     {
 
-        if (!$this->_current)
-            $this->_current = $this->createElement();
+        if (!$this->current)
+            $this->current = $this->createElement();
 
-        if ($this->_current->type !== 'element')
+        if ($this->current->type !== 'element')
             $this->throwException("Tags can only be used on elements", $token);
 
-        if ($this->_current->tag)
+        if ($this->current->tag)
             $this->throwException('This element already has a tag name', $token);
 
-        $this->_current->tag = $token['name'];
+        $this->current->tag = $token['name'];
     }
 
     /**
@@ -963,7 +963,7 @@ class Parser
     protected function handleMixin(array $token)
     {
 
-        if ($this->_inMixin)
+        if ($this->inMixin)
             $this->throwException(
                 "Failed to define mixin: Mixins cant be nested"
             );
@@ -973,10 +973,10 @@ class Parser
         $node->attributes = [];
         $node->assignments = [];
 
-        $this->_inMixin = true;
-        $this->_mixinLevel = $this->_level;
+        $this->inMixin = true;
+        $this->mixinLevel = $this->level;
 
-        $this->_current = $node;
+        $this->current = $node;
     }
 
     /**
@@ -992,7 +992,7 @@ class Parser
         $node->attributes = [];
         $node->assignments = [];
 
-        $this->_current = $node;
+        $this->current = $node;
     }
 
     /**
@@ -1011,20 +1011,20 @@ class Parser
     protected function handleNewLine()
     {
 
-        if ($this->_current) {
+        if ($this->current) {
 
             //Is there any expansion?
-            if ($this->_expansion) {
+            if ($this->expansion) {
 
                 //Tell the current element who expands it
-                $this->_current->expands = $this->_expansion;
-                $this->_expansion = null;
+                $this->current->expands = $this->expansion;
+                $this->expansion = null;
             }
 
             //Append to current parent
-            $this->_currentParent->append($this->_current);
-            $this->_last = $this->_current;
-            $this->_current = null;
+            $this->currentParent->append($this->current);
+            $this->last = $this->current;
+            $this->current = null;
         }
     }
 
@@ -1044,14 +1044,14 @@ class Parser
     protected function handleOutdent()
     {
 
-        $this->_level--;
+        $this->level--;
 
-        $this->_currentParent = $this->_currentParent->parent;
+        $this->currentParent = $this->currentParent->parent;
 
-        if ($this->_inMixin && $this->_level <= $this->_mixinLevel) {
+        if ($this->inMixin && $this->level <= $this->mixinLevel) {
 
-            $this->_inMixin = false;
-            $this->_mixinLevel = null;
+            $this->inMixin = false;
+            $this->mixinLevel = null;
         }
     }
 
@@ -1079,13 +1079,13 @@ class Parser
     protected function handleExpansion(array $token)
     {
 
-        if (!$this->_current)
+        if (!$this->current)
             $this->throwException(
                 "Expansion needs an element to work on",
                 $token
             );
 
-        if ($this->_current->type === 'element' && !$token['withSpace']) {
+        if ($this->current->type === 'element' && !$token['withSpace']) {
 
             if (!$this->expectNext(['tag'])) {
                 $this->throwException(
@@ -1099,16 +1099,16 @@ class Parser
             }
 
             $token = $this->getToken();
-            $this->_current->tag .= ':'.$token['name'];
+            $this->current->tag .= ':'.$token['name'];
 
             return;
         }
 
-        if ($this->_expansion)
-            $this->_current->expands = $this->_expansion;
+        if ($this->expansion)
+            $this->current->expands = $this->expansion;
 
-        $this->_expansion = $this->_current;
-        $this->_current = null;
+        $this->expansion = $this->current;
+        $this->current = null;
     }
 
 
@@ -1128,11 +1128,11 @@ class Parser
         $node->level = $token['level'];
         $node->escaped = $token['escaped'];
 
-        if ($this->_current) {
+        if ($this->current) {
 
-            $this->_current->append($node);
+            $this->current->append($node);
         } else
-            $this->_current = $node;
+            $this->current = $node;
     }
 
     /**
@@ -1146,7 +1146,7 @@ class Parser
         $node = $this->createNode('when', $token);
         $node->subject = $token['subject'];
         $node->default = $token['default'];
-        $this->_current = $node;
+        $this->current = $node;
     }
 
     /**
@@ -1159,7 +1159,7 @@ class Parser
 
         $node = $this->createNode('while', $token);
         $node->subject = $token['subject'];
-        $this->_current = $node;
+        $this->current = $node;
     }
 
 
@@ -1173,7 +1173,7 @@ class Parser
 
         $node = $this->createNode('for', $token);
         $node->subject = $token['subject'];
-        $this->_current = $node;
+        $this->current = $node;
     }
 
 

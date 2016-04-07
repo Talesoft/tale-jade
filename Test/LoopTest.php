@@ -9,12 +9,12 @@ class LoopTest extends \PHPUnit_Framework_TestCase
 {
 
     /** @var \Tale\Jade\Renderer */
-    private $_renderer;
+    private $renderer;
 
     public function setUp()
     {
 
-        $this->_renderer = new Renderer([
+        $this->renderer = new Renderer([
             'adapterOptions' => [
                 'path' => __DIR__.'/cache/loops'
             ],
@@ -29,7 +29,7 @@ class LoopTest extends \PHPUnit_Framework_TestCase
     public function testEach($array, $expected)
     {
 
-        $this->assertEquals($expected, $this->_renderer->render('each', ['array' => $array]));
+        $this->assertEquals($expected, $this->renderer->render('each', ['array' => $array]));
     }
 
     public function arrayValueProvider()
@@ -45,12 +45,12 @@ class LoopTest extends \PHPUnit_Framework_TestCase
     public function testWhile()
     {
 
-        $this->assertEquals('<p>1 My $i is 0!</p><p>1 My $i is 1!</p><p>1 My $i is 2!</p><p>1 My $i is 3!</p><p>1 My $i is 4!</p><p>1 My $i is 5!</p><p>1 My $i is 6!</p><p>1 My $i is 7!</p><p>1 My $i is 8!</p><p>1 My $i is 9!</p><p>1 My $i is 10!</p><p>1 My $i is 11!</p><p>1 My $i is 12!</p><p>1 My $i is 13!</p><p>1 My $i is 14!</p><p>1 My $i is 15!</p><p>1 My $i is 16!</p><p>1 My $i is 17!</p><p>1 My $i is 18!</p><p>1 My $i is 19!</p><p>1 My $i is 20!</p><p>1 My $i is 21!</p><p>1 My $i is 22!</p><p>1 My $i is 23!</p><p>1 My $i is 24!</p><p>2 My $i is 0</p><p>2 My $i is 1</p><p>2 My $i is 2</p><p>2 My $i is 3</p><p>2 My $i is 4</p><p>2 My $i is 5</p><p>2 My $i is 6</p><p>2 My $i is 7</p><p>2 My $i is 8</p><p>2 My $i is 9</p><p>2 My $i is 10</p><p>2 My $i is 11</p><p>2 My $i is 12</p><p>2 My $i is 13</p><p>2 My $i is 14</p><p>2 My $i is 15</p><p>2 My $i is 16</p><p>2 My $i is 17</p><p>2 My $i is 18</p><p>2 My $i is 19</p><p>2 My $i is 20</p><p>2 My $i is 21</p><p>2 My $i is 22</p><p>2 My $i is 23</p><p>2 My $i is 24</p>', $this->_renderer->render('while'));
+        $this->assertEquals('<p>1 My $i is 0!</p><p>1 My $i is 1!</p><p>1 My $i is 2!</p><p>1 My $i is 3!</p><p>1 My $i is 4!</p><p>1 My $i is 5!</p><p>1 My $i is 6!</p><p>1 My $i is 7!</p><p>1 My $i is 8!</p><p>1 My $i is 9!</p><p>1 My $i is 10!</p><p>1 My $i is 11!</p><p>1 My $i is 12!</p><p>1 My $i is 13!</p><p>1 My $i is 14!</p><p>1 My $i is 15!</p><p>1 My $i is 16!</p><p>1 My $i is 17!</p><p>1 My $i is 18!</p><p>1 My $i is 19!</p><p>1 My $i is 20!</p><p>1 My $i is 21!</p><p>1 My $i is 22!</p><p>1 My $i is 23!</p><p>1 My $i is 24!</p><p>2 My $i is 0</p><p>2 My $i is 1</p><p>2 My $i is 2</p><p>2 My $i is 3</p><p>2 My $i is 4</p><p>2 My $i is 5</p><p>2 My $i is 6</p><p>2 My $i is 7</p><p>2 My $i is 8</p><p>2 My $i is 9</p><p>2 My $i is 10</p><p>2 My $i is 11</p><p>2 My $i is 12</p><p>2 My $i is 13</p><p>2 My $i is 14</p><p>2 My $i is 15</p><p>2 My $i is 16</p><p>2 My $i is 17</p><p>2 My $i is 18</p><p>2 My $i is 19</p><p>2 My $i is 20</p><p>2 My $i is 21</p><p>2 My $i is 22</p><p>2 My $i is 23</p><p>2 My $i is 24</p>', $this->renderer->render('while'));
     }
 
     public function testFor()
     {
 
-        $this->assertEquals('<p>1 Character at 0 is a</p><p>1 Character at 1 is b</p><p>1 Character at 2 is c</p><p>1 Character at 3 is d</p><p>1 Character at 4 is e</p><p>1 Character at 5 is f</p><p>1 Character at 6 is g</p><p>1 Character at 7 is h</p><p>1 Character at 8 is i</p><p>1 Character at 9 is j</p><p>1 Character at 10 is k</p><p>1 Character at 11 is l</p><p>1 Character at 12 is m</p><p>1 Character at 13 is n</p><p>1 Character at 14 is o</p><p>1 Character at 15 is p</p><p>1 Character at 16 is q</p><p>1 Character at 17 is r</p><p>1 Character at 18 is s</p><p>1 Character at 19 is t</p><p>1 Character at 20 is u</p><p>1 Character at 21 is v</p><p>1 Character at 22 is w</p><p>1 Character at 23 is x</p><p>1 Character at 24 is y</p><p>1 Character at 25 is z</p>', $this->_renderer->render('for'));
+        $this->assertEquals('<p>1 Character at 0 is a</p><p>1 Character at 1 is b</p><p>1 Character at 2 is c</p><p>1 Character at 3 is d</p><p>1 Character at 4 is e</p><p>1 Character at 5 is f</p><p>1 Character at 6 is g</p><p>1 Character at 7 is h</p><p>1 Character at 8 is i</p><p>1 Character at 9 is j</p><p>1 Character at 10 is k</p><p>1 Character at 11 is l</p><p>1 Character at 12 is m</p><p>1 Character at 13 is n</p><p>1 Character at 14 is o</p><p>1 Character at 15 is p</p><p>1 Character at 16 is q</p><p>1 Character at 17 is r</p><p>1 Character at 18 is s</p><p>1 Character at 19 is t</p><p>1 Character at 20 is u</p><p>1 Character at 21 is v</p><p>1 Character at 22 is w</p><p>1 Character at 23 is x</p><p>1 Character at 24 is y</p><p>1 Character at 25 is z</p>', $this->renderer->render('for'));
     }
 }

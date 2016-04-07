@@ -9,12 +9,12 @@ class ImportTest extends \PHPUnit_Framework_TestCase
 {
 
     /** @var \Tale\Jade\Compiler */
-    private $_renderer;
+    private $renderer;
 
     public function setUp()
     {
 
-        $this->_renderer = new Renderer([
+        $this->renderer = new Renderer([
             'adapterOptions' => [
                 'path' => __DIR__.'/cache/imports'
             ],
@@ -26,7 +26,7 @@ class ImportTest extends \PHPUnit_Framework_TestCase
     public function testExtends()
     {
 
-        $this->assertEquals('<div><h1>Some Template</h1><p>Passed content to extended file!</p></div>', $this->_renderer->render(
+        $this->assertEquals('<div><h1>Some Template</h1><p>Passed content to extended file!</p></div>', $this->renderer->render(
             'extends'
         ));
     }
@@ -34,7 +34,7 @@ class ImportTest extends \PHPUnit_Framework_TestCase
     public function testInclude()
     {
 
-        $this->assertEquals('<div><h1>Included!</h1><p>I was included, man!</p></div><p><h1>Included!</h1><p>I was included, man!</p></p>', $this->_renderer->render(
+        $this->assertEquals('<div><h1>Included!</h1><p>I was included, man!</p></div><p><h1>Included!</h1><p>I was included, man!</p></p>', $this->renderer->render(
             'include'
         ));
     }
@@ -42,7 +42,7 @@ class ImportTest extends \PHPUnit_Framework_TestCase
     public function testIncludeFilters()
     {
 
-        $this->assertEquals('<style>some, random { css: operations; } and, .just { some: more; }</style><style>some, random { css: operations; } and, .just { some: more; }</style><script>function someJs() { console.log(\'someJs\'); } someJs();</script><script>function someJs() { console.log(\'someJs\'); } someJs();</script>Hello from PHP!Hello from PHP!', $this->_renderer->render(
+        $this->assertEquals('<style>some, random { css: operations; } and, .just { some: more; }</style><style>some, random { css: operations; } and, .just { some: more; }</style><script>function someJs() { console.log(\'someJs\'); } someJs();</script><script>function someJs() { console.log(\'someJs\'); } someJs();</script>Hello from PHP!Hello from PHP!', $this->renderer->render(
             'include-filters'
         ));
     }
@@ -52,7 +52,7 @@ class ImportTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException(Compiler\Exception::class);
 
-        $this->_renderer->compile('include non-existent-file');
-        $this->_renderer->compile('extends non-existent-file');
+        $this->renderer->compile('include non-existent-file');
+        $this->renderer->compile('extends non-existent-file');
     }
 }

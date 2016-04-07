@@ -8,18 +8,18 @@ class TagTest extends \PHPUnit_Framework_TestCase
 {
 
     /** @var \Tale\Jade\Compiler */
-    private $_compiler;
+    private $compiler;
 
     public function setUp()
     {
 
-        $this->_compiler = new Compiler();
+        $this->compiler = new Compiler();
     }
 
     public function testTag()
     {
 
-        $this->assertEquals('<p>Test</p>', $this->_compiler->compile('p Test'));
+        $this->assertEquals('<p>Test</p>', $this->compiler->compile('p Test'));
     }
 
     public function testTagChars()
@@ -27,7 +27,7 @@ class TagTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             '<abcdefghijklmnopqrstuvwxyz-_ABCDEFGHIJKLMNOPQRSTUVWXYZ>Test</abcdefghijklmnopqrstuvwxyz-_ABCDEFGHIJKLMNOPQRSTUVWXYZ>',
-            $this->_compiler->compile('abcdefghijklmnopqrstuvwxyz-_ABCDEFGHIJKLMNOPQRSTUVWXYZ Test')
+            $this->compiler->compile('abcdefghijklmnopqrstuvwxyz-_ABCDEFGHIJKLMNOPQRSTUVWXYZ Test')
         );
     }
 
@@ -36,12 +36,12 @@ class TagTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             '<a:b>Test</a:b>',
-            $this->_compiler->compile('a:b Test')
+            $this->compiler->compile('a:b Test')
         );
 
         $this->assertEquals(
             '<a-b:c-d>Test</a-b:c-d>',
-            $this->_compiler->compile('a-b:c-d Test')
+            $this->compiler->compile('a-b:c-d Test')
         );
     }
 
@@ -53,7 +53,7 @@ p
     a Test
 JADE;
 
-        $this->assertEquals('<p><a>Test</a></p>', $this->_compiler->compile($jade));
+        $this->assertEquals('<p><a>Test</a></p>', $this->compiler->compile($jade));
     }
 
     public function testTabTags()
@@ -72,7 +72,7 @@ body
 \tscript
 JADE;
 
-        $this->assertEquals('<!DOCTYPE html><head><title></title><link></head><body><h1></h1><div><p>Some text</p><a>Some link</a></div><script></script></body>', $this->_compiler->compile($jade));
+        $this->assertEquals('<!DOCTYPE html><head><title></title><link></head><body><h1></h1><div><p>Some text</p><a>Some link</a></div><script></script></body>', $this->compiler->compile($jade));
     }
 
     public function testComplexNestedTag()
@@ -106,6 +106,6 @@ div
                 a
 JADE;
 
-        $this->assertEquals('<div><nav><ul><li><a></a></li><li><a></a></li><li><a></a></li></ul></nav><nav><ul><li><a></a></li><li><a></a></li><li><a></a></li></ul></nav><nav><ul><li><a></a></li><li><a></a></li><li><a></a></li></ul></nav></div>', $this->_compiler->compile($jade));
+        $this->assertEquals('<div><nav><ul><li><a></a></li><li><a></a></li><li><a></a></li></ul></nav><nav><ul><li><a></a></li><li><a></a></li><li><a></a></li></ul></nav><nav><ul><li><a></a></li><li><a></a></li><li><a></a></li></ul></nav></div>', $this->compiler->compile($jade));
     }
 }

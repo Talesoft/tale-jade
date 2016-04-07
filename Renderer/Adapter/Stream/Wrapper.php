@@ -18,7 +18,7 @@
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.0
+ * @version    1.4.2
  * @link       http://jade.talesoft.io/docs/files/Renderer.Adapter.Stream.Wrapper.html
  * @since      File available since Release 1.0
  */
@@ -42,7 +42,7 @@ use RuntimeException;
  * @author     Talesoft <info@talesoft.io>
  * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.0
+ * @version    1.4.2
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Renderer.Adapter.Stream.Wrapper.html
  * @since      File available since Release 1.0
  */
@@ -54,21 +54,21 @@ class Wrapper
      *
      * @var string
      */
-    private $_data;
+    private $data;
 
     /**
      * The current position in our $_data.
      *
      * @var int
      */
-    private $_position;
+    private $position;
 
     /**
      * The length of our $_data.
      *
      * @var int
      */
-    private $_length;
+    private $length;
 
     /**
      * This gets called when a url-stream is opened with the wrapper-scheme.
@@ -96,10 +96,10 @@ class Wrapper
         // <base64-encoded-phtml>
         //We decode that and $_data will contain only the pure, compiled PHTML
         //ready for inclusion
-        $this->_data = base64_decode($substr($uri, $strpos($uri, ';') + 1));
+        $this->data = base64_decode($substr($uri, $strpos($uri, ';') + 1));
 
-        $this->_position = 0;
-        $this->_length = $strlen($this->_data);
+        $this->position = 0;
+        $this->length = $strlen($this->data);
 
         return true;
     }
@@ -125,8 +125,8 @@ class Wrapper
         $strlen = function_exists('mb_strlen') ? 'mb_strlen' : 'strlen';
 
         //Read that stuff chunk by chunk (whatever buffersize there is)
-        $result = $substr($this->_data, $this->_position, $length);
-        $this->_position += $strlen($result);
+        $result = $substr($this->data, $this->position, $length);
+        $this->position += $strlen($result);
 
         return $result;
     }
@@ -141,7 +141,7 @@ class Wrapper
     public function stream_tell()
     {
 
-        return $this->_position;
+        return $this->position;
     }
 
     /**
@@ -155,7 +155,7 @@ class Wrapper
     public function stream_eof()
     {
 
-        return $this->_position >= $this->_length;
+        return $this->position >= $this->length;
     }
 
     /**

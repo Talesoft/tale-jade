@@ -9,12 +9,12 @@ class StandAloneTest extends \PHPUnit_Framework_TestCase
 {
 
     /** @var \Tale\Jade\Renderer */
-    private $_renderer;
+    private $renderer;
 
     public function setUp()
     {
 
-        $this->_renderer = new Renderer([
+        $this->renderer = new Renderer([
             'adapterOptions' => [
                 'path' => __DIR__.'/cache/stand-alone',
             ],
@@ -27,6 +27,6 @@ class StandAloneTest extends \PHPUnit_Framework_TestCase
     public function testStandAloneCompilation()
     {
 
-        $this->assertEquals('<p class="a b c d e f">Test!</p>', $this->_renderer->render('basic', ['classes' => ['e', 'f']]));
+        $this->assertEquals('<p class="a b c d e f">Test!</p>', $this->renderer->render('basic', ['classes' => ['e', 'f']]));
     }
 }

@@ -10,12 +10,12 @@ class PrettyTest extends \PHPUnit_Framework_TestCase
 {
 
     /** @var \Tale\Jade\Renderer */
-    private $_renderer;
+    private $renderer;
 
     public function setUp()
     {
 
-        $this->_renderer = new Renderer([
+        $this->renderer = new Renderer([
             'adapterOptions' => [
                 'path' => __DIR__.'/cache/pretty',
             ],
@@ -51,7 +51,7 @@ class PrettyTest extends \PHPUnit_Framework_TestCase
 PHTML;
 
 
-        $this->assertEquals(str_replace("\r", '', $phtml), $this->_renderer->compileFile(
+        $this->assertEquals(str_replace("\r", '', $phtml), $this->renderer->compileFile(
             'basic'
         ));
     }
@@ -81,7 +81,7 @@ PHTML;
 </div>
 PHTML;
 
-        $this->assertEquals(str_replace("\r", '', $phtml), $this->_renderer->compileFile(
+        $this->assertEquals(str_replace("\r", '', $phtml), $this->renderer->compileFile(
             'single'
         ));
     }
