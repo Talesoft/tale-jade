@@ -29,6 +29,7 @@
 namespace Tale\Jade;
 
 use Tale\ConfigurableTrait;
+use Tale\Jade\Filter\FilterInterface;
 use Tale\Jade\Parser\Node;
 use Tale\Jade\Parser\Node\AssignmentNode;
 use Tale\Jade\Parser\Node\AttributeNode;
@@ -433,20 +434,21 @@ class Compiler
      *
      * It should return either a PHTML string or a Node-instance
      *
-     * @param string   $name     the name of the filter
-     * @param callable $callback the filter handler callback
+     * @param string   $name           the name of the filter
+     * @param callable|FilterInterface $filter the filter or filter handler callback
      *
      * @return $this
      */
-    public function addFilter($name, $callback)
+    public function addFilter($name, $filter)
     {
 
-        if (!is_callable($callback))
-            throw new \InvalidArgumentException(
-                "Argument 2 of addFilter must be valid callback"
+        if (!is_callable($filter) && !$filter instanceof FilterInterface)
+            throw new \InvalidArgumentException(sprintf(
+                'Argument 2 of addFilter must be instance of "%s" or valid callback',
+                FilterInterface::class
             );
 
-        $this->options['filters'][$name] = $callback;
+        $this->options['filters'][$name] = $filter;
 
         return $this;
     }
@@ -1787,7 +1789,13 @@ class Compiler
                 $node
             );
 
-        $result = call_user_func($this->options['filters'][$name], $node, $this->indent(), $this->newLine(), $this);
+        if ($this->options['filters'][$name] instanceof FilterInterface) {
+            $callback = [$this->options['filters'][$name], 'filter'];
+        } else {
+            $callback = $this->options['filters'][$name];
+        }
+
+        $result = call_user_func($callback, $node, $this->indent(), $this->newLine(), $this);
 
         return $result instanceof Node ? $this->compileNode($result) : (string)$result;
     }
