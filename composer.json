@@ -22,13 +22,24 @@
         "source": "https://github.com/talesoft/tale-jade",
         "docs": "http://jade.talesoft.io/docs"
     },
-    "minimum-stability": "stable",
     "require": {
         "php": ">=5.5.0",
         "talesoft/tale-config": "0.2",
         "talesoft/tale-factory": "0.1",
         "talesoft/tale-tree": "0.1",
         "talesoft/tale-reader": "0.1"
+    },
+    "require-dev": {
+        "twig/twig": "~1.12|~2.0",
+        "oyejorge/less.php": "~1",
+        "leafo/scssphp": "~0.3",
+        "coffeescript/coffeescript": "~1",
+        "michelf/php-markdown": "~1.3",
+        "erusev/parsedown": "~1",
+        "league/commonmark": ">=0.9",
+        "cebe/markdown": "~1",
+        "gregwar/rst": "~1",
+        "neemzy/stylus": "@dev"
     },
     "autoload": {
         "psr-4": {
