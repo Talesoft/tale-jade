@@ -693,6 +693,7 @@ class Compiler
                 list(, $start) = $match[0];
                 list($escapeType) = $match[2];
                 list($checkType) = $match[1];
+                $start = $strlen(substr($string, 0, $start + 1)) - 1;
                 $prefixLen = $strlen($escapeType) + $strlen($checkType) + $strlen($open);
                 $offset = $start + $prefixLen;
                 $level = 1;
