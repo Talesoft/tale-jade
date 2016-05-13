@@ -14,9 +14,9 @@
  * @package    Tale\Jade\Lexer
  * @author     Torben Koehn <tk@talesoft.io>
  * @author     Talesoft <info@talesoft.io>
- * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @copyright  Copyright (c) 2015 Torben Köhn (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.2
+ * @version    1.4.3
  * @link       http://jade.talesoft.io/docs/files/Lexer.Exception.html
  * @since      File available since Release 1.0
  */
@@ -32,9 +32,9 @@ namespace Tale\Jade\Lexer;
  * @package    Tale\Jade\Lexer
  * @author     Torben Koehn <tk@talesoft.io>
  * @author     Talesoft <info@talesoft.io>
- * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @copyright  Copyright (c) 2015 Torben Köhn (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.2
+ * @version    1.4.3
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Lexer.Exception.html
  * @since      File available since Release 1.0
  */

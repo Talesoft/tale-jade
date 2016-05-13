@@ -49,7 +49,7 @@ class ExpressionAndCodeTest extends \PHPUnit_Framework_TestCase
     public function testCodeBlock()
     {
 
-        $this->assertEquals('<?php foreach ($post in $posts) {doSomethingWith($post); } $array = ["a", "b", "c"];?>', $this->compiler->compile('-
+        $this->assertEquals('<?php foreach ($post in $posts) {doSomethingWith($post);}$array = ["a", "b", "c"];?>', $this->compiler->compile('-
     foreach ($post in $posts) {
         doSomethingWith($post);
     }

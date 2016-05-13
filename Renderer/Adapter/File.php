@@ -18,9 +18,9 @@
  * @package    Tale\Jade\Renderer\Adapter
  * @author     Torben Koehn <tk@talesoft.io>
  * @author     Talesoft <info@talesoft.io>
- * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @copyright  Copyright (c) 2015 Torben Köhn (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.2
+ * @version    1.4.3
  * @link       http://jade.talesoft.io/docs/files/Renderer.Adapter.File.html
  * @since      File available since Release 1.0
  */
@@ -57,9 +57,9 @@ use Tale\Jade\Renderer\AdapterBase;
  * @package    Tale\Jade\Renderer\Adapter
  * @author     Torben Koehn <tk@talesoft.io>
  * @author     Talesoft <info@talesoft.io>
- * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @copyright  Copyright (c) 2015 Torben Köhn (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.2
+ * @version    1.4.3
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Renderer.Adapter.File.html
  * @since      File available since Release 1.0
  */
@@ -89,7 +89,7 @@ class File extends AdapterBase
         $this->setDefaults([
             'path'      => './cache/views',
             'extension' => '.phtml',
-            'lifeTime'  => 0
+            'ttl'  => 0
         ]);
 
         $dir = $this->getOption('path');
@@ -156,7 +156,7 @@ class File extends AdapterBase
             return ob_get_clean();
         };
 
-        if (!file_exists($outputPath) || time() - filemtime($outputPath) >= $this->getOption('lifeTime')) {
+        if (!file_exists($outputPath) || time() - filemtime($outputPath) >= $this->getOption('ttl')) {
 
             $dir = dirname($outputPath);
 

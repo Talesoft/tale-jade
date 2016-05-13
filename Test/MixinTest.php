@@ -14,7 +14,7 @@ class MixinTest extends \PHPUnit_Framework_TestCase
     {
 
         $this->renderer = new Renderer([
-            'cachePath' => __DIR__.'/cache/mixins',
+            'cache_path' => __DIR__.'/cache/mixins',
             'pretty' => false,
             'paths' => [__DIR__.'/views/mixins']
         ]);
@@ -41,7 +41,7 @@ class MixinTest extends \PHPUnit_Framework_TestCase
     public function testBlock()
     {
 
-        $this->assertEquals('<h2>Article 1</h2><p><strong>Block Content 1</strong> Awesome, isn\'t it?</p><h2>Article 2</h2><p><strong>Block Content 2</strong> And another block content</p>', $this->renderer->render(
+        $this->assertEquals('<h2>Article 1</h2><p><strong>Block Content 1</strong>Awesome, isn\'t it?</p><h2>Article 2</h2><p><strong>Block Content 2</strong>And another block content</p>', $this->renderer->render(
             'block'
         ));
     }

@@ -16,9 +16,9 @@
  * @package    Tale\Jade
  * @author     Torben Koehn <tk@talesoft.io>
  * @author     Talesoft <info@talesoft.io>
- * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @copyright  Copyright (c) 2015 Torben Köhn (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.2
+ * @version    1.4.3
  * @link       http://jade.talesoft.io/docs/files/Parser.html
  * @since      File available since Release 1.0
  */
@@ -56,9 +56,9 @@ use Tale\Jade\Parser\Exception;
  * @package    Tale\Jade
  * @author     Torben Koehn <tk@talesoft.io>
  * @author     Talesoft <info@talesoft.io>
- * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @copyright  Copyright (c) 2015 Torben Köhn (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.2
+ * @version    1.4.3
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Parser.html
  * @since      File available since Release 1.0
  */
@@ -173,9 +173,9 @@ class Parser
     public function __construct(array $options = null, Lexer $lexer = null)
     {
 
-        $this->defineOptions(['lexerOptions' => []], $options);
+        $this->defineOptions(['lexer_options' => []], $options);
 
-        $this->lexer = $lexer ? $lexer : new Lexer($this->options['lexerOptions']);
+        $this->lexer = $lexer ? $lexer : new Lexer($this->options['lexer_options']);
     }
 
     /**

@@ -16,9 +16,9 @@
  * @package    Tale\Jade
  * @author     Torben Koehn <tk@talesoft.io>
  * @author     Talesoft <info@talesoft.io>
- * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @copyright  Copyright (c) 2015 Torben Köhn (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.2
+ * @version    1.4.3
  * @link       http://jade.talesoft.io/docs/files/Renderer.html
  * @since      File available since Release 1.0
  */
@@ -50,9 +50,9 @@ use Tale\Jade\Renderer\AdapterBase;
  * @package    Tale\Jade
  * @author     Torben Koehn <tk@talesoft.io>
  * @author     Talesoft <info@talesoft.io>
- * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @copyright  Copyright (c) 2015 Torben Köhn (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.2
+ * @version    1.4.3
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Renderer.html
  * @since      File available since Release 1.0
  */
@@ -99,10 +99,10 @@ class Renderer
      * adapter:         The name of the adapter to use, either a short-name
      *                  for an internal adapter or a class-name for a custom
      *                  adapter
-     * adapterOptions:  The option-array that gets passed to the adapter
+     * adapter_options:  The option-array that gets passed to the adapter
      * compiler:        The compiler-options that get passed to the compiler
-     * parserOptions:   The parser-options that get passed to the parser
-     * lexerOptions:    The lexer options that get passed to the lexer
+     * parser_options:   The parser-options that get passed to the parser
+     * lexer_options:    The lexer options that get passed to the lexer
      *
      * pretty:          Compile with indentations and newlines (default: false)
      * paths:           The paths the compiler should search the jade files in
@@ -122,31 +122,35 @@ class Renderer
 
         $this->defineOptions([
             'adapter'           => 'file',
-            'adapterOptions'    => [],
-            'compilerOptions'   => [],
-            'parserOptions'     => [],
-            'lexerOptions'      => [],
+            'adapter_options'    => [],
+            'compiler_options'   => [],
+            'parser_options'     => [],
+            'lexer_options'      => [],
         ], $options);
 
         //Quick Options.
         //These get passed to the actual option arrays of the related objects
-        $this->forwardOption('lifeTime', 'adapterOptions');
-        $this->forwardOption('cachePath', 'adapterOptions', 'path');
+        //@DEPRECATED lifeTime and cachePath will be removed in the near future!
+        $this->forwardOption('lifeTime', 'adapter_options', 'ttl');
+        $this->forwardOption('ttl', 'adapter_options');
+        $this->forwardOption('cachePath', 'adapter_options', 'path');
+        $this->forwardOption('cache_dir', 'adapter_options', 'path');
+        $this->forwardOption('cache_path', 'adapter_options', 'path');
 
-        $this->forwardOption('paths', 'compilerOptions');
-        $this->forwardOption('pretty', 'compilerOptions');
-        $this->forwardOption('indentStyle', 'compilerOptions');
-        $this->forwardOption('indentWidth', 'compilerOptions');
-        $this->forwardOption('standAlone', 'compilerOptions');
-        $this->forwardOption('extensions', 'compilerOptions');
-        $this->forwardOption('mode', 'compilerOptions');
-        $this->forwardOption('doctypes', 'compilerOptions');
-        $this->forwardOption('filters', 'compilerOptions');
-        $this->forwardOption('filterMap', 'compilerOptions');
+        $this->forwardOption('paths', 'compiler_options');
+        $this->forwardOption('pretty', 'compiler_options');
+        $this->forwardOption('indent_style', 'compiler_options');
+        $this->forwardOption('indent_width', 'compiler_options');
+        $this->forwardOption('stand_alone', 'compiler_options');
+        $this->forwardOption('extensions', 'compiler_options');
+        $this->forwardOption('mode', 'compiler_options');
+        $this->forwardOption('doctypes', 'compiler_options');
+        $this->forwardOption('filters', 'compiler_options');
+        $this->forwardOption('filter_map', 'compiler_options');
 
-        $this->lexer = $lexer ? $lexer : new Lexer($this->options['lexerOptions']);
-        $this->parser = $parser ? $parser : new Parser($this->options['parserOptions'], $this->lexer);
-        $this->compiler = $compiler ? $compiler : new Compiler($this->options['compilerOptions'], $this->parser);
+        $this->lexer = $lexer ?: new Lexer($this->options['lexer_options']);
+        $this->parser = $parser ?: new Parser($this->options['parser_options'], $this->lexer);
+        $this->compiler = $compiler ?: new Compiler($this->options['compiler_options'], $this->parser);
     }
 
     /**
@@ -258,7 +262,7 @@ class Renderer
                     "The passed adapter doesnt extend Tale\\Jade\\Renderer\\AdapterBase"
                 );
 
-            $this->adapter = new $className($this, $this->options['adapterOptions']);
+            $this->adapter = new $className($this, $this->options['adapter_options']);
         }
 
         return $this->adapter;

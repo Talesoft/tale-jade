@@ -16,7 +16,7 @@ class IssueTest extends \PHPUnit_Framework_TestCase
     {
 
         $this->renderer = new Renderer([
-            'adapterOptions' => [
+            'adapter_options' => [
                 'path' => __DIR__.'/cache/issues'
             ],
             'pretty' => false,
@@ -53,7 +53,7 @@ class IssueTest extends \PHPUnit_Framework_TestCase
             'issue-48/1'
         ));
 
-        $this->assertEquals(' <button>Submit</button>', $this->renderer->render(
+        $this->assertEquals('<button>Submit</button>', $this->renderer->render(
             'issue-48/views/view.ctp'
         ));
 
@@ -78,34 +78,34 @@ JADE;
 
 
         $renderer = new Renderer([
-            'adapterOptions' => [
+            'adapter_options' => [
                 'path' => __DIR__.'/cache/issues'
             ],
             'pretty' => false,
             'paths' => [__DIR__.'/views/issues']
         ]);
 
-        $this->assertEquals('<?php /** * CakePHP(tm) : Rapid Development Framework (http://cakephp.org) * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org) */?><!DOCTYPE html>', $renderer->compile($jade));
-        $this->assertEquals('<?php /*** CakePHP(tm) : Rapid Development Framework (http://cakephp.org) * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org) */?><!DOCTYPE html><!DOCTYPE html> <html> <head><?=$view->Html->charset()?> <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">', $renderer->compileFile('issue-44'));
+        $this->assertEquals('<?php /*** CakePHP(tm) : Rapid Development Framework (http://cakephp.org)* Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)*/?><!DOCTYPE html>', $renderer->compile($jade));
+        $this->assertEquals('<?php /*** CakePHP(tm) : Rapid Development Framework (http://cakephp.org)* Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)*/?><!DOCTYPE html><!DOCTYPE html><html><head><?=$view->Html->charset()?><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">', $renderer->compileFile('issue-44'));
 
         $this->assertEquals('<ul class="right hide-on-med-and-down"><li><?=$view->Html->link(__(\'Dashboard\'), [\'controller\' => \'Users\', \'action\' => \'index\'])?></li><li><?=$view->Html->link(__(\'Log Out\'), [\'controller\' => \'Users\', \'action\' => \'logout\'])?></li></ul><ul id="nav-mobile" class="side-nav"><li><?=$view->Html->link(__(\'Dashboard\'), [\'controller\' => \'Users\', \'action\' => \'index\'])?></li><li><?=$view->Html->link(__(\'Log Out\'), [\'controller\' => \'Users\', \'action\' => \'logout\'])?></li></ul><a class="button-collapse" href="#" data-activates="nav-mobile"><i class="material-icons">menu</i></a><div class="progress -main"><div class="indeterminate"></div></div>', $this->renderer->compileFile('issue-44/for_members.ctp.1'));
         $this->assertEquals('<ul class="right hide-on-med-and-down"><li><?=$view->Html->link(__(\'Dashboard\'), [\'controller\' => \'Users\', \'action\' => \'index\'])?></li><li><?=$view->Html->link(__(\'Log Out\'), [\'controller\' => \'Users\', \'action\' => \'logout\'])?></li></ul><ul id="nav-mobile" class="side-nav"><li><?=$view->Html->link(__(\'Dashboard\'), [\'controller\' => \'Users\', \'action\' => \'index\'])?></li><li><?=$view->Html->link(__(\'Log Out\'), [\'controller\' => \'Users\', \'action\' => \'logout\'])?></li></ul><a class="button-collapse" href="#" data-activates="nav-mobile"><i class="material-icons">menu</i></a><div class="progress -main"><div class="indeterminate"></div></div>', $this->renderer->compileFile('issue-44/for_members.ctp.2'));
 
 
         $renderer = new Renderer([
-            'adapterOptions' => [
+            'adapter_options' => [
                 'path' => __DIR__.'/cache/issues'
             ],
-            'lexerOptions' => [
-                'indentWidth' => 2,
-                'indentStyle' => ' '
+            'lexer_options' => [
+                'indent_width' => 2,
+                'indent_style' => ' '
             ],
             'pretty' => false,
             'paths' => [__DIR__.'/views/issues']
         ]);
 
-        $this->assertEquals('<?php /** * CakePHP(tm) : Rapid Development Framework (http://cakephp.org) * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org) */?><!DOCTYPE html>', $renderer->compile($jade));
-        $this->assertEquals('<?php /** * CakePHP(tm) : Rapid Development Framework (http://cakephp.org) * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org) */?><!DOCTYPE html><!DOCTYPE html> <html> <head><?=$view->Html->charset()?> <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">', $renderer->compileFile('issue-44'));
+        $this->assertEquals('<?php /*** CakePHP(tm) : Rapid Development Framework (http://cakephp.org)* Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)*/?><!DOCTYPE html>', $renderer->compile($jade));
+        $this->assertEquals('<?php /*** CakePHP(tm) : Rapid Development Framework (http://cakephp.org)* Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)*/?><!DOCTYPE html><!DOCTYPE html><html><head><?=$view->Html->charset()?><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">', $renderer->compileFile('issue-44'));
 
         $this->assertEquals('<ul class="right hide-on-med-and-down"><li><?=$view->Html->link(__(\'Dashboard\'), [\'controller\' => \'Users\', \'action\' => \'index\'])?></li><li><?=$view->Html->link(__(\'Log Out\'), [\'controller\' => \'Users\', \'action\' => \'logout\'])?></li></ul><ul id="nav-mobile" class="side-nav"><li><?=$view->Html->link(__(\'Dashboard\'), [\'controller\' => \'Users\', \'action\' => \'index\'])?></li><li><?=$view->Html->link(__(\'Log Out\'), [\'controller\' => \'Users\', \'action\' => \'logout\'])?></li></ul><a class="button-collapse" href="#" data-activates="nav-mobile"><i class="material-icons">menu</i></a><div class="progress -main"><div class="indeterminate"></div></div>', $this->renderer->compileFile('issue-44/for_members.ctp.1'));
         $this->assertEquals('<ul class="right hide-on-med-and-down"><li><?=$view->Html->link(__(\'Dashboard\'), [\'controller\' => \'Users\', \'action\' => \'index\'])?></li><li><?=$view->Html->link(__(\'Log Out\'), [\'controller\' => \'Users\', \'action\' => \'logout\'])?></li></ul><ul id="nav-mobile" class="side-nav"><li><?=$view->Html->link(__(\'Dashboard\'), [\'controller\' => \'Users\', \'action\' => \'index\'])?></li><li><?=$view->Html->link(__(\'Log Out\'), [\'controller\' => \'Users\', \'action\' => \'logout\'])?></li></ul><a class="button-collapse" href="#" data-activates="nav-mobile"><i class="material-icons">menu</i></a><div class="progress -main"><div class="indeterminate"></div></div>', $this->renderer->compileFile('issue-44/for_members.ctp.2'));
@@ -120,7 +120,7 @@ JADE;
     public function testIssue57()
     {
 
-        $this->assertEquals('<pre><code><?=htmlentities(\'<?php\', \ENT_QUOTES, \'UTF-8\')?> <?=htmlentities(\'$foo = \'hey\';\', \ENT_QUOTES, \'UTF-8\')?></code></pre>', $this->renderer->compile("pre: code!.\n\t<?php\n\t\$foo = 'hey';"));
+        $this->assertEquals('<pre><code><?=htmlentities(\'<?php\', \ENT_QUOTES, \'UTF-8\')?><?=htmlentities(\'$foo = \'hey\';\', \ENT_QUOTES, \'UTF-8\')?></code></pre>', $this->renderer->compile("pre: code!.\n\t<?php\n\t\$foo = 'hey';"));
     }
 
     public function testIssue66()

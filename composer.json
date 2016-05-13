@@ -2,15 +2,10 @@
     "name": "talesoft/tale-jade",
     "type": "library",
     "keywords": ["template", "dialect", "html", "views", "presentation", "jade", "html", "php", "phtml"],
-    "description": "A complete and fully-functional implementation of the Jade template language for PHP",
+    "description": "A clean, lightweight and easy-to-use templating engine for PHP based on Jade/Pug",
     "license": "MIT",
     "homepage": "http://jade.talesoft.io",
     "authors": [
-        {
-            "name": "Talesoft",
-            "homepage": "http://talesoft.io",
-            "email": "info@talesoft.io"
-        },
         {
             "name": "Torben Koehn",
             "email": "tk@talesoft.io"
@@ -25,7 +20,8 @@
     "minimum-stability": "stable",
     "require": {
         "php": ">=5.5.0",
-        "talesoft/tale-config": "0.2"
+        "talesoft/tale-config": "0.2",
+        "symfony/polyfill-mbstring": "*"
     },
     "autoload": {
         "psr-4": {

@@ -15,7 +15,7 @@ class EscapingTest extends \PHPUnit_Framework_TestCase
     {
 
         $this->renderer = new Renderer([
-            'adapterOptions' => [
+            'adapter_options' => [
                 'path' => __DIR__.'/cache/escaping'
             ],
             'pretty' => false,
@@ -126,7 +126,7 @@ class EscapingTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('Some <b>Text</b>', $this->renderer->compile('| Some <b>Text</b>'));
         $this->assertEquals('<div>Some <b>Text</b></div>', $this->renderer->compile('div Some <b>Text</b>'));
-        $this->assertEquals('<p>Some <b>Text</b> Some <i>further</i> text</p>', $this->renderer->compile("p.\n\tSome <b>Text</b>\n\tSome <i>further</i> text"));
+        $this->assertEquals('<p>Some <b>Text</b>Some <i>further</i> text</p>', $this->renderer->compile("p.\n\tSome <b>Text</b>\n\tSome <i>further</i> text"));
     }
 
     public function testEscapedText()
@@ -134,7 +134,7 @@ class EscapingTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('<?=htmlentities(\'Some <b>Text</b>\', \ENT_QUOTES, \'UTF-8\')?>', $this->renderer->compile('!| Some <b>Text</b>'));
         $this->assertEquals('<div><?=htmlentities(\'Some <b>Text</b>\', \ENT_QUOTES, \'UTF-8\')?></div>', $this->renderer->compile('div! Some <b>Text</b>'));
-        $this->assertEquals('<p><?=htmlentities(\'Some <b>Text</b>\', \ENT_QUOTES, \'UTF-8\')?> <?=htmlentities(\'Some <i>further</i> text\', \ENT_QUOTES, \'UTF-8\')?></p>', $this->renderer->compile("p!.\n\tSome <b>Text</b>\n\tSome <i>further</i> text"));
+        $this->assertEquals('<p><?=htmlentities(\'Some <b>Text</b>\', \ENT_QUOTES, \'UTF-8\')?><?=htmlentities(\'Some <i>further</i> text\', \ENT_QUOTES, \'UTF-8\')?></p>', $this->renderer->compile("p!.\n\tSome <b>Text</b>\n\tSome <i>further</i> text"));
     }
 
     public function testInterpolationInEscapedText()

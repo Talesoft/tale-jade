@@ -16,9 +16,9 @@
  * @package    Tale\Jade
  * @author     Torben Koehn <tk@talesoft.io>
  * @author     Talesoft <info@talesoft.io>
- * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @copyright  Copyright (c) 2015 Torben Köhn (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.2
+ * @version    1.4.3
  * @link       http://jade.talesoft.io/docs/files/Lexer.html
  * @since      File available since Release 1.0
  */
@@ -60,9 +60,9 @@ use Tale\Jade\Lexer\Exception;
  * @package    Tale\Jade
  * @author     Torben Koehn <tk@talesoft.io>
  * @author     Talesoft <info@talesoft.io>
- * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @copyright  Copyright (c) 2015 Torben Köhn (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.2
+ * @version    1.4.3
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Lexer.html
  * @since      File available since Release 1.0
  */
@@ -186,8 +186,8 @@ class Lexer
     {
 
         $this->defineOptions([
-            'indentStyle' => null,
-            'indentWidth' => null,
+            'indent_style' => null,
+            'indent_width' => null,
             'encoding'    => mb_internal_encoding(),
             'scans'       => [
                 'newLine', 'indent',
@@ -209,13 +209,13 @@ class Lexer
         ], $options);
 
         //Validate options
-        if (!in_array($this->options['indentStyle'], [null, self::INDENT_TAB, self::INDENT_SPACE]))
+        if (!in_array($this->options['indent_style'], [null, self::INDENT_TAB, self::INDENT_SPACE]))
             throw new RuntimeException(
                 "indentStyle needs to be null or one of the INDENT_* constants of the lexer"
             );
 
-        if (!is_null($this->options['indentWidth']) &&
-            (!is_int($this->options['indentWidth']) || $this->options['indentWidth'] < 1)
+        if (!is_null($this->options['indent_width']) &&
+            (!is_int($this->options['indent_width']) || $this->options['indent_width'] < 1)
         )
             throw new RuntimeException(
                 "indentWidth needs to be a integer above 0"
@@ -368,8 +368,8 @@ class Lexer
         $this->offset = 0;
         $this->level = 0;
 
-        $this->indentStyle = $this->options['indentStyle'];
-        $this->indentWidth = $this->options['indentWidth'];
+        $this->indentStyle = $this->options['indent_style'];
+        $this->indentWidth = $this->options['indent_width'];
 
         $this->lastPeekResult = null;
         $this->lastMatches = null;

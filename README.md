@@ -16,22 +16,6 @@ Tale Jade is the first complete and most powerful Jade implementation in PHP.
 
 ---
 
-**Update Time!**
-
-Tale Jade is receiving a larger update at this time which will bring in more stability, extensibility and better integration possibilities. I'm pretty busy right now, that's why it will take quite a while until it is finished.
-
-If you're starting a larger project right now, be assured that there will be API changes from 1.4 to 1.5.
-Your Jade files will render just as they did before, but if you add own filters or extend Tale Jade in another way, things might break with the update.
-
-If you know you've extended Tale Jade in 1.4 you might as well just stick to 1.4 (It's pretty stable and functional).
-
-If you want to take a look at what we're up to, check out the [compiler-enhancements branch](https://github.com/Talesoft/tale-jade/tree/compiler-enhancements). It contains the latest updates (It's not a working version yet, though!)
-
-If you want to help out, send PRs.
-
----
-
-
 ## Getting Started
 
 
@@ -107,7 +91,7 @@ To change this directory, use the `cachePath`-option
 ```php
 
 $renderer = new Jade\Renderer([
-    'cachePath' => '/your/absolute/cache/path'
+    'cache_path' => '/your/absolute/cache/path'
 ]);
 ```
 
@@ -120,7 +104,7 @@ To enable a cache that won't render the files on each call, use the `lifeTime` o
 ```php
 
 $renderer = new Jade\Renderer([
-    'lifeTime' => 3600 //Will cache the file for 3600 seconds (one hour)
+    'ttl' => 3600 //Will cache the file for 3600 seconds (one hour)
 ]);
 ```
 

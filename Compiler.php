@@ -19,9 +19,9 @@
  * @package    Tale\Jade
  * @author     Torben Koehn <tk@talesoft.io>
  * @author     Talesoft <info@talesoft.io>
- * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @copyright  Copyright (c) 2015 Torben Köhn (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.2
+ * @version    1.4.3
  * @link       http://jade.talesoft.io/docs/files/Compiler.html
  * @since      File available since Release 1.0
  */
@@ -90,9 +90,9 @@ use Tale\Jade\Parser\Node;
  * @package    Tale\Jade
  * @author     Torben Koehn <tk@talesoft.io>
  * @author     Talesoft <info@talesoft.io>
- * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @copyright  Copyright (c) 2015 Torben Köhn (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.2
+ * @version    1.4.3
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Compiler.html
  * @since      File available since Release 1.0
  */
@@ -217,13 +217,13 @@ class Compiler
      *
      * pretty:                      Use indentation and new-lines
      *                              or compile everything into a single line
-     * indentStyle:                 The character that is used for
+     * indent_style:                 The character that is used for
      *                              indentation (Space by default)
-     * indentWidth:                 The amount of characters to repeat for
+     * indent_width:                 The amount of characters to repeat for
      *                              indentation (Default 2 for 2-space-indentation)
-     * selfClosingTags:             The tags that don't need any closing in
+     * self_closing_tags:             The tags that don't need any closing in
      *                              HTML-style languages
-     * selfRepeatingAttributes:     The attributes that repeat their value to
+     * self_repeating_attributes:     The attributes that repeat their value to
      *                              set them to true in HTML-style languages
      * doctypes:                    The different doctypes you can use via the
      *                              "doctype"-directive [name => doctype-string]
@@ -231,31 +231,31 @@ class Compiler
      * xhtmlModes:                  The mode strings that compile XHTML-style
      * filters:                     The different filters you can use via the
      *                              ":<filterName>"-directive [name => callback]
-     * filterMap:                   The extension-to-filter-map for
+     * filter_map:                   The extension-to-filter-map for
      *                              include-filters [extension => filter]
-     * escapeSequences:             The escape-sequences that are possible in
+     * escape_sequences:             The escape-sequences that are possible in
      *                              scalar strings
-     * compileUncalledMixins:       Always compile all mixins or leave out
+     * compile_uncalled_mixins:       Always compile all mixins or leave out
      *                              those that aren't called?
-     * standAlone:                  Allows the rendered files to be called
+     * stand_alone:                  Allows the rendered files to be called
      *                              without any requirements
-     * allowImports:                Set to false to disable imports for this
+     * allow_imports:                Set to false to disable imports for this
      *                              compiler instance. Importing will throw an
      *                              exception. Great for demo-pages
      * defaultTag:                  The tag to default to for
      *                              class/id/attribute-initiated elements
      *                              (.abc, #abc, (abc))
-     * quoteStyle:                  The quote-style in the markup (default: ")
-     * replaceMixins:               Replaces mixins from top to bottom if they
+     * quote_style:                  The quote-style in the markup (default: ")
+     * replace_mixins:               Replaces mixins from top to bottom if they
      *                              have the same name. Allows duplicated mixin names.
-     * echoXmlDoctype:              Uses PHP's "echo" to for XML processing instructions
+     * echo_xml_doctype:              Uses PHP's "echo" to for XML processing instructions
      *                              This fixes problems with PHP's short open tags
      * paths:                       The paths to resolve paths in.
      *                              If none set, it will default to get_include_path()
      * extensions:                  The extensions for Jade files
      *                              (default: .jade and .jd)
-     * parserOptions:               The options for the parser if none given
-     * lexerOptions:                The options for the lexer if none given.
+     * parser_options:               The options for the parser if none given
+     * lexer_options:                The options for the lexer if none given.
      *
      *
      * @param array|null  $options an array of options
@@ -267,15 +267,15 @@ class Compiler
 
         $this->defineOptions([
             'pretty'                  => false,
-            'indentStyle'             => Lexer::INDENT_SPACE,
-            'indentWidth'             => 2,
-            'selfClosingTags'         => [
+            'indent_style'             => Lexer::INDENT_SPACE,
+            'indent_width'             => 2,
+            'self_closing_tags'         => [
                 'input', 'br', 'img', 'link',
                 'area', 'base', 'col', 'command',
                 'embed', 'hr', 'keygen', 'meta',
                 'param', 'source', 'track', 'wbr'
             ],
-            'selfRepeatingAttributes' => [
+            'self_repeating_attributes' => [
                 'selected', 'checked', 'disabled'
             ],
             'doctypes'                => [
@@ -290,7 +290,7 @@ class Compiler
                 'mobile'       => '<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.2//EN" "http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd">'
             ],
             'mode'                    => self::MODE_HTML,
-            'xhtmlModes' => ['default', 'transitional', 'strict', 'frameset', '1.1', 'basic', 'mobile'],
+            'xhtml_modes' => ['default', 'transitional', 'strict', 'frameset', '1.1', 'basic', 'mobile'],
             'filters'                 => [
                 'plain' => 'Tale\\Jade\\Filter::filterPlain',
                 'css'   => 'Tale\\Jade\\Filter::filterStyle',
@@ -309,7 +309,7 @@ class Compiler
                 'sass' => 'Tale\\Jade\\Filter::filterSass'
                 //TODO: What else?
             ],
-            'filterMap'               => [
+            'filter_map'               => [
                 'jade' => 'plain',
                 'css'  => 'css',
                 'js'   => 'js',
@@ -321,27 +321,27 @@ class Compiler
                 'sass' => 'sass',
                 'scss' => 'sass'
             ],
-            'escapeSequences'         => [
+            'escape_sequences'         => [
                 '\n' => "\n",
                 '\r' => "\r",
                 '\t' => "\t"
             ],
-            'compileUncalledMixins'   => false,
-            'standAlone'              => false,
-            'allowImports'            => true,
-            'defaultTag'              => 'div',
-            'quoteStyle'              => '"',
-            'escapeCharset'           => 'UTF-8',
-            'replaceMixins'           => false,
-            'echoXmlDoctype'          => defined('HHVM_VERSION'),
+            'compile_uncalled_mixins'   => false,
+            'stand_alone'              => false,
+            'allow_imports'            => true,
+            'default_tag'              => 'div',
+            'quote_style'              => '"',
+            'escape_charset'           => 'UTF-8',
+            'replace_mixins'           => false,
+            'echo_xml_doctype'          => defined('HHVM_VERSION'),
             'paths'                   => [],
             'extensions'              => ['.jd', '.jade'],
-            'parserOptions'           => [],
-            'lexerOptions'            => []
+            'parser_options'           => [],
+            'lexer_options'            => []
         ], $options);
 
-        $this->lexer = $lexer ? $lexer : new Lexer($this->options['lexerOptions']);
-        $this->parser = $parser ? $parser : new Parser($this->options['parserOptions'], $this->lexer);
+        $this->lexer = $lexer ?: new Lexer($this->options['lexer_options']);
+        $this->parser = $parser ?: new Parser($this->options['parser_options'], $this->lexer);
     }
 
     /**
@@ -479,7 +479,7 @@ class Compiler
         $mixins = $this->compileMixins();
 
         $helpers = '';
-        if ($this->options['standAlone']) {
+        if ($this->options['stand_alone']) {
 
             $helpers = file_get_contents(__DIR__.'/Compiler/functions.php')."\n?>\n";
             $helpers .= $this->createCode('namespace {');
@@ -488,7 +488,7 @@ class Compiler
         //Put everything together
         $phtml = implode('', [$helpers, $mixins, $phtml]);
 
-        if ($this->options['standAlone'])
+        if ($this->options['stand_alone'])
             $phtml .= $this->createCode('}');
 
         //Reset the files after compilation so that compileFile may resolve correctly
@@ -619,7 +619,7 @@ class Compiler
     protected function compileScalar($value, $inCode = false)
     {
 
-        $sequences = $this->options['escapeSequences'];
+        $sequences = $this->options['escape_sequences'];
 
         return $this->interpolate(trim(str_replace(array_keys($sequences), $sequences, $value), '\'"'), $inCode);
     }
@@ -737,7 +737,7 @@ class Compiler
                             : $subject;
 
                         if ($escapeType !== '!')
-                            $code = "htmlentities($code, \\ENT_QUOTES, '".$this->options['escapeCharset']."')";
+                            $code = "htmlentities($code, \\ENT_QUOTES, '".$this->options['escape_charset']."')";
 
                         $replacement = !$inCode ? $this->createShortCode($code) : '\'.('.$code.').\'';
                         break;
@@ -752,7 +752,7 @@ class Compiler
 
                         if ($escapeType === '!') {
 
-                            $code = 'htmlentities('.$this->exportScalar($code).', \\ENT_QUOTES, \''.$this->options['escapeCharset'].'\')';
+                            $code = 'htmlentities('.$this->exportScalar($code).', \\ENT_QUOTES, \''.$this->options['escape_charset'].'\')';
                             $code = !$inCode ? $this->createShortCode($code) : '\'.('.$code.').\'';
                         }
 
@@ -794,7 +794,7 @@ class Compiler
     {
 
         return $this->options['pretty']
-            ? str_repeat($this->options['indentStyle'], ($this->level + $offset) * $this->options['indentWidth'])
+            ? str_repeat($this->options['indent_style'], ($this->level + $offset) * $this->options['indent_width'])
             : '';
     }
 
@@ -944,10 +944,10 @@ class Compiler
 
             $this->options['mode'] = self::MODE_XML;
 
-            if ($this->options['echoXmlDoctype'])
+            if ($this->options['echo_xml_doctype'])
                 $value = "<?='$value'?>";
 
-        } else if (in_array($name, $this->options['xhtmlModes']))
+        } else if (in_array($name, $this->options['xhtml_modes']))
             $this->options['mode'] = self::MODE_XHTML;
         else
             $this->options['mode'] = self::MODE_HTML;
@@ -1032,7 +1032,7 @@ class Compiler
 
         foreach ($node->find('import') as $importNode) {
 
-            if (!$this->options['allowImports'])
+            if (!$this->options['allow_imports'])
                 $this->throwException(
                     'Imports are not allowed in this compiler instance',
                     $node
@@ -1060,16 +1060,16 @@ class Compiler
 
             $ext = pathinfo($path, \PATHINFO_EXTENSION);
 
-            if (empty($ext) && $node->filter && in_array($node->filter, $this->options['filterMap'], true)) {
+            if (empty($ext) && $node->filter && in_array($node->filter, $this->options['filter_map'], true)) {
 
                 //Get our extension from our filter map
-                $ext = array_search($node->filter, $this->options['filterMap']);
+                $ext = array_search($node->filter, $this->options['filter_map']);
             }
 
             if (!empty($ext) && (!in_array(".$ext", $this->options['extensions']) || $node->filter)) {
 
-                if (!$node->filter && isset($this->options['filterMap'][$ext]))
-                    $node->filter = $this->options['filterMap'][$ext];
+                if (!$node->filter && isset($this->options['filter_map'][$ext]))
+                    $node->filter = $this->options['filter_map'][$ext];
 
                 $fullPath = $this->resolvePath($path, ".$ext");
                 if (!$fullPath)
@@ -1241,7 +1241,7 @@ class Compiler
         //Save all mixins in $this->mixins for our mixinCalls to reference them
         foreach ($mixins as $mixinNode) {
 
-            if (isset($this->mixins[$mixinNode->name]) && !$this->options['replaceMixins'])
+            if (isset($this->mixins[$mixinNode->name]) && !$this->options['replace_mixins'])
                 $this->throwException(
                     "Duplicate mixin name $mixinNode->name",
                     $mixinNode
@@ -1308,7 +1308,7 @@ class Compiler
         foreach ($this->mixins as $name => $mixin) {
 
             //Don't compile the mixin if we dont use it (opt-out)
-            if (!$this->options['compileUncalledMixins'] && !in_array($name, $this->calledMixins, true))
+            if (!$this->options['compile_uncalled_mixins'] && !in_array($name, $this->calledMixins, true))
                 continue; //Skip compilation
 
             //Put the arguments together
@@ -1796,7 +1796,7 @@ class Compiler
 
             //No children, this is simple variable output (Escaped!)
             return $this->createShortCode(
-                "htmlentities(\${$node->name}, \\ENT_QUOTES, '".$this->options['escapeCharset']."')"
+                "htmlentities(\${$node->name}, \\ENT_QUOTES, '".$this->options['escape_charset']."')"
             );
         }
 
@@ -1864,11 +1864,6 @@ class Compiler
 
         foreach ($nodes as $idx => $node) {
 
-            if ($node->type === 'text' && !$this->options['pretty'] && $idx > 0) {
-
-                $phtml .= ' ';
-            }
-
             $phtml .= $this->newLine().$this->indent().$this->compileNode($node);
         }
         $this->level -= $indent ? 1 : 0;
@@ -1891,7 +1886,7 @@ class Compiler
         $phtml = '';
 
         if (!$node->tag)
-            $node->tag = $this->options['defaultTag'];
+            $node->tag = $this->options['default_tag'];
 
         $phtml .= "<{$node->tag}";
 
@@ -1992,13 +1987,13 @@ class Compiler
                 //In XML-mode, self-repeating attributes are automatically expanded
                 if ($anyXmlMode || $xmlMode && count($values) < 1) {
 
-                    if ($xhtmlMode && in_array($name, $this->options['selfRepeatingAttributes']))
+                    if ($xhtmlMode && in_array($name, $this->options['self_repeating_attributes']))
                         $values[] = $name;
                     else
                         $values[] = '';
                 }
 
-                $quot = $this->options['quoteStyle'];
+                $quot = $this->options['quote_style'];
                 $builder = '\\Tale\\Jade\\Compiler\\build_value';
 
                 //Handle specific attribute styles for HTML
@@ -2071,7 +2066,7 @@ class Compiler
         }
 
         $hasChildren = count($node->children) > 0;
-        $isSelfClosing = in_array($node->tag, $this->options['selfClosingTags']);
+        $isSelfClosing = in_array($node->tag, $this->options['self_closing_tags']);
 
         if (!$hasChildren && (!$htmlMode || !$isSelfClosing)) {
 
@@ -2115,7 +2110,7 @@ class Compiler
 
         if ($node->escaped)
             $text = $this->createShortCode(
-                'htmlentities('.$this->exportScalar($node->value, '\'', true).', \\ENT_QUOTES, \''.$this->options['escapeCharset'].'\')'
+                'htmlentities('.$this->exportScalar($node->value, '\'', true).', \\ENT_QUOTES, \''.$this->options['escape_charset'].'\')'
             );
         else
             $text = $this->interpolate($node->value);
@@ -2133,7 +2128,7 @@ class Compiler
     protected function compileExpression(Node $node)
     {
 
-        $code = $node->escaped ? 'htmlentities(%s, \\ENT_QUOTES, \''.$this->options['escapeCharset'].'\')' : '%s';
+        $code = $node->escaped ? 'htmlentities(%s, \\ENT_QUOTES, \''.$this->options['escape_charset'].'\')' : '%s';
 
         $value = rtrim(trim($node->value), ';');
 

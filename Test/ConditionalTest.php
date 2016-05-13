@@ -15,7 +15,7 @@ class ConditionalTest extends \PHPUnit_Framework_TestCase
     {
 
         $this->renderer = new Renderer([
-            'adapterOptions' => [
+            'adapter_options' => [
                 'path' => __DIR__.'/cache/conditionals'
             ],
             'pretty' => false,
@@ -96,8 +96,9 @@ JADE;
 
 
         $this->assertEquals(
-            '<div><?php $menuItems[] = [\'label\' => \'Issues\', \'url\' => [\'/issue/index\']]?><?php if (Yii::$app->user->isGuest) {?><?php $menuItems[] = [\'label\' => \'Login\', \'url\' => [\'/site/login\']]?><?php $menuItems[] = [\'label\' => \'Users\', \'url\' => [\'/user/index\']]?><?php } else {?><?php $menuItems[] = [\'label\' => \'Gii\', \'url\' => [\'/gii\']]?><?php }?></div>',
-            $this->renderer->compile($jade)
+            '<div><?php $menuItems[] = [\'label\' => \'Issues\',\'url\' => [\'/issue/index\']]?><?php if (Yii::$app->user->isGuest) {?><?php $menuItems[] = [\'label\' => \'Login\',\'url\' => [\'/site/login\']]?><?php $menuItems[] = [\'label\' => \'Users\', \'url\' => [\'/user/index\']]?><?php } else {?><?php $menuItems[] = [\'label\' => \'Gii\', \'url\' => [\'/gii\']]?><?php }?></div>',
+            $this->renderer->compile($jade),
+            '2-spaces'
         );
 
 
@@ -117,8 +118,9 @@ div
 JADE;
 
         $this->assertEquals(
-            '<div><?php $menuItems[] = [\'label\' => \'Issues\', \'url\' => [\'/issue/index\']]?><?php if (Yii::$app->user->isGuest) {?><?php $menuItems[] = [\'label\' => \'Login\', \'url\' => [\'/site/login\']]?><?php $menuItems[] = [\'label\' => \'Users\', \'url\' => [\'/user/index\']]?><?php } else {?><?php $menuItems[] = [\'label\' => \'Gii\', \'url\' => [\'/gii\']]?><?php }?></div>',
-            $this->renderer->compile($jade)
+            '<div><?php $menuItems[] = [\'label\' => \'Issues\',\'url\' => [\'/issue/index\']]?><?php if (Yii::$app->user->isGuest) {?><?php $menuItems[] = [\'label\' => \'Login\',\'url\' => [\'/site/login\']]?><?php $menuItems[] = [\'label\' => \'Users\', \'url\' => [\'/user/index\']]?><?php } else {?><?php $menuItems[] = [\'label\' => \'Gii\', \'url\' => [\'/gii\']]?><?php }?></div>',
+            $this->renderer->compile($jade),
+            '4-spaces'
         );
 
 
@@ -139,8 +141,9 @@ div
 ";
 
         $this->assertEquals(
-            '<div><?php $menuItems[] = [\'label\' => \'Issues\', \'url\' => [\'/issue/index\']]?><?php if (Yii::$app->user->isGuest) {?><?php $menuItems[] = [\'label\' => \'Login\', \'url\' => [\'/site/login\']]?><?php $menuItems[] = [\'label\' => \'Users\', \'url\' => [\'/user/index\']]?><?php } else {?><?php $menuItems[] = [\'label\' => \'Gii\', \'url\' => [\'/gii\']]?><?php }?></div>',
-            $this->renderer->compile($jade)
+            '<div><?php $menuItems[] = [\'label\' => \'Issues\',\'url\' => [\'/issue/index\']]?><?php if (Yii::$app->user->isGuest) {?><?php $menuItems[] = [\'label\' => \'Login\',\'url\' => [\'/site/login\']]?><?php $menuItems[] = [\'label\' => \'Users\', \'url\' => [\'/user/index\']]?><?php } else {?><?php $menuItems[] = [\'label\' => \'Gii\', \'url\' => [\'/gii\']]?><?php }?></div>',
+            $this->renderer->compile($jade),
+            'tabs'
         );
     }
 
@@ -178,7 +181,7 @@ JADE;
 
 
         $this->assertEquals(
-            '<?php if ($something):?><p>Do something</p><?php endif;?><?php if ($something && $somethingElse) {?><p>Do some random stuff</p><?php }?><?php if ($something && $somethingElse) {echo "No jade handling here"; } $array = ["a","b""c", "d","e", "f", "g", "h"];?><p>and it goes on normally...</p>',
+            '<?php if ($something):?><p>Do something</p><?php endif;?><?php if ($something && $somethingElse) {?><p>Do some random stuff</p><?php }?><?php if ($something && $somethingElse) {echo "No jade handling here";}$array = ["a","b""c", "d","e", "f","g","h"];?><p>and it goes on normally...</p>',
             $this->renderer->compile($jade)
         );
     }

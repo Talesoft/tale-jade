@@ -16,11 +16,11 @@ class AttributeTest extends \PHPUnit_Framework_TestCase
     {
 
         $this->renderer = new Renderer([
-            'adapterOptions' => [
+            'adapter_options' => [
                 'path' => __DIR__.'/cache/attributes'
             ],
-            'compilerOptions' => [
-                'echoXmlDoctype' => false
+            'compiler_options' => [
+                'echo_xml_doctype' => false
             ],
             'pretty' => false,
             'paths' => [__DIR__.'/views/attributes']

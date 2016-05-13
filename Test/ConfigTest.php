@@ -36,7 +36,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     public function testRendererForwardsOptionsToLexer($option, $value)
     {
 
-        $renderer = new Renderer(['lexerOptions' => [$option => $value]]);
+        $renderer = new Renderer(['lexer_options' => [$option => $value]]);
 
         $this->assertEquals($value, $renderer->getCompiler()->getParser()->getLexer()->getOption($option));
     }
@@ -47,9 +47,9 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         return [
             ['paths', ['/a', '/b', '/c']],
             ['pretty', true],
-            ['indentStyle', '-'],
-            ['indentWidth', 8],
-            ['standAlone', true],
+            ['indent_style', '-'],
+            ['indent_width', 8],
+            ['stand_alone', true],
             ['extensions', ['.a', '.b', '.c']],
             ['mode', Compiler::MODE_XHTML]
         ];
@@ -59,8 +59,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     {
 
         return [
-            ['indentWidth', 8],
-            ['indentStyle', "\t"]
+            ['indent_width', 8],
+            ['indent_style', "\t"]
         ];
     }
 }

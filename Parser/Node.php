@@ -18,9 +18,9 @@
  * @package    Tale\Jade\Parser
  * @author     Torben Koehn <tk@talesoft.io>
  * @author     Talesoft <info@talesoft.io>
- * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @copyright  Copyright (c) 2015 Torben Köhn (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.2
+ * @version    1.4.3
  * @link       http://jade.talesoft.io/docs/files/Parser.Node.html
  * @since      File available since Release 1.0
  */
@@ -38,9 +38,9 @@ namespace Tale\Jade\Parser;
  * @package    Tale\Jade\Parser
  * @author     Torben Koehn <tk@talesoft.io>
  * @author     Talesoft <info@talesoft.io>
- * @copyright  Copyright (c) 2015 Talesoft (http://talesoft.io)
+ * @copyright  Copyright (c) 2015 Torben Köhn (http://talesoft.io)
  * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.2
+ * @version    1.4.3
  * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Parser.Node.html
  * @since      File available since Release 1.0
  */
@@ -97,9 +97,7 @@ class Node
      * It can be appended to any node after that
      *
      * The type can be any kind of string
-     *
-     * @todo Maybe switch to privates above?
-     *
+     * 
      * @param string   $type   the type of this node
      * @param int|null $line   the line at which we found this node
      * @param int|null $offset the offset in a line we found this node at

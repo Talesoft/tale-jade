@@ -15,7 +15,7 @@ class InterpolationTest extends \PHPUnit_Framework_TestCase
     {
 
         $this->renderer = new Renderer([
-            'adapterOptions' => [
+            'adapter_options' => [
                 'path' => __DIR__.'/cache/interpolation'
             ],
             'pretty' => false,
@@ -100,6 +100,6 @@ class InterpolationTest extends \PHPUnit_Framework_TestCase
     public function testIeConditionals()
     {
 
-        $this->assertEquals('<!--[if IE8]><script src="ie8.js"></script> <![endif]-->', $this->renderer->compile("<!--[if IE8]>\nscript(src='ie8.js')\n<![endif]-->"));
+        $this->assertEquals('<!--[if IE8]><script src="ie8.js"></script><![endif]-->', $this->renderer->compile("<!--[if IE8]>\nscript(src='ie8.js')\n<![endif]-->"));
     }
 }
