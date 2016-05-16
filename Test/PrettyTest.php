@@ -45,6 +45,12 @@ class PrettyTest extends \PHPUnit_Framework_TestCase
       text that will just span
       over as many lines as it fucking likes!
     </p>
+    <h2>
+      A node with a single zero
+    </h2>
+    <p>
+      0
+    </p>
     <script src="/some-script.css"></script>
   </body>
 </html>
