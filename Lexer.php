@@ -950,7 +950,7 @@ class Lexer
 
             $value = trim($this->getMatch(1));
 
-            if (empty($value))
+            if ($value === '')
                 continue;
 
             $token['value'] = $value;
