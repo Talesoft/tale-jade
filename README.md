@@ -2,6 +2,8 @@
 
 # Tale Jade for PHP
 
+[![Join the chat at https://gitter.im/Talesoft/tale-jade](https://badges.gitter.im/Talesoft/tale-jade.svg)](https://gitter.im/Talesoft/tale-jade?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 
 [![GitHub release](https://img.shields.io/github/release/talesoft/tale-jade.svg?style=flat-square)](https://github.com/Talesoft/tale-jade) [![Travis](https://img.shields.io/travis/Talesoft/tale-jade.svg?style=flat-square)](https://travis-ci.org/Talesoft/tale-jade) [![Packagist](https://img.shields.io/packagist/dt/talesoft/tale-jade.svg?style=flat-square)](https://packagist.org/packages/talesoft/tale-jade) [![HHVM](https://img.shields.io/hhvm/talesoft/tale-jade.svg?style=flat-square)](https://travis-ci.org/Talesoft/tale-jade) [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/Talesoft/tale-jade/blob/master/LICENSE.md)
 
