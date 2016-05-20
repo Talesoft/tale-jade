@@ -1129,7 +1129,7 @@ class Lexer
 
         foreach ($this->scanToken(
             'block',
-            'block(?:[\t ]+(?<mode>append|prepend|replace))?(?:[\t ]+(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*))?'
+            'block((?:[\t ]+(?<mode>append|prepend|replace))?(?:[\t ]+(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*))|[\t \n])'
         ) as $token) {
 
             yield $token;

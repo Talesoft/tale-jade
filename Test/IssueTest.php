@@ -128,4 +128,10 @@ JADE;
 
         $this->assertEquals('<div class="blogentry" itemscope itemtype="http://schema.org/BlogPosting"></div>', $this->renderer->compile('.blogentry(itemscope itemtype="http://schema.org/BlogPosting")'));
     }
+
+    public function testIssue95()
+    {
+
+        $this->assertEquals('<blockquote></blockquote>', $this->renderer->compile('blockquote'));
+    }
 }
