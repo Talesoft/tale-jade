@@ -134,4 +134,13 @@ JADE;
 
         $this->assertEquals('<blockquote></blockquote>', $this->renderer->compile('blockquote'));
     }
+
+    public function testIssue88()
+    {
+
+        $this->assertEquals('<some-tag></some-tag><some-other-tag></some-other-tag>', $this->renderer->compile("some-tag \nsome-other-tag"));
+        $this->assertEquals('<some-tag></some-tag><some-other-tag></some-other-tag>', $this->renderer->compile("some-tag\t\nsome-other-tag"));
+        $this->assertEquals('<some-tag></some-tag><some-other-tag></some-other-tag>', $this->renderer->compile("some-tag  \nsome-other-tag"));
+        $this->assertEquals('<some-tag></some-tag><some-other-tag></some-other-tag>', $this->renderer->compile("some-tag \t \nsome-other-tag"));
+    }
 }

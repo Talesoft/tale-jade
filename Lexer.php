@@ -359,8 +359,8 @@ class Lexer
     {
 
         $this->input = rtrim(str_replace([
-                "\r", "\0"
-            ], '', $input))."\n";
+            "\r", "\0"
+        ], '', $input))."\n";
         $this->length = $this->strlen($this->input);
         $this->position = 0;
 
@@ -941,17 +941,15 @@ class Lexer
      * Scans for text until the end of the current line
      * and yields a <text>-token if found.
      *
+     * @param bool $escaped
      * @return \Generator
      */
     protected function scanText($escaped = false)
     {
 
-        foreach ($this->scanToken('text', "([^\n]*)") as $token) {
+        foreach ($this->scanToken('text', "([^\n]*)?") as $token) {
 
             $value = trim($this->getMatch(1));
-
-            if ($value === '')
-                continue;
 
             $token['value'] = $value;
             $token['escaped'] = $escaped;
@@ -1129,7 +1127,7 @@ class Lexer
 
         foreach ($this->scanToken(
             'block',
-            'block((?:[\t ]+(?<mode>append|prepend|replace))?(?:[\t ]+(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*))|[\t \n])'
+            'block((?:[\t ]+(?<mode>append|prepend|replace))?(?:[\t ]+(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*))|[\t ]*\n)'
         ) as $token) {
 
             yield $token;

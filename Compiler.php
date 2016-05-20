@@ -1864,6 +1864,10 @@ class Compiler
 
         foreach ($nodes as $idx => $node) {
 
+            // Skip empty text lines completely
+            if ($node->type === 'text' && trim($node->value) === '')
+                continue;
+
             $phtml .= $this->newLine().$this->indent().$this->compileNode($node);
         }
         $this->level -= $indent ? 1 : 0;
@@ -2108,6 +2112,7 @@ class Compiler
     protected function compileText(Node $node)
     {
 
+        //Dont print empty text
         if ($node->escaped)
             $text = $this->createShortCode(
                 'htmlentities('.$this->exportScalar($node->value, '\'', true).', \\ENT_QUOTES, \''.$this->options['escape_charset'].'\')'
