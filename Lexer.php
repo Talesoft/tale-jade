@@ -1511,7 +1511,7 @@ class Lexer
     protected function scanTag()
     {
 
-        foreach ($this->scanToken('tag', '(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*)', 'i') as $token) {
+        foreach ($this->scanToken('tag', '(?<name>(([a-zA-Z_][a-zA-Z0-9\-_]*)?[\?!#]\{[^\}]+\}([a-zA-Z_][a-zA-Z0-9\-_]*)?|[a-zA-Z_][a-zA-Z0-9\-_]*))', 'i') as $token) {
 
             yield $token;
 

@@ -1889,10 +1889,9 @@ class Compiler
 
         $phtml = '';
 
-        if (!$node->tag)
-            $node->tag = $this->options['default_tag'];
+        $tag = $this->interpolate($node->tag ?: $this->options['default_tag']);
 
-        $phtml .= "<{$node->tag}";
+        $phtml .= "<{$tag}";
 
         $htmlMode = $this->isHtml();
         $xhtmlMode = $this->isXhtml();
@@ -2070,14 +2069,14 @@ class Compiler
         }
 
         $hasChildren = count($node->children) > 0;
-        $isSelfClosing = in_array($node->tag, $this->options['self_closing_tags']);
+        $isSelfClosing = in_array($tag, $this->options['self_closing_tags']);
 
         if (!$hasChildren && (!$htmlMode || !$isSelfClosing)) {
 
             if ($anyHtmlMode && !$isSelfClosing) {
 
                 //Force closed tag in HTML
-                $phtml .= "></{$node->tag}>";
+                $phtml .= "></{$tag}>";
 
                 return $phtml;
             }
@@ -2093,7 +2092,7 @@ class Compiler
             return $phtml;
 
         $phtml .= $this->compileChildren($node->children);
-        $phtml .= $this->newLine().$this->indent()."</{$node->tag}>";
+        $phtml .= $this->newLine().$this->indent()."</{$tag}>";
 
         return $phtml;
     }
