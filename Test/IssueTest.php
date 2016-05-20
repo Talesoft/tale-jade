@@ -142,5 +142,10 @@ JADE;
         $this->assertEquals('<some-tag></some-tag><some-other-tag></some-other-tag>', $this->renderer->compile("some-tag\t\nsome-other-tag"));
         $this->assertEquals('<some-tag></some-tag><some-other-tag></some-other-tag>', $this->renderer->compile("some-tag  \nsome-other-tag"));
         $this->assertEquals('<some-tag></some-tag><some-other-tag></some-other-tag>', $this->renderer->compile("some-tag \t \nsome-other-tag"));
+
+        $this->assertEquals('<i class="fa fa-fw fa-gear">Some text</i>', $this->renderer->compile('i.fa.fa-fw.fa-gear Some text'));
+        $this->assertEquals('<i class="fa fa-fw fa-gear"> Some text</i>', $this->renderer->compile('i.fa.fa-fw.fa-gear  Some text'));
+        $this->assertEquals('<i class="fa fa-fw fa-gear">Some text</i>', $this->renderer->compile("i.fa.fa-fw.fa-gear\n\t| Some text"));
+        $this->assertEquals('<i class="fa fa-fw fa-gear"> Some text</i>', $this->renderer->compile("i.fa.fa-fw.fa-gear\n\t|  Some text"));
     }
 }

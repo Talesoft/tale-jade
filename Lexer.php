@@ -947,9 +947,9 @@ class Lexer
     protected function scanText($escaped = false)
     {
 
-        foreach ($this->scanToken('text', "([^\n]*)?") as $token) {
+        foreach ($this->scanToken('text', "[ ]?([^\n]*)?") as $token) {
 
-            $value = trim($this->getMatch(1));
+            $value = trim($this->getMatch(1), "\t");
 
             $token['value'] = $value;
             $token['escaped'] = $escaped;
