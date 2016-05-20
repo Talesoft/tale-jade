@@ -147,10 +147,10 @@ class File extends AdapterBase
 
         $outputPath = rtrim($this->getOption('path'), '/\\').'/'.ltrim($path.$this->getOption('extension'), '/\\');
 
-        $render = function ($__path, $__args) {
+        $render = function ($__path, $__arguments) {
 
             ob_start();
-            extract($__args);
+            extract($__arguments);
             include($__path);
 
             return ob_get_clean();

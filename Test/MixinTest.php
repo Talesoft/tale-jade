@@ -76,4 +76,10 @@ class MixinTest extends \PHPUnit_Framework_TestCase
             ['name' => 'Item 8', 'id' => 58],
         ]]));
     }
+
+    public function testScoping()
+    {
+
+        $this->assertEquals('<h1>Parent Mixin</h1><div class="parent-block"><h2>Child Mixin</h2><div class="child-block"><span>This is test content</span><span>This content is fed from outside</span></div></div>', $this->renderer->render('scoping', ['fedFromOutside' => 'This content is fed from outside']));
+    }
 }

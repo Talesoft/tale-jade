@@ -1,0 +1,21 @@
+
+mixin a
+    h1 Parent Mixin
+    .parent-block
+        block
+
+
+mixin b
+    h2 Child Mixin
+    .child-block
+        block
+
+
+
+
+$testVar = 'This is test content'
+
++a
+    +b
+        span= $testVar
+        span= $fedFromOutside
