@@ -85,7 +85,7 @@ class Filter
      * This will create working PHP expressions.
      *
      * If <?php or ? > are already found, they will be trimmed and re-appended
-     * correctly to avoid failing nested expressions (<?php cant be used
+     * correctly to avoid failing nested expressions (<?php can't be used
      * _inside_ <?php)
      *
      * @param Node   $node    the node to be wrapped
