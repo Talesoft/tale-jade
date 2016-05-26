@@ -965,7 +965,7 @@ class Parser
 
         if ($this->inMixin)
             $this->throwException(
-                "Failed to define mixin: Mixins cant be nested"
+                "Failed to define mixin: Mixins can't be nested"
             );
 
         $node = $this->createNode('mixin', $token);
