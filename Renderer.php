@@ -307,7 +307,7 @@ class Renderer
      * @param string $path The path to the jade file
      *
      * @return mixed|string the compiled PHTML
-     * @throws \Exception when the file wasnt found or the compilation,
+     * @throws \Exception when the file couldn't found or the compilation,
      *                    lexing or parsing failed
      */
     public function compileFile($path)
@@ -323,7 +323,7 @@ class Renderer
      * the shortest and easiest way to get Jade running
      * in your project
      *
-     * Notice that if your file wasn't found, you need to
+     * Notice that if your file couldn't found, you need to
      * pass _relative_ paths.
      *
      * The paths will be relative from the compiler:paths option

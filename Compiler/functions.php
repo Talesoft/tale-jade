@@ -26,6 +26,8 @@ namespace Tale\Jade\Compiler {
          */
         function build_value($value, $quoteStyle, $escaped)
         {
+            if (method_exists($value, '__toString'))
+                return $quoteStyle.(string)$value.$quoteStyle;
 
             if (is_object($value))
                 $value = (array)$value;

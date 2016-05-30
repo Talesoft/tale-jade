@@ -527,7 +527,7 @@ class Compiler
 
         if (!$fullPath)
             throw new \Exception(
-                "File $path wasnt found in ".
+                "File $path could not be found in ".
                 implode(', ', $this->options['paths']).
                 ", Extensions: ".implode(', ', $this->options['extensions']).
                 ", Include path: ".get_include_path()
@@ -1754,7 +1754,7 @@ class Compiler
 
             if (count($node->children))
                 $this->throwException(
-                    'A variable node with attributes cant have any children',
+                    "A variable node with attributes can't have any children",
                     $node
                 );
 

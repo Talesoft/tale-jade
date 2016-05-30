@@ -128,7 +128,7 @@ class File extends AdapterBase
      *
      * @return string the rendered markup
      * @throws \Exception when the directory can't be created
-     * @throws \Tale\Jade\Compiler\Exception when the file to render wasnt found
+     * @throws \Tale\Jade\Compiler\Exception when the file to render couldn't found
      */
     public function render($path, array $args = null)
     {
