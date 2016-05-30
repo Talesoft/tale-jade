@@ -336,6 +336,12 @@ class Compiler
             'echo_xml_doctype'          => defined('HHVM_VERSION'),
             'paths'                   => [],
             'extensions'              => ['.jd', '.jade'],
+            'ignored_scope_variables'  => [
+                'GLOBALS', '_SERVER', '_GET', '_POST',
+                '_FILES', '_REQUEST', '_SESSION', '_ENV', '_COOKIE',
+                'php_errormsg', 'HTTP_RAW_POST_DATA', 'http_response_header',
+                'argc', 'argv', '__scope', '__arguments', '__ignore', '__block'
+            ],
             'parser_options'           => [],
             'lexer_options'            => []
         ], $options);
@@ -1302,7 +1308,6 @@ class Compiler
             return '';
 
         $phtml = '';
-        $phtml .= $this->createCode('$__args = isset($__args) ? $__args : [];').$this->newLine();
         $phtml .= $this->createCode('$__mixins = [];').$this->newLine();
 
         foreach ($this->mixins as $name => $mixin) {
@@ -1335,11 +1340,9 @@ class Compiler
             }
 
             $phtml .= $this->createCode(
-                    '$__mixins[\''.$name.'\'] = function(array $__arguments) use($__args, $__mixins) {
+                    '$__mixins[\''.$name.'\'] = function(array $__arguments, array $__scope) {
                         $__defaults = '.$this->exportArray($args).';
-                        $__arguments = array_replace($__defaults, $__arguments);
-                        $__args = array_replace($__args, $__arguments);
-                        extract($__args);
+                        extract(array_replace($__scope, array_replace($__defaults, $__arguments)));
                     '
                 ).$this->newLine();
 
@@ -1380,9 +1383,8 @@ class Compiler
 
             $hasBlock = true;
             $phtml = $this->createCode(
-                '$__block = function(array $__arguments = []) use($__args, $__mixins) {
-                    extract($__args);
-                    extract($__arguments);
+                '$__block = function(array $__scope) {
+                    extract($__scope);
                 '
             ).$this->newLine();
             $phtml .= $this->compileChildren($node->children, false).$this->newLine();
@@ -1442,12 +1444,16 @@ class Compiler
         }
 
         $phtml .= (count($node->children) > 0 ? $this->indent() : '').$this->createCode(
-                '$__mixinCallArgs = '.$this->exportArray($args).';'.($hasBlock ? '
-            $__mixinCallArgs[\'__block\'] = isset($__block) ? $__block : null;
-            ' : '').'
-            call_user_func($__mixins[\''.$name.'\'], $__mixinCallArgs);
-            unset($__mixinCallArgs);
-            unset($__block);'
+                '$__ignore = array_flip('.$this->exportArray($this->options['ignored_scope_variables']).');
+                $__scope = array_diff_key(array_replace(get_defined_vars(), $__ignore), $__ignore);   
+                $__mixinCallArgs = '.$this->exportArray($args).';'.($hasBlock ? '
+                $__mixinCallArgs[\'__block\'] = isset($__block) ? $__block : null;
+                ' : '').'
+                call_user_func($__mixins[\''.$name.'\'], $__mixinCallArgs, $__scope);
+                unset($__ignore);
+                unset($__scope);
+                unset($__mixinCallArgs);
+                '.($hasBlock ? 'unset($__block);' : '')
             ).$this->newLine();
 
         return $phtml;
@@ -1469,7 +1475,15 @@ class Compiler
         $name = $node->name;
 
         if (!$name)
-            return $this->createShortCode('isset($__block) && $__block instanceof \Closure ? $__block(array_replace($__args, $__arguments)) : \'\'');
+            return $this->createCode(
+                '$__ignore = array_flip('.$this->exportArray($this->options['ignored_scope_variables']).');
+                $__scope = array_diff_key(array_replace(get_defined_vars(), $__ignore), $__ignore); 
+
+                echo isset($__block) && $__block instanceof \Closure ? $__block($__scope) : \'\';
+                
+                unset($__ignore);
+                unset($__scope);'
+            );
 
         //At this point the code knows this block only, since handleBlock took care of the blocks previously
         return $this->compileChildren($node->children, false);

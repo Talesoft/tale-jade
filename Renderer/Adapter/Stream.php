@@ -128,11 +128,11 @@ class Stream extends AdapterBase
         $url = $this->getOption('scheme').'://data;'.$compiled;
 
 
-        $render = function ($__dataUrl, $__args) {
+        $render = function ($__path, $__arguments) {
 
             ob_start();
-            extract($__args);
-            include($__dataUrl);
+            extract($__arguments);
+            include($__path);
 
             return ob_get_clean();
         };
