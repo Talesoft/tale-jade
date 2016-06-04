@@ -1,10 +1,8 @@
 
-
 # Tale Jade for PHP
 
 
-[![GitHub release](https://img.shields.io/github/release/talesoft/tale-jade.svg?style=flat-square)](https://github.com/Talesoft/tale-jade) [![Travis](https://img.shields.io/travis/Talesoft/tale-jade.svg?style=flat-square)](https://travis-ci.org/Talesoft/tale-jade) [![Packagist](https://img.shields.io/packagist/dt/talesoft/tale-jade.svg?style=flat-square)](https://packagist.org/packages/talesoft/tale-jade) [![HHVM](https://img.shields.io/hhvm/talesoft/tale-jade.svg?style=flat-square)](https://travis-ci.org/Talesoft/tale-jade) [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/Talesoft/tale-jade/blob/master/LICENSE.md)
-[![Gitter](https://img.shields.io/gitter/room/Talesoft/tale-jade.svg?maxAge=2592000?style=flat-square)](https://gitter.im/Talesoft/tale-jade)
+[![GitHub release](https://img.shields.io/github/release/talesoft/tale-jade.svg?style=flat-square)](https://github.com/Talesoft/tale-jade) [![Travis](https://img.shields.io/travis/Talesoft/tale-jade.svg?style=flat-square)](https://travis-ci.org/Talesoft/tale-jade) [![Packagist](https://img.shields.io/packagist/dt/talesoft/tale-jade.svg?style=flat-square)](https://packagist.org/packages/talesoft/tale-jade) [![HHVM](https://img.shields.io/hhvm/talesoft/tale-jade.svg?style=flat-square)](https://travis-ci.org/Talesoft/tale-jade) [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/Talesoft/tale-jade/blob/master/LICENSE.md) [![Gitter](https://img.shields.io/gitter/room/Talesoft/tale-jade.svg?maxAge=2592000?style=flat-square)](https://gitter.im/Talesoft/tale-jade)
 
 > **Finally a fully-functional, complete and clean port of the Jade language to PHP**
 >
@@ -87,7 +85,7 @@ We show you how to add alternative search paths further in the **Basic configura
 
 When the Jade-file gets rendered, a `./cache/views`-directory is created automatically and the compiled PHTML will be stored in that directory.
 
-To change this directory, use the `cachePath`-option
+To change this directory, use the `cache_path`-option
 
 ```php
 
@@ -99,7 +97,7 @@ $renderer = new Jade\Renderer([
 
 The Jade-file will now be rendered to that directory on each call.
 
-To enable a cache that won't render the files on each call, use the `lifeTime` option of the `file`-adapter
+To enable a cache that won't render the files on each call, use the `ttl` option of the `file`-adapter
 
 
 ```php

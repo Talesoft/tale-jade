@@ -148,4 +148,10 @@ JADE;
         $this->assertEquals('<i class="fa fa-fw fa-gear">Some text</i>', $this->renderer->compile("i.fa.fa-fw.fa-gear\n\t| Some text"));
         $this->assertEquals('<i class="fa fa-fw fa-gear"> Some text</i>', $this->renderer->compile("i.fa.fa-fw.fa-gear\n\t|  Some text"));
     }
+
+    public function testIssue105()
+    {
+
+        $this->assertEquals('<script id="stylmock" data-items="globals" data-project="wdg_inv_2016_olya" data-save_path="c:\\\\Apache24\\\\htdocs\\\\romero\\\\wdg\\\\wdg_html\\\\wp-content\\\\themes\\\\invite2016\\\\styles.css"></script>', $this->renderer->compile("script#stylmock(data-items='globals' data-project='wdg_inv_2016_olya' data-save_path='c:\\\\Apache24\\\\htdocs\\\\romero\\\\wdg\\\\wdg_html\\\\wp-content\\\\themes\\\\invite2016\\\\styles.css')"));
+    }
 }

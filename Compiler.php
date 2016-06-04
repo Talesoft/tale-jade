@@ -627,7 +627,12 @@ class Compiler
 
         $sequences = $this->options['escape_sequences'];
 
-        return $this->interpolate(trim(str_replace(array_keys($sequences), $sequences, $value), '\'"'), $inCode);
+        foreach ($sequences as $seq => $repl) {
+            $value = preg_replace('/(?<!\\\\)'.preg_quote($seq, '/').'/', $repl, $value);
+        }
+
+
+        return $this->interpolate(trim($value, '\'"'), $inCode);
     }
 
     /**
