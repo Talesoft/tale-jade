@@ -2,6 +2,7 @@
 
 namespace Tale\Test\Jade;
 
+use Tale\Jade\Compiler\Exception;
 use Tale\Jade\Renderer;
 
 class MixinTest extends \PHPUnit_Framework_TestCase
@@ -81,5 +82,26 @@ class MixinTest extends \PHPUnit_Framework_TestCase
     {
 
         $this->assertEquals('<h1>Parent Mixin</h1><div class="parent-block"><h2>Child Mixin</h2><div class="child-block"><span>This is test content</span><span>This content is fed from outside</span></div></div>', $this->renderer->render('scoping', ['fedFromOutside' => 'This content is fed from outside']));
+    }
+
+    public function testDuplicateWithoutOverwrite()
+    {
+
+        $this->setExpectedException(Exception::class);
+        $this->renderer->render('duplicate');
+    }
+
+    public function testDuplicateWithOverwrite()
+    {
+
+        $this->renderer->getCompiler()->setOption('replace_mixins', true);
+        $this->assertEquals('<p>Testing</p>', $this->renderer->render('duplicate'));
+    }
+
+    public function testDuplicateInInclude()
+    {
+
+        $this->renderer->getCompiler()->setOption('replace_mixins', true);
+        $this->assertEquals('<p>Testing</p>', $this->renderer->render('duplicate-in-include'));
     }
 }

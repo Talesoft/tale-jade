@@ -1257,6 +1257,8 @@ class Compiler
                     "Duplicate mixin name $mixinNode->name",
                     $mixinNode
                 );
+            else if (isset($this->mixins[$mixinNode->name]))
+                $this->mixins[$mixinNode->name]->parent->remove($this->mixins[$mixinNode->name]);
 
             $this->mixins[$mixinNode->name] = $mixinNode;
         }
