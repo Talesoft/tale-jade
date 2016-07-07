@@ -4,18 +4,18 @@
     "keywords": ["template", "dialect", "html", "views", "presentation", "jade", "html", "php", "phtml"],
     "description": "A clean, lightweight and easy-to-use templating engine for PHP based on Jade/Pug",
     "license": "MIT",
-    "homepage": "http://jade.talesoft.io",
+    "homepage": "http://jade.talesoft.codes",
     "authors": [
         {
             "name": "Torben Koehn",
-            "email": "tk@talesoft.io"
+            "email": "torben@talesoft.codes"
         }
     ],
     "support": {
-        "email": "info@talesoft.io",
+        "email": "torben@talesoft.codes",
         "issues": "https://github.com/talesoft/tale-jade/issues",
         "source": "https://github.com/talesoft/tale-jade",
-        "docs": "http://jade.talesoft.io/docs"
+        "docs": "http://jade.talesoft.codes/docs"
     },
     "minimum-stability": "stable",
     "require": {
