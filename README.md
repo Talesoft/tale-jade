@@ -162,45 +162,45 @@ h1= $title
 
 ## Supported features
 
-We support every single feature the [original Jade implementation](http://jade-lang.com/reference/) supports!
-This always has been and will always be our main target.
+Tale Jade supports every single feature the [original Jade implementation](http://jade-lang.com/reference/) supports!
+This always has been and will always be the main target.
 
 **But why stop there?**
 PHP has it's own features that are surely different from JavaScript's.
-By utilizing those features we aim to bring in more, compatible features into the language to make the fastest template development ever possible!
+By utilizing those features it aims to bring in more, compatible features into the language to make the fastest template development ever possible!
 
-**You can try features and see a bunch of examples on our [sandbox site](http://sandbox.jade.talesoft.io)**
+**You can try features and see a bunch of examples on my [sandbox site](http://sandbox.jade.talesoft.codes)**
 
 ### Supported official Node.js Jade Features
 
-- [Tags](http://sandbox.jade.talesoft.io)
-- [Classes](http://sandbox.jade.talesoft.io?example=classes)
-- [IDs](http://sandbox.jade.talesoft.io?example=ids)
-- [Doctypes](http://sandbox.jade.talesoft.io?example=html-5)
-- [Attributes](http://sandbox.jade.talesoft.io?example=attributes)
-- [Mixins](http://sandbox.jade.talesoft.io?example=mixins)
-- [Blocks](http://sandbox.jade.talesoft.io?example=blocks)
-- [Expressions](http://sandbox.jade.talesoft.io?example=expressions)
-- [Escaping](http://sandbox.jade.talesoft.io?example=escaping)
-- [Block Expansion](http://sandbox.jade.talesoft.io?example=block-expansion)
-- [Assignments](http://sandbox.jade.talesoft.io?example=assignments)
-- [Comments](http://sandbox.jade.talesoft.io?example=comments)
-- [Code](http://sandbox.jade.talesoft.io?example=code)
-- [Inheritance](http://sandbox.jade.talesoft.io?example=inheritance)
-- [Includes](http://sandbox.jade.talesoft.io?example=includes)
-- [Conditionals](http://sandbox.jade.talesoft.io?example=conditionals)
-- [Loops](http://sandbox.jade.talesoft.io?example=loops)
-- [Interpolation](http://sandbox.jade.talesoft.io?example=interpolation)
-- [Filters](http://sandbox.jade.talesoft.io?example=filters)
-- [Mixin Blocks](http://sandbox.jade.talesoft.io?example=mixin-blocks)
-- [Variadics](http://sandbox.jade.talesoft.io?example=variadics)
+- [Tags](http://sandbox.jade.talesoft.codes)
+- [Classes](http://sandbox.jade.talesoft.codes?example=classes)
+- [IDs](http://sandbox.jade.talesoft.codes?example=ids)
+- [Doctypes](http://sandbox.jade.talesoft.codes?example=html-5)
+- [Attributes](http://sandbox.jade.talesoft.codes?example=attributes)
+- [Mixins](http://sandbox.jade.talesoft.codes?example=mixins)
+- [Blocks](http://sandbox.jade.talesoft.codes?example=blocks)
+- [Expressions](http://sandbox.jade.talesoft.codes?example=expressions)
+- [Escaping](http://sandbox.jade.talesoft.codes?example=escaping)
+- [Block Expansion](http://sandbox.jade.talesoft.codes?example=block-expansion)
+- [Assignments](http://sandbox.jade.talesoft.codes?example=assignments)
+- [Comments](http://sandbox.jade.talesoft.codes?example=comments)
+- [Code](http://sandbox.jade.talesoft.codes?example=code)
+- [Inheritance](http://sandbox.jade.talesoft.codes?example=inheritance)
+- [Includes](http://sandbox.jade.talesoft.codes?example=includes)
+- [Conditionals](http://sandbox.jade.talesoft.codes?example=conditionals)
+- [Loops](http://sandbox.jade.talesoft.codes?example=loops)
+- [Interpolation](http://sandbox.jade.talesoft.codes?example=interpolation)
+- [Filters](http://sandbox.jade.talesoft.codes?example=filters)
+- [Mixin Blocks](http://sandbox.jade.talesoft.codes?example=mixin-blocks)
+- [Variadics](http://sandbox.jade.talesoft.codes?example=variadics)
 
 ### Supported Tale Jade Features
 
-- [Named Mixin Parameters](http://sandbox.jade.talesoft.io?example=named-mixin-parameters)
-- [Attribute Stacking](http://sandbox.jade.talesoft.io?example=attribute-stacking)
-- [Variable Access](http://sandbox.jade.talesoft.io?example=variable-access)
-- [Do/while and for-Loops](http://sandbox.jade.talesoft.io?example=loops)
+- [Named Mixin Parameters](http://sandbox.jade.talesoft.codes?example=named-mixin-parameters)
+- [Attribute Stacking](http://sandbox.jade.talesoft.codes?example=attribute-stacking)
+- [Variable Access](http://sandbox.jade.talesoft.codes?example=variable-access)
+- [Do/while and for-Loops](http://sandbox.jade.talesoft.codes?example=loops)
 
 ### Other cool features
 
@@ -224,9 +224,9 @@ By utilizing those features we aim to bring in more, compatible features into th
 
 Tale Jade is actively used and developed in many projects and is improved constantly.
 
-We don't stick to the Jade-convention, but we'll always provide compatibility to Node.js Jade to help reducing confusion.
+It doesn't stick to the Jade-convention, but it will always provide compatibility to Node.js Jade to help reducing confusion.
 
-We love Jade, we love PHP, we love Node.js and we love the official and original Jade-contributors.
+I love Jade, I love PHP, I love Node.js and I love the official and original Jade-contributors.
 
 **Planned features:**
 - [x] Command line tools
@@ -244,15 +244,15 @@ We love Jade, we love PHP, we love Node.js and we love the official and original
 
 ## Documentation Resources
 
-[Tale Jade Live Compiler](http://sandbox.jade.talesoft.io)
+[Tale Jade Live Compiler](http://sandbox.jade.talesoft.codes)
 A compiler for you to play with in your browser as well as a whole bunch of examples to give you a grasp of what Tale Jade is capable of.
 
-[The Tale Jade API Docs](http://jade.talesoft.io/docs)
+[The Tale Jade API Docs](http://jade.talesoft.codes/docs)
 The documentation of the Tale Jade source code.
 Generated with phpDocumentor, but is's fairly enlightening.
 
 [Official Node.js Jade Documentation](http://jade-lang.com)
-The real thing. This is where everything that we do here originates from.
+The real thing. This is where everything that I do here originates from.
 The syntax is the same, only the code-expressions are different.
 
 [Tale Jade Bootstrap](https://github.com/Talesoft/tale-jade-bootstrap) 
@@ -260,11 +260,10 @@ A quick-start project to get you up and running. Fork it, download it, play with
 Don't forget to run `composer install` before launching ([Download Composer](https://getcomposer.org/download/))
 
 [Development Test Files](https://github.com/Talesoft/tale-jade-examples)
-The example files we tested the engine with.
-We cover all features somewhere in there, for sure!
+The example files I tested the engine with.
 
 [Tale Jade Unit Tests](https://github.com/Talesoft/tale-jade/tree/master/Test)
-The Unit Tests we're using to ensure stability.
+The Unit Tests I'm using to ensure stability.
 There will be new tests added constantly and most features are covered here.
 It's PHP code, though.
 
@@ -277,7 +276,7 @@ It's PHP code, though.
 You're using a framework with a template engine already, but you really want to try out Jade?
 Search no further.
 
-Thanks to the Tale Jade Community we got some modules for existing frameworks that allow you to use Tale Jade easily!
+Thanks to the Tale Jade Community there are some modules for existing frameworks that allow you to use Tale Jade easily!
 
 ### Laravel Framework
 - [Official Tale Jade Bridge](http://github.com/Talesoft/tale-jade-laravel)
@@ -300,7 +299,7 @@ Thanks to the Tale Jade Community we got some modules for existing frameworks th
 - [vdcrea's Jade Editor](http://www.getsymphony.com/download/extensions/view/111595/)
 
 
-**Your framework is missing? [Send us an e-mail](mailto:info@talesoft.io) and we'll get a bridge up and running as soon as possible!**
+**Your framework is missing? [Send me an e-mail](mailto:torben@talesoft.codes) and we'll get a bridge up and running as soon as possible!**
 
 A great thanks to the contributors of these modules!
 
@@ -310,15 +309,15 @@ A great thanks to the contributors of these modules!
 ## Get in touch
 
 If you find a bug or miss a function, please use the [Issues](https://github.com/Talesoft/tale-jade/issues) on this page
-to tell us about it. We will gladly hear you out :)
+to tell me about it. I will gladly hear you out :)
 
-Don't forget to [support our work](https://www.paypal.me/TorbenKoehn) if you like it!
+Don't forget to [support my work](https://www.paypal.me/TorbenKoehn) if you like it!
 
-If you'd like to contribute, fork us, send us pull requests and we'll take a deep look at what you've been working at!
-We're completely **Open Source**! You can do anything you like with our code as long as you stick to the
-**MIT-license** we've appended.
+If you'd like to contribute, fork, send pull requests and I'll take a deep look at what you've been working at!
+Tale Jade is completely **Open Source**! You can do anything you like with the code as long as you stick to the
+**MIT-license** we've appended. Just keep my name somewhere around!
 
-You can also contact us via E-Mail [info@talesoft.io](mailto:info@talesoft.io)
+You can also contact me via E-Mail [torben@talesoft.codes](mailto:torben@talesoft.codes)
 
 
 **Thank you for using Tale Jade. Let us spread the Jade-language together!**
