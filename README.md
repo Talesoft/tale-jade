@@ -13,6 +13,8 @@ The Tale Jade Template Engine brings the popular and powerful Templating-Languag
 
 Tale Jade is the first complete and most powerful Jade implementation in PHP.
 
+**Currently looking for contributors because of lacking time. If you're interested, drop an E-Mail on [torben@talesoft.codes](mailto:torben@talesoft.codes). Thank you.**
+
 ---
 
 ## Getting Started
