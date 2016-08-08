@@ -26,11 +26,12 @@ namespace Tale\Jade\Compiler {
          */
         function build_value($value, $quoteStyle, $escaped)
         {
-            if (method_exists($value, '__toString'))
-                return $quoteStyle.(string)$value.$quoteStyle;
-
-            if (is_object($value))
-                $value = (array)$value;
+            if (is_object($value)) {
+                if (method_exists($value, '__toString'))
+                    return $quoteStyle.(string)$value.$quoteStyle;
+                else
+                    $value = (array)$value;
+            }
 
             return $quoteStyle.($escaped ? htmlentities(is_array($value) ? flatten($value, '') : $value, \ENT_QUOTES) : ((string)$value)).$quoteStyle;
         }
