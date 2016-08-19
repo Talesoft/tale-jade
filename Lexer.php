@@ -10,16 +10,16 @@
  * LICENSE:
  * The code of this file is distributed under the MIT license.
  * If you didn't receive a copy of the license text, you can
- * read it here http://licenses.talesoft.io/2015/MIT.txt
+ * read it here https://github.com/Talesoft/tale-jade/blob/master/LICENSE.md
  *
  * @category   Presentation
  * @package    Tale\Jade
- * @author     Torben Koehn <tk@talesoft.io>
- * @author     Talesoft <info@talesoft.io>
- * @copyright  Copyright (c) 2015 Torben Köhn (http://talesoft.io)
- * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.3
- * @link       http://jade.talesoft.io/docs/files/Lexer.html
+ * @author     Torben Koehn <torben@talesoft.codes>
+ * @author     Talesoft <info@talesoft.codes>
+ * @copyright  Copyright (c) 2015-2016 Torben Köhn (http://talesoft.codes)
+ * @license    https://github.com/Talesoft/tale-jade/blob/master/LICENSE.md MIT License
+ * @version    1.4.5
+ * @link       http://jade.talesoft.codes/docs/files/Lexer.html
  * @since      File available since Release 1.0
  */
 
@@ -58,12 +58,12 @@ use Tale\Jade\Lexer\Exception;
  *
  * @category   Presentation
  * @package    Tale\Jade
- * @author     Torben Koehn <tk@talesoft.io>
- * @author     Talesoft <info@talesoft.io>
- * @copyright  Copyright (c) 2015 Torben Köhn (http://talesoft.io)
- * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.3
- * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Lexer.html
+ * @author     Torben Koehn <torben@talesoft.codes>
+ * @author     Talesoft <info@talesoft.codes>
+ * @copyright  Copyright (c) 2015-2016 Torben Köhn (http://talesoft.codes)
+ * @license    https://github.com/Talesoft/tale-jade/blob/master/LICENSE.md MIT License
+ * @version    1.4.5
+ * @link       http://jade.talesoft.codes/docs/classes/Tale.Jade.Lexer.html
  * @since      File available since Release 1.0
  */
 class Lexer
@@ -503,7 +503,7 @@ class Lexer
     {
 
         if (!is_callable($callback))
-            throw new \Exception(
+            throw new \InvalidArgumentException(
                 "Argument 1 passed to peekWhile needs to be callback"
             );
 
@@ -1265,7 +1265,7 @@ class Lexer
 
                 if ($this->peek() !== ')')
                     $this->throwException(
-                        "Unclosed control statement subject"
+                        "A closing [`)`] is missing in a control statement subject"
                     );
 
                 $this->consume();
@@ -1450,6 +1450,9 @@ class Lexer
             $token['withSpace'] = !empty($spaces);
 
             yield $token;
+
+            foreach ($this->scanClasses() as $subToken)
+                yield $subToken;
         }
     }
 
@@ -1535,7 +1538,7 @@ class Lexer
     protected function scanClasses()
     {
 
-        foreach ($this->scanToken('class', '(\.(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*))', 'i') as $token) {
+        foreach ($this->scanToken('class', '(\.(?<name>[a-zA-Z_\-][a-zA-Z0-9\-_]*))', 'i') as $token) {
 
             yield $token;
 
@@ -1784,7 +1787,7 @@ class Lexer
 
         if ($this->peek() !== ')')
             $this->throwException(
-                "Unclosed attribute block"
+                "An unclosed attribute block has been encountered. Make sure you close all attribute blocks with ) correctly."
             );
 
         $this->consume();

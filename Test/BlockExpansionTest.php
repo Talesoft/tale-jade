@@ -58,4 +58,10 @@ JADE;
 
         $this->assertEquals('<a><b><c><d><div class="e"><div id="f"></div></div></d></c></b></a><a><b><c aa="bb"><d><d><e><f><g><h></h></g></f></e></d><d><e><f><g><h></h></g></f></e></d></d></c></b></a>', $this->compiler->compile($jade));
     }
+
+    public function testClassNestedExpansion()
+    {
+
+        $this->assertEquals('<div class="a b"><div class="c d">Hello, World!</div></div>', $this->compiler->compile(".a.b: .c.d\n\t| Hello, World!"));
+    }
 }

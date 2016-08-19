@@ -10,16 +10,16 @@
  * LICENSE:
  * The code of this file is distributed under the MIT license.
  * If you didn't receive a copy of the license text, you can
- * read it here http://licenses.talesoft.io/2015/MIT.txt
+ * read it here https://github.com/Talesoft/tale-jade/blob/master/LICENSE.md
  *
  * @category   Presentation
  * @package    Tale\Jade
- * @author     Torben Koehn <tk@talesoft.io>
- * @author     Talesoft <info@talesoft.io>
- * @copyright  Copyright (c) 2015 Torben Köhn (http://talesoft.io)
- * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.3
- * @link       http://jade.talesoft.io/docs/files/Parser.html
+ * @author     Torben Koehn <torben@talesoft.codes>
+ * @author     Talesoft <info@talesoft.codes>
+ * @copyright  Copyright (c) 2015-2016 Torben Köhn (http://talesoft.codes)
+ * @license    https://github.com/Talesoft/tale-jade/blob/master/LICENSE.md MIT License
+ * @version    1.4.5
+ * @link       http://jade.talesoft.codes/docs/files/Parser.html
  * @since      File available since Release 1.0
  */
 
@@ -54,12 +54,12 @@ use Tale\Jade\Parser\Exception;
  *
  * @category   Presentation
  * @package    Tale\Jade
- * @author     Torben Koehn <tk@talesoft.io>
- * @author     Talesoft <info@talesoft.io>
- * @copyright  Copyright (c) 2015 Torben Köhn (http://talesoft.io)
- * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.3
- * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Parser.html
+ * @author     Torben Koehn <torben@talesoft.codes>
+ * @author     Talesoft <info@talesoft.codes>
+ * @copyright  Copyright (c) 2015-2016 Torben Köhn (http://talesoft.codes)
+ * @license    https://github.com/Talesoft/tale-jade/blob/master/LICENSE.md MIT License
+ * @version    1.4.5
+ * @link       http://jade.talesoft.codes/docs/classes/Tale.Jade.Parser.html
  * @since      File available since Release 1.0
  */
 class Parser
@@ -267,7 +267,8 @@ class Parser
         //If the token has no handler, we throw an error
         if (!method_exists($this, $method)) {
             $this->throwException(
-                "Unexpected token `{$token['type']}`, no handler $method found",
+                "Unexpected token `{$token['type']}` encountered, no handler $method found. ".
+                "It seems you added custom tokens. Please extend the Parser and add a $method-method for that token",
                 $token
             );
         } else {
@@ -381,7 +382,7 @@ class Parser
         if (!$this->expectNext(['newLine'])) {
 
             $this->throwException(
-                "The statement should end here.",
+                "Nothing should be following this statement, the end of line is expected.",
                 $relatedToken
             );
         } else
@@ -504,7 +505,7 @@ class Parser
 
         if (!in_array($this->current->type, ['element', 'mixinCall']))
             $this->throwException(
-                "Assignments can only happen on elements and mixinCalls"
+                "You can use assignment-syntax ([`&name(..values..)`]) only mixin calls and HTML elements only, not on {$this->current->type}"
             );
 
         $node = $this->createNode('assignment', $token);
@@ -519,7 +520,7 @@ class Parser
             $this->current = $element;
         } else
             $this->throwException(
-                "Assignments require a parameter block"
+                "The assignment-syntax ([`&name(..values..)`]) requires an attribute block with passed values."
             );
     }
 
@@ -549,7 +550,10 @@ class Parser
         $node->unchecked = $token['unchecked'];
 
         if (!$node->name && in_array($this->current->type, ['element', 'mixin']))
-            $this->throwException('Attributes in elements and mixins need a name', $token);
+            $this->throwException(
+                'Attributes in elements and mixins always need a name, it seems you only passed a value.',
+                $token
+            );
 
         if ($this->current->type === 'mixinCall' && !$node->value) {
 
@@ -581,7 +585,7 @@ class Parser
 
         if (!in_array($this->current->type, ['element', 'assignment', 'import', 'variable', 'mixin', 'mixinCall']))
             $this->throwException(
-                "Attributes can only be placed on element, assignment, import, variable, mixin and mixinCall"
+                "Attributes can only be placed on elements, assignments, imports, variables, mixins and mixin calls, not on {$this->current->type}"
             );
 
         foreach ($this->lookUpNext(['attribute']) as $subToken) {
@@ -591,7 +595,7 @@ class Parser
 
         if (!$this->expect(['attributeEnd']))
             $this->throwException(
-                "Attribute list not ended",
+                "No attributeEnd token was found. That is unexpected. Please report this behavior.",
                 $token
             );
     }
@@ -605,7 +609,6 @@ class Parser
      */
     protected function handleAttributeEnd(array $token)
     {
-
     }
 
     /**
@@ -626,7 +629,7 @@ class Parser
 
         if (!$node->name && !$this->inMixin)
             $this->throwException(
-                "Blocks outside a mixin always need a name"
+                "Blocks outside of a mixin always need a valid name."
             );
 
         $this->current = $node;
@@ -655,7 +658,10 @@ class Parser
             $this->current = $this->createElement();
 
         if (!in_array($this->current->type, ['element', 'mixinCall']))
-            $this->throwException("Classes can only be used on elements and mixin calls", $token);
+            $this->throwException(
+                "Classes can only be used on elements and mixin calls, not on {$this->current->type}",
+                $token
+            );
 
         $attr = $this->createNode('attribute', $token);
         $attr->name = 'class';
@@ -825,7 +831,7 @@ class Parser
             $this->current = $this->createElement();
 
         if (!in_array($this->current->type, ['element', 'mixinCall']))
-            $this->throwException("IDs can only be used on elements and mixin calls", $token);
+            $this->throwException("IDs can only be used on elements and mixin calls, not on {$this->current->type}", $token);
 
         $attr = $this->createNode('attribute', $token);
         $attr->name = 'id';
@@ -869,7 +875,7 @@ class Parser
 
         if ($token['importType'] === 'extends' && count($this->document->children) > 0)
             $this->throwException(
-                "extends should be the very first statement in a document",
+                "extends should be the very first statement in a document, only whitespace can precede it",
                 $token
             );
 
@@ -914,7 +920,7 @@ class Parser
 
         if (in_array($this->last->type, ['import', 'expression', 'doctype']))
             $this->throwException(
-                'The '.$this->last->type.' instruction can\'t have children',
+                'The '.$this->last->type.' instruction can\'t have any children',
                 $token
             );
 
@@ -941,10 +947,10 @@ class Parser
             $this->current = $this->createElement();
 
         if ($this->current->type !== 'element')
-            $this->throwException("Tags can only be used on elements", $token);
+            $this->throwException("Tags can only be used on elements, not on {$this->current->type}", $token);
 
         if ($this->current->tag)
-            $this->throwException('This element already has a tag name', $token);
+            $this->throwException('This element already has a tag name, you can\'t pass a second one', $token);
 
         $this->current->tag = $token['name'];
     }
@@ -965,7 +971,7 @@ class Parser
 
         if ($this->inMixin)
             $this->throwException(
-                "Failed to define mixin: Mixins can't be nested"
+                "Failed to define mixin {$token['name']}: Mixins can't be nested. Please each mixin outside of each other."
             );
 
         $node = $this->createNode('mixin', $token);
@@ -1005,8 +1011,6 @@ class Parser
      * 2. Appends the $_current element to the $_currentParent
      * 3. Set's the $_last element to the $_current element
      * 4. Resets $_current to null
-     *
-     * @param array|null $token the <newLine>-token or null
      */
     protected function handleNewLine()
     {
@@ -1038,8 +1042,6 @@ class Parser
      *
      * If we're in a mixin and we're at or below our mixin-level again,
      * we're not in a mixin anymore
-     *
-     * @param array|null $token the <outdent>-token
      */
     protected function handleOutdent()
     {
@@ -1081,7 +1083,7 @@ class Parser
 
         if (!$this->current)
             $this->throwException(
-                "Expansion needs an element to work on",
+                "An element expansion needs a preceding element. It can't be used stand-alone.",
                 $token
             );
 
@@ -1090,8 +1092,8 @@ class Parser
             if (!$this->expectNext(['tag'])) {
                 $this->throwException(
                     sprintf(
-                        "Expected tag name or expansion after double colon, "
-                        ."%s received",
+                        "Expected a tag name or an expanding element after block expansion, "
+                        ."a %s-node was given.",
                         $this->getToken()['type']
                     ),
                     $token

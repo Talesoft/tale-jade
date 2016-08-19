@@ -104,4 +104,11 @@ class MixinTest extends \PHPUnit_Framework_TestCase
         $this->renderer->getCompiler()->setOption('replace_mixins', true);
         $this->assertEquals('<p>Testing</p>', $this->renderer->render('duplicate-in-include'));
     }
+
+    public function testCircular()
+    {
+
+
+        $this->assertEquals('<b>a</b>', $this->renderer->render('circular'));
+    }
 }

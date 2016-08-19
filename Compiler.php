@@ -13,16 +13,16 @@
  * LICENSE:
  * The code of this file is distributed under the MIT license.
  * If you didn't receive a copy of the license text, you can
- * read it here http://licenses.talesoft.io/2015/MIT.txt
+ * read it here https://github.com/Talesoft/tale-jade/blob/master/LICENSE.md
  *
  * @category   Presentation
  * @package    Tale\Jade
- * @author     Torben Koehn <tk@talesoft.io>
- * @author     Talesoft <info@talesoft.io>
- * @copyright  Copyright (c) 2015 Torben Köhn (http://talesoft.io)
- * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.3
- * @link       http://jade.talesoft.io/docs/files/Compiler.html
+ * @author     Torben Koehn <torben@talesoft.codes>
+ * @author     Talesoft <info@talesoft.codes>
+ * @copyright  Copyright (c) 2015-2016 Torben Köhn (http://talesoft.codes)
+ * @license    https://github.com/Talesoft/tale-jade/blob/master/LICENSE.md MIT License
+ * @version    1.4.5
+ * @link       http://jade.talesoft.codes/docs/files/Compiler.html
  * @since      File available since Release 1.0
  */
 
@@ -88,12 +88,12 @@ use Tale\Jade\Parser\Node;
  *
  * @category   Presentation
  * @package    Tale\Jade
- * @author     Torben Koehn <tk@talesoft.io>
- * @author     Talesoft <info@talesoft.io>
- * @copyright  Copyright (c) 2015 Torben Köhn (http://talesoft.io)
- * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.3
- * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Compiler.html
+ * @author     Torben Koehn <torben@talesoft.codes>
+ * @author     Talesoft <info@talesoft.codes>
+ * @copyright  Copyright (c) 2015-2016 Torben Köhn (http://talesoft.codes)
+ * @license    https://github.com/Talesoft/tale-jade/blob/master/LICENSE.md MIT License
+ * @version    1.4.5
+ * @link       http://jade.talesoft.codes/docs/classes/Tale.Jade.Compiler.html
  * @since      File available since Release 1.0
  */
 class Compiler
@@ -532,11 +532,13 @@ class Compiler
         $fullPath = $this->resolvePath($path);
 
         if (!$fullPath)
-            throw new \Exception(
-                "File $path could not be found in ".
+            $this->throwException(
+                "Template file [$path] could not be resolved in the following paths: [".
                 implode(', ', $this->options['paths']).
-                ", Extensions: ".implode(', ', $this->options['extensions']).
-                ", Include path: ".get_include_path()
+                "], Extensions: [".implode(', ', $this->options['extensions']).
+                "], Include path: ".get_include_path()."]\n\n".
+                "Make sure the paths are configured correctly. If you're missing a path, add it with the [`paths`] ".
+                "option or the [`->addPath`]-method."
             );
 
         return $this->compile(file_get_contents($fullPath), $fullPath);
@@ -732,7 +734,7 @@ class Compiler
                 if ($offset >= $strlen($string)) {
 
                     $this->throwException(
-                        "Failed to interpolate value, $open is not closed with $close"
+                        "Failed to interpolate value [`$subject`], the [`$open`]-bracket is not closed with the [`$close`]-bracket."
                     );
                 }
 
@@ -900,7 +902,8 @@ class Compiler
 
         if (!method_exists($this, $method))
             $this->throwException(
-                "No handler $method found for $node->type found",
+                "No handler $method found for $node->type found. It seems you have customized nodes. You need to ".
+                "extend the Tale Jade Compiler and add own $method-method for the respective node type.",
                 $node
             );
 
@@ -1045,7 +1048,8 @@ class Compiler
 
             if (!$this->options['allow_imports'])
                 $this->throwException(
-                    'Imports are not allowed in this compiler instance',
+                    'Imports are disabled in this Jade compiler instance through the [`allow_imports`] option. '.
+                    'Set it to [`false`] (default) to enable imports again',
                     $node
                 );
 
@@ -1085,7 +1089,8 @@ class Compiler
                 $fullPath = $this->resolvePath($path, ".$ext");
                 if (!$fullPath)
                     $this->throwException(
-                        "File $path not found in ".implode(', ', $this->options['paths']).", Include path: ".get_include_path(),
+                        "Included/Extended file [$path] not found in the following paths: [".implode(', ', $this->options['paths'])."], Include path: ".get_include_path()."\n".
+                        "Make sure the paths are configured correctly. If you're missing a path, add it with the [`paths`] option or the [`->addPath`]-method.",
                         $node
                     );
 
@@ -1123,7 +1128,8 @@ class Compiler
 
         if (!$fullPath)
             $this->throwException(
-                "File $path wasnt found in ".implode(', ', $this->options['paths']).", Include path: ".get_include_path(),
+                "Included/Extended file [$path] not found in the following paths: [".implode(', ', $this->options['paths'])."], Include path: ".get_include_path()."\n".
+                "Make sure the paths are configured correctly. If you're missing a path, add it with the [`paths`] option or the [`->addPath`]-method.",
                 $node
             );
 
@@ -1254,7 +1260,8 @@ class Compiler
 
             if (isset($this->mixins[$mixinNode->name]) && !$this->options['replace_mixins'])
                 $this->throwException(
-                    "Duplicate mixin name $mixinNode->name",
+                    "A mixin with the name [$mixinNode->name] is already defined. Rename the it or enable the".
+                    "[`replace_mixins`]-option to be able to overwrite it",
                     $mixinNode
                 );
             else if (isset($this->mixins[$mixinNode->name]))
@@ -1264,9 +1271,8 @@ class Compiler
         }
 
         //Handle the mixins
-        foreach ($this->mixins as $mixinNode) {
+        foreach ($this->mixins as $mixinNode)
             $this->handleMixin($mixinNode);
-        }
 
         return $this;
     }
@@ -1288,6 +1294,10 @@ class Compiler
      */
     protected function handleMixin(Node $node)
     {
+
+        //Check if the mixin has already been handled (Needed for circular handling)
+        if (isset($this->mixins[$node->name]) && is_array($this->mixins[$node->name]))
+            return $this;
 
         //Detach
         $node->parent->remove($node);
@@ -1376,7 +1386,8 @@ class Compiler
 
         if (!isset($this->mixins[$name]))
             $this->throwException(
-                "Mixin $name is not defined",
+                "A mixin with the name [$name] is not defined. Please define it with `mixin $name` before you attempt to call a it".
+                "with that name.",
                 $node
             );
 
@@ -1384,6 +1395,17 @@ class Compiler
             $this->calledMixins[] = $name;
 
         $mixin = $this->mixins[$name];
+
+
+        if ($mixin instanceof Node) {
+
+            //This is still an unhandled mixin, inside another mixin
+            //Make sure to resolve circular references
+            $this->handleMixin($mixin);
+            $mixin = $this->mixins[$name];
+        }
+
+
         $phtml = '';
 
         if (count($node->children) > 0) {
@@ -1437,7 +1459,7 @@ class Compiler
                 }
                 continue;
             }
-
+            
             $mixinAttributes = $mixin['node']->attributes;
 
             if (isset($mixinAttributes[$i]) && strncmp('...', $mixinAttributes[$i]->name, 3) !== 0) {
@@ -1572,7 +1594,8 @@ class Compiler
 
             if ($child->type !== 'when') {
                 $this->throwException(
-                    "`case` can only have `when` children",
+                    "The `case`-node (`switch`-equivalent) can only have `when`-node children (`case`-equivalent). ".
+                    "A $child->type-node has been provided.",
                     $node
                 );
             }
@@ -1583,7 +1606,8 @@ class Compiler
         if (!$hasChild) {
 
             $this->throwException(
-                "`case` needs at least one `when`-child",
+                "The `case`-node needs at least one `when`-node as a child. Empty `case`-blocks are not allowed as ".
+                "they can't provide any functionality.",
                 $node
             );
         }
@@ -1609,7 +1633,8 @@ class Compiler
 
         if (!$node->parent || $node->parent->type !== 'case')
             $this->throwException(
-                "`when` can only be direct descendants of `case`",
+                "A `when`-node can only be a direct descendant of a `case`-node. This one is a child of a ".
+                "{$node->parent->type}-node. Maybe you wanted to use `if/unless`?",
                 $node
             );
 
@@ -1692,7 +1717,7 @@ class Compiler
             );
         else if ($isDoWhile && $hasChildren)
             $this->throwException(
-                'In a do-while statement the while-part shouldn\'t have any children',
+                'In a do-while statement the while-part shouldn\'t have any children. Put the children in the `do`-part',
                 $node
             );
 
@@ -1740,13 +1765,13 @@ class Compiler
 
         if (!empty($subject))
             $this->throwException(
-                "Do can't have a subject",
+                "Do-loops can't have a subject, they only accept children to repeat.",
                 $node
             );
 
         if (!$node->next() || $node->next()->type !== 'while')
             $this->throwException(
-                "A do-statement needs a while-statement following immediately"
+                "A do-statement needs a while-statement with a condition following immediately, {$node->next()->type} was provided"
             );
 
         //Notice that the } wont have closing ? >, php needs this.
@@ -1775,7 +1800,7 @@ class Compiler
 
             if (count($node->children))
                 $this->throwException(
-                    "A variable node with attributes can't have any children",
+                    "A variable node with attributes can't have any children. They are used for array-assignments.",
                     $node
                 );
 
@@ -1824,7 +1849,7 @@ class Compiler
         if ($node->children[0]->type !== 'expression') {
 
             $this->throwException(
-                'Variable nodes can only have expression children',
+                'Following a variable, you can only enter an expression or an attribute block (e.g. `$varName= \'some value\'`)',
                 $node
             );
         }
@@ -1849,13 +1874,13 @@ class Compiler
 
         if (!isset($this->options['filters'][$name]))
             $this->throwException(
-                "Filter $name doesnt exist",
+                "Filter $name was not defined. Make sure to add it via the [`filters`]-option or the [`->addFilter`]-method ",
                 $node
             );
 
         $result = call_user_func($this->options['filters'][$name], $node, $this->indent(), $this->newLine(), $this);
 
-        return $result instanceof \Tale\Jade\Parser\Node ? $this->compileNode($result) : (string)$result;
+        return $result instanceof Node ? $this->compileNode($result) : (string)$result;
     }
 
     /**
@@ -1924,8 +1949,10 @@ class Compiler
 
         //In the following lines we kind of map assignments
         //to attributes (that's the core of how cross-assignments work)
-        //&href('a', 'b', 'c') will add 3 attributes href=a, href=b and href=b          lkrueger
+        //&href('a', 'b', 'c') will add 3 attributes href=a, href=b and href=b
         //to the attributes we work on
+        //This is not the final way on how attributes should work, but at least it has some (somewhat) useful
+        //functionality.
         foreach ($node->assignments as $assignment) {
 
             $name = $assignment->name;
@@ -2288,7 +2315,7 @@ class Compiler
                 .':'.$relatedNode->offset.')';
 
         if (!empty($this->files))
-            $message .= "\n[".end($this->files).']';
+            $message .= "\nError occured in: [".end($this->files).']';
 
         throw new Exception(
             "Failed to compile Jade: $message"

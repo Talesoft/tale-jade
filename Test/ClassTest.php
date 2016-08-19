@@ -50,6 +50,15 @@ JADE;
         $this->assertEquals('<div class="test-parent"><p class="test-child">Test</p></div>', $this->compiler->compile($jade));
     }
 
+    public function testDashClassName()
+    {
+
+        $this->assertEquals('<a class="-some-class"></a>', $this->compiler->compile('a.-some-class'));
+        $this->assertEquals('<div class="-some-class"></div>', $this->compiler->compile('.-some-class'));
+        $this->assertEquals('<a class="b -some-class"></a>', $this->compiler->compile('a.b.-some-class'));
+        $this->assertEquals('<a class="--some-class"></a>', $this->compiler->compile('a.--some-class'));
+    }
+
     public function testComplexTagClassCombination()
     {
 

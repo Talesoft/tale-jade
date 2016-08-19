@@ -12,16 +12,16 @@
  * LICENSE:
  * The code of this file is distributed under the MIT license.
  * If you didn't receive a copy of the license text, you can
- * read it here http://licenses.talesoft.io/2015/MIT.txt
+ * read it here https://github.com/Talesoft/tale-jade/blob/master/LICENSE.md
  *
  * @category   Presentation
  * @package    Tale\Jade\Parser
- * @author     Torben Koehn <tk@talesoft.io>
- * @author     Talesoft <info@talesoft.io>
- * @copyright  Copyright (c) 2015 Torben Köhn (http://talesoft.io)
- * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.3
- * @link       http://jade.talesoft.io/docs/files/Parser.Node.html
+ * @author     Torben Koehn <torben@talesoft.codes>
+ * @author     Talesoft <info@talesoft.codes>
+ * @copyright  Copyright (c) 2015-2016 Torben Köhn (http://talesoft.codes)
+ * @license    https://github.com/Talesoft/tale-jade/blob/master/LICENSE.md MIT License
+ * @version    1.4.5
+ * @link       http://jade.talesoft.codes/docs/files/Parser.Node.html
  * @since      File available since Release 1.0
  */
 
@@ -36,12 +36,12 @@ namespace Tale\Jade\Parser;
  *
  * @category   Presentation
  * @package    Tale\Jade\Parser
- * @author     Torben Koehn <tk@talesoft.io>
- * @author     Talesoft <info@talesoft.io>
- * @copyright  Copyright (c) 2015 Torben Köhn (http://talesoft.io)
- * @license    http://licenses.talesoft.io/2015/MIT.txt MIT License
- * @version    1.4.3
- * @link       http://jade.talesoft.io/docs/classes/Tale.Jade.Parser.Node.html
+ * @author     Torben Koehn <torben@talesoft.codes>
+ * @author     Talesoft <info@talesoft.codes>
+ * @copyright  Copyright (c) 2015-2016 Torben Köhn (http://talesoft.codes)
+ * @license    https://github.com/Talesoft/tale-jade/blob/master/LICENSE.md MIT License
+ * @version    1.4.5
+ * @link       http://jade.talesoft.codes/docs/classes/Tale.Jade.Parser.Node.html
  * @since      File available since Release 1.0
  */
 class Node
@@ -531,6 +531,12 @@ class Node
      * @return string a debuggable text-representation of this node tree
      */
     public function __toString()
+    {
+
+        return $this->dump();
+    }
+
+    public function __debugInfo()
     {
 
         return $this->dump();

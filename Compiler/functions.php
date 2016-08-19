@@ -218,4 +218,30 @@ namespace Tale\Jade\Compiler {
             return implode($separator, $items);
         }
     }
+
+    if (!function_exists(__NAMESPACE__.'\\get_or_set_ignored_scope_variables')) {
+
+        /**
+         * Stores the currently ignored scope variables.
+         *
+         * This is only a way to make them configurable and not require to copy them all over
+         * the jade code.
+         *
+         * This is needed to preserve the stand-alone mode.
+         *
+         * @param array $variableNames the variable names to ignore in the jade code when scoping (set)
+         * @return string the variable names to ignore in the jade code when scoping (get)
+         *
+         */
+        function get_or_set_ignored_scope_variables(array $variableNames = null)
+        {
+
+            static $ignoredScopeVariables = [];
+
+            if ($variableNames)
+                $ignoredScopeVariables = $variableNames;
+
+            return $ignoredScopeVariables;
+        }
+    }
 }
