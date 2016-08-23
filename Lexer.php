@@ -1772,11 +1772,12 @@ class Lexer
                         $token['value'] .= $this->read('ctype_space');
 
                         //Get the middle (if) value
-                        $token['value'] .= $this->readBracketContents($argSeparators);
+                        if (!$this->match('(:|\?)'))
+                            $token['value'] .= $this->readBracketContents($argSeparators);
 
-                        if (!$this->match('\s*:'))
+                        if (!$this->match('\s*(:|\?)'))
                             $this->throwException(
-                                'Invalid ternary operator defined. You\'re missing the double colon to specify an else-block'
+                                'Invalid ternary operator defined. You\'re missing the double colon or another question mark to specify an else-block'
                             );
 
                         $token['value'] .= $this->getMatch(0);
