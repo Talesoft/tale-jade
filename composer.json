@@ -1,7 +1,7 @@
 {
     "name": "talesoft/tale-jade",
     "type": "library",
-    "keywords": ["template", "dialect", "html", "views", "presentation", "jade", "html", "php", "phtml"],
+    "keywords": ["template", "dialect", "html", "views", "render", "presentation", "jade", "html", "php", "phtml"],
     "description": "A clean, lightweight and easy-to-use templating engine for PHP based on Jade/Pug",
     "license": "MIT",
     "homepage": "http://jade.talesoft.codes",

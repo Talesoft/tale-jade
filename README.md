@@ -13,9 +13,43 @@ The Tale Jade Template Engine brings the popular and powerful Templating-Languag
 
 Tale Jade is the first complete and most powerful Jade implementation in PHP.
 
+
+**Contents:**
+
+- [What is Tale Jade](#what-is-tale-jade)
+- [Getting Started / Installation](#getting-started)
+- [Supported Features](#supported-features)
+- [Documentation Resources](#documentation-resources)
+- [Tale Jade in your favorite framework](#tale-jade-in-your-favorite-framework)
+- [Get in touch & support my work](#get-in-touch-and-support-my-work)
+
+
+
 **Currently looking for contributors because of lacking time. This will not cease development on my side, I just need one or two helping hands. If you're interested, drop an E-Mail on [torben@talesoft.codes](mailto:torben@talesoft.codes). Thank you.**
 
 ---
+
+
+## What is Tale Jade
+
+It's a template engine that doesn't focus on abstracting PHP, but focuses on abstracting **HTML**.
+
+**Why another template engine, you might ask?**
+
+Template engines like Twig or Blade are pretty cool and functional, but they all lack one common thing: **HTML abstraction**.
+
+You still have to write all those tags, brackets and quotes, you have to close tags and make sure that you keep your structure consistent. It's verbose and it tages large sizes on large sites pretty quick.
+
+Similar to HAML, but less verbose, Tale Jade takes both approaches, it abstracts PHP as well as HTML. It works based on indentation and simple CSS-selectors to create your HTML as clean and quick as possible. It also involves a lot of dynamic features, you won't need any line of HTML or PHP to write your templates anymore. _You only need Tale Jade_.
+
+Furthermore, Tale Jade can handle different output formats through its syntax. That way you can use Tale Jade for HTML5, XHTML or XML templates just by changing the doctype and it will automatically make sure to always render valid markup.
+
+Below you have some examples, feature-links, links to documentation and a sandbox where you can play in. Check them out!
+
+Don't fear the syntax. Let me stress this out because I've read a lot about people _being scared_ of Jade syntax. 
+It is basically indented CSS-selectors and a few characters to control what you output.
+Once you wrote a few templates with it, I assure you, **you'll love it**!
+
 
 ## Getting Started
 
@@ -30,7 +64,6 @@ If you want to get started right now, hook up [composer](https://getcomposer.org
 
 ```bash
 $ composer require "talesoft/tale-jade:*"
-$ composer install
 ```
 
 or add it to your `composer.json` by yourself
@@ -38,7 +71,7 @@ or add it to your `composer.json` by yourself
 ```json
 {
     "require": {
-        "talesoft/tale-jade": "*"
+        "talesoft/tale-jade": "^1.4.5"
     }
 }
 ```
@@ -171,7 +204,7 @@ This always has been and will always be the main target.
 PHP has it's own features that are surely different from JavaScript's.
 By utilizing those features it aims to bring in more, compatible features into the language to make the fastest template development ever possible!
 
-**You can try features and see a bunch of examples on my [sandbox site](http://sandbox.jade.talesoft.codes)**
+**You can try each feature and see a bunch of examples on my [sandbox site](http://sandbox.jade.talesoft.codes)**
 
 ### Supported official Node.js Jade Features
 
@@ -308,16 +341,17 @@ A great thanks to the contributors of these modules!
 ---
 
 
-## Get in touch
+## Get in touch and support my work
 
-If you find a bug or miss a function, please use the [Issues](https://github.com/Talesoft/tale-jade/issues) on this page
-to tell me about it. I will gladly hear you out :)
+If you find a bug or miss a function, please use the [Issues](https://github.com/Talesoft/tale-jade/issues) on this page to tell me about it. I will gladly hear you out :)
 
-Don't forget to [support my work](https://www.paypal.me/TorbenKoehn) if you like it!
+
+If this library helped you, eased up your work and you simply can't live without it, think about supporting my work and [spend me a coffee](https://www.paypal.me/TorbenKoehn). Thank you!
+
 
 If you'd like to contribute, fork, send pull requests and I'll take a deep look at what you've been working at!
-Tale Jade is completely **Open Source**! You can do anything you like with the code as long as you stick to the
-**MIT-license** we've appended. Just keep my name somewhere around!
+Tale Jade is completely **Open Source**! You can do anything you like with the code as long as you stick to the **MIT-license** I've appended. Just keep my name somewhere around!
+
 
 You can also contact me via E-Mail [torben@talesoft.codes](mailto:torben@talesoft.codes)
 

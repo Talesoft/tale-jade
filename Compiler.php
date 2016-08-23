@@ -336,12 +336,6 @@ class Compiler
             'echo_xml_doctype'          => defined('HHVM_VERSION'),
             'paths'                   => [],
             'extensions'              => ['.jd', '.jade'],
-            'ignored_scope_variables'  => [
-                'GLOBALS', '_SERVER', '_GET', '_POST',
-                '_FILES', '_REQUEST', '_SESSION', '_ENV', '_COOKIE',
-                'php_errormsg', 'HTTP_RAW_POST_DATA', 'http_response_header',
-                'argc', 'argv', '__scope', '__arguments', '__ignore', '__block'
-            ],
             'parser_options'           => [],
             'lexer_options'            => []
         ], $options);
@@ -1473,16 +1467,14 @@ class Compiler
         }
 
         $phtml .= (count($node->children) > 0 ? $this->indent() : '').$this->createCode(
-                '$__ignore = array_flip('.$this->exportArray($this->options['ignored_scope_variables']).');
-                $__scope = array_diff_key(array_replace(get_defined_vars(), $__ignore), $__ignore);   
-                $__mixinCallArgs = '.$this->exportArray($args).';'.($hasBlock ? '
-                $__mixinCallArgs[\'__block\'] = isset($__block) ? $__block : null;
-                ' : '').'
-                call_user_func($__mixins[\''.$name.'\'], $__mixinCallArgs, $__scope);
-                unset($__ignore);
-                unset($__scope);
-                unset($__mixinCallArgs);
-                '.($hasBlock ? 'unset($__block);' : '')
+                '$__scope = \\Tale\\Jade\\Compiler\\create_scope(get_defined_vars()); '. 
+                '$__mixinCallArgs = '.$this->exportArray($args).';'.(
+                    $hasBlock ? '$__mixinCallArgs[\'__block\'] = isset($__block) ? $__block : null; ' : ''
+                ).'call_user_func($__mixins[\''.$name.'\'], $__mixinCallArgs, $__scope); '.
+                'unset($__scope); '.
+                'unset($__mixinCallArgs); '.(
+                    $hasBlock ? 'unset($__block); ' : ''
+                )
             ).$this->newLine();
 
         return $phtml;
@@ -1505,13 +1497,9 @@ class Compiler
 
         if (!$name)
             return $this->createCode(
-                '$__ignore = array_flip('.$this->exportArray($this->options['ignored_scope_variables']).');
-                $__scope = array_diff_key(array_replace(get_defined_vars(), $__ignore), $__ignore); 
-
-                echo isset($__block) && $__block instanceof \Closure ? $__block($__scope) : \'\';
-                
-                unset($__ignore);
-                unset($__scope);'
+                '$__scope = \\Tale\\Jade\\Compiler\\create_scope(get_defined_vars()); '.
+                'echo isset($__block) && $__block instanceof \Closure ? $__block($__scope) : \'\'; '.
+                'unset($__scope);'
             );
 
         //At this point the code knows this block only, since handleBlock took care of the blocks previously

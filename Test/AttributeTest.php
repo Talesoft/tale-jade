@@ -138,6 +138,16 @@ class AttributeTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException(Compiler\Exception::class);
         $this->assertEquals('', $this->renderer->compile('a(="some value")'));
+
+        $this->setExpectedException(Compiler\Exception::class);
+        $this->assertEquals('', $this->renderer->compile('a("some value")'));
+    }
+
+    public function testTernaryExpressionValue()
+    {
+
+        $this->assertEquals('<a<?php $__value = true ? \'some value\' : false; if (!\Tale\Jade\Compiler\is_null_or_false($__value)) echo \' some-attr=\'.\Tale\Jade\Compiler\build_value($__value, \'"\', true); unset($__value);?>></a>', $this->renderer->compile('a(some-attr=true ? \'some value\' : false)'));
+        $this->assertEquals('<a<?php $__value = true ? \'some value\' : false; if (!\Tale\Jade\Compiler\is_null_or_false($__value)) echo \' some-attr=\'.\Tale\Jade\Compiler\build_value($__value, \'"\', true); unset($__value);?> title="test"></a>', $this->renderer->compile('a(some-attr=true ? \'some value\' : false title="test")'));
     }
 
     public function testExpectedButNotGivenValue()

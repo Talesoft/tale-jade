@@ -1762,8 +1762,32 @@ class Lexer
                                     ? $token['value'].$value
                                     : $value;
                     $spaces = null;
-                }
 
+                    //If this is a ternary operator, there might be more?
+                    //Try to fetch ternaries without surrounding brackets
+                    if ($this->match('\s*\?')) {
+
+                        $token['value'] .= $this->getMatch(0);
+                        $this->consumeMatch();
+                        $token['value'] .= $this->read('ctype_space');
+
+                        //Get the middle (if) value
+                        $token['value'] .= $this->readBracketContents($argSeparators);
+
+                        if (!$this->match('\s*:'))
+                            $this->throwException(
+                                'Invalid ternary operator defined. You\'re missing the double colon to specify an else-block'
+                            );
+
+                        $token['value'] .= $this->getMatch(0);
+                        $this->consumeMatch();
+                        $token['value'] .= $this->read('ctype_space');
+                        
+                        //Get the last (else) value
+                        $token['value'] .= $this->readBracketContents($argSeparators);
+                    }
+                }
+                
                 yield $token;
 
                 if (!empty($spaces)) {

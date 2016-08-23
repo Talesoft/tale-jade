@@ -219,29 +219,54 @@ namespace Tale\Jade\Compiler {
         }
     }
 
-    if (!function_exists(__NAMESPACE__.'\\get_or_set_ignored_scope_variables')) {
+    if (!defined(__NAMESPACE__.'\\IGNORED_SCOPE_VARIABLES')) {
+
+        define(
+            __NAMESPACE__.'\\IGNORED_SCOPE_VARIABLES',
+            'GLOBALS:_SERVER:_GET:_POST:_FILES:_REQUEST:_SESSION:_ENV:_COOKIE:php_errormsg:'.
+            'HTTP_RAW_POST_DATA:http_response_header:argc:argv:__scope:__arguments:__ignore:__block'
+        );
+    }
+
+    if (!function_exists(__NAMESPACE__.'\\get_ignored_scope_variables')) {
 
         /**
-         * Stores the currently ignored scope variables.
+         * Returns the variable names to ignore when handling scoping for mixins.
          *
          * This is only a way to make them configurable and not require to copy them all over
          * the jade code.
          *
          * This is needed to preserve the stand-alone mode.
          *
-         * @param array $variableNames the variable names to ignore in the jade code when scoping (set)
-         * @return string the variable names to ignore in the jade code when scoping (get)
+         * @return array the variable names to ignore in the jade code when scoping
          *
          */
-        function get_or_set_ignored_scope_variables(array $variableNames = null)
+        function get_ignored_scope_variables()
         {
 
-            static $ignoredScopeVariables = [];
+            static $ignoredScopeVariables = null;
 
-            if ($variableNames)
-                $ignoredScopeVariables = $variableNames;
+            if (!$ignoredScopeVariables)
+                $ignoredScopeVariables = explode(':', __NAMESPACE__.'\\IGNORED_SCOPE_VARIABLES');
 
             return $ignoredScopeVariables;
+        }
+    }
+
+    if (!function_exists(__NAMESPACE__.'\\create_scope')) {
+
+        /**
+         * This will return a diff of currently defined variables and variables to ignore.
+         *
+         * The passed argument usually should be the result of `get_defined_variables()`
+         *
+         * @return array the final scope variables and values
+         */
+        function create_scope(array $definedVariables)
+        {
+
+            $ignore = get_ignored_scope_variables();
+            return array_diff_key(array_replace($definedVariables, $ignore), $ignore);
         }
     }
 }
