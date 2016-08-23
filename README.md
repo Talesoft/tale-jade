@@ -1,8 +1,8 @@
 
 # Tale Jade for PHP
 
-
 [![GitHub release](https://img.shields.io/github/release/talesoft/tale-jade.svg?style=flat-square)](https://github.com/Talesoft/tale-jade) [![Travis](https://img.shields.io/travis/Talesoft/tale-jade.svg?style=flat-square)](https://travis-ci.org/Talesoft/tale-jade) [![Packagist](https://img.shields.io/packagist/dt/talesoft/tale-jade.svg?style=flat-square)](https://packagist.org/packages/talesoft/tale-jade) [![HHVM](https://img.shields.io/hhvm/talesoft/tale-jade.svg?style=flat-square)](https://travis-ci.org/Talesoft/tale-jade) [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/Talesoft/tale-jade/blob/master/LICENSE.md) [![Gitter](https://img.shields.io/gitter/room/Talesoft/tale-jade.svg?maxAge=2592000?style=flat-square)](https://gitter.im/Talesoft/tale-jade)
+
 
 > **Finally a fully-functional, complete and clean port of the Jade language to PHP**
 >
@@ -20,7 +20,7 @@ Tale Jade is the first complete and most powerful Jade implementation in PHP.
 - [Getting Started / Installation](#getting-started)
 - [Supported Features](#supported-features)
 - [Documentation Resources](#documentation-resources)
-- [Tale Jade in your favorite framework](#tale-jade-in-your-favorite-framework)
+- [Tale Jade in your favorite framework](#tale-jade-for-your-favorite-framework)
 - [Get in touch & support my work](#get-in-touch-and-support-my-work)
 
 
@@ -38,9 +38,9 @@ It's a template engine that doesn't focus on abstracting PHP, but focuses on abs
 
 Template engines like Twig or Blade are pretty cool and functional, but they all lack one common thing: **HTML abstraction**.
 
-You still have to write all those tags, brackets and quotes, you have to close tags and make sure that you keep your structure consistent. It's verbose and it tages large sizes on large sites pretty quick.
+You still have to write all those tags, brackets and quotes, you have to close tags and make sure that you keep your structure consistent. It's verbose and it takes large sizes on bigger sites pretty quick.
 
-Similar to HAML, but less verbose, Tale Jade takes both approaches, it abstracts PHP as well as HTML. It works based on indentation and simple CSS-selectors to create your HTML as clean and quick as possible. It also involves a lot of dynamic features, you won't need any line of HTML or PHP to write your templates anymore. _You only need Tale Jade_.
+Similar to HAML, but less verbose, Tale Jade takes _both_ approaches, it abstracts PHP _as well_ as HTML. It works based on indentation and simple CSS-selectors to create your HTML as clean and quick as possible. It also involves a lot of dynamic features, you won't need any line of HTML or PHP to write your templates anymore. _You only need Tale Jade_.
 
 Furthermore, Tale Jade can handle different output formats through its syntax. That way you can use Tale Jade for HTML5, XHTML or XML templates just by changing the doctype and it will automatically make sure to always render valid markup.
 
@@ -306,7 +306,7 @@ It's PHP code, though.
 ---
 
 
-## Tale Jade in for your favorite framework
+## Tale Jade for your favorite framework
 
 You're using a framework with a template engine already, but you really want to try out Jade?
 Search no further.
@@ -315,6 +315,9 @@ Thanks to the Tale Jade Community there are some modules for existing frameworks
 
 ### Laravel Framework
 - [Official Tale Jade Bridge](http://github.com/Talesoft/tale-jade-laravel)
+
+### Symfony 2/3
+- [Example Jade Bundle](https://github.com/Talesoft/tale-symfony-jadebundle)
 
 ### Yii2 Framework
 - [jacmoe's Extension](https://github.com/jacmoe/yii2-tale-jade)
@@ -329,8 +332,6 @@ Thanks to the Tale Jade Community there are some modules for existing frameworks
 - [berkus' Integration](https://gist.github.com/berkus/f54347a4a1fd74e9e162)
 
 ### Symphony XSLT CMS
-*(This is not the Symfony PHP Framework)*
-
 - [vdcrea's Jade Editor](http://www.getsymphony.com/download/extensions/view/111595/)
 
 
@@ -346,7 +347,7 @@ A great thanks to the contributors of these modules!
 If you find a bug or miss a function, please use the [Issues](https://github.com/Talesoft/tale-jade/issues) on this page to tell me about it. I will gladly hear you out :)
 
 
-If this library helped you, eased up your work and you simply can't live without it, think about supporting my work and [spend me a coffee](https://www.paypal.me/TorbenKoehn). Thank you!
+If this library helped you, eased up your work and you simply can't live without it, think about supporting my work and [**spend me a coffee**](https://www.paypal.me/TorbenKoehn). Thank you!
 
 
 If you'd like to contribute, fork, send pull requests and I'll take a deep look at what you've been working at!
