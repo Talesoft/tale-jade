@@ -1,34 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-us">
   <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <meta charset="UTF-8">
+    <title>Tale Jade for PHP by Talesoft</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
-
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-
-    <title>Tale Jade for PHP by Talesoft</title>
   </head>
-
   <body>
-    <header>
-      <div class="inner">
-        <h1>Tale Jade for PHP</h1>
-        <h2>A complete and fully-functional implementation of the Jade template language for PHP</h2>
-        <a href="https://github.com/Talesoft/tale-jade" class="button"><small>View project on</small> GitHub</a>
-      </div>
-    </header>
+    <section class="page-header">
+      <h1 class="project-name">Tale Jade for PHP</h1>
+      <h2 class="project-tagline">A complete and fully-functional implementation of the Jade template language for PHP</h2>
+      <a href="https://github.com/Talesoft/tale-jade" class="btn">View on GitHub</a>
+      <a href="https://github.com/Talesoft/tale-jade/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/Talesoft/tale-jade/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
 
-    <div id="content-wrapper">
-      <div class="inner clearfix">
-        <section id="main-content">
-          <h1>
+    <section class="main-content">
+      <h1>
 <a id="tale-jade-for-php" class="anchor" href="#tale-jade-for-php" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Tale Jade for PHP</h1>
 
 <p><a href="https://github.com/Talesoft/tale-jade"><img src="https://img.shields.io/github/release/talesoft/tale-jade.svg?style=flat-square" alt="GitHub release"></a> <a href="https://travis-ci.org/Talesoft/tale-jade"><img src="https://img.shields.io/travis/Talesoft/tale-jade.svg?style=flat-square" alt="Travis"></a> <a href="https://packagist.org/packages/talesoft/tale-jade"><img src="https://img.shields.io/packagist/dt/talesoft/tale-jade.svg?style=flat-square" alt="Packagist"></a> <a href="https://travis-ci.org/Talesoft/tale-jade"><img src="https://img.shields.io/hhvm/talesoft/tale-jade.svg?style=flat-square" alt="HHVM"></a> <a href="https://github.com/Talesoft/tale-jade/blob/master/LICENSE.md"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="License"></a> <a href="https://gitter.im/Talesoft/tale-jade"><img src="https://img.shields.io/gitter/room/Talesoft/tale-jade.svg?maxAge=2592000?style=flat-square" alt="Gitter"></a></p>
@@ -43,7 +34,41 @@
 
 <p>Tale Jade is the first complete and most powerful Jade implementation in PHP.</p>
 
+<p><strong>Contents:</strong></p>
+
+<ul>
+<li><a href="#what-is-tale-jade">What is Tale Jade</a></li>
+<li><a href="#getting-started">Getting Started / Installation</a></li>
+<li><a href="#supported-features">Supported Features</a></li>
+<li><a href="#documentation-resources">Documentation Resources</a></li>
+<li><a href="#tale-jade-for-your-favorite-framework">Tale Jade in your favorite framework</a></li>
+<li><a href="#get-in-touch-and-support-my-work">Get in touch &amp; support my work</a></li>
+</ul>
+
+<p><strong>Currently looking for contributors. If you're interested and require any resources or info about the engine, drop an E-Mail on <a href="mailto:torben@talesoft.codes">torben@talesoft.codes</a>. Thank you.</strong></p>
+
 <hr>
+
+<h2>
+<a id="what-is-tale-jade" class="anchor" href="#what-is-tale-jade" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>What is Tale Jade</h2>
+
+<p>It's a template engine that doesn't focus on abstracting PHP, but focuses on abstracting <strong>HTML</strong>.</p>
+
+<p><strong>Why another template engine?</strong>, you might ask.</p>
+
+<p>Template engines like Twig or Blade are pretty cool and functional, but they all lack one common thing: <strong>HTML abstraction</strong>.</p>
+
+<p>You still have to write all those tags, brackets and quotes, you have to close tags and make sure that you keep your structure consistent. It's verbose and it takes large sizes on bigger sites pretty quick.</p>
+
+<p>Similar to HAML, but less verbose, Tale Jade takes <em>both</em> approaches, it abstracts PHP <em>as well</em> as HTML. It works based on indentation and simple CSS-selectors to create your HTML as clean and quick as possible. It also involves a lot of dynamic features, you won't need any line of HTML or PHP to write your templates anymore. <em>You only need Tale Jade</em>.</p>
+
+<p>Furthermore, Tale Jade can handle different output formats through its syntax. That way you can use Tale Jade for HTML5, XHTML or XML templates just by changing the doctype and it will automatically make sure to always render valid markup.</p>
+
+<p>Below you have some examples, feature-links, links to documentation and a sandbox where you can play in. Check them out!</p>
+
+<p>Don't fear the syntax. Let me stress this out because I've read a lot about people <em>being scared</em> of Jade syntax. 
+It is basically indented CSS-selectors and a few characters to control what you output.
+Once you wrote a few templates with it, I assure you, <strong>you'll love it</strong>!</p>
 
 <h2>
 <a id="getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Getting Started</h2>
@@ -58,33 +83,17 @@
 
 <p>If you want to get started right now, hook up <a href="https://getcomposer.org/">composer</a> and run</p>
 
-<div class="highlight highlight-source-shell"><pre>$ composer require <span class="pl-s"><span class="pl-pds">"</span>talesoft/tale-jade:*<span class="pl-pds">"</span></span>
-$ composer install</pre></div>
+<div class="highlight highlight-source-shell"><pre>$ composer require <span class="pl-s"><span class="pl-pds">"</span>talesoft/tale-jade:*<span class="pl-pds">"</span></span></pre></div>
 
 <p>or add it to your <code>composer.json</code> by yourself</p>
 
 <div class="highlight highlight-source-json"><pre>{
     <span class="pl-s"><span class="pl-pds">"</span>require<span class="pl-pds">"</span></span>: {
-        <span class="pl-s"><span class="pl-pds">"</span>talesoft/tale-jade<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>*<span class="pl-pds">"</span></span>
+        <span class="pl-s"><span class="pl-pds">"</span>talesoft/tale-jade<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>^1.4.5<span class="pl-pds">"</span></span>
     }
 }</pre></div>
 
-<h3>
-<a id="install-by-downloading-the-sources" class="anchor" href="#install-by-downloading-the-sources" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Install by downloading the sources</h3>
-
-<p>You can also download the sources by yourself.</p>
-
-<p>Tale Jade is compatible with the <a href="http://www.php-fig.org/psr/psr-0/">PSR-0</a> and <a href="http://www.php-fig.org/psr/psr-4/">PSR-4</a> autoloading standards.</p>
-
-<p>Put the sources inside your a <code>Tale/Jade</code> subfolder inside your autoloading directories, e.g. <code>library/Tale/Jade</code> and you're ready to go!</p>
-
-<p>The easiest way might be to just put a clone of the repository there, that way you can update it easier</p>
-
-<div class="highlight highlight-source-shell"><pre>$ git clone git@github.com:Talesoft/tale-jade.git library/Tale/Jade</pre></div>
-
-<p>or as a sub-module if you're using git for your project as well</p>
-
-<div class="highlight highlight-source-shell"><pre>$ git submodule add git@github.com:Talesoft/tale-jade.git library/Tale/Jade</pre></div>
+<p><em>Note: If you're not using composer, make sure to also include the <code>Compiler/functions.php</code> file</em></p>
 
 <h3>
 <a id="rendering-a-jade-template" class="anchor" href="#rendering-a-jade-template" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Rendering a Jade Template</h3>
@@ -175,7 +184,7 @@ This always has been and will always be the main target.</p>
 PHP has it's own features that are surely different from JavaScript's.
 By utilizing those features it aims to bring in more, compatible features into the language to make the fastest template development ever possible!</p>
 
-<p><strong>You can try features and see a bunch of examples on my <a href="http://sandbox.jade.talesoft.codes">sandbox site</a></strong></p>
+<p><strong>You can try each feature and see a bunch of examples on my <a href="http://sandbox.jade.talesoft.codes">sandbox site</a></strong></p>
 
 <h3>
 <a id="supported-official-nodejs-jade-features" class="anchor" href="#supported-official-nodejs-jade-features" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Supported official Node.js Jade Features</h3>
@@ -241,8 +250,6 @@ By utilizing those features it aims to bring in more, compatible features into t
 
 <p>It doesn't stick to the Jade-convention, but it will always provide compatibility to Node.js Jade to help reducing confusion.</p>
 
-<p>I love Jade, I love PHP, I love Node.js and I love the official and original Jade-contributors.</p>
-
 <p><strong>Planned features:</strong></p>
 
 <ul>
@@ -288,7 +295,7 @@ It's PHP code, though.</p>
 <hr>
 
 <h2>
-<a id="tale-jade-in-for-your-favorite-framework" class="anchor" href="#tale-jade-in-for-your-favorite-framework" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Tale Jade in for your favorite framework</h2>
+<a id="tale-jade-for-your-favorite-framework" class="anchor" href="#tale-jade-for-your-favorite-framework" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Tale Jade for your favorite framework</h2>
 
 <p>You're using a framework with a template engine already, but you really want to try out Jade?
 Search no further.</p>
@@ -300,6 +307,13 @@ Search no further.</p>
 
 <ul>
 <li><a href="http://github.com/Talesoft/tale-jade-laravel">Official Tale Jade Bridge</a></li>
+</ul>
+
+<h3>
+<a id="symfony-23" class="anchor" href="#symfony-23" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Symfony 2/3</h3>
+
+<ul>
+<li><a href="https://github.com/Talesoft/tale-symfony-jadebundle">Example Jade Bundle</a></li>
 </ul>
 
 <h3>
@@ -333,8 +347,6 @@ Search no further.</p>
 <h3>
 <a id="symphony-xslt-cms" class="anchor" href="#symphony-xslt-cms" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Symphony XSLT CMS</h3>
 
-<p><em>(This is not the Symfony PHP Framework)</em></p>
-
 <ul>
 <li><a href="http://www.getsymphony.com/download/extensions/view/111595/">vdcrea's Jade Editor</a></li>
 </ul>
@@ -346,38 +358,26 @@ Search no further.</p>
 <hr>
 
 <h2>
-<a id="get-in-touch" class="anchor" href="#get-in-touch" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Get in touch</h2>
+<a id="get-in-touch-and-support-my-work" class="anchor" href="#get-in-touch-and-support-my-work" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Get in touch and support my work</h2>
 
-<p>If you find a bug or miss a function, please use the <a href="https://github.com/Talesoft/tale-jade/issues">Issues</a> on this page
-to tell me about it. I will gladly hear you out :)</p>
+<p>If you find a bug or miss a function, please use the <a href="https://github.com/Talesoft/tale-jade/issues">Issues</a> on this page to tell me about it. I will gladly hear you out :)</p>
 
-<p>Don't forget to <a href="https://www.paypal.me/TorbenKoehn">support my work</a> if you like it!</p>
+<p>If this library helped you, eased up your work and you simply can't live without it, think about supporting my work and <a href="https://www.paypal.me/TorbenKoehn"><strong>spend me a coffee</strong></a>. Thank you!</p>
 
 <p>If you'd like to contribute, fork, send pull requests and I'll take a deep look at what you've been working at!
-Tale Jade is completely <strong>Open Source</strong>! You can do anything you like with the code as long as you stick to the
-<strong>MIT-license</strong> we've appended. Just keep my name somewhere around!</p>
+Tale Jade is completely <strong>Open Source</strong>! You can do anything you like with the code as long as you stick to the <strong>MIT-license</strong> I've appended. Just keep my name somewhere around!</p>
 
 <p>You can also contact me via E-Mail <a href="mailto:torben@talesoft.codes">torben@talesoft.codes</a></p>
 
 <p><strong>Thank you for using Tale Jade. Let us spread the Jade-language together!</strong></p>
-        </section>
 
-        <aside id="sidebar">
-          <a href="https://github.com/Talesoft/tale-jade/zipball/master" class="button">
-            <small>Download</small>
-            .zip file
-          </a>
-          <a href="https://github.com/Talesoft/tale-jade/tarball/master" class="button">
-            <small>Download</small>
-            .tar.gz file
-          </a>
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/Talesoft/tale-jade">Tale Jade for PHP</a> is maintained by <a href="https://github.com/Talesoft">Talesoft</a>.</span>
 
-          <p class="repo-owner"><a href="https://github.com/Talesoft/tale-jade"></a> is maintained by <a href="https://github.com/Talesoft">Talesoft</a>.</p>
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
 
-          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
-        </aside>
-      </div>
-    </div>
+    </section>
 
             <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
