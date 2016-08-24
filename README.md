@@ -25,7 +25,7 @@ Tale Jade is the first complete and most powerful Jade implementation in PHP.
 
 
 
-**Currently looking for contributors because of lacking time. This will not cease development on my side, I just need one or two helping hands. If you're interested, drop an E-Mail on [torben@talesoft.codes](mailto:torben@talesoft.codes). Thank you.**
+**Currently looking for contributors. If you're interested and require any resources or info about the engine, drop an E-Mail on [torben@talesoft.codes](mailto:torben@talesoft.codes). Thank you.**
 
 ---
 
@@ -34,7 +34,7 @@ Tale Jade is the first complete and most powerful Jade implementation in PHP.
 
 It's a template engine that doesn't focus on abstracting PHP, but focuses on abstracting **HTML**.
 
-**Why another template engine, you might ask?**
+**Why another template engine?**, you might ask.
 
 Template engines like Twig or Blade are pretty cool and functional, but they all lack one common thing: **HTML abstraction**.
 
@@ -76,26 +76,7 @@ or add it to your `composer.json` by yourself
 }
 ```
 
-### Install by downloading the sources
-
-You can also download the sources by yourself.
-
-Tale Jade is compatible with the [PSR-0](http://www.php-fig.org/psr/psr-0/) and [PSR-4](http://www.php-fig.org/psr/psr-4/) autoloading standards.
-
-Put the sources inside your a `Tale/Jade` subfolder inside your autoloading directories, e.g. `library/Tale/Jade` and you're ready to go!
-
-The easiest way might be to just put a clone of the repository there, that way you can update it easier
-
-```bash
-$ git clone git@github.com:Talesoft/tale-jade.git library/Tale/Jade
-```
-
-or as a sub-module if you're using git for your project as well
-
-```bash
-$ git submodule add git@github.com:Talesoft/tale-jade.git library/Tale/Jade
-```
-
+_Note: If you're not using composer, make sure to also include the `Compiler/functions.php` file_
 
 ### Rendering a Jade Template
 
@@ -260,8 +241,6 @@ By utilizing those features it aims to bring in more, compatible features into t
 Tale Jade is actively used and developed in many projects and is improved constantly.
 
 It doesn't stick to the Jade-convention, but it will always provide compatibility to Node.js Jade to help reducing confusion.
-
-I love Jade, I love PHP, I love Node.js and I love the official and original Jade-contributors.
 
 **Planned features:**
 - [x] Command line tools
