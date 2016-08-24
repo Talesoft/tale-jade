@@ -1,0 +1,20 @@
+
+mixin mixin-a(content)
+    a-element= $content
+
+mixin mixin-b(content)
+    b-element= $content
+
+mixin mixin-c(content)
+    c-element= $content
+
+
+$mixinName= 'b'
+
++mixin-#{$mixinName}('Some Content')
+
+
+$mixinName = 'c'
+$m = 'mixin'
+
++#{$m}-#{$mixinName}('Some other content')

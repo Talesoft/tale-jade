@@ -111,4 +111,11 @@ class MixinTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('<b>a</b>', $this->renderer->render('circular'));
     }
+
+    public function testCallNameInterpolation()
+    {
+
+
+        $this->assertEquals('<b-element>Some Content</b-element><c-element>Some other content</c-element>', $this->renderer->render('interpolation'));
+    }
 }

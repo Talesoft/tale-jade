@@ -108,6 +108,7 @@ class InterpolationTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('<?php $tagName = \'abcdefghi\'?><<?=htmlentities(isset($tagName) ? $tagName : \'\', \ENT_QUOTES, \'UTF-8\')?> class="some-class">Some Content</<?=htmlentities(isset($tagName) ? $tagName : \'\', \ENT_QUOTES, \'UTF-8\')?>>', $this->renderer->compile("\$tagName='abcdefghi'\n#{\$tagName}.some-class Some Content"));
         $this->assertEquals('<?php $tagName = \'def\'?><abc<?=htmlentities(isset($tagName) ? $tagName : \'\', \ENT_QUOTES, \'UTF-8\')?>ghi class="some-class">Some Content</abc<?=htmlentities(isset($tagName) ? $tagName : \'\', \ENT_QUOTES, \'UTF-8\')?>ghi>', $this->renderer->compile("\$tagName='def'\nabc#{\$tagName}ghi.some-class Some Content"));
+        $this->assertEquals('<?php $t1 = \'abc\'?><?php $t2 = \'def\'?><abc<?=htmlentities(isset($t1) ? $t1 : \'\', \ENT_QUOTES, \'UTF-8\')?>ghi-<?=htmlentities(isset($t2) ? $t2 : \'\', \ENT_QUOTES, \'UTF-8\')?> class="some-class">Some Content</abc<?=htmlentities(isset($t1) ? $t1 : \'\', \ENT_QUOTES, \'UTF-8\')?>ghi-<?=htmlentities(isset($t2) ? $t2 : \'\', \ENT_QUOTES, \'UTF-8\')?>>', $this->renderer->compile("\$t1='abc'\n\$t2='def'\nabc#{\$t1}ghi-#{\$t2}.some-class Some Content"));
 
     }
 }

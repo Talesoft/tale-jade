@@ -1514,7 +1514,7 @@ class Lexer
     protected function scanTag()
     {
 
-        foreach ($this->scanToken('tag', '(?<name>(([a-zA-Z_][a-zA-Z0-9\-_]*)?[\?!#]\{[^\}]+\}([a-zA-Z_][a-zA-Z0-9\-_]*)?|[a-zA-Z_][a-zA-Z0-9\-_]*))', 'i') as $token) {
+        foreach ($this->scanToken('tag', '(?<name>(([a-zA-Z0-9_]+|[?!]?#\{[^\}]+\})\-?)+)', 'i') as $token) {
 
             yield $token;
 
@@ -1586,7 +1586,7 @@ class Lexer
     protected function scanMixin()
     {
 
-        foreach ($this->scanToken('mixin', "mixin[\t ]+(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*)") as $token) {
+        foreach ($this->scanToken('mixin', 'mixin[\t ]+(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*)') as $token) {
 
             yield $token;
 
@@ -1610,7 +1610,7 @@ class Lexer
     protected function scanMixinCall()
     {
 
-        foreach ($this->scanToken('mixinCall', '\+(?<name>[a-zA-Z_][a-zA-Z0-9\-_]*)') as $token) {
+        foreach ($this->scanToken('mixinCall', '\+(?<name>(([a-zA-Z0-9_]+|[?!]?#\{[^\}]+\})\-?)+)') as $token) {
 
             yield $token;
 

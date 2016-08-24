@@ -423,10 +423,6 @@ class Compiler
      *
      * Look at Renderer to get this done for you
      *
-     * Before evaluating you should set a $__args variables
-     * that will be passed through mixins.
-     * It like a global scope.
-     *
      * If you give it a path, the directory of that path will be used
      * for relative includes.
      *
@@ -1351,9 +1347,12 @@ class Compiler
             }
 
             $phtml .= $this->createCode(
-                    '$__mixins[\''.$name.'\'] = function(array $__arguments, array $__scope) {
-                        $__defaults = '.$this->exportArray($args).';
-                        extract(array_replace($__scope, array_replace($__defaults, $__arguments)));
+                    '$__mixins[\''.$name.'\'] = function(array $__arguments, array $__scope) {'.
+                        '$__defaults = '.$this->exportArray($args).'; '.
+                        'if (is_numeric(key($__arguments))) extract(array_replace($__scope, array_combine('.
+                            'array_keys($__defaults), array_replace(array_values($__defaults)'.
+                            ', array_values($__arguments)))));'.
+                        'else extract(array_replace($__scope, array_replace($__defaults, $__arguments)));
                     '
                 ).$this->newLine();
 
@@ -1378,25 +1377,36 @@ class Compiler
         $name = $node->name;
         $hasBlock = false;
 
-        if (!isset($this->mixins[$name]))
+        $interpolatedName = $this->interpolate($name, true);
+        $interpolated = $name !== $interpolatedName;
+        $name = $interpolatedName;
+
+        if ($interpolated)
+            $this->options['compile_uncalled_mixins'] = true;
+
+        if (!$interpolated && !isset($this->mixins[$name]))
             $this->throwException(
                 "A mixin with the name [$name] is not defined. Please define it with `mixin $name` before you attempt to call a it".
                 "with that name.",
                 $node
             );
 
-        if (!in_array($name, $this->calledMixins, true))
+        if (!$interpolated && !in_array($name, $this->calledMixins, true))
             $this->calledMixins[] = $name;
 
-        $mixin = $this->mixins[$name];
+        $mixin = null;
 
-
-        if ($mixin instanceof Node) {
-
-            //This is still an unhandled mixin, inside another mixin
-            //Make sure to resolve circular references
-            $this->handleMixin($mixin);
+        if (!$interpolated) {
+            
             $mixin = $this->mixins[$name];
+
+            if ($mixin instanceof Node) {
+    
+                //This is still an unhandled mixin, inside another mixin
+                //Make sure to resolve circular references
+                $this->handleMixin($mixin);
+                $mixin = $this->mixins[$name];
+            }
         }
 
 
@@ -1453,16 +1463,17 @@ class Compiler
                 }
                 continue;
             }
-            
-            $mixinAttributes = $mixin['node']->attributes;
 
-            if (isset($mixinAttributes[$i]) && strncmp('...', $mixinAttributes[$i]->name, 3) !== 0) {
 
-                $args[$mixinAttributes[$i]->name] = $value;
-            } else {
+                $mixinAttributes = !$interpolated ? $mixin['node']->attributes : null;
 
-                $args[] = $value;
-            }
+                if (!$interpolated && isset($mixinAttributes[$i]) && strncmp('...', $mixinAttributes[$i]->name, 3) !== 0) {
+
+                    $args[$mixinAttributes[$i]->name] = $value;
+                } else {
+
+                    $args[] = $value;
+                }
             $i++;
         }
 
