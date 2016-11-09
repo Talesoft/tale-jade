@@ -92,4 +92,31 @@ PHTML;
         ));
     }
 
+    public function testForcedInlineTags()
+    {
+
+        $phtml = <<<'PHTML'
+<?php $content = "This is some Content.\n\n    This comment contains own whitespace to preserve."?>
+<some-container>
+  <pre><?=htmlentities(isset($content) ? $content : '', \ENT_QUOTES, 'UTF-8')?></pre>
+  <pre>Some <strong>interpolated content</strong></pre>
+  <div>
+    <?=htmlentities(isset($content) ? $content : '', \ENT_QUOTES, 'UTF-8')?>
+  </div>
+  <div>
+    Some 
+    <strong>
+      interpolated content
+    </strong>
+  </div>
+  <code><?=htmlentities(isset($content) ? $content : '', \ENT_QUOTES, 'UTF-8')?></code>
+  <code>Some <strong>interpolated content</strong></code>
+</some-container>
+PHTML;
+
+        $this->assertEquals(str_replace("\r", '', $phtml), $this->renderer->compileFile(
+            'forced-inline'
+        ));
+    }
+
 }

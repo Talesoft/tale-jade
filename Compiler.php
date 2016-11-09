@@ -208,6 +208,13 @@ class Compiler
     private $iteratorId;
 
     /**
+     * Specifies wether we're ignoring pretty-mode right now and print inline
+     *
+     * @var bool
+     */
+    private $forceInline;
+
+    /**
      * Creates a new compiler instance.
      *
      * You can pass a modified parser or lexer.
@@ -217,45 +224,47 @@ class Compiler
      *
      * pretty:                      Use indentation and new-lines
      *                              or compile everything into a single line
-     * indent_style:                 The character that is used for
+     * indent_style:                The character that is used for
      *                              indentation (Space by default)
-     * indent_width:                 The amount of characters to repeat for
+     * indent_width:                The amount of characters to repeat for
      *                              indentation (Default 2 for 2-space-indentation)
-     * self_closing_tags:             The tags that don't need any closing in
+     * self_closing_tags:           he tags that don't need any closing in
      *                              HTML-style languages
-     * self_repeating_attributes:     The attributes that repeat their value to
+     * self_repeating_attributes:   The attributes that repeat their value to
      *                              set them to true in HTML-style languages
+     * force_inlined_tags:          The tags that don't allow any pretty-printing inside them
+     *                              Required for e.g. pre-tags
      * doctypes:                    The different doctypes you can use via the
      *                              "doctype"-directive [name => doctype-string]
      * mode:                        Compile in HTML, XML or XHTML mode
-     * xhtmlModes:                  The mode strings that compile XHTML-style
+     * xhtml_modes:                 The mode strings that compile XHTML-style
      * filters:                     The different filters you can use via the
      *                              ":<filterName>"-directive [name => callback]
-     * filter_map:                   The extension-to-filter-map for
+     * filter_map:                  The extension-to-filter-map for
      *                              include-filters [extension => filter]
-     * escape_sequences:             The escape-sequences that are possible in
+     * escape_sequences:            The escape-sequences that are possible in
      *                              scalar strings
-     * compile_uncalled_mixins:       Always compile all mixins or leave out
+     * compile_uncalled_mixins:     Always compile all mixins or leave out
      *                              those that aren't called?
-     * stand_alone:                  Allows the rendered files to be called
+     * stand_alone:                 Allows the rendered files to be called
      *                              without any requirements
-     * allow_imports:                Set to false to disable imports for this
+     * allow_imports:               Set to false to disable imports for this
      *                              compiler instance. Importing will throw an
      *                              exception. Great for demo-pages
      * defaultTag:                  The tag to default to for
      *                              class/id/attribute-initiated elements
      *                              (.abc, #abc, (abc))
-     * quote_style:                  The quote-style in the markup (default: ")
-     * replace_mixins:               Replaces mixins from top to bottom if they
+     * quote_style:                 The quote-style in the markup (default: ")
+     * replace_mixins:              Replaces mixins from top to bottom if they
      *                              have the same name. Allows duplicated mixin names.
-     * echo_xml_doctype:              Uses PHP's "echo" to for XML processing instructions
+     * echo_xml_doctype:            Uses PHP's "echo" to for XML processing instructions
      *                              This fixes problems with PHP's short open tags
      * paths:                       The paths to resolve paths in.
      *                              If none set, it will default to get_include_path()
      * extensions:                  The extensions for Jade files
      *                              (default: .jade and .jd)
-     * parser_options:               The options for the parser if none given
-     * lexer_options:                The options for the lexer if none given.
+     * parser_options:              The options for the parser if none given
+     * lexer_options:               The options for the lexer if none given.
      *
      *
      * @param array|null  $options an array of options
@@ -277,6 +286,9 @@ class Compiler
             ],
             'self_repeating_attributes' => [
                 'selected', 'checked', 'disabled'
+            ],
+            'force_inlined_tags' => [
+                'pre', 'code'
             ],
             'doctypes'                => [
                 '5'            => '<!DOCTYPE html>',
@@ -445,6 +457,7 @@ class Compiler
         $this->blocks = [];
         $this->level = 0;
         $this->iteratorId = 0;
+        $this->forceInline = false;
 
         //Parse the input into an AST
         $node = null;
@@ -581,6 +594,17 @@ class Compiler
     {
 
         return $this->isMode(self::MODE_XHTML);
+    }
+
+    /**
+     * Returns wether we're allowed to do pretty-printing or not currently
+     *
+     * @return bool
+     */
+    protected function isPretty()
+    {
+
+        return $this->options['pretty'] && !$this->forceInline;
     }
 
     /**
@@ -779,9 +803,7 @@ class Compiler
     protected function newLine()
     {
 
-        return $this->options['pretty']
-            ? "\n"
-            : '';
+        return $this->isPretty() ? "\n" : '';
     }
 
     /**
@@ -796,7 +818,7 @@ class Compiler
     protected function indent($offset = 0)
     {
 
-        return $this->options['pretty']
+        return $this->isPretty()
             ? str_repeat($this->options['indent_style'], ($this->level + $offset) * $this->options['indent_width'])
             : '';
     }
@@ -1887,9 +1909,10 @@ class Compiler
      *
      * if $indent is true, the level will be increased
      *
-     * @param Node[]     $nodes
-     * @param bool|true  $indent
-     * @param bool|false $allowInline
+     * @param Node[] $nodes
+     * @param bool $indent
+     * @param bool $allowInline
+     * @param bool $forceInline
      *
      * @return string
      */
@@ -1943,6 +1966,13 @@ class Compiler
         $xmlMode = $this->isXml();
         $anyHtmlMode = $htmlMode || $xhtmlMode;
         $anyXmlMode = $xmlMode || $xhtmlMode;
+
+        $forceInline = $anyHtmlMode && in_array($tag, $this->options['force_inlined_tags']);
+
+        if ($forceInline) {
+
+            $this->forceInline = true;
+        }
 
         $nodeAttributes = $node->attributes;
 
@@ -2140,6 +2170,9 @@ class Compiler
 
         $phtml .= $this->compileChildren($node->children);
         $phtml .= $this->newLine().$this->indent()."</{$tag}>";
+
+        if ($forceInline)
+            $this->forceInline = false;
 
         return $phtml;
     }
