@@ -323,6 +323,7 @@ class Compiler
             ],
             'filter_map'               => [
                 'jade' => 'plain',
+                'pug' => 'plain',
                 'css'  => 'css',
                 'js'   => 'js',
                 'php'  => 'php',
@@ -347,7 +348,7 @@ class Compiler
             'replace_mixins'           => false,
             'echo_xml_doctype'          => defined('HHVM_VERSION'),
             'paths'                   => [],
-            'extensions'              => ['.jd', '.jade'],
+            'extensions'              => ['.pug', '.jd', '.jade'],
             'parser_options'           => [],
             'lexer_options'            => []
         ], $options);
